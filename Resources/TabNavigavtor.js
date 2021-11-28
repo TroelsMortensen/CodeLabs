@@ -44,9 +44,9 @@ function nextPrev(n) {
     // if you have reached the end of the form...
     if (currentTab >= x.length) {
         // starting over
-
-        currentTab = 0;
-        setTab(0);
+        window.location.href ="/CodeLabs/index.html";
+        // currentTab = 0;
+        // setTab(0);
     } else {
         // Otherwise, display the correct tab:
         showTab(currentTab);
