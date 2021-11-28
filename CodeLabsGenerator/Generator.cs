@@ -9,15 +9,14 @@ namespace CodeLabsGenerator
 {
     public class Generator
     {
-
-        public static void GenerateHtmlPageFromMdFiles(string pathToMdSteps, string outputPath, string basePagePath)
+        public static void GenerateHtmlPageFromMdFiles(string pathToMdSteps, string basePagePath)
         {
             string basePage = ReadBasePageHtmlFromFile(basePagePath);
             string steps = ConstructStepsOverview(pathToMdSteps);
             string tabs = ConstructAllTabsFromMdFiles(pathToMdSteps);
             basePage = InsertStepsIntoBasePage(basePage, steps);
             basePage = InsertTabsIntoBasePage(basePage, tabs);
-            WriteFinalPageToFile(outputPath, basePage);
+            WriteFinalPageToFile(pathToMdSteps, basePage);
         }
 
         private static void WriteFinalPageToFile(string outputPath, string basePage)
@@ -27,7 +26,7 @@ namespace CodeLabsGenerator
             //     Console.WriteLine("Creating");
             //     File.Create(outputPath);
             // }
-            File.WriteAllText(outputPath, basePage);
+            File.WriteAllText(outputPath + "/Page.html", basePage);
         }
 
         private static string InsertTabsIntoBasePage(string basePage, string tabs)
