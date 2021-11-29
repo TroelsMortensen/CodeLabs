@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div id="container" action="/action_page.php">
+    <div style="overflow:auto;">
+        <div style="text-align:center">
+            <!-- Circles which indicates the steps of the form: -->
+
+            <span class="step" onclick="setTab(0)">0</span>
+<span class="step" onclick="setTab(1)">1</span>
+
+        </div>
+        <div style="float:right;">
+            <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+            <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+        </div>
+    </div>
+    
+    <!-- One "tab" for each step in the form: -->
+    
+    <div class="tab">
+<p>#Multithreading in C#
+This tutorial will take you through the basics of how to work with threads in C#. The concept is very similar to that of Java-threads.</p>
+
+</div>
+<div class="tab">
+<p>#Multithreading overview
+The threading functionality exists in the namespace <strong>System.Threading</strong></p>
+<p>This namesspace provides classes and interfaces which enable multithreaded programming, i.e. parallel execution of code, and leveraging threads.</p>
+<p>###Example usage</p>
+<ul>
+<li>Separate heavy calculations from UI (to avoid freezes)</li>
+<li>Regularly query external service, and notify application if new data arrived (polling)</li>
+<li>To avoid stopping processing when waiting for user's input</li>
+<li>When you have independent tasks, which do not intersect</li>
+<li>Handling multiple clients in a client-server setup with sockets</li>
+</ul>
+
+</div>
+
+
+    
+</div>
+
+<script>
+    showTab(currentTab);
+</script>
+
+</body>
+</html>
