@@ -1,7 +1,7 @@
-# Multithreading overview
+# Multi-threading overview
 The threading functionality exists in the namespace **System.Threading**
 
-This namesspace provides classes and interfaces which enable multithreaded programming, i.e. parallel execution of code, and leveraging threads.
+This namespace provides classes and interfaces which enable multithreaded programming, i.e. parallel execution of code, and leveraging threads.
 
 ### Example usage
 * Separate heavy calculations from UI (to avoid freezes)

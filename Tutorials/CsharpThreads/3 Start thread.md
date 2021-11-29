@@ -1,6 +1,6 @@
 # Starting a thread, and printing numbers
 
-In Java the `Thread` constructor takes an object, which implements the interface `Runnable`.  
+In Java the `Thread` constructor takes an instance of a class, which implements the interface `Runnable`.  
 In C# the `Thread` constructor takes a delegate, i.e. either a lambda expression, or a method reference.
 
 As an example, we would like to execute the following method in a new thread:

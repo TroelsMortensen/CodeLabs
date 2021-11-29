@@ -1,4 +1,4 @@
-# Passing arguments
+ # Passing arguments
 
 In the previous example, we just referenced a method. This can be done, when we don't need to pass any arguments.
 
