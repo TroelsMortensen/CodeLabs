@@ -16,7 +16,7 @@ namespace CodeLabsGenerator
             string tabs = ConstructAllTabsFromMdFiles(pathToMdSteps);
             basePage = InsertStepsIntoBasePage(basePage, steps);
             basePage = InsertTabsIntoBasePage(basePage, tabs);
-            // basePage = FixLanguageClass(basePage);
+            
             basePage = AddLineNumberClassToCodeTag(basePage);
             WriteFinalPageToFile(pathToMdSteps, basePage);
         }
@@ -24,11 +24,6 @@ namespace CodeLabsGenerator
         private static string AddLineNumberClassToCodeTag(string basePage)
         {
             return basePage.Replace("class=\"language-", "class=\"line-numbers language-");
-        }
-
-        private static string FixLanguageClass(string basePage)
-        {
-            return basePage.Replace("language-C#", "language-csharp");
         }
 
         private static void WriteFinalPageToFile(string outputPath, string basePage)
