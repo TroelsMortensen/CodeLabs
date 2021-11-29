@@ -16,7 +16,7 @@ namespace CodeLabsGenerator
             string tabs = ConstructAllTabsFromMdFiles(pathToMdSteps);
             basePage = InsertStepsIntoBasePage(basePage, steps);
             basePage = InsertTabsIntoBasePage(basePage, tabs);
-            basePage = FixLanguageClass(basePage);
+            // basePage = FixLanguageClass(basePage);
             basePage = AddLineNumberClassToCodeTag(basePage);
             WriteFinalPageToFile(pathToMdSteps, basePage);
         }

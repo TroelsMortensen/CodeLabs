@@ -36,44 +36,113 @@ This is, however, not covered in this tutorial.</p>
 </div>
 <div class="tab">
 <h1>Server Side</h1>
-<p>The below code shows a simple server program:</p>
+<p>The below code shows a simple server program. It is an echo server, so it reads a string from the client, and returns it back to the client.</p>
 <pre><code class="line-numbers language-csharp">class Program {
     static void Main(string[] args) {
         Console.WriteLine(&quot;Starting server..&quot;);
-
+        
         IPAddress ip = IPAddress.Parse(&quot;127.0.0.1&quot;);
         TcpListener listener = new TcpListener(ip, 5000);
         listener.Start();
 
         Console.WriteLine(&quot;Server started..&quot;);
 
-        while (true) {
-            TcpClient client = listener.AcceptTcpClient();
-            
-            Console.WriteLine(&quot;Client connected&quot;);
-            NetworkStream stream = client.GetStream();
-
-            // read
-            byte[] dataFromClient = new byte[1024];
-            int bytesRead = stream.Read(dataFromClient, 0, dataFromClient.Length);
-            string s = Encoding.ASCII.GetString(dataFromClient, 0, bytesRead);
-            Console.WriteLine(s);
-            
-            // respond
-            byte[] dataToClient = Encoding.ASCII.GetBytes($&quot;Returning {s}&quot;);
-            stream.Write(dataToClient, 0, dataToClient.Length);
-            
-            // close connection
-            client.Close();
+        while (true)
+        {
+            HandleOneClient(listener);
         }
+    }
+
+</code></pre>
+<p>The above is just a simple main method, starting a server socket, and handling incoming client requests.</p>
+<p><strong>Line 5</strong>: The IP address, the server should use, is specified. This example runs both client and server and localhost.<br />
+If you wish to connect to the server form a different pc, you will need to look up the server pc's actual IP address.</p>
+<p><strong>Line 6</strong>: This is the server socket, it is a class, which listens for incoming TCP connections.<br />
+The first argument is the IP address. The second is the port number.</p>
+<p><strong>Line 7</strong>: The listener is started, now it is ready for incoming requests.</p>
+<p><strong>Line 11</strong>: The functionality of accepting and handling incoming requests is done in a <code>while(true)</code> loop. One client is handled at a time.</p>
+<p><strong>Line 13</strong>: Here we call a method to handle one client. When that client is handled, the method exists, goes back to the <code>while</code>-loop, and starts on the next client. See client-handling below.</p>
+<pre><code class="line-numbers language-csharp">    private static void HandleOneClient(TcpListener listener)
+    {
+        using TcpClient client = listener.AcceptTcpClient();
+
+        Console.WriteLine(&quot;Client connected&quot;);
+        using NetworkStream stream = client.GetStream();
+
+        // read
+        byte[] dataFromClient = new byte[1024];
+        int bytesRead = stream.Read(dataFromClient, 0, dataFromClient.Length);
+        string s = Encoding.ASCII.GetString(dataFromClient, 0, bytesRead);
+        Console.WriteLine(s);
+
+        // respond
+        byte[] dataToClient = Encoding.ASCII.GetBytes($&quot;Returning {s}&quot;);
+        stream.Write(dataToClient, 0, dataToClient.Length);
     }
 }
 </code></pre>
+<p><strong>Line 3</strong>: A new connection from a client is accepted. This results in a <code>TcpClient</code> object, which represents the connection to the client. Notice the <code>using</code> keyword in front of the client variable. This is used to make sure the client is correctly disposed/closed, when the end of the current scope is reached.</p>
+<p><strong>Line 6</strong>: The <code>NetworkStream</code> is acquired. This stream is used for reading and writing from/to the client. Unlike Java, where you have an object for input, and another for output. Notice again the <code>using</code> keyword.</p>
+<p><strong>Line 9</strong>: Data is sent as bytes. We define here a byte array to hold the incoming data, a so-called buffer array. Initially there's allocated 1024 bytes of space. If larger objects are sent, you will not receive everything. The simple solution is just to set this number high enough to not encounter problems. More elegant solutions exists, where you figure out how many bytes will be sent, before allocating the necessary number of bytes.</p>
+<p><strong>Line 10</strong>: Here we read the incoming data from the client. The result is how many bytes were read from the client.<br />
+The arguemtents are:</p>
+<ol>
+<li>the buffer array to hold the incoming data</li>
+<li>which index in the buffer array to start inserting data at (most often just default this value to 0)</li>
+<li>the length of the buffer array</li>
+</ol>
+<p><strong>Line 11</strong>: The buffer array is converted to a string. It is here assumed the encoding is ASCII. Other encodings can be used, e.g. UTF8, for a larger character set.<br />
+The arguments are:</p>
+<ol>
+<li>the buffer array containing the data sent from the client</li>
+<li>which index in the buffer to start converting at (again, default to 0)</li>
+<li>how many bytes were read from the client, so that we do not convert empty cells to part of the result.</li>
+</ol>
+<p>We have now received the data from the client, and converted it to a <code>string</code>.<br />
+This is a very simpel example. For more complex client-server interactions, you would usually want to send some kind of object. That is done by first converting that object, serializing it, to either json (a string-representation of the object) or to a byte array. This format can then be sent over the socket connection.</p>
+<p><strong>Line 15</strong>: We want to respond to the client, by echoing back the data previously received. That data is <code>&quot;Returning {s}&quot;</code><br />
+Where <em>s</em> is the string from the client.<br />
+The data is converted to a byte array, again using an encoding, in this case ASCII.</p>
+<p><strong>Line 16</strong>: The byte array is sent to the client, the arguments are:</p>
+<ol>
+<li>the byte array with the data</li>
+<li>the index of where to start in the array (default to 0)</li>
+<li>how many cells of the array to send, default to the array-length, i.e. we want the entire array sent.</li>
+</ol>
+<p>We do not have to manually close neither the client nor the stream, because we applied the <em>using</em> keyword. Any variables declared with the <em>using</em> keyword will automatically be disposed at the end of the surrounding scope.</p>
+<p>The method is finished handling one client. It exists, returns to the while loop, starts over, and handles a new client.<br />
+Over and over and over and...</p>
 
 </div>
 <div class="tab">
 <h1>Client Side</h1>
-<p>Some description about client side.</p>
+<p>This is the client side of the example. It sends a string to the server, and receives a string back again.<br />
+You will notice similarities to the server with regards to reading and writing data.</p>
+<p>Below is a main method with the client program:</p>
+<pre><code class="line-numbers language-csharp">class Program
+{
+    static void Main(string[] args)
+    {
+        using TcpClient client = new TcpClient(&quot;127.0.0.1&quot;, 5000);
+
+        using NetworkStream stream = client.GetStream();
+
+        byte[] dataToServer = Encoding.ASCII.GetBytes(&quot;Hello from client&quot;);
+        stream.Write(dataToServer, 0, dataToServer.Length);
+
+        byte[] dataFromServer = new byte[1024];
+        int bytesRead = stream.Read(dataFromServer, 0, dataFromServer.Length);
+        string response = Encoding.ASCII.GetString(dataFromServer, 0, bytesRead);
+        Console.WriteLine(response);
+    }
+}
+</code></pre>
+<p><strong>Line 5</strong>: We instantiate a new <code>TcpClient</code>, which makes a connection to a server located at the provided IP address and port number, the two constructor arguments. Notice again the <code>using</code> keyword, so that the client object is disposed when no longer used.</p>
+<p><strong>Line 7</strong>: Obtaining the stream.</p>
+<p><strong>Line 9</strong>: The message to be sent to the server, <code>Hello from client</code>, is converted to a byte array.</p>
+<p><strong>Line 10</strong>: The byte array is sent to the server.</p>
+<p><strong>Lines 12-14</strong>: Identical to how the server side read from the client. Here we just read from the server instead.</p>
+<p><strong>Line 15</strong>: Finally, printing out the result.</p>
 
 </div>
 
