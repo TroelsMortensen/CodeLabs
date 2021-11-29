@@ -3,8 +3,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
 <link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
 <script src="./../../Resources/TabNavigavtor.js"></script>
 <body>
+<script src="./../../Resources/prism.js"></script>
 
 <div id="container" action="/action_page.php">
     <div style="overflow:auto;">
@@ -17,27 +19,60 @@
 
         </div>
         <div style="float:right;">
-            <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-            <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+            <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+            <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
         </div>
     </div>
     
     <!-- One "tab" for each step in the form: -->
     
     <div class="tab">
-<h2>Sockets in C#</h2>
-<p>In this short tutorial, you'll see how to make a socket connection in C# between a client and a server.<br />
-More text here.</p>
+<h1>Sockets in C#</h1>
 <p><img src="Socket.png" alt="socket" /></p>
+<p>In this short tutorial, you will see how to make a socket connection in C# between a client and a server.</p>
+<p>Multiple clients cannot be handled out of the box, and you must use multi-threading, similarly to what you were taught in SDJ2.<br />
+This is, however, not covered in this tutorial.</p>
 
 </div>
 <div class="tab">
-<h2>Server Side</h2>
-<p>Some description about server side.</p>
+<h1>Server Side</h1>
+<p>The below code shows a simple server program:</p>
+<pre><code class="line-numbers language-csharp">class Program {
+    static void Main(string[] args) {
+        Console.WriteLine(&quot;Starting server..&quot;);
+
+        IPAddress ip = IPAddress.Parse(&quot;127.0.0.1&quot;);
+        TcpListener listener = new TcpListener(ip, 5000);
+        listener.Start();
+
+        Console.WriteLine(&quot;Server started..&quot;);
+
+        while (true) {
+            TcpClient client = listener.AcceptTcpClient();
+            
+            Console.WriteLine(&quot;Client connected&quot;);
+            NetworkStream stream = client.GetStream();
+
+            // read
+            byte[] dataFromClient = new byte[1024];
+            int bytesRead = stream.Read(dataFromClient, 0, dataFromClient.Length);
+            string s = Encoding.ASCII.GetString(dataFromClient, 0, bytesRead);
+            Console.WriteLine(s);
+            
+            // respond
+            byte[] dataToClient = Encoding.ASCII.GetBytes($&quot;Returning {s}&quot;);
+            stream.Write(dataToClient, 0, dataToClient.Length);
+            
+            // close connection
+            client.Close();
+        }
+    }
+}
+</code></pre>
 
 </div>
 <div class="tab">
-<h2>Client Side</h2>
+<h1>Client Side</h1>
 <p>Some description about client side.</p>
 
 </div>
