@@ -15,6 +15,8 @@
 
             <span class="step" onclick="setTab(0)">0</span>
 <span class="step" onclick="setTab(1)">1</span>
+<span class="step" onclick="setTab(2)">2</span>
+<span class="step" onclick="setTab(3)">3</span>
 
         </div>
         <div style="float:right;">
@@ -26,15 +28,15 @@
     <!-- One "tab" for each step in the form: -->
     
     <div class="tab">
-<p>#Multithreading in C#
-This tutorial will take you through the basics of how to work with threads in C#. The concept is very similar to that of Java-threads.</p>
+<h1>Multithreading in C#</h1>
+<p>This tutorial will take you through the basics of how to work with threads in C#. The concept is very similar to that of Java-threads.</p>
 
 </div>
 <div class="tab">
-<p>#Multithreading overview
-The threading functionality exists in the namespace <strong>System.Threading</strong></p>
+<h1>Multithreading overview</h1>
+<p>The threading functionality exists in the namespace <strong>System.Threading</strong></p>
 <p>This namesspace provides classes and interfaces which enable multithreaded programming, i.e. parallel execution of code, and leveraging threads.</p>
-<p>###Example usage</p>
+<h3>Example usage</h3>
 <ul>
 <li>Separate heavy calculations from UI (to avoid freezes)</li>
 <li>Regularly query external service, and notify application if new data arrived (polling)</li>
@@ -42,6 +44,52 @@ The threading functionality exists in the namespace <strong>System.Threading</st
 <li>When you have independent tasks, which do not intersect</li>
 <li>Handling multiple clients in a client-server setup with sockets</li>
 </ul>
+
+</div>
+<div class="tab">
+<h1>Starting a thread, and printing numbers</h1>
+<p>In Java the <code>Thread</code> constructor takes an object, which implements the interface <code>Runnable</code>.<br />
+In C# the <code>Thread</code> constructor takes a delegate, i.e. either a lambda expression, or a method reference.</p>
+<p>As an example, we would like to execute the following method in a new thread:</p>
+<pre><code class="line-numbers language-csharp">public void PrintNumbers()
+{
+    for (int i = 0; i &lt; 1000; i++)
+    {
+        Console.WriteLine(i);
+        Thread.Sleep(100);
+    }
+}
+</code></pre>
+<p>This method just prints out numbers from 0 to 999. Notice the <code>Thread.Sleep(100)</code> method call, which sleeps the <em>current</em> thread for 100 milliseconds. Identical to the <code>sleep()</code> method in Java.</p>
+<p>Now, we would like to create a thread to execute this method in a new thread. That can be done as follows:</p>
+<pre><code class="line-numbers language-csharp">Thread thread = new Thread(PrintNumbers);
+thread.Start();
+</code></pre>
+<p>A new thread instance is created, the constructor takes a method reference to the <code>PrintNumbers</code> method shown above.<br />
+When the <code>Start()</code> method is called on the <code>thread</code> a new thread is created, and the method is executed.</p>
+
+</div>
+<div class="tab">
+<h1>Passing arguments</h1>
+<p>In the previous example, we just referenced a method. This can be done, when we don't need to pass any arguments.</p>
+<p>The below method also prints numbers, but requires an argument.</p>
+<pre><code class="line-numbers language-csharp">public void PrintNumbers(int count)
+{
+    for (int i = 0; i &lt; count; i++)
+    {
+        Console.WriteLine(i);
+        Thread.Sleep(100);
+    }
+}
+</code></pre>
+<p>The way we start the thread now is to use a lambda expression, like below:</p>
+<pre><code class="line-numbers language-csharp">Thread thread = new Thread( () =&gt; PrintNumbers(1000) );
+thread.Start();
+</code></pre>
+<p>This lambda expression is an anonymous method.<br />
+<code>() =&gt; PrintNumbers(1000)</code><br />
+The leading <code>()</code> defines the arguments to be passed to the method. In this case, there are none, so the parameter list is empty.
+The <code>=&gt;</code> is the lambda operator, so the right hand side is the functionality to execute, in this case it's a method call to <code>PrintNumbers</code>.</p>
 
 </div>
 
