@@ -54,11 +54,15 @@ namespace CodeLabsGenerator
 
         private static string ConstructStepsOverview(string pathToMdSteps)
         {
-            int numOfMdFiles = Directory.GetFiles(pathToMdSteps, "*.md").Length;
+            string[] fileNames = Directory.GetFiles(pathToMdSteps, "*.md");
             StringBuilder sb = new();
-            for (int i = 0; i < numOfMdFiles; i++)
+            for (int i = 0; i < fileNames.Length; i++)
             {
-                sb.Append($"<span class=\"step\" onclick=\"setTab({i})\">{i}</span>").Append("\n");
+                // sb.Append($"<span class=\"step\" onclick=\"setTab({i})\">{i}</span>").Append("\n");
+                var fileName = fileNames[i];
+                string[] pathParts = fileName.Split("\\");
+                fileName = pathParts[pathParts.Length - 1].Replace(".md", "");
+                sb.Append($"<li class=\"step\" onclick=\"setTab({i})\">{fileName}</li>").Append("\n");
             }
 
             return sb.ToString();

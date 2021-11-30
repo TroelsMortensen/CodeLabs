@@ -6,7 +6,7 @@
 
         static void Main(string[] args)
         {
-            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\CsharpThreads";
+            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\CsharpSockets";
             Generator.GenerateHtmlPageFromMdFiles(folderPathToMdSteps, basePagePath);
         }
     }

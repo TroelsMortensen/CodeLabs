@@ -8,28 +8,31 @@
 <body>
 <script src="./../../Resources/prism.js"></script>
 
-<div id="container" action="/action_page.php">
-    <div style="overflow:auto;">
-        <div style="text-align:center">
-            <!-- Circles which indicates the steps of the form: -->
 
-            <span class="step" onclick="setTab(0)">0</span>
-<span class="step" onclick="setTab(1)">1</span>
-<span class="step" onclick="setTab(2)">2</span>
-<span class="step" onclick="setTab(3)">3</span>
-<span class="step" onclick="setTab(4)">4</span>
-<span class="step" onclick="setTab(5)">5</span>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Welcome</li>
+<li class="step" onclick="setTab(1)">2 Overview</li>
+<li class="step" onclick="setTab(2)">3 Start thread</li>
+<li class="step" onclick="setTab(3)">4 Pass arguments</li>
+<li class="step" onclick="setTab(4)">5 Call method on other class</li>
+<li class="step" onclick="setTab(5)">6 More thread methods</li>
 
-        </div>
-        <div style="float:right;">
-            <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
-            <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
-        </div>
+        </ol>
     </div>
-    
-    <!-- One "tab" for each step in the form: -->
-    
-    <div class="tab">
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+            
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
 <h1>Multi-threading in C#</h1>
 <p>This tutorial will take you through the basics of how to work with threads in C#. The concept is very similar to that of Java-threads.</p>
 
@@ -133,9 +136,9 @@ In the below main method, a new instance of the above class is created, and then
 </div>
 
 
-    
-</div>
 
+    </div>
+</div>
 <script>
     showTab(currentTab);
 </script>

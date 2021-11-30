@@ -8,25 +8,28 @@
 <body>
 <script src="./../../Resources/prism.js"></script>
 
-<div id="container" action="/action_page.php">
-    <div style="overflow:auto;">
-        <div style="text-align:center">
-            <!-- Circles which indicates the steps of the form: -->
 
-            <span class="step" onclick="setTab(0)">0</span>
-<span class="step" onclick="setTab(1)">1</span>
-<span class="step" onclick="setTab(2)">2</span>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1. Welcome</li>
+<li class="step" onclick="setTab(1)">2. ServerSide</li>
+<li class="step" onclick="setTab(2)">3. ClientSide</li>
 
-        </div>
-        <div style="float:right;">
-            <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
-            <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
-        </div>
+        </ol>
     </div>
-    
-    <!-- One "tab" for each step in the form: -->
-    
-    <div class="tab">
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+            
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
 <h1>Sockets in C#</h1>
 <p><img src="Socket.png" alt="socket" /></p>
 <p>In this short tutorial, you will see how to make a socket connection in C# between a client and a server.</p>
@@ -147,9 +150,9 @@ You will notice similarities to the server with regards to reading and writing d
 </div>
 
 
-    
-</div>
 
+    </div>
+</div>
 <script>
     showTab(currentTab);
 </script>

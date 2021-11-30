@@ -8,26 +8,29 @@
 <body>
 <script src="./../../Resources/prism.js"></script>
 
-<div id="container" action="/action_page.php">
-    <div style="overflow:auto;">
-        <div style="text-align:center">
-            <!-- Circles which indicates the steps of the form: -->
 
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
             ###STEPOVERVIEW###
-        </div>
-        <div style="float:right;">
-            <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
-            <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
-        </div>
+        </ol>
     </div>
-    
-    <!-- One "tab" for each step in the form: -->
-    
-    ###STEPPAGES###
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+            
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
 
-    
+        <!-- One "tab" for each step in the form: -->
+
+        ###STEPPAGES###
+
+
+    </div>
 </div>
-
 <script>
     showTab(currentTab);
 </script>
