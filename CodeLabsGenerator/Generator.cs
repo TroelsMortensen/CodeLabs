@@ -15,9 +15,6 @@ namespace CodeLabsGenerator
             InsertBasePageHtmlFromFile(basePagePath, mainBuilder);
             InsertStepsOverview(pathToMdSteps, mainBuilder);
             InsertAllTabsFromMdFiles(pathToMdSteps, mainBuilder);
-            // basePage = InsertStepsIntoBasePage(basePage, steps);
-            // basePage = InsertTabsIntoBasePage(basePage, tabs);
-            
             AddLineNumberClassToCodeTag(mainBuilder);
             WriteFinalPageToFile(pathToMdSteps, mainBuilder);
         }
@@ -32,16 +29,6 @@ namespace CodeLabsGenerator
             File.WriteAllText(outputPath + "/Page.html", mainBuilder.ToString());
         }
 
-        private static string InsertTabsIntoBasePage(string basePage, string tabs)
-        {
-            return basePage.Replace("###STEPPAGES###", tabs);
-        }
-
-        private static string InsertStepsIntoBasePage(string basePage, string steps)
-        {
-            return basePage.Replace("###STEPOVERVIEW###", steps);
-        }
-
         private static void InsertBasePageHtmlFromFile(string s, StringBuilder stringBuilder)
         {
             string basePage = File.ReadAllText(s);
@@ -54,18 +41,18 @@ namespace CodeLabsGenerator
             StringBuilder sb = new();
             for (int i = 0; i < fileNames.Length; i++)
             {
-                string fileName = ExtractFileName(fileNames, i);
+                string fileName = ExtractMdFileName(fileNames, i);
                 sb.Append($"<li class=\"step\" onclick=\"setTab({i})\">{fileName}</li>").Append("\n");
             }
 
             mainBuilder.Replace("###STEPOVERVIEW###", sb.ToString());
         }
 
-        private static string ExtractFileName(string[] fileNames, int i)
+        private static string ExtractMdFileName(string[] fileNames, int i)
         {
             var fileName = fileNames[i];
             string[] pathParts = fileName.Split("\\"); //TODO not linux/mac friendly?
-            fileName = pathParts[^1].Replace(".md", ""); // the ^1 is index from behind
+            fileName = pathParts[^1].Replace(".md", ""); // the ^1 is index from behind, we don't start at 0 here
             return fileName;
         }
 
@@ -76,8 +63,7 @@ namespace CodeLabsGenerator
             foreach (string mdFile in mdFiles)
             {
                 string tab = ConstructSingleTab(mdFile);
-                sb.Append(tab);
-                sb.Append("\n");
+                sb.Append(tab).Append('\n');
             }
 
             mainBuilder.Replace("###STEPPAGES###", sb.ToString());
@@ -88,9 +74,9 @@ namespace CodeLabsGenerator
             string mdFileContent = File.ReadAllText(mdFile);
             string mdAsHtml = Markdown.ToHtml(mdFileContent);
             StringBuilder sb = new();
-            sb.Append("<div class=\"tab\">").Append("\n");
+            sb.Append("<div class=\"tab\">").Append('\n');
             {
-                sb.Append(mdAsHtml).Append("\n");
+                sb.Append(mdAsHtml).Append('\n');
             }
             sb.Append("</div>");
             return sb.ToString();
