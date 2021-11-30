@@ -7,33 +7,29 @@ using Markdig;
 
 namespace CodeLabsGenerator
 {
-    public class Generator
+    public static class Generator
     {
         public static void GenerateHtmlPageFromMdFiles(string pathToMdSteps, string basePagePath)
         {
-            string basePage = ReadBasePageHtmlFromFile(basePagePath);
-            string steps = ConstructStepsOverview(pathToMdSteps);
-            string tabs = ConstructAllTabsFromMdFiles(pathToMdSteps);
-            basePage = InsertStepsIntoBasePage(basePage, steps);
-            basePage = InsertTabsIntoBasePage(basePage, tabs);
+            StringBuilder mainBuilder = new();
+            InsertBasePageHtmlFromFile(basePagePath, mainBuilder);
+            InsertStepsOverview(pathToMdSteps, mainBuilder);
+            InsertAllTabsFromMdFiles(pathToMdSteps, mainBuilder);
+            // basePage = InsertStepsIntoBasePage(basePage, steps);
+            // basePage = InsertTabsIntoBasePage(basePage, tabs);
             
-            basePage = AddLineNumberClassToCodeTag(basePage);
-            WriteFinalPageToFile(pathToMdSteps, basePage);
+            AddLineNumberClassToCodeTag(mainBuilder);
+            WriteFinalPageToFile(pathToMdSteps, mainBuilder);
         }
 
-        private static string AddLineNumberClassToCodeTag(string basePage)
+        private static void AddLineNumberClassToCodeTag(StringBuilder basePage)
         {
-            return basePage.Replace("class=\"language-", "class=\"line-numbers language-");
+            basePage.Replace("class=\"language-", "class=\"line-numbers language-");
         }
 
-        private static void WriteFinalPageToFile(string outputPath, string basePage)
+        private static void WriteFinalPageToFile(string outputPath, StringBuilder mainBuilder)
         {
-            // if (!File.Exists(outputPath))
-            // {
-            //     Console.WriteLine("Creating");
-            //     File.Create(outputPath);
-            // }
-            File.WriteAllText(outputPath + "/Page.html", basePage);
+            File.WriteAllText(outputPath + "/Page.html", mainBuilder.ToString());
         }
 
         private static string InsertTabsIntoBasePage(string basePage, string tabs)
@@ -46,29 +42,34 @@ namespace CodeLabsGenerator
             return basePage.Replace("###STEPOVERVIEW###", steps);
         }
 
-        private static string ReadBasePageHtmlFromFile(string s)
+        private static void InsertBasePageHtmlFromFile(string s, StringBuilder stringBuilder)
         {
             string basePage = File.ReadAllText(s);
-            return basePage;
+            stringBuilder.Append(basePage);
         }
 
-        private static string ConstructStepsOverview(string pathToMdSteps)
+        private static void InsertStepsOverview(string pathToMdSteps, StringBuilder mainBuilder)
         {
             string[] fileNames = Directory.GetFiles(pathToMdSteps, "*.md");
             StringBuilder sb = new();
             for (int i = 0; i < fileNames.Length; i++)
             {
-                // sb.Append($"<span class=\"step\" onclick=\"setTab({i})\">{i}</span>").Append("\n");
-                var fileName = fileNames[i];
-                string[] pathParts = fileName.Split("\\");
-                fileName = pathParts[pathParts.Length - 1].Replace(".md", "");
+                string fileName = ExtractFileName(fileNames, i);
                 sb.Append($"<li class=\"step\" onclick=\"setTab({i})\">{fileName}</li>").Append("\n");
             }
 
-            return sb.ToString();
+            mainBuilder.Replace("###STEPOVERVIEW###", sb.ToString());
         }
 
-        private static string ConstructAllTabsFromMdFiles(string pathToMdSteps)
+        private static string ExtractFileName(string[] fileNames, int i)
+        {
+            var fileName = fileNames[i];
+            string[] pathParts = fileName.Split("\\"); //TODO not linux/mac friendly?
+            fileName = pathParts[^1].Replace(".md", ""); // the ^1 is index from behind
+            return fileName;
+        }
+
+        private static void InsertAllTabsFromMdFiles(string pathToMdSteps, StringBuilder mainBuilder)
         {
             List<string> mdFiles = Directory.GetFiles(pathToMdSteps, "*.md").ToList();
             StringBuilder sb = new();
@@ -79,7 +80,7 @@ namespace CodeLabsGenerator
                 sb.Append("\n");
             }
 
-            return sb.ToString();
+            mainBuilder.Replace("###STEPPAGES###", sb.ToString());
         }
 
         private static string ConstructSingleTab(string mdFile)
