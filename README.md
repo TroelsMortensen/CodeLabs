@@ -10,9 +10,12 @@ The CodeLabsGenerator/Generator file generates the final Page.html for a tutoria
 
 A new tutorial is created by:
 1) Making a new sub-folder in Tutorials.
-2) Making .md files here, one for each step. Naming convention is to start with a number, the steps will be generated in the same order as the .md files are ordered. The actual name of the file is not used.
+2) Making .md files in above made folder, one for each step. Naming convention is to start with a number, the steps will be generated in the same order as the .md files are ordered. The actual name of the file is now used as the name in the steps overview on the left.
 3) In the CodeLabsGenerator/Program class, you modify the path in the main method, to point to your new tutorials folder, you run the program. A Page.html is generated in that tutorials folder. This is the final tutorial page.
+4) update index.html with a link to the new tutorial.
+
+Tutorials folder structure must be strictly as above: A folder inside Tutorials, this is because path to css and js files are relative. creating sub-folders for resources (images, etc) should be okay.
 
 Prismjs is used for styling the code.
 
-Eventually I plan on a version 2, which will be Blazor-WASM, hosted on GitHub pages. Still, things would be generated locally and committed. Some day.
+Maybe someday it will be updated to Blazor-WASM.
