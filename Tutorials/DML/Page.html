@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link  rel="shortcut icon"  href="./../../Resources/CodeIcon.png">
+
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div  style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Welcome</li>
+<li class="step" onclick="setTab(1)">2 Insert data</li>
+<li class="step" onclick="setTab(2)">3 Insert data</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<h1>Data Manipulation Language (SQL)</h1>
+<p>This tutorial will introduce how to manipulate the data in a database. This includes:</p>
+<ul>
+<li>Inserting data</li>
+<li>Updating existing data</li>
+<li>Deleting data</li>
+</ul>
+
+</div>
+<div class="tab">
+<h1>Inserting data</h1>
+<p>There are a few different ways of inserting data into the database. The first step here is to insert data by explicitly specifying the data.</p>
+<p>Assume the following table, and columns</p>
+<p><img src="Employee.png" alt="Employee" /></p>
+<p>We wish to insert a new <code>Employee</code>, and can do so in different ways.</p>
+<h3>Explicit, all columns</h3>
+<pre><code class="line-numbers language-sql">INSERT INTO Employee(firstname, lastname, department, salary, employ_id, startdate, age)
+VALUES('Troels', 'Mortensen', 'SW', 5000, 42, '01-08-2016', 34);
+</code></pre>
+<p>In the first line we specify we wish to <code>INSERT</code> data into the <code>Employee</code> table. We also provide a list of the columns, we wish to insert data into.<br />
+In the second line, we define what <code>VALUES</code> to insert.</p>
+<h3>Implicit, all columns</h3>
+<p>The second approach can be used, if you just wish to insert data into all columns. The result will be the same as above.</p>
+<pre><code class="line-numbers language-sql">INSERT INTO Employee
+VALUES('Troels', 'Mortensen', 'SW', 5000, 42, '01-08-2016', 34);
+</code></pre>
+<p>Here we have left out the column names, and so it is implicit that all columns are chosen, and the order is the same is in the table definition.</p>
+<h3>Explicit, some columns</h3>
+<p>You may wish to only insert data into some of the columns. Instead of using either of the above, and providing empty (e.g. <code>null</code>) values for some columns, you can instead specify which columns, you wish to insert data into. Like so:</p>
+<pre><code class="line-numbers language-sql">INSERT INTO Employee(firstname, lastname, department, employ_id, startdate)
+VALUES('Troels', 'Mortensen', 'SW', 42, '01-08-2016');
+</code></pre>
+<p>In the first line, we have specified the five columns for which we want to provide data. In the second row, the values are given. All columns not mentioned above will be set to <code>null</code></p>
+<h3>Multiple inserts</h3>
+<p>You can insert multiple rows (in this example Employees) into the table with one statement, if you comma-separate the provided values like so:</p>
+<pre><code class="line-numbers language-sql">INSERT INTO employee(firstname, lastname, department, employ_id, startdate)
+VALUES ('Troels', 'Mortensen', 'SW', 42, '01-08-2016'),
+       ('Peter', 'Jensen', 'GBE', 57, '01-02-2018');
+</code></pre>
+<p>Here, two sets of data are provided, separate with a comma.</p>
+
+</div>
+<div class="tab">
+<h1>Insert data from query result</h1>
+<p>Sometimes you wish to insert data based on a query result. Perhaps you are given a messy table with all data, and wish to split it out into separate tables.</p>
+<p>Assume again the below Employee table, and another table, Names:</p>
+<p><img src="EmployeeAndNames.png" alt="EmployeeAndNames" /></p>
+<p>We now wish to take the <code>firstname</code> and <code>lastname</code> from all rows of the Employee table, and insert that data into the Names table.<br />
+We can do this by first getting the required data with a query, and then using that as the data to insert:</p>
+<pre><code class="line-numbers language-sql">INSERT INTO Names(f_name, l_name)
+(SELECT firstname, lastname FROM Employee);
+</code></pre>
+<p>The second row is the query which returns the firstname and lastname of all rows in Employee. This result is then inserted into Names. Notice that the number of columns queried and inserted into, must be the same. The same is true for the data type of the columns, e.g. f_name and firstname must have the same type.</p>
+
+</div>
+
+
+
+    </div>
+</div>
+<script>
+    showTab(currentTab);
+</script>
+
+</body>
+</html>
