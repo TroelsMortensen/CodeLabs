@@ -17,17 +17,15 @@
 
 .card {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    width: 20%;
-    min-width: 300px;
+    width: 300px;
     margin: 5px;
-    transition: 0.5s;
+    transition: 0.25s;
     border-radius: 10px;
 }
 
 .card:hover {
-    transition: 0.5s;
+    transition: 0.25s;
     border-radius: 0px;
-
 }
 
 .center {
@@ -42,4 +40,8 @@
     width: 100%;
     background: #d9d9d9;
     text-align: right;
+}
+
+h4 {
+    padding-left: 10px;
 }
