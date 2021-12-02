@@ -88,10 +88,6 @@ button:hover {
 
 }
 
-li {
-    margin: 10px 0;
-}
-
 code:not([class]) {
     display: inline-block;
     border-radius: 5px;

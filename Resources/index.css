@@ -1,0 +1,41 @@
+.indextitle {
+    text-align: center;
+}
+
+.cardheader {
+    text-align: center;
+}
+
+.cardcontainer {
+    display: flex;
+justify-content: center;
+}
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    width: 20%;
+    min-width: 300px;
+    margin: 5px;
+    transition: 0.5s;
+    border-radius: 10px;
+}
+
+.card:hover {
+    transition: 0.5s;
+    border-radius: 0px;
+
+}
+
+.center {
+    margin: auto;
+}
+
+#footer {
+    position:fixed;
+    left:0px;
+    bottom:0%;
+    height:30px;
+    width:100%;
+    background: #d9d9d9;
+    text-align: right;
+}
