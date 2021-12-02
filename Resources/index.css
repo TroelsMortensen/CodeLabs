@@ -6,9 +6,13 @@
     text-align: center;
 }
 
+.containerparent {
+}
+
 .cardcontainer {
     display: flex;
-justify-content: center;
+    flex-wrap: wrap;
+    margin: auto;
 }
 
 .card {
@@ -31,11 +35,11 @@ justify-content: center;
 }
 
 #footer {
-    position:fixed;
-    left:0px;
-    bottom:0%;
-    height:30px;
-    width:100%;
+    position: fixed;
+    left: 0px;
+    bottom: 0%;
+    height: 30px;
+    width: 100%;
     background: #d9d9d9;
     text-align: right;
 }
