@@ -8,8 +8,10 @@
 <body>
 <script src="./../../Resources/prism.js"></script>
 
-
-<div style="display:flex;width:100%;height:100%;padding-top:64px">
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div >
     <div>
         <ol>
             <li class="step" onclick="setTab(0)">1 Welcome</li>
@@ -23,7 +25,7 @@
     </div>
     <div id="container" action="/action_page.php">
         <div style="overflow:auto;">
-            
+
             <div style="float:right;">
                 <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
                 <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
