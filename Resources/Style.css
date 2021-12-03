@@ -88,6 +88,10 @@ button:hover {
 
 }
 
+img{
+    max-width: 800px;
+}
+
 code:not([class]) {
     display: inline-block;
     border-radius: 5px;

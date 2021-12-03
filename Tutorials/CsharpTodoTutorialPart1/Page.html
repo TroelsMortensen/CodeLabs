@@ -5,7 +5,7 @@
 <link href="./../../Resources/Style.css" rel="stylesheet">
 <link href="./../../Resources/prism.css" rel="stylesheet">
 <script src="./../../Resources/TabNavigavtor.js"></script>
-<link  rel="shortcut icon"  href="./../../Resources/CodeIcon.png">
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
 
 <body>
 <script src="./../../Resources/prism.js"></script>
@@ -13,12 +13,12 @@
 <div>
     <a href="./../../index.html" class="homelink">HOME</a>
 </div>
-<div  style="display:flex;width:100%;height:100%;padding-top:64px">
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
     <div>
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
-<li class="step" onclick="setTab(1)">2 New solution</li>
-<li class="step" onclick="setTab(2)">3 Project structure</li>
+            <li class="step" onclick="setTab(1)">2 New solution</li>
+            <li class="step" onclick="setTab(2)">3 Project structure</li>
 
         </ol>
     </div>
@@ -34,58 +34,72 @@
         <!-- One "tab" for each step in the form: -->
 
         <div class="tab">
-<h1>Introduction</h1>
-<p>This tutorial will initially introduce you to Blazor-server. You will create a web app to manage todo items. You can consider it a very simple Trello clone.</p>
-<p>You will create basic features, such as</p>
-<ul>
-<li>creating a Todo</li>
-<li>viewing all</li>
-<li>searching</li>
-<li>modifying</li>
-<li>deleting</li>
-</ul>
-<p>Initially the data will be saved in a file, as json format.</p>
-<p>In later sessions, we will expand upon the tutorial, changing it to a client server system using REST, and lastly adding a real database, using Entity Framework Core (EFC).</p>
-<p>The entire collection of Todo tutorials aim to perfectly prepare you for the exam.</p>
-<p>All source code will be on GitHub, so you always have a reference, if you're stuck.</p>
-<p><img src="TodoIcon.png" alt="Todo list" /></p>
+            <h1>Introduction</h1>
+            <p>This tutorial will initially introduce you to Blazor-server. You will create a web app to manage todo
+                items. You can consider it a very simple Trello clone.</p>
+            <p>You will create basic features, such as</p>
+            <ul>
+                <li>creating a Todo</li>
+                <li>viewing all</li>
+                <li>searching</li>
+                <li>modifying</li>
+                <li>deleting</li>
+            </ul>
+            <p>Initially the data will be saved in a file, as json format.</p>
+            <p>In later sessions, we will expand upon the tutorial, changing it to a client server system using REST,
+                and lastly adding a real database, using Entity Framework Core (EFC).</p>
+            <p>The entire collection of Todo tutorials aim to perfectly prepare you for the exam.</p>
+            <p>All source code will be on GitHub, so you always have a reference, if you're stuck.</p>
+            <p><img src="TodoIcon.png" alt="Todo list" /></p>
 
-</div>
-<div class="tab">
-<h1>Creating a new solution</h1>
-<p>For previous exercises, you have most likely put them all in the same solution, and created a new project for each exercise.</p>
-<p>This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. As such, we wish to have a better code-structure for our application. You have been taught the SOLID design principles. They usually apply to single methods, or classes. In this project we will attempt to apply <em>Clean Architecture</em>, which is basically applying the SOLID principles on a larger scale.</p>
-<p>Therefore, we're going to need a new, <strong>empty solution</strong>. You can name it TodoApp.</p>
-<p>Follow the steps below to create a new solution:</p>
-<p><img src="File-New.png" alt="" /></p>
-<p>Clicking <strong>New...</strong> will open the dialog for creating a new solution, see below.</p>
-<ol>
-<li>Select Empty Solution</li>
-<li>Give your solution a name. I have multiple Todo apps by now, so I have called mine <em>BlazorTodoApp</em></li>
-<li>You can choose to add a git repository, if you wish.</li>
-</ol>
-<p><img src="EmptySolution.png" alt="" /></p>
-<p>Your new empty solution should now look like this:</p>
-<p><img src="SolutionCreated.png" alt="" /></p>
-<p>I.e. it's pretty empty.</p>
+        </div>
+        <div class="tab">
+            <h1>Creating a new solution</h1>
+            <p>For previous exercises, you have most likely put them all in the same solution, and created a new project
+                for each exercise.</p>
+            <p>This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. As such, we wish to have a
+                better code-structure for our application. You have been taught the SOLID design principles. They
+                usually apply to single methods, or classes. In this project we will attempt to apply <em>Clean
+                    Architecture</em>, which is basically applying the SOLID principles on a larger scale.</p>
+            <p>Therefore, we're going to need a new, <strong>empty solution</strong>. You can name it TodoApp.</p>
+            <p>Follow the steps below to create a new solution:</p>
+            <p><img src="File-New.png" alt=""/></p>
+            <p>Clicking <strong>New...</strong> will open the dialog for creating a new solution, see below.</p>
+            <ol>
+                <li>Select Empty Solution</li>
+                <li>Give your solution a name. I have multiple Todo apps by now, so I have called mine
+                    <em>BlazorTodoApp</em></li>
+                <li>You can choose to add a git repository, if you wish.</li>
+            </ol>
+            <p><img src="EmptySolution.png" alt=""/></p>
+            <p>Your new empty solution should now look like this:</p>
+            <p><img src="SolutionCreated.png" alt=""/></p>
+            <p>I.e. it's pretty empty.</p>
 
-</div>
-<div class="tab">
-<h1>Project structure</h1>
-<p>You have previously heard about layered systems on second semester, a simple example could look like this:</p>
-<p><img src="SimpleArch.png" alt="img.png" /></p>
-<p>This would be a basic structure for a local desktop app. In SEP2 you expanded to a client server system, using JFX. Such a system could be diagrammed like below:</p>
-<p><img src="CSArch.png" alt="img_1.png" /></p>
-<p>The same approach applies: Layers have different responsibilites, and each layer is separated by interfaces. In SEP2 you probably divided layers into different packages.
-The next step is to separate into <em>modules</em>. In Java it's called a module, in .NET it's called a <em>project</em>. This means your .NET app will be structured using an approach like below:</p>
-<p><img src="FinalAppStructure.png" alt="" /></p>
-<p>This is your entire solution. You will have at least 4 projects: Blazor, WebAPI, Domain, DataAccess.<br />
-In this first part we will start with Blazor and DataAccess.</p>
-<p>The point is that these projects (modules) are separated, each handling their own responsibilities. There are different approaches on how to structure these modules. We will do by layer, because that is simpler. However, in your professional career, you will probably encounter a separation by feature. This is the recommended approach, however much more complicated.</p>
-<p>This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe.</p>
+        </div>
+        <div class="tab">
+            <h1>Project structure</h1>
+            <p>You have previously heard about layered systems on second semester, a simple example could look like
+                this:</p>
+            <p><img src="SimpleArch.png" alt="img.png"/></p>
+            <p>This would be a basic structure for a local desktop app. In SEP2 you expanded to a client server system,
+                using JFX. Such a system could be diagrammed like below:</p>
+            <p><img src="CSArch.png" alt="img_1.png"/></p>
+            <p>The same approach applies: Layers have different responsibilites, and each layer is separated by
+                interfaces. In SEP2 you probably divided layers into different packages.
+                The next step is to separate into <em>modules</em>. In Java it's called a module, in .NET it's called a
+                <em>project</em>. This means your .NET app will be structured using an approach like below:</p>
+            <p><img src="FinalAppStructure.png" alt=""/></p>
+            <p>This is your entire solution. You will have at least 4 projects: Blazor, WebAPI, Domain, DataAccess.<br/>
+                In this first part we will start with Blazor and DataAccess.</p>
+            <p>The point is that these projects (modules) are separated, each handling their own responsibilities. There
+                are different approaches on how to structure these modules. We will do by layer, because that is
+                simpler. However, in your professional career, you will probably encounter a separation by feature. This
+                is the recommended approach, however much more complicated.</p>
+            <p>This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will
+                be safe.</p>
 
-</div>
-
+        </div>
 
 
     </div>

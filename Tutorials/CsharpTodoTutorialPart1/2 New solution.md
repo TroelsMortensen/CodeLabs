@@ -20,4 +20,4 @@ Your new empty solution should now look like this:
 
 ![](SolutionCreated.png)
 
-I.e. it's pretty empty.
+I.e. it's pretty empty. Next up, we will talk about the solution structure.
