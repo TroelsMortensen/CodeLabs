@@ -12,7 +12,7 @@ The next step is to separate into *components*. In Java it's called a module, in
 
 ![](FinalAppStructure.png)
 
-This is your entire solution. You will have at least 4 components: Blazor, WebAPI, Domain, DataAccess. Each component may contain multiple layers.  
+This could be an example of your entire solution. You will have at least 4 components: Blazor, WebAPI, Domain, DataAccess (we have some side-steps along the way, though). Each component may contain multiple layers.  
 In this first part we will start with Blazor and DataAccess. You may notice there is no component for business logic, simply because this app is rather simple. The final structure of your Todo app at the end of the semester may look slightly different. 
 
 In your SEP3 you're going to need a component for logic.  

@@ -1,4 +1,7 @@
 ﻿# Introduction
+
+![Todo list](TodoIcon.png)
+
 This tutorial will initially introduce you to Blazor-server. You will create a web app to manage todo items. You can consider it a very simple Trello clone.
 
 You will create basic features, such as 
@@ -14,6 +17,10 @@ In later sessions, we will expand upon the tutorial, changing it to a client ser
 
 The entire collection of Todo tutorials aim to perfectly prepare you for the exam.
 
-All source code will be on GitHub, so you always have a reference, if you're stuck.
+All source code will be on GitHub, so you always have a reference, if you're stuck.  
+**Find it here** [App On GitHub](https://github.com/TroelsMortensen/BlazorTodoApp/tree/Part1)
 
-![Todo list](TodoIcon.png)
+Different parts of the tutorial in the future, will be in different branches:
+
+![img_4.png](img_4.png)
+
