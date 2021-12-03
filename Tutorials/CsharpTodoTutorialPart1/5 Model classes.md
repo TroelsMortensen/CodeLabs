@@ -5,7 +5,7 @@ Inside your Domain project, create a new directory, name it Models. In here we p
 
 Create a new class, call it `Todo`:
 
-![img_1.png](img_1.png)
+![img_1.png](Resources/img_1.png)
 
 The `Todo` class needs properties for the data, a Todo should hold:
 

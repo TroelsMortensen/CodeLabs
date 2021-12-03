@@ -7,7 +7,7 @@ Create a new directory, DataAccess, inside the FileData component.
 
 Inside this directory, create a new class, call it FileContext:
 
-![img_6.png](img_6.png)
+![img_6.png](Resources/img_6.png)
 
 Below, the content of the FileContext will be explained.
 The final version of the class can be found [here](https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs)

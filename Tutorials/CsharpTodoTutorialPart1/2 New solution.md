@@ -7,17 +7,17 @@ Therefore, we're going to need a new, **empty solution**. You can name it TodoAp
 
 Follow the steps below to create a new solution:
 
-![](File-New.png)
+![](Resources/File-New.png)
 
 Clicking **New...** will open the dialog for creating a new solution, see below.
 1) Select Empty Solution
 2) Give your solution a name. I have multiple Todo apps by now, so I have called mine *BlazorTodoApp*
 3) You can choose to add a git repository, if you wish.
 
-![](EmptySolution.png)
+![](Resources/EmptySolution.png)
 
 Your new empty solution should now look like this:
 
-![](SolutionCreated.png)
+![](Resources/SolutionCreated.png)
 
 I.e. it's pretty empty. Next up, we will talk about the solution structure.

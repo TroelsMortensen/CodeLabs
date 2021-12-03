@@ -3,7 +3,7 @@ We currently only have one type of domain object, so we just need a single DAO t
 
 This DAO should be located in the FileData component, either put it in the DataAccess directory or create a new.
 
-![img_11.png](img_11.png)
+![img_11.png](Resources/img_11.png)
 
 This class should implement the `ITodoService` interface from the Blazor component, and provide implementations for the methods.
 

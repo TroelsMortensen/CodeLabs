@@ -6,7 +6,7 @@ I.e. we wish to swap out the implementation of these interfaces.
 In order to not have to change the dependencies of the Blazor component, we put the interfaces in the Blazor component.
 It will eventually look something like this:
 
-![img_9.png](img_9.png)
+![img_9.png](Resources/img_9.png)
 
 We currently have the Blazor component, and the FileData component. In a later tutorial, we will expand with the HttpServices component. At that point, we wish to swap out which implementation the Blazor component uses.
 
@@ -19,7 +19,7 @@ But first, we need to define the interfaces.
 ### Blazor -> Domain dependency
 First, we need to let the Blazor app know about the Domain component, so that it can use the Todo class.
 
-![img_10.png](img_10.png)
+![img_10.png](Resources/img_10.png)
 
 Add a reference to Domain.
 

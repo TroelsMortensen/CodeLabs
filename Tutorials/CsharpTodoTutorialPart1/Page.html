@@ -43,7 +43,7 @@
 
         <div class="tab">
 <h1>Introduction</h1>
-<p><img src="TodoIcon.png" alt="Todo list" /></p>
+<p><img src="Resources/TodoIcon.png" alt="Todo list" /></p>
 <p>This tutorial will initially introduce you to Blazor-server. You will create a web app to manage todo items. You can consider it a very simple Trello clone.</p>
 <p>You will create basic features, such as</p>
 <ul>
@@ -59,7 +59,7 @@
 <p>All source code will be on GitHub, so you always have a reference, if you're stuck.<br />
 <strong>Find it here</strong> <a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/Part1">App On GitHub</a></p>
 <p>Different parts of the tutorial in the future, will be in different branches:</p>
-<p><img src="img_4.png" alt="img_4.png" /></p>
+<p><img src="Resources/img_4.png" alt="img_4.png" /></p>
 
 </div>
 <div class="tab">
@@ -68,28 +68,28 @@
 <p>This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. As such, we wish to have a better code-structure for our application. You have been taught the SOLID design principles. They usually apply to single methods, or classes. In this project we will attempt to apply <em>Clean Architecture</em>, which is basically applying the SOLID principles on a larger scale.</p>
 <p>Therefore, we're going to need a new, <strong>empty solution</strong>. You can name it TodoApp.</p>
 <p>Follow the steps below to create a new solution:</p>
-<p><img src="File-New.png" alt="" /></p>
+<p><img src="Resources/File-New.png" alt="" /></p>
 <p>Clicking <strong>New...</strong> will open the dialog for creating a new solution, see below.</p>
 <ol>
 <li>Select Empty Solution</li>
 <li>Give your solution a name. I have multiple Todo apps by now, so I have called mine <em>BlazorTodoApp</em></li>
 <li>You can choose to add a git repository, if you wish.</li>
 </ol>
-<p><img src="EmptySolution.png" alt="" /></p>
+<p><img src="Resources/EmptySolution.png" alt="" /></p>
 <p>Your new empty solution should now look like this:</p>
-<p><img src="SolutionCreated.png" alt="" /></p>
+<p><img src="Resources/SolutionCreated.png" alt="" /></p>
 <p>I.e. it's pretty empty. Next up, we will talk about the solution structure.</p>
 
 </div>
 <div class="tab">
 <h1>Project structure</h1>
 <p>You have previously heard about layered systems on second semester, a simple example could look like this:</p>
-<p><img src="SimpleArch.png" alt="img.png" /></p>
+<p><img src="Resources/SimpleArch.png" alt="img.png" /></p>
 <p>The above would be a basic structure for a local desktop app. In SEP2 you expanded to a client/server system, using JFX. Such a system could be diagrammed like below:</p>
-<p><img src="CSArch.png" alt="img_1.png" /></p>
+<p><img src="Resources/CSArch.png" alt="img_1.png" /></p>
 <p>The same approach applies: Layers have different responsibilites, and each layer is separated by interfaces. In SEP2 you probably divided layers into different packages.
 The next step is to separate into <em>components</em>. In Java it's called a module, in .NET it's called a <em>project</em>. This means your .NET app will be structured using an approach like below:</p>
-<p><img src="FinalAppStructure.png" alt="" /></p>
+<p><img src="Resources/FinalAppStructure.png" alt="" /></p>
 <p>This could be an example of your entire solution. You will have at least 4 components: Blazor, WebAPI, Domain, DataAccess (we have some side-steps along the way, though). Each component may contain multiple layers.<br />
 In this first part we will start with Blazor and DataAccess. You may notice there is no component for business logic, simply because this app is rather simple. The final structure of your Todo app at the end of the semester may look slightly different.</p>
 <p>In your SEP3 you're going to need a component for logic.</p>
@@ -102,9 +102,9 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 <p>First, we need the model classes. In this first iteration of the tutorial, we will just need a Todo object. Later we will add Users.</p>
 <h3>New project (component)</h3>
 <p>Create a new Library project, by right-clicking your solution:</p>
-<p><img src="CreateLibrary1.png" alt="img.png" /></p>
+<p><img src="Resources/CreateLibrary1.png" alt="img.png" /></p>
 <p>This will open a familiar dialog, where you can create a Class Library (1). Give the project a name (2), I have called mine <em>Domain</em>. In your case, you can probably only select net6.0 (3). Finally press Create (4).</p>
-<p><img src="img.png" alt="img.png" /></p>
+<p><img src="Resources/img.png" alt="img.png" /></p>
 <p>A Class Library is a type of project which cannot be run, it instead contains functionality. All NuGet packages are generally libraries with functionality, you can import into your system. Your Domain component will just contain the domain model classes, there is nothing to <em>run</em>. If you make custom Exceptions, they could also go here.</p>
 
 </div>
@@ -113,7 +113,7 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 <p>You can start by deleting the default class that comes with the project: Class1.cs.</p>
 <p>Inside your Domain project, create a new directory, name it Models. In here we put the model classes.</p>
 <p>Create a new class, call it <code>Todo</code>:</p>
-<p><img src="img_1.png" alt="img_1.png" /></p>
+<p><img src="Resources/img_1.png" alt="img_1.png" /></p>
 <p>The <code>Todo</code> class needs properties for the data, a Todo should hold:</p>
 <pre><code class="line-numbers language-csharp">public class Todo
 {
@@ -135,7 +135,7 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 <div class="tab">
 <h1>A tale of  two components</h1>
 <p>We are going to need two more components for this first part of the tutorial: a Blazor-server component, and another component to save data to a file. The relationship between the two components will be like below:</p>
-<p><img src="img_2.png" alt="img_2.png" /></p>
+<p><img src="Resources/img_2.png" alt="img_2.png" /></p>
 <p>This means the interface, which the UI depends on, is located in the Blazor component. The FileData component will reference the Blazor component, to get access to the interfaces, so that data access classes in the FileData component can implement the interfaces.</p>
 <p>This is because, in a later part of the tutorial, the Blazor app should contact a server for data, instead of getting the data from a local file. By keeping the interface in the Blazor component, we shouldn't need to modify this app, when we change out, where the data comes from.</p>
 
@@ -143,7 +143,7 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 <div class="tab">
 <h1>Creating blazor-server component</h1>
 <p>First, we create the blazor-server component. Right-click your solution folder again, to add a new project:</p>
-<p><img src="img_3.png" alt="img_3.png" /></p>
+<p><img src="Resources/img_3.png" alt="img_3.png" /></p>
 <ol>
 <li>ASP.NET contains everything web, within .NET</li>
 <li>Give your project a name</li>
@@ -160,13 +160,13 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 <div class="tab">
 <h1>File data component</h1>
 <p>Create a new project again, this time a library:</p>
-<p><img src="img_5.png" alt="img_5.png" /></p>
+<p><img src="Resources/img_5.png" alt="img_5.png" /></p>
 <p>Again, delete the Class1.cs.</p>
 <p>We then need to add dependencies to other components, so that the FileData component can use classes from other components.
 Inside the FileData component, right-click the Dependencies:</p>
-<p><img src="img_7.png" alt="img_7.png" /></p>
+<p><img src="Resources/img_7.png" alt="img_7.png" /></p>
 <p>Then select both Blazor and Domain components.</p>
-<p><img src="img_8.png" alt="img_8.png" /></p>
+<p><img src="Resources/img_8.png" alt="img_8.png" /></p>
 <p>This means your FileData component can now access namespaces and classes in those two components.</p>
 
 </div>
@@ -176,7 +176,7 @@ Inside the FileData component, right-click the Dependencies:</p>
 file. It's a pretty simple substitute for a database.</p>
 <p>Create a new directory, DataAccess, inside the FileData component.</p>
 <p>Inside this directory, create a new class, call it FileContext:</p>
-<p><img src="img_6.png" alt="img_6.png" /></p>
+<p><img src="Resources/img_6.png" alt="img_6.png" /></p>
 <p>Below, the content of the FileContext will be explained.
 The final version of the class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs">here</a></p>
 <h3>Fields</h3>
@@ -270,7 +270,7 @@ Later we wish to change this, so the data comes from a server.
 I.e. we wish to swap out the implementation of these interfaces.</p>
 <p>In order to not have to change the dependencies of the Blazor component, we put the interfaces in the Blazor component.
 It will eventually look something like this:</p>
-<p><img src="img_9.png" alt="img_9.png" /></p>
+<p><img src="Resources/img_9.png" alt="img_9.png" /></p>
 <p>We currently have the Blazor component, and the FileData component. In a later tutorial, we will expand with the HttpServices component. At that point, we wish to swap out which implementation the Blazor component uses.</p>
 <p>Because we have applied the dependency inversion principle,
 it should be little work to swap from using file storage,
@@ -278,7 +278,7 @@ to using a client to get data from a server.</p>
 <p>But first, we need to define the interfaces.</p>
 <h3>Blazor -&gt; Domain dependency</h3>
 <p>First, we need to let the Blazor app know about the Domain component, so that it can use the Todo class.</p>
-<p><img src="img_10.png" alt="img_10.png" /></p>
+<p><img src="Resources/img_10.png" alt="img_10.png" /></p>
 <p>Add a reference to Domain.</p>
 <h3>ITodoService</h3>
 <p>In the Blazor component, inside the Services directory, create a new interface, ITodoService:</p>
@@ -305,7 +305,7 @@ public interface ITodoService
 <h1>Data Access Object</h1>
 <p>We currently only have one type of domain object, so we just need a single DAO to provide CRUD operations.</p>
 <p>This DAO should be located in the FileData component, either put it in the DataAccess directory or create a new.</p>
-<p><img src="img_11.png" alt="img_11.png" /></p>
+<p><img src="Resources/img_11.png" alt="img_11.png" /></p>
 <p>This class should implement the <code>ITodoService</code> interface from the Blazor component, and provide implementations for the methods.</p>
 <p>First, we need a FileContext. We will just instantiate this in the constructor:</p>
 <pre><code class="line-numbers language-csharp">public class TodoFileDAO : ITodoService
