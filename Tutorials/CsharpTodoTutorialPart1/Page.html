@@ -26,6 +26,7 @@
 <li class="step" onclick="setTab(7)">8 File data component</li>
 <li class="step" onclick="setTab(8)">9 File context</li>
 <li class="step" onclick="setTab(9)">10 Data access interfaces</li>
+<li class="step" onclick="setTab(10)">11 Data access implementation</li>
 
         </ol>
     </div>
@@ -176,7 +177,8 @@ file. It's a pretty simple substitute for a database.</p>
 <p>Create a new directory, DataAccess, inside the FileData component.</p>
 <p>Inside this directory, create a new class, call it FileContext:</p>
 <p><img src="img_6.png" alt="img_6.png" /></p>
-<p>Below, the content of the FileContext will be explained.</p>
+<p>Below, the content of the FileContext will be explained.
+The final version of the class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs">here</a></p>
 <h3>Fields</h3>
 <p>You need to define the file, which should hold the data. And we need a collection of Todo objects:</p>
 <pre><code class="line-numbers language-csharp">private string todoFilePath = &quot;todos.json&quot;;
@@ -258,9 +260,70 @@ Then that string is deserialized into a <code>List&lt;Todo&gt;</code>, and assig
 </code></pre>
 <p>Here, whenever someone wants to get the collection of Todos, they will call the <code>Todos</code> property. This will call <code>LoadData()</code> to instantiate the collection, and then return it.</p>
 <p>The next step will be to add a Data Access Object with the usual <a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> operations.</p>
+<p>The final version of the class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs">here</a></p>
 
 </div>
 <div class="tab">
+<h1>Data access interfaces</h1>
+<p>As mentioned previously, our Blazor app will initially get data from the just created FileContext.
+Later we wish to change this, so the data comes from a server.
+I.e. we wish to swap out the implementation of these interfaces.</p>
+<p>In order to not have to change the dependencies of the Blazor component, we put the interfaces in the Blazor component.
+It will eventually look something like this:</p>
+<p><img src="img_9.png" alt="img_9.png" /></p>
+<p>We currently have the Blazor component, and the FileData component. In a later tutorial, we will expand with the HttpServices component. At that point, we wish to swap out which implementation the Blazor component uses.</p>
+<p>Because we have applied the dependency inversion principle,
+it should be little work to swap from using file storage,
+to using a client to get data from a server.</p>
+<p>But first, we need to define the interfaces.</p>
+<h3>Blazor -&gt; Domain dependency</h3>
+<p>First, we need to let the Blazor app know about the Domain component, so that it can use the Todo class.</p>
+<p><img src="img_10.png" alt="img_10.png" /></p>
+<p>Add a reference to Domain.</p>
+<h3>ITodoService</h3>
+<p>In the Blazor component, inside the Services directory, create a new interface, ITodoService:</p>
+<pre><code class="line-numbers language-csharp">using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Blazor.Services;
+
+public interface ITodoService
+{
+    public Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync();
+    public Task&lt;Todo&gt; GetById(int id);
+    public Task&lt;Todo&gt; AddAsync(Todo todo);
+    public Task DeleteAsync(int id);
+    public Task UpdateAsync(Todo todo);
+}
+</code></pre>
+<p>We are using asynchronous programming, so all methods returns a Task, and method names are suffixed 'Async'.</p>
+<p>We have here the standard CRUD operations. Notice how the <code>AddAsync</code> method returns a Todo object. This is because the Todo object is finalized when storing it, i.e. it gets an Id assigned from the FileData component, at some later point. We return it, so the finalized object can be displayed to the user, should we want to.</p>
+<p>Next up, we need the adapters to let the Blazor app get data from the FileContext. These are our Data Access Objects.</p>
+
+</div>
+<div class="tab">
+<h1>Data Access Object</h1>
+<p>We currently only have one type of domain object, so we just need a single DAO to provide CRUD operations.</p>
+<p>This DAO should be located in the FileData component, either put it in the DataAccess directory or create a new.</p>
+<p><img src="img_11.png" alt="img_11.png" /></p>
+<p>This class should implement the <code>ITodoService</code> interface from the Blazor component, and provide implementations for the methods.</p>
+<p>First, we need a FileContext. We will just instantiate this in the constructor:</p>
+<pre><code class="line-numbers language-csharp">public class TodoFileDAO : ITodoService
+{
+    private FileContext fileContext;
+
+    public TodoFileDAO(FileContext fileContext)
+    {
+        this.fileContext = fileContext;
+    }
+    
+    // ...
+</code></pre>
+<p>We use constructor dependency injection for the FileContext,
+so we don't have to manually create a new instance.
+This is generally a good approach. Remember SDJ2 and MVVM:
+Controllers, VMs, Models got what they needed through constructors.
+We will get the framework to handle this dependency injection for us.</p>
 
 </div>
 
