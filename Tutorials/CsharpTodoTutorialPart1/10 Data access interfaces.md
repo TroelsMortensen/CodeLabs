@@ -3,29 +3,26 @@ As mentioned previously, our Blazor app will initially get data from the just cr
 Later we wish to change this, so the data comes from a server. 
 I.e. we wish to swap out the implementation of these interfaces. 
 
-In order to not have to change the dependencies of the Blazor component, we put the interfaces in the Blazor component.
+In order to not have to change the dependencies of the Blazor component, we put the interfaces in the Domain component.
 It will eventually look something like this:
 
 ![img_9.png](Resources/img_9.png)
 
-We currently have the Blazor component, and the FileData component. In a later tutorial, we will expand with the HttpServices component. At that point, we wish to swap out which implementation the Blazor component uses.
+We currently have the Blazor, Domain, and FileData components. In a later tutorial, we will expand with the HttpServices component. At that point, we wish to swap out which implementation the Blazor component uses.
 
 Because we have applied the dependency inversion principle, 
 it should be little work to swap from using file storage, 
 to using a client to get data from a server.
 
-But first, we need to define the interfaces.
-
-### Blazor -> Domain dependency
-First, we need to let the Blazor app know about the Domain component, so that it can use the Todo class.
-
-![img_10.png](Resources/img_10.png)
-
-Add a reference to Domain.
+But first, we need to define the interface.
 
 
 ### ITodoService
-In the Blazor component, inside the Services directory, create a new interface, ITodoService:
+Inside the Domain component, create a new directory. I have called mine "Contracts". "Interfaces" imply the same thing. 
+But interfaces are essentially a contract between two classes: Class A, which needs some functionality, and Class B which provides some functionality. 
+The interface is then a Contract, so class B knows what functionality to deliver, and Class A knows what functionality it will get. 
+
+Inside the Contracts directory, create a new interface, ITodoHome:
 
 ```csharp
 using System.Collections.Generic;
@@ -33,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace Blazor.Services;
 
-public interface ITodoService
+public interface ITodoHome
 {
     public Task<ICollection<Todo>> GetAsync();
     public Task<Todo> GetById(int id);

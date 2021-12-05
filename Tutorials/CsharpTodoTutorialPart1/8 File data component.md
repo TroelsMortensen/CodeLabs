@@ -10,8 +10,8 @@ Inside the FileData component, right-click the Dependencies:
 
 ![img_7.png](Resources/img_7.png)
 
-Then select both Blazor and Domain components.
+Then select the Domain component.
 
 ![img_8.png](Resources/img_8.png)
 
-This means your FileData component can now access namespaces and classes in those two components.
+This means your FileData component can now access namespaces and classes in the Domain component.

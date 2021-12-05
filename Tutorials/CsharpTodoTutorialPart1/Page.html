@@ -21,12 +21,13 @@
 <li class="step" onclick="setTab(2)">3 Project structure</li>
 <li class="step" onclick="setTab(3)">4 Domain component</li>
 <li class="step" onclick="setTab(4)">5 Model classes</li>
-<li class="step" onclick="setTab(5)">6 Two new components</li>
+<li class="step" onclick="setTab(5)">6 More components</li>
 <li class="step" onclick="setTab(6)">7 Blazor component</li>
 <li class="step" onclick="setTab(7)">8 File data component</li>
 <li class="step" onclick="setTab(8)">9 File context</li>
 <li class="step" onclick="setTab(9)">10 Data access interfaces</li>
 <li class="step" onclick="setTab(10)">11 Data access implementation</li>
+<li class="step" onclick="setTab(11)">12 Adding services</li>
 
         </ol>
     </div>
@@ -85,16 +86,30 @@
 <h1>Project structure</h1>
 <p>You have previously heard about layered systems on second semester, a simple example could look like this:</p>
 <p><img src="Resources/SimpleArch.png" alt="img.png" /></p>
-<p>The above would be a basic structure for a local desktop app. In SEP2 you expanded to a client/server system, using JFX. Such a system could be diagrammed like below:</p>
+<p>The above would be a basic structure for a local desktop app, e.g. SEP1, roughly sketched.<br />
+In SEP2 you expanded to a client/server system, using JFX. Such a system could be illustrated in a layared diagram like below:</p>
 <p><img src="Resources/CSArch.png" alt="img_1.png" /></p>
 <p>The same approach applies: Layers have different responsibilites, and each layer is separated by interfaces. In SEP2 you probably divided layers into different packages.
-The next step is to separate into <em>components</em>. In Java it's called a module, in .NET it's called a <em>project</em>. This means your .NET app will be structured using an approach like below:</p>
+The next step is to separate into <em>components</em>. In Java it's called a module, in .NET it's called a <em>project</em>.
+Components can be considered a bit like lego-building blocks, with the intention that you used these blocks til construct the system. They provide modularity, so building-blocks can easily be swapped out.</p>
+<p>This means your .NET app will be structured using an approach like below, roughly sketched. Notice that some &quot;packages&quot; have a little upside-down two-pronged fork above the name. This indicates a &quot;sub-system&quot; in Astah, we use it to represent components/projects/modules. Inside each, you can have packages. Inside packages, you find interfaces and classes.</p>
 <p><img src="Resources/FinalAppStructure.png" alt="" /></p>
-<p>This could be an example of your entire solution. You will have at least 4 components: Blazor, WebAPI, Domain, DataAccess (we have some side-steps along the way, though). Each component may contain multiple layers.<br />
-In this first part we will start with Blazor and DataAccess. You may notice there is no component for business logic, simply because this app is rather simple. The final structure of your Todo app at the end of the semester may look slightly different.</p>
-<p>In your SEP3 you're going to need a component for logic.</p>
-<p>The point is that these projects (components) are separated, each handling their own responsibilities. There are different approaches on how to structure these components. We will do by layer, because that is simpler. However, in your professional career, you will probably encounter a separation by feature. This is the recommended approach, however much more complicated.</p>
-<p>This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe.</p>
+<p>This could be an example of your entire solution, at the end of the semester. You will probably have these 6 components:</p>
+<ol>
+<li>Blazor - The UI. It will depend on interfaces in the Domain</li>
+<li>Domain - Holds domain model classes, and certain central interfaces. Potentially custom exceptions, but probably not in our case</li>
+<li>FileData - Implements interface from Domain. Will provide functionality to store data in a file</li>
+<li>HttpServices - Will contain client classes, which can contact a server</li>
+<li>WebAPI - This is the server</li>
+<li>DataAccess - Similar to FileData, but data will be stored in a database</li>
+</ol>
+<p>The first tutorial will cover 1, 2, and 3. We will then expand later with 4 and 5. Then lastly 6.</p>
+<p>In this first part we will start with Blazor, Domain and FileData. You may notice there is no component for business logic, simply because this app is rather simple. We are also going to put most interfaces into the Domain.Interfaces. This is also a simplified approach.</p>
+<p>In your SEP3 you're going to need a component for logic. Sometimes this component is called Application.</p>
+<p>The point is that these projects (components) are separated, each handling their own responsibilities. It will feel like overkill in this tutorial, because each component will be pretty small, containing only a handful of classes. But this is just practice.</p>
+<p>There are different approaches on how to structure these components. We will do by layer, because that is simpler. However, in your professional career, you will probably encounter a separation by feature. This is an often recommended approach, however much more complicated.</p>
+<p>This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe. No worries.</p>
+<p><img src="Resources/HakunaMatata.png" alt="img.png" /></p>
 
 </div>
 <div class="tab">
@@ -103,9 +118,11 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 <h3>New project (component)</h3>
 <p>Create a new Library project, by right-clicking your solution:</p>
 <p><img src="Resources/CreateLibrary1.png" alt="img.png" /></p>
-<p>This will open a familiar dialog, where you can create a Class Library (1). Give the project a name (2), I have called mine <em>Domain</em>. In your case, you can probably only select net6.0 (3). Finally press Create (4).</p>
+<p>This will open a familiar dialog, where you can create a Class Library (1). Give the project a name (2), I have called mine <em>Domain</em>, in some examples it is called <em>Entities</em>. In your case, you can probably only select net6.0 (3). Finally press Create (4).</p>
 <p><img src="Resources/img.png" alt="img.png" /></p>
-<p>A Class Library is a type of project which cannot be run, it instead contains functionality. All NuGet packages are generally libraries with functionality, you can import into your system. Your Domain component will just contain the domain model classes, there is nothing to <em>run</em>. If you make custom Exceptions, they could also go here.</p>
+<p>A Class Library is a type of project which cannot be run, it instead contains functionality. All NuGet packages are generally libraries with functionality, you can import into your system. Similar to Jar files in Java.<br />
+Your Domain component will just contain the domain model classes, there is nothing to <em>run</em>. If you make custom Exceptions, they could also go here. We will also add certain interfaces, shortly.</p>
+<p>This component will contain things that are needed across the application.</p>
 
 </div>
 <div class="tab">
@@ -130,14 +147,18 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 }
 </code></pre>
 <p>We have created a constructor, which only takes two of the four properties as arguments. The intention is that the Id should be set automatically by whatever class persists the data, and you cannot create a Todo, which is initially already completed.</p>
+<p>We might consider adding a feature of reassigning todos to other users. At a later point.</p>
 
 </div>
 <div class="tab">
-<h1>A tale of  two components</h1>
-<p>We are going to need two more components for this first part of the tutorial: a Blazor-server component, and another component to save data to a file. The relationship between the two components will be like below:</p>
+<h1>A tale of three components</h1>
+<p>We are going to need two more components for this first part of the tutorial:
+a Blazor-server component, and another component to save data to a file.
+The relationship between the components will be like below:</p>
 <p><img src="Resources/img_2.png" alt="img_2.png" /></p>
-<p>This means the interface, which the UI depends on, is located in the Blazor component. The FileData component will reference the Blazor component, to get access to the interfaces, so that data access classes in the FileData component can implement the interfaces.</p>
-<p>This is because, in a later part of the tutorial, the Blazor app should contact a server for data, instead of getting the data from a local file. By keeping the interface in the Blazor component, we shouldn't need to modify this app, when we change out, where the data comes from.</p>
+<p>Both Blazor and FileData knows about Domain, but neither knows about the other.
+Because of this separation, we can at a later point easily swap out which implementation of ITodoHome Blazor uses. Initially it will be the file storage functionality, but later it will be a client, which contacts a server.</p>
+<p>There is a small detail that we will have to require Blazor to know about the FileData component, that cannot be avoided, but it will have a microscopic impact, and it is still very easy to remove FileData, and input something else. We'll get back to this later.</p>
 
 </div>
 <div class="tab">
@@ -153,8 +174,7 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 <li>Create the project</li>
 </ol>
 <p>Wonderful.</p>
-<p>Start by creating a new directory in your blazor project, call it Services. Here we will eventually put all interfaces, the blazor app needs, to get data from somewhere.</p>
-<p>Next, the file data component.</p>
+<p>We will leave the component for now, and move on to data access.</p>
 
 </div>
 <div class="tab">
@@ -165,16 +185,16 @@ In this first part we will start with Blazor and DataAccess. You may notice ther
 <p>We then need to add dependencies to other components, so that the FileData component can use classes from other components.
 Inside the FileData component, right-click the Dependencies:</p>
 <p><img src="Resources/img_7.png" alt="img_7.png" /></p>
-<p>Then select both Blazor and Domain components.</p>
+<p>Then select the Domain component.</p>
 <p><img src="Resources/img_8.png" alt="img_8.png" /></p>
-<p>This means your FileData component can now access namespaces and classes in those two components.</p>
+<p>This means your FileData component can now access namespaces and classes in the Domain component.</p>
 
 </div>
 <div class="tab">
 <h1>FileContext</h1>
-<p>We will now create the class, which can save and retrieve data. We'll be serializing objects to JSON, and write to a
-file. It's a pretty simple substitute for a database.</p>
-<p>Create a new directory, DataAccess, inside the FileData component.</p>
+<p>We will now create the class, which can save and retrieve data.
+We will be serializing objects to JSON, and write to a file. It's a pretty simple substitute for a database.</p>
+<p>Inside the FileData component: Create a new directory, DataAccess.</p>
 <p>Inside this directory, create a new class, call it FileContext:</p>
 <p><img src="Resources/img_6.png" alt="img_6.png" /></p>
 <p>Below, the content of the FileContext will be explained.
@@ -184,7 +204,7 @@ The final version of the class can be found <a href="https://github.com/TroelsMo
 <pre><code class="line-numbers language-csharp">private string todoFilePath = &quot;todos.json&quot;;
 private ICollection&lt;Todo&gt; todos;
 </code></pre>
-<p>We use a collection, because this class does not have get-methods to access objects at an index. This is to simulate how you will work with a database in the future.</p>
+<p>We use a collection, because this class should not have get-methods to access objects at an index. This is to simulate how you will work with a database in the future.</p>
 <h3>Constructor</h3>
 <p>Then we need a constructor. We wish to insert some dummy data into the file, if nothing exists, just so we have
 something to work with. The constructor looks like this:</p>
@@ -268,26 +288,25 @@ Then that string is deserialized into a <code>List&lt;Todo&gt;</code>, and assig
 <p>As mentioned previously, our Blazor app will initially get data from the just created FileContext.
 Later we wish to change this, so the data comes from a server.
 I.e. we wish to swap out the implementation of these interfaces.</p>
-<p>In order to not have to change the dependencies of the Blazor component, we put the interfaces in the Blazor component.
+<p>In order to not have to change the dependencies of the Blazor component, we put the interfaces in the Domain component.
 It will eventually look something like this:</p>
 <p><img src="Resources/img_9.png" alt="img_9.png" /></p>
-<p>We currently have the Blazor component, and the FileData component. In a later tutorial, we will expand with the HttpServices component. At that point, we wish to swap out which implementation the Blazor component uses.</p>
+<p>We currently have the Blazor, Domain, and FileData components. In a later tutorial, we will expand with the HttpServices component. At that point, we wish to swap out which implementation the Blazor component uses.</p>
 <p>Because we have applied the dependency inversion principle,
 it should be little work to swap from using file storage,
 to using a client to get data from a server.</p>
-<p>But first, we need to define the interfaces.</p>
-<h3>Blazor -&gt; Domain dependency</h3>
-<p>First, we need to let the Blazor app know about the Domain component, so that it can use the Todo class.</p>
-<p><img src="Resources/img_10.png" alt="img_10.png" /></p>
-<p>Add a reference to Domain.</p>
+<p>But first, we need to define the interface.</p>
 <h3>ITodoService</h3>
-<p>In the Blazor component, inside the Services directory, create a new interface, ITodoService:</p>
+<p>Inside the Domain component, create a new directory. I have called mine &quot;Contracts&quot;. &quot;Interfaces&quot; imply the same thing.
+But interfaces are essentially a contract between two classes: Class A, which needs some functionality, and Class B which provides some functionality.
+The interface is then a Contract, so class B knows what functionality to deliver, and Class A knows what functionality it will get.</p>
+<p>Inside the Contracts directory, create a new interface, ITodoHome:</p>
 <pre><code class="line-numbers language-csharp">using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Blazor.Services;
 
-public interface ITodoService
+public interface ITodoHome
 {
     public Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync();
     public Task&lt;Todo&gt; GetById(int id);
@@ -303,11 +322,13 @@ public interface ITodoService
 </div>
 <div class="tab">
 <h1>Data Access Object</h1>
-<p>We currently only have one type of domain object, so we just need a single DAO to provide CRUD operations.</p>
+<p>We currently only have one type of domain object, so we just need a single DAO to provide CRUD operations on Todos.</p>
+<p>The finished class is found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/TodoFileDAO.cs">here</a>.</p>
 <p>This DAO should be located in the FileData component, either put it in the DataAccess directory or create a new.</p>
 <p><img src="Resources/img_11.png" alt="img_11.png" /></p>
-<p>This class should implement the <code>ITodoService</code> interface from the Blazor component, and provide implementations for the methods.</p>
-<p>First, we need a FileContext. We will just instantiate this in the constructor:</p>
+<p>This class should implement the <code>ITodoHome</code> interface from the Domain component, and provide implementations for the
+methods.</p>
+<p>First, we need a FileContext. We will just get and assign this in the constructor:</p>
 <pre><code class="line-numbers language-csharp">public class TodoFileDAO : ITodoService
 {
     private FileContext fileContext;
@@ -319,11 +340,78 @@ public interface ITodoService
     
     // ...
 </code></pre>
-<p>We use constructor dependency injection for the FileContext,
-so we don't have to manually create a new instance.
-This is generally a good approach. Remember SDJ2 and MVVM:
-Controllers, VMs, Models got what they needed through constructors.
-We will get the framework to handle this dependency injection for us.</p>
+<p>We use constructor dependency injection for the FileContext, so we don't have to manually create a new instance. This is
+generally a good approach. Remember SDJ2 and MVVM:
+Controllers, VMs, and Models got what they needed through constructors. We will get the framework to handle this dependency
+injection for us.</p>
+<h3>Getting all todos</h3>
+<p>We'll start with the <code>GetAsync()</code> method:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
+{
+    ICollection&lt;Todo&gt; todos = fileContext.Todos;
+    return todos;
+}
+</code></pre>
+<p>Here we just retrieve the <code>Todos</code> from the <code>fileContext</code>, and return the collection. The method is marked <code>async</code>, even though we don't have any asynchronous code here.
+This is future proofing, because when we change to retrieving data from a server, that will be asynchronous.</p>
+<h3>Get todo by id</h3>
+<p>This method should return a Todo by its id:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; GetById(int id)
+{
+    return fileContext.Todos.First(t =&gt; t.Id == id);
+}
+</code></pre>
+<p>The <code>First()</code> method takes a predicate and returns the first Todo, which matches the criteria. We know the Id is unique, so there should be no problems here.</p>
+<h3>Add Todo</h3>
+<p>In this method we need to implement the functionality of auto-setting the Id of the provided Todo item. The method looks like this:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; AddAsync(Todo todo)
+{
+    int largestId = fileContext.Todos.Max(t =&gt; t.Id);
+    int nextId = largestId + 1;
+    todo.Id = nextId;
+    fileContext.Todos.Add(todo);
+    fileContext.SaveChanges();
+    return todo;
+}
+</code></pre>
+<p>First, we use the <code>Max(...)</code> method to find the largest value of Id in the collection.<br />
+Then we create the new Id, by incrementing the current largest Id by 1.<br />
+We assign that Id to the provided todo.<br />
+We add the todo to the fileContext.<br />
+We call <code>SaveChanges()</code> so that the Todos are written to the file.<br />
+Finally, we return the finalized todo object, now with a correct Id.</p>
+<h3>The other methods</h3>
+<p>Give the other methods a try on your own, and look up the solution on GitHub (link at the top) if needed.</p>
+<p>DeleteAsync: Remove a todo from the collection of todos, based on the given id, in the <code>fileContext</code>, remember to call <code>SaveChangesAsync</code></p>
+<p>UpdateAsync: First find the existing Todo, by using <code>todo.Id</code>. Take the <code>OwnerId</code> and <code>IsCompleted</code> from the argument, and overwrite the values of the Todo from the <code>fileContext</code>. Then call <code>SaveChanges()</code></p>
+
+</div>
+<div class="tab">
+<h1>Adding services</h1>
+<p>Now that we have our data persistence in place, we are ready to start working on the Blazor side of things.</p>
+<h3>Managing component dependencies</h3>
+<p>The first step is to make sure that our Blazor app knows about our ITodoHome, and TodoFileDAO so that we can use it to persist data.</p>
+<p>Now, in the <code>Program.cs</code> class of the Blazor component, we can register services, so that the framework can create these as needed, and inject into whatever class needs a given service. This is the dependency injection, the Blazor framework can handle this automatically for us. That's pretty nifty. It makes it easier to retain loose coupling.</p>
+<p>We encounter a problem here. In order to register a service of type FileContext and TodoFileDAO, the Blazor component must know about the FileData component.</p>
+<p>This is the minor hiccup, I mentioned earlier. In order to reference classes from FileData, Blazor must know about FileData.
+We would have liked to avoid this knowledge, but it is only the <code>Program.cs</code> class which will be &quot;tainted&quot; like this, and that's okay.</p>
+<p>We need a dependency from Blazor to FileData:</p>
+<p><img src="Resources/DependBlazorToFileData.gif" alt="" /></p>
+<h3>Adding the services</h3>
+<p>Then, in <code>Program.cs</code> we need to add services. It goes like this:</p>
+<p><img src="Resources/AddingServices.gif" alt="" /></p>
+<p>Now, whenever a page request a class, which has been added as a service, the framework will create that for us.
+If we request a class, which hasn't been added, the framework will give an error, saying it was unable to create the requested service.</p>
+<p>Notice we use <code>AddScoped</code>, this is a good default approach. Adding a singleton can sometimes cause problems, if you are not careful.</p>
+<p>With the line</p>
+<pre><code>builder.Services.AddScoped&lt;ITodoHome, TodoFileDAO&gt;();
+</code></pre>
+<p>we are saying, that whenever the blazor app requests an instance of <code>ITodoHome</code>, it will get a <code>TodoFileDAO</code>. In the future, when we wish to provide a different implementation, we just need to change this single line of code, and our entire app will get data from a server somewhere, instead of a file.</p>
+<h3>Multithreading problem?</h3>
+<p>In our case here, we could potentially have two clients, who wishes to create Todo items at the same time,
+cause two different instances of FileContext to attempt to write to the same file. That will cause an error.<br />
+We could use a singleton and synchronize the FileContext class to make it thread safe,
+but that's out of scope of this exercise, given that the FileContext is just temporary.</p>
 
 </div>
 

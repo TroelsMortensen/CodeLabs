@@ -1,9 +1,9 @@
 # FileContext
 
-We will now create the class, which can save and retrieve data. We'll be serializing objects to JSON, and write to a
-file. It's a pretty simple substitute for a database.
+We will now create the class, which can save and retrieve data. 
+We will be serializing objects to JSON, and write to a file. It's a pretty simple substitute for a database.
 
-Create a new directory, DataAccess, inside the FileData component.
+Inside the FileData component: Create a new directory, DataAccess.
 
 Inside this directory, create a new class, call it FileContext:
 
@@ -19,7 +19,8 @@ You need to define the file, which should hold the data. And we need a collectio
 private string todoFilePath = "todos.json";
 private ICollection<Todo> todos;
 ```
-We use a collection, because this class does not have get-methods to access objects at an index. This is to simulate how you will work with a database in the future.
+We use a collection, because this class should not have get-methods to access objects at an index. This is to simulate how you will work with a database in the future.
+
 ### Constructor
 Then we need a constructor. We wish to insert some dummy data into the file, if nothing exists, just so we have
 something to work with. The constructor looks like this:

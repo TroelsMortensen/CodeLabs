@@ -12,6 +12,4 @@ First, we create the blazor-server component. Right-click your solution folder a
 
 Wonderful.
 
-Start by creating a new directory in your blazor project, call it Services. Here we will eventually put all interfaces, the blazor app needs, to get data from somewhere.
-
-Next, the file data component.
+We will leave the component for now, and move on to data access.

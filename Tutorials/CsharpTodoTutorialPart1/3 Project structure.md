@@ -3,20 +3,37 @@ You have previously heard about layered systems on second semester, a simple exa
 
 ![img.png](Resources/SimpleArch.png)
 
-The above would be a basic structure for a local desktop app. In SEP2 you expanded to a client/server system, using JFX. Such a system could be diagrammed like below:
+The above would be a basic structure for a local desktop app, e.g. SEP1, roughly sketched.  
+In SEP2 you expanded to a client/server system, using JFX. Such a system could be illustrated in a layared diagram like below:
 
 ![img_1.png](Resources/CSArch.png)
 
 The same approach applies: Layers have different responsibilites, and each layer is separated by interfaces. In SEP2 you probably divided layers into different packages.
-The next step is to separate into *components*. In Java it's called a module, in .NET it's called a *project*. This means your .NET app will be structured using an approach like below:
+The next step is to separate into *components*. In Java it's called a module, in .NET it's called a *project*. 
+Components can be considered a bit like lego-building blocks, with the intention that you used these blocks til construct the system. They provide modularity, so building-blocks can easily be swapped out.
+
+This means your .NET app will be structured using an approach like below, roughly sketched. Notice that some "packages" have a little upside-down two-pronged fork above the name. This indicates a "sub-system" in Astah, we use it to represent components/projects/modules. Inside each, you can have packages. Inside packages, you find interfaces and classes.
 
 ![](Resources/FinalAppStructure.png)
 
-This could be an example of your entire solution. You will have at least 4 components: Blazor, WebAPI, Domain, DataAccess (we have some side-steps along the way, though). Each component may contain multiple layers.  
-In this first part we will start with Blazor and DataAccess. You may notice there is no component for business logic, simply because this app is rather simple. The final structure of your Todo app at the end of the semester may look slightly different. 
+This could be an example of your entire solution, at the end of the semester. You will probably have these 6 components: 
+1) Blazor - The UI. It will depend on interfaces in the Domain
+2) Domain - Holds domain model classes, and certain central interfaces. Potentially custom exceptions, but probably not in our case
+3) FileData - Implements interface from Domain. Will provide functionality to store data in a file 
+4) HttpServices - Will contain client classes, which can contact a server 
+5) WebAPI - This is the server
+6) DataAccess - Similar to FileData, but data will be stored in a database
 
-In your SEP3 you're going to need a component for logic.  
+The first tutorial will cover 1, 2, and 3. We will then expand later with 4 and 5. Then lastly 6.
 
-The point is that these projects (components) are separated, each handling their own responsibilities. There are different approaches on how to structure these components. We will do by layer, because that is simpler. However, in your professional career, you will probably encounter a separation by feature. This is the recommended approach, however much more complicated. 
+In this first part we will start with Blazor, Domain and FileData. You may notice there is no component for business logic, simply because this app is rather simple. We are also going to put most interfaces into the Domain.Interfaces. This is also a simplified approach. 
 
-This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe.
+In your SEP3 you're going to need a component for logic. Sometimes this component is called Application. 
+
+The point is that these projects (components) are separated, each handling their own responsibilities. It will feel like overkill in this tutorial, because each component will be pretty small, containing only a handful of classes. But this is just practice. 
+
+There are different approaches on how to structure these components. We will do by layer, because that is simpler. However, in your professional career, you will probably encounter a separation by feature. This is an often recommended approach, however much more complicated. 
+
+This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe. No worries.
+
+![img.png](Resources/HakunaMatata.png)
