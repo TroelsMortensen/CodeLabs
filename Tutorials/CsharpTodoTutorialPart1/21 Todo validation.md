@@ -34,3 +34,12 @@ Required means that this property is not allowed to be `null`. MaxLength means t
 We don't have any requirements for `IsCompleted`, so the default value will just be `false`.
 
 There are various validation attributes, you can google for examples. They are used by certain Blazor components to validate data, and later, they are used by the Web API
+
+### Empty constructor
+For the next part, we are also going to need an empty constructor in `Todo`:
+
+```csharp
+public Todo() { }
+```
+
+This is need by the upcoming blazor page.

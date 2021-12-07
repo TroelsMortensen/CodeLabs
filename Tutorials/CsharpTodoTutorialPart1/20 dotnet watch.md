@@ -48,3 +48,6 @@ Then go through the below steps:
 5) Click OK.
 
 Now you have a new launch configuration from the drop down, you can run. This time with the *watch* enabled.
+
+### Note:
+This *watch* is still under development, and you may still sometimes have to restart your app.

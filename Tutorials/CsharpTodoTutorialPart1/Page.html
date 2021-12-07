@@ -37,6 +37,8 @@
 <li class="step" onclick="setTab(18)">19 Clean up</li>
 <li class="step" onclick="setTab(19)">20 dotnet watch</li>
 <li class="step" onclick="setTab(20)">21 Todo validation</li>
+<li class="step" onclick="setTab(21)">22 Add todo page</li>
+<li class="step" onclick="setTab(22)">23 Add todo view</li>
 
         </ol>
     </div>
@@ -655,6 +657,8 @@ PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor&gt; dotnet watch run
 <li>Click OK.</li>
 </ol>
 <p>Now you have a new launch configuration from the drop down, you can run. This time with the <em>watch</em> enabled.</p>
+<h3>Note:</h3>
+<p>This <em>watch</em> is still under development, and you may still sometimes have to restart your app.</p>
 
 </div>
 <div class="tab">
@@ -686,6 +690,122 @@ This one says that the valid values for <code>OwnerId</code> is 1 to the maximum
 Required means that this property is not allowed to be <code>null</code>. MaxLength means that the <code>Title</code> can contain a maximum of 128 characters.</p>
 <p>We don't have any requirements for <code>IsCompleted</code>, so the default value will just be <code>false</code>.</p>
 <p>There are various validation attributes, you can google for examples. They are used by certain Blazor components to validate data, and later, they are used by the Web API</p>
+<h3>Empty constructor</h3>
+<p>For the next part, we are also going to need an empty constructor in <code>Todo</code>:</p>
+<pre><code class="line-numbers language-csharp">public Todo() { }
+</code></pre>
+<p>This is need by the upcoming blazor page.</p>
+
+</div>
+<div class="tab">
+<h1>Add Todo page</h1>
+<p>The final class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/AddTodo.razor">here</a> for reference.</p>
+<p>We are going to need a new page for adding todos, so create a new page, similar to the Todos page previously. In the Pages folder. Call it AddTodo.</p>
+<p>The result should be in that file should be</p>
+<pre><code class="line-numbers language-razor">@page &quot;/AddTodo&quot;
+&lt;h3&gt;AddTodo&lt;/h3&gt;
+
+@code {
+    
+}
+</code></pre>
+<p>Next, we wish to add a <strong>Form</strong>. Blazor has built in components for this, which will utilize the data validation attributes,
+we just added to the Todo class.</p>
+<p>Now, we update the AddTodo page. It should look like below:</p>
+<pre><code class="line-numbers language-razor">@page &quot;/AddTodo&quot;
+@using Domain.Models
+@using Domain.Contracts
+@inject ITodoHome TodoHome
+@inject NavigationManager NavMgr
+
+&lt;h3&gt;AddTodo&lt;/h3&gt;
+
+
+@code {
+    private Todo newTodoItem = new Todo();
+    private string errorLabel;
+    
+    private async Task AddNewTodo()
+    {
+        errorLabel = &quot;&quot;;
+        try
+        {
+            await TodoHome.AddAsync(newTodoItem);
+        }
+        catch (Exception e)
+        {
+            errorLabel = e.Message;
+            return;
+        }
+        
+        NavMgr.NavigateTo(&quot;/Todos&quot;);
+    }
+}
+</code></pre>
+<p>Let us go over it.</p>
+<p><strong>Line 1</strong>: Again, the page directive, how to navigate to this page using URI.</p>
+<p><strong>Lines 2-3</strong>: Using statements, importing Models and Contracts</p>
+<p><strong>Line 4</strong>: Injecting the ITodoHome.</p>
+<p><strong>Line 5</strong>: This one is new. We are injecting a <code>NavigationManager</code>. This class exists in Blazor. It's used to navigate to other URIs, i.e. open other pages. We'll use it below.</p>
+<p><strong>Line 11</strong>: This is the Todo item we will fill out with the user-inputted data.</p>
+<p><strong>Line 12</strong>: This string will hold any error messages from trying to save the Todo. The content will be used in an html-label later.</p>
+<p><strong>Line 14</strong>: The method, which should be called when the user clicks the button for creating a Todo. Note it is async</p>
+<p><strong>Line 16</strong>: We reset the errorLabel, so it is not displayed.</p>
+<p><strong>Line 19</strong>: The call to ITodoHome to add a new Todo. This method call is wrapped in a try-catch, in case something goes wrong.</p>
+<p><strong>Lines 21-25</strong>: Here we catch the exception, and update the errorLabel with the exception message.
+This is so that the user gets feedback in case of errors.
+It's always a good approach to let the user know if something went wrong.
+If something <em>does</em> go wrong, we <code>return</code> i.e. exit the method so that the rest is not executed.</p>
+<p><strong>Line 27</strong>: We ask the <code>NavigationManager</code> to open the Todos overview page.</p>
+
+</div>
+<div class="tab">
+<h1>The view part of adding a new Todo item</h1>
+<p>In the view part of the page, insert the below:</p>
+<pre><code class="line-numbers language-razor">&lt;EditForm Model=&quot;@newTodoItem&quot; OnValidSubmit=&quot;@AddNewTodo&quot;&gt;
+    &lt;DataAnnotationsValidator/&gt; 
+    &lt;ValidationSummary/&gt;
+    &lt;div class=&quot;form-group&quot;&gt;
+        &lt;span&gt;
+            &lt;label&gt;User Id:&lt;/label&gt;
+        &lt;/span&gt;
+        &lt;span&gt;
+            &lt;InputNumber @bind-Value=&quot;newTodoItem.OwnerId&quot;/&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;form-group&quot;&gt;
+        &lt;span&gt;
+            &lt;label&gt;Title:&lt;/label&gt;
+        &lt;/span&gt;
+        &lt;span&gt;
+            &lt;InputTextArea rows=&quot;4&quot; @bind-Value=&quot;newTodoItem.Title&quot;/&gt;
+        &lt;/span&gt;
+    &lt;/div&gt;
+    &lt;p class=&quot;actions&quot;&gt;
+        &lt;button class=&quot;btn btn-outline-dark&quot; type=&quot;submit&quot;&gt;Create&lt;/button&gt;
+    &lt;/p&gt;
+&lt;/EditForm&gt;
+&lt;label&gt;@errorLabel&lt;/label&gt;
+</code></pre>
+<p>Note that the author is no expert in css and html, and you are welcome to rearrange things to beautify the page, as needed.</p>
+<p><strong>Line 1</strong>: This is an EditForm component, from Blazor. We pass arguments to the component, the <code>Model</code> is the <code>newTodoItem</code> from the code-block.
+<code>OnValidSubmit</code> points to which method to call, when the Create button is pressed, and the inputted data is valid according
+to the Todo data validation attributes. There is also a <code>OnInvalidSubmit</code>, in case you want to do something specific, when the inserted data is invalid.</p>
+<p><strong>Line 2</strong>: Another component from Blazor, which collaborates with <code>EditForm</code>. This is the component which actually validates the Todo.</p>
+<p><strong>Line 3</strong>: This will display a summary in case of invalid data.</p>
+<p><strong>Line 9</strong>: This InputNumber component works with EditForm. Here we data-bind.
+This is done with <code>@bind-Value=newTodoItem.Id</code>.
+Notice the capital 'V' in Value. Much important!
+This data-binding means, that whatever we type into the input field will be assigned to the OwnerId of the Todo.
+Data-binding is widely used.</p>
+<p><strong>Line 17</strong>: This is a text area blazor component, again working together with EditForm.
+Here we also data-bind so the value of the text area is assigned to the Title of the Todo item.</p>
+<p><strong>Line 21</strong>: Here we have the submit button, notice the <em>type</em> attribute. When this is clicked, the <code>&lt;DataAnnotationsValidator/&gt;</code> will validate the data,
+and if there are no problems, the <code>AddNewTodo</code> method will be called.</p>
+<p><strong>Line 24</strong>: This is the errorLabel, which will show errors from trying to save the Todo.</p>
+<p>There are a handful of InputSomething components, e.g. InputText. These can be googled as need.</p>
+<p>This concludes the AddTodo page. The final step is to add another navigation menu item, similar to what we did with the Todos page.</p>
+<p>The final class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/AddTodo.razor">here</a></p>
 
 </div>
 
