@@ -65,6 +65,10 @@ button:hover {
     background-color: #bbbbbb;
 }
 
+#prevBtn1 {
+    background-color: #bbbbbb;
+}
+
 /* Make circles that indicate the steps of the form: */
 .step {
     background-color: #ffffff;

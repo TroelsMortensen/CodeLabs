@@ -5,7 +5,7 @@
 <link href="./../../Resources/Style.css" rel="stylesheet">
 <link href="./../../Resources/prism.css" rel="stylesheet">
 <script src="./../../Resources/TabNavigavtor.js"></script>
-<link  rel="shortcut icon"  href="./../../Resources/CodeIcon.png">
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
 <title>VIA Codelabs</title>
 <body>
 <script src="./../../Resources/prism.js"></script>
@@ -13,7 +13,7 @@
 <div>
     <a href="./../../index.html" class="homelink">HOME</a>
 </div>
-<div  style="display:flex;width:100%;height:100%;padding-top:64px">
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
     <div>
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
@@ -33,6 +33,10 @@
 <li class="step" onclick="setTab(14)">15 Test your app</li>
 <li class="step" onclick="setTab(15)">16 Todos page code</li>
 <li class="step" onclick="setTab(16)">17 Todos page view</li>
+<li class="step" onclick="setTab(17)">18 Test todos overview</li>
+<li class="step" onclick="setTab(18)">19 Clean up</li>
+<li class="step" onclick="setTab(19)">20 dotnet watch</li>
+<li class="step" onclick="setTab(20)">21 Todo validation</li>
 
         </ol>
     </div>
@@ -576,19 +580,125 @@ else
 }
 </code></pre>
 <p>What's up?</p>
-<p>*<em>Line 1</em>: Initially when the page is shown, the todos field variable will not have been initialized, it's <code>null</code>. So, if that's the case, we will render the html in lines 3-5.</p>
+<p><strong>Line 1</strong>: Initially when the page is shown, the todos field variable will not have been initialized, it's <code>null</code>. So, if that's the case, we will render the html in lines 3-5.</p>
 <p><strong>Line 7</strong>: Maybe you load the list of todos, but there are none, the list is empty. Then we render lines 9-11 to the user.</p>
-<p><strong>Line 13</strong>: If there are any Todos, we render a table, defined in lines 15-29.</p>
-<p><strong>Lines 16-28</strong>: This is just basic html for a table header, nothing fancy here.</p>
+<p><strong>Line 13</strong>: If there are any Todos, we render a table, defined in lines 15-32.</p>
+<p><strong>Lines 16-20</strong>: This is just basic html for a table header, nothing fancy here.</p>
 <p><strong>Line 22</strong>: Here we have a for-loop, embedded in the page. This is razor syntax. It is marked with an '@', to indicate the start of the C# code.
 You will notice, html and C# can be mixed. Whenever the user requests this page, the framework will execute any code to generate the final html result.
 In this case, we loop over each Todo, and insert a table row for each item.</p>
-<p>You can embed razor syntax just about anywhere. Usually to generate html like the loop above, but you can also add/remove specific css classes to tags, or styles, if needed.</p>
+<p>You can embed razor syntax just about anywhere, just mark it with <code>@( your code here )</code>. Usually to generate html like the loop above, but you can also add/remove specific css classes to tags, or styles, if needed.
+Or, in the future, maybe the todos should be generated as cards, and the html for that is in a separate component.</p>
+<p>Again, the result of this file can be found on my GitHub project <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/Todos.razor">here</a>.</p>
+
+</div>
+<div class="tab">
+<h1>Testing again.</h1>
+<p>Run your app, like previous, navigate to the Todos page.</p>
+<p>You should see something like this:</p>
+<p><img src="Resources/TodosOverview.png" alt="img.png" /></p>
+
+</div>
+<div class="tab">
+<h1>Cleaning up</h1>
+<p><img src="Resources/CleanUp.png" alt="img.png" /></p>
+<p>The default project comes with various classes/functionality, we don't really need. E.g. the weather data stuff and counter incrementer.
+We might as well remove this, so we don't clutter our app.</p>
+<h3>NavMenu</h3>
+<p>First, the nav menu, open that file. Remove the part highlighted below, that's the counter and weather data:</p>
+<p><img src="Resources/CleanNavMenu.png" alt="img.png" /></p>
+<p>We now only have two menu items, the Todos overview and the home page, which is nice to have. We can expand on that later.</p>
+<h3>Pages</h3>
+<p>In the pages folder, remove the highlited razor components:</p>
+<p><img src="Resources/CleanRazorComponents.png" alt="img.png" /></p>
+<h3>Program.cs</h3>
+<p>Open Program.cs, we wish to remove the WeatherForecastService, delete the highlighted line:</p>
+<p><img src="Resources/CleanProgramCs.png" alt="img.png" /></p>
+<p>Also, at the top of the class remove the <code>using Blazor.Data;</code> statement.</p>
+<h3>Classes</h3>
+<p>Finally, delete the Data directory, with its content: <code>WeatherForecast.cs</code> and <code>WeatherForecastService.cs</code>.</p>
+<p><img src="Resources/CleanClasses.png" alt="img.png" /></p>
+<h3>Test</h3>
+<p>Now it is time to confirm we didn't break anything. Run your app, verify the two nav menu items are gone, and that your Todos page still works.</p>
+
+</div>
+<div class="tab">
+<h1>dotnet watch run (optional step)</h1>
+<p>So far, whenever you have made a change to your blazor app, you need to stop the app, and start it again, for the changes to take effect.</p>
+<p>If you are fine with this, you can just skip this step.</p>
+<p>However, there is another approach, which might increase your workflow speed. It's the watch command, which will automatically update a running blazor app, whenever changes are made.
+This just means that in most cases, you don't have to restart your app to see changes. Whenever you save a file, the running blazor app will update. In theory, at least.</p>
+<p>There are two ways to enable this:</p>
+<h3>Approach 1</h3>
+<p>At the bottom in Rider, there is a tab called Terminal:</p>
+<p><img src="Resources/TerminalTab.png" alt="img.png" /></p>
+<p>When you open this tab, you probably start at your current solution folder, at the time of writing, mine is</p>
+<p>C:\TRMO\RiderProjects\BlazorTodoApp</p>
+<p>You must enter the Blazor project folder, with the <code>cd</code> command, and in here, you can type <code>dotnet watch run</code>. This will run your app with the watch, i.e. auto-update, enabled:</p>
+<pre><code>PS C:\TRMO\RiderProjects\BlazorTodoApp&gt; cd .\Blazor\
+PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor&gt; dotnet watch run
+</code></pre>
+<p>When you want to close the app again, you need to click somewhere in the terminal tab and press [ctrl] + [c] a couple of times.</p>
+<h3>Approach 2</h3>
+<p>You can also setup a launch configuration, so you can use the little green play button up to the top right of Rider.</p>
+<p>Click the drop down, and click the <em>Edit Configurations...</em>:</p>
+<p><img src="Resources/EditConfigurations.png" alt="img.png" /></p>
+<p>This opens a dialog. Click the top left plus to add a new configuration, select <em>Native Executable</em></p>
+<p><img src="Resources/NativeExecutable.png" alt="img.png" /></p>
+<p>Then go through the below steps:</p>
+<p><img src="Resources/FinalLaunchConfig.png" alt="img.png" /></p>
+<ol>
+<li>Give it a name, e.g. Blazor Watch.</li>
+<li>Locate your dotnet.exe, this program is run when you type <code>dotnet</code> in the terminal or command window. In Windows the default path is as the screenshot.</li>
+<li>Add program arguments</li>
+<li>Locate the folder where your .csproj file for the Blazor project is. I.e. inside the solution, inside the Blazor project folder.</li>
+<li>Click OK.</li>
+</ol>
+<p>Now you have a new launch configuration from the drop down, you can run. This time with the <em>watch</em> enabled.</p>
+
+</div>
+<div class="tab">
+<h1>Todo validation rules</h1>
+<p>Now that we can view all Todos, it's time to add new Todo items.</p>
+<p>First, we want to make sure, that whenever we add a Todo, the data is valid.</p>
+<p>We can do this by adding Validation attributes to the <code>Todo</code> class, like so:</p>
+<pre><code class="line-numbers language-csharp">public class Todo
+{
+    public int Id { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = &quot;Please enter a value bigger than {1}&quot;)]
+    public int OwnerId { get; set; }
+
+    [Required, MaxLength(128)] 
+    public string Title { get; set; }
+    public bool IsCompleted { get; set; }
+
+    public Todo(int ownerId, string title)
+    {
+        OwnerId = ownerId;
+        Title = title;
+    }
+}
+</code></pre>
+<p><strong>Line 5</strong>: This is an attribute, an extra piece of information defined in [ ]. We will use various attributes throughout the course.
+This one says that the valid values for <code>OwnerId</code> is 1 to the maximum value of <code>int</code>. We also provide an error message, these are used by various frameworks.</p>
+<p><strong>Line 8</strong>: Here we have two attributes, Required and MaxLength. They could have been split into <code>[Required] [MaxLength]</code>, if you prefer.
+Required means that this property is not allowed to be <code>null</code>. MaxLength means that the <code>Title</code> can contain a maximum of 128 characters.</p>
+<p>We don't have any requirements for <code>IsCompleted</code>, so the default value will just be <code>false</code>.</p>
+<p>There are various validation attributes, you can google for examples. They are used by certain Blazor components to validate data, and later, they are used by the Web API</p>
 
 </div>
 
 
 
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
     </div>
 </div>
 <script>

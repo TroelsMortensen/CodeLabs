@@ -8,13 +8,17 @@ function showTab(n) {
     //... and fix the Previous/Next buttons:
     if (n == 0) {
         document.getElementById("prevBtn").style.display = "none";
+        document.getElementById("prevBtn1").style.display = "none";
     } else {
         document.getElementById("prevBtn").style.display = "inline";
+        document.getElementById("prevBtn1").style.display = "inline";
     }
     if (n == (x.length - 1)) {
         document.getElementById("nextBtn").innerHTML = "Done";
+        document.getElementById("nextBtn1").innerHTML = "Done";
     } else {
         document.getElementById("nextBtn").innerHTML = "Next >";
+        document.getElementById("nextBtn1").innerHTML = "Next >";
     }
     //... and run a function that will display the correct step indicator:
     fixStepIndicator(n)
@@ -34,6 +38,7 @@ function setTab(n) {
 }
 
 function nextPrev(n) {
+    window.scrollTo(0, 0);
     // This function will figure out which tab to display
     var x = document.getElementsByClassName("tab");
     // Exit the function if any field in the current tab is invalid:
