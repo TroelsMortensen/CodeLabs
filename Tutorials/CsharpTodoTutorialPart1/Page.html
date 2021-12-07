@@ -28,6 +28,11 @@
 <li class="step" onclick="setTab(9)">10 Data access interfaces</li>
 <li class="step" onclick="setTab(10)">11 Data access implementation</li>
 <li class="step" onclick="setTab(11)">12 Adding services</li>
+<li class="step" onclick="setTab(12)">13 Viewing todos</li>
+<li class="step" onclick="setTab(13)">14 Navigate to page</li>
+<li class="step" onclick="setTab(14)">15 Test your app</li>
+<li class="step" onclick="setTab(15)">16 Todos page code</li>
+<li class="step" onclick="setTab(16)">17 Todos page view</li>
 
         </ol>
     </div>
@@ -412,6 +417,173 @@ If we request a class, which hasn't been added, the framework will give an error
 cause two different instances of FileContext to attempt to write to the same file. That will cause an error.<br />
 We could use a singleton and synchronize the FileContext class to make it thread safe,
 but that's out of scope of this exercise, given that the FileContext is just temporary.</p>
+
+</div>
+<div class="tab">
+<h1>Viewing todo items</h1>
+<p>We are now ready for our first UI element. We need a page, where we can view existing Todo items. Select <em>Blazor Component</em>, not the <em>Page</em>!</p>
+<p><img src="Resources/AddNewPage.png" alt="img.png" /></p>
+<p>This will open a new dialogue, where you can type in the name (e.g. <em>Todos</em>) of the new page, and pick either Component or Page.
+Select <em>Page</em>. It doesn't make much of a different, except when selecting Page, the page directive is added at the top: <code>@page &quot;/Todos&quot;</code>.
+This means we can navigate to this page with a URI.</p>
+<p>You should get an empty page like this:</p>
+<pre><code class="line-numbers language-razor">@page &quot;/Todos&quot;
+&lt;h3&gt;Todos&lt;/h3&gt;
+
+@code {
+    
+}
+</code></pre>
+<p>This is your new Todos overview page. Not much functionality yet.</p>
+<p><strong>Line 1</strong> is the page directive, as mentioned above. You could run the app, and type in &quot;/Todos&quot; at the end of the URI. That should open this page.</p>
+<p><strong>Lines 2-3</strong> is the view part, here you will define the html to setup what the view should look like. We will spice it up with razor syntax, which is embedded C# code. This is used to generate parts of the page. We will get back to this. In MVVM terms, this is the <em>view</em>.</p>
+<p><strong>Lines 4-6</strong> is your <strong>code block</strong>. This is your <em>view-model</em>, essentially. Here you put fields to manage the state of the view, e.g. what is enabled, visible, shown. It's also here, in fields, we hold the data to be shown.</p>
+<p>We don't have the model, which you are used to from SDJ2, but in Blazor you can basically consider it to be any type of service-interface, your code block uses. That will in a short while be the ITodoHome interface.</p>
+
+</div>
+<div class="tab">
+<h1>Navigate to todos overview</h1>
+<h3>Changing layout</h3>
+<p>The default blazor app comes with the left side navigation bar. For this tutorial, we will just expand on that. You can, however, rework the entire layout of the app at a later point, if you wish.
+This is done in the file <code>MainLayout.razor</code></p>
+<p><img src="Resources/MainLayout.png" alt="img.png" /></p>
+<p>In this file you can see a bit of html, which define the layout. You will also notice the <code>&lt;NavMenu/&gt;</code>, which is a reference to the NavMenu component, the look and functionality of which, is defined in the NavMenu.razor file. The NavMenu is a component, i.e. a piece of UI, which can be inserted into other pages or components.
+It can be very beneficial to organize UI pieces into components for re-usability.</p>
+<p>In MainLayout.razor you will also notice <code>@Body</code>. This must always be present, if you start reworking the layout. This variable will be replaced with whatever page you open.</p>
+<h3>Adding to NavMenu</h3>
+<p>Open the NavMenu.razor:</p>
+<p><img src="Resources/NavMenuPlace.png" alt="img.png" /></p>
+<p>As mentioned, this defines the left hand side navigation menu. We want to add a new menu item, so we can open the Todos overview.</p>
+<p>Inside NavMenu, locate the following piece of html:</p>
+<pre><code class="line-numbers language-razor">&lt;div class=&quot;@NavMenuCssClass&quot; @onclick=&quot;ToggleNavMenu&quot;&gt;
+    &lt;nav class=&quot;flex-column&quot;&gt;
+        &lt;div class=&quot;nav-item px-3&quot;&gt;
+            &lt;NavLink class=&quot;nav-link&quot; href=&quot;&quot; Match=&quot;NavLinkMatch.All&quot;&gt;
+                &lt;span class=&quot;oi oi-home&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt; Home
+            &lt;/NavLink&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nav-item px-3&quot;&gt;
+            &lt;NavLink class=&quot;nav-link&quot; href=&quot;counter&quot;&gt;
+                &lt;span class=&quot;oi oi-plus&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt; Counter
+            &lt;/NavLink&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;nav-item px-3&quot;&gt;
+            &lt;NavLink class=&quot;nav-link&quot; href=&quot;fetchdata&quot;&gt;
+                &lt;span class=&quot;oi oi-list-rich&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt; Fetch data
+            &lt;/NavLink&gt;
+        &lt;/div&gt;
+    &lt;/nav&gt;
+&lt;/div&gt;
+</code></pre>
+<p>The divs marked with <code>class=nav-item px-3</code> each contain a nav menu item. Duplicate the last one and modify it like this:</p>
+<p><img src="Resources/NewNavItem.png" alt="img.png" /></p>
+<p>The class <code>oi-list-rich</code> is the icon:</p>
+<p><img src="Resources/NavItemIcon.png" alt="img.png" /></p>
+<p>You can find more included icons <a href="https://iconify.design/icon-sets/oi/">here</a> and <a href="https://useiconic.com/open">here</a>.</p>
+<p>Rider is also pretty good at auto completing html. E.g. for more icons place your cursor here:</p>
+<p><img src="Resources/AutoComplete.png" alt="img.png" /></p>
+<p>And press [ctrl] + [space], assuming default IntelliJ Keymapping.</p>
+<p>Addiditionally, you can click on an html tag (or in general just about anything) and press [ctrl]+[q] to get more information about something, a class, a tag, a method, a variable.</p>
+
+</div>
+<div class="tab">
+<h1>TESTING, TESTING, 1, 2, TESTING</h1>
+<p>Let us see what the current app looks like. It is not particularly interesting, but let us just verify the Todos page is working, and you can navigate to it.</p>
+<p>Now, in .NET6, the Program.cs no longer has an explicit main method. You are probably used to having a little green play arrow next to the main method in IntelliJ.<br />
+We have that for explicit main methods in Rider too. But at the time of writing, not for implicit main methods.</p>
+<p>Instead, you can right click the Blazor project folder and run the project:</p>
+<p><img src="Resources/RunBlazor.png" alt="img.png" /></p>
+<p>Alternatively, up to the right of the editor, you can select Blazor and click the green play button:</p>
+<p><img src="Resources/RunBlazor2.png" alt="img.png" /></p>
+<p><strong>Never</strong> run the &quot;IIS Express&quot;. You will see this option for Blazor, and later for the Web API. We don't use this.</p>
+<p>When running, the app should automatically open a new tab in your favourite browser. Alternatively, click the link in the Run console.</p>
+<p>The app should open, you should be able to click Todos in the nav menu, and open the world's most bland page. Let's improve that.</p>
+
+</div>
+<div class="tab">
+<h1>Todos page code</h1>
+<p>The result can be found on my GitHub project <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/Todos.razor">here</a>.</p>
+<p>Open your Todos.razor file.</p>
+<p>We will start by updating the code, then the view. Modify the page like so:</p>
+<pre><code class="line-numbers language-razor">@page &quot;/Todos&quot;
+@using Domain.Models
+@using Domain.Contracts
+@inject ITodoHome TodoHome
+
+&lt;h3&gt;Todos&lt;/h3&gt;
+
+@code {
+    private ICollection&lt;Todo&gt; todos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        todos = await TodoHome.GetAsync();
+    }
+}
+</code></pre>
+<p>What's going on?</p>
+<p><strong>Line 1</strong>: The page directive, meaning we can navigate to this page by URI: https://localhost:7140/Todos.</p>
+<p><strong>Line 2-3</strong>: Here we import namespaces from the Domain component, the Models and Contracts.</p>
+<p><strong>Line 4</strong>: This here is important.
+We <em>inject</em> a dependecy, of type ITodoHome. Whenever this page is opened,
+the framework will create an instance of ITodoHome (currently that is TodoFileDAO).
+This means our page just knows about the interface, and we can later, easily, swap out which implementation is used.
+This is pretty cool. This is the standard approach, you should probably never create a new service manually in your pages,
+always ask for them with the @inject</p>
+<p><strong>Line 9</strong>: This field holds our todos, which will be shown on the page.</p>
+<p><strong>Line 11</strong>: This method is automatically called, whenever the page is opened. That means, we can use this method to load relevant data, or set things up.</p>
+<p><strong>Line 13</strong>: Here we fetch the todos from the ITodoHome instance (the TodoFileDAO, which uses FileContext). We <em>await</em> the method call, because this may potentially take some time, and we want to release control, so the process can do other stuff. In general, we use async wherever we can in our pages.</p>
+<p>That's all for the code, for now. Next the view.</p>
+
+</div>
+<div class="tab">
+<h1>Todos page view</h1>
+<p>We wish to show the Todo items in a table, at least initially.</p>
+<p>This means we must update the view part of the page, i.e. just below <code>&lt;h3&gt;Todos&gt;/h3&gt;</code>, and above the <code>@code {</code>.</p>
+<p>Insert the following:</p>
+<pre><code class="line-numbers language-razor">@if (todos == null)
+{
+    &lt;p&gt;
+        &lt;em&gt;Loading...&lt;/em&gt;
+    &lt;/p&gt;
+}
+else if (!todos.Any())
+{
+    &lt;p&gt;
+        &lt;em&gt;No ToDo items exist. Please add some.&lt;/em&gt;
+    &lt;/p&gt;
+}
+else
+{
+    &lt;table class=&quot;table&quot;&gt;
+        &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Owner ID&lt;/th&gt; &lt;th&gt;Todo ID&lt;/th&gt; &lt;th&gt;Title&lt;/th&gt; &lt;th&gt;Completed?&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        @foreach (var item in todos)
+        {
+            &lt;tr&gt;
+                &lt;td&gt;@item.OwnerId&lt;/td&gt; 
+                &lt;td&gt;@item.Id&lt;/td&gt; 
+                &lt;td&gt;@item.Title&lt;/td&gt; 
+                &lt;td&gt;@item.IsCompleted&lt;/td&gt;
+            &lt;/tr&gt;
+        }
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+}
+</code></pre>
+<p>What's up?</p>
+<p>*<em>Line 1</em>: Initially when the page is shown, the todos field variable will not have been initialized, it's <code>null</code>. So, if that's the case, we will render the html in lines 3-5.</p>
+<p><strong>Line 7</strong>: Maybe you load the list of todos, but there are none, the list is empty. Then we render lines 9-11 to the user.</p>
+<p><strong>Line 13</strong>: If there are any Todos, we render a table, defined in lines 15-29.</p>
+<p><strong>Lines 16-28</strong>: This is just basic html for a table header, nothing fancy here.</p>
+<p><strong>Line 22</strong>: Here we have a for-loop, embedded in the page. This is razor syntax. It is marked with an '@', to indicate the start of the C# code.
+You will notice, html and C# can be mixed. Whenever the user requests this page, the framework will execute any code to generate the final html result.
+In this case, we loop over each Todo, and insert a table row for each item.</p>
+<p>You can embed razor syntax just about anywhere. Usually to generate html like the loop above, but you can also add/remove specific css classes to tags, or styles, if needed.</p>
 
 </div>
 

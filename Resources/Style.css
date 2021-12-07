@@ -90,6 +90,7 @@ button:hover {
 
 img{
     max-width: 800px;
+    min-width: 300px;
 }
 
 code:not([class]) {
