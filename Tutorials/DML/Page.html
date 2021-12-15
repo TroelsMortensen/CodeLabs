@@ -5,15 +5,15 @@
 <link href="./../../Resources/Style.css" rel="stylesheet">
 <link href="./../../Resources/prism.css" rel="stylesheet">
 <script src="./../../Resources/TabNavigavtor.js"></script>
-<link  rel="shortcut icon"  href="./../../Resources/CodeIcon.png">
-
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
 <body>
 <script src="./../../Resources/prism.js"></script>
 
 <div>
     <a href="./../../index.html" class="homelink">HOME</a>
 </div>
-<div  style="display:flex;width:100%;height:100%;padding-top:64px">
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
     <div>
         <ol>
             <li class="step" onclick="setTab(0)">1 Welcome</li>
@@ -92,6 +92,14 @@ We can do this by first getting the required data with a query, and then using t
 
 
 
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
     </div>
 </div>
 <script>
