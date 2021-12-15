@@ -39,6 +39,7 @@
 <li class="step" onclick="setTab(20)">21 Todo validation</li>
 <li class="step" onclick="setTab(21)">22 Add todo page</li>
 <li class="step" onclick="setTab(22)">23 Add todo view</li>
+<li class="step" onclick="setTab(23)">23 Test add todo</li>
 
         </ol>
     </div>
@@ -637,7 +638,7 @@ This just means that in most cases, you don't have to restart your app to see ch
 <p>When you open this tab, you probably start at your current solution folder, at the time of writing, mine is</p>
 <p>C:\TRMO\RiderProjects\BlazorTodoApp</p>
 <p>You must enter the Blazor project folder, with the <code>cd</code> command, and in here, you can type <code>dotnet watch run</code>. This will run your app with the watch, i.e. auto-update, enabled:</p>
-<pre><code>PS C:\TRMO\RiderProjects\BlazorTodoApp&gt; cd .\Blazor\
+<pre><code class="line-numbers language-terminal">PS C:\TRMO\RiderProjects\BlazorTodoApp&gt; cd .\Blazor\
 PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor&gt; dotnet watch run
 </code></pre>
 <p>When you want to close the app again, you need to click somewhere in the terminal tab and press [ctrl] + [c] a couple of times.</p>
@@ -804,8 +805,12 @@ Here we also data-bind so the value of the text area is assigned to the Title of
 and if there are no problems, the <code>AddNewTodo</code> method will be called.</p>
 <p><strong>Line 24</strong>: This is the errorLabel, which will show errors from trying to save the Todo.</p>
 <p>There are a handful of InputSomething components, e.g. InputText. These can be googled as need.</p>
-<p>This concludes the AddTodo page. The final step is to add another navigation menu item, similar to what we did with the Todos page.</p>
+<p>This concludes the AddTodo page. The final step is to add another navigation menu item, similar to what we did with the Todos page. I leave that to the reader.</p>
 <p>The final class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/AddTodo.razor">here</a></p>
+
+</div>
+<div class="tab">
+<h1>Can we add a Todo?</h1>
 
 </div>
 

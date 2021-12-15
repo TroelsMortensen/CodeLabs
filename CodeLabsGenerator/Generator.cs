@@ -44,10 +44,17 @@ namespace CodeLabsGenerator
             for (int i = 0; i < mdFiles.Count; i++)
             {
                 string fileName = ExtractMdFileName(mdFiles[i]);
+                fileName = StripLeadingZeros(fileName);
                 sb.Append($"<li class=\"step\" onclick=\"setTab({i})\">{fileName}</li>").Append('\n');
             }
 
             mainBuilder.Replace("###STEPOVERVIEW###", sb.ToString());
+        }
+
+        private static string StripLeadingZeros(string fileName)
+        {
+            var trimmedForZero = fileName.TrimStart('0');
+            return trimmedForZero;
         }
 
         private static List<string> GetAndSortMdFiles(string pathToMdSteps)

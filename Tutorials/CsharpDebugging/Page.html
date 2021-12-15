@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 New project</li>
+<li class="step" onclick="setTab(2)">3 Utils class</li>
+<li class="step" onclick="setTab(3)">4 Category enum</li>
+<li class="step" onclick="setTab(4)">5 Product class</li>
+<li class="step" onclick="setTab(5)">6 Program class</li>
+<li class="step" onclick="setTab(6)">7 Your first breakpoint</li>
+<li class="step" onclick="setTab(7)">8 The debug window</li>
+<li class="step" onclick="setTab(8)">9 Advancing execution</li>
+<li class="step" onclick="setTab(9)">10 Stepping over code</li>
+<li class="step" onclick="setTab(10)">11 Stepping into code</li>
+<li class="step" onclick="setTab(11)">12 Resuming the program</li>
+<li class="step" onclick="setTab(12)">13 Evaluating expressions</li>
+<li class="step" onclick="setTab(13)">14 Adding watches</li>
+<li class="step" onclick="setTab(14)">15 End note</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<h1>Welcome to debugging in C# with Rider</h1>
+<p>This tutorial will introduce the debugging tool in Rider. The tutorial can be used for other IDEs as well, though some descriptions or images will not match e.g. Visual Studio.</p>
+<p>Still, the same code can be used, and the same debugging functionality will most likely exist.</p>
+
+</div>
+<div class="tab">
+<h1>The code</h1>
+<p>The code introduced over the next few slides is what we will use for this example. There are four classes:</p>
+<ul>
+<li>Category</li>
+<li>Product</li>
+<li>Program</li>
+<li>Utils</li>
+</ul>
+<p>The program is about products and calculating prices, nothing too fancy.</p>
+<h3>New project</h3>
+<p>First, you'll need a new console project. It can be in an existing solution, or a new one.</p>
+
+</div>
+<div class="tab">
+<h1>Create Utils class</h1>
+<p>Inside your new project, create a class called Utils, it looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class Utils
+{
+    private const double VatGrocery = 0.07;
+    private const double VatNormal = 0.19;
+
+    public static double CalculateVat(double price, Category category)
+    {
+        double result;
+
+        if (category == Category.Grocery)
+            result = price * VatGrocery;
+        else
+            result = price * VatNormal;
+
+        return result;
+    }
+
+    public static double CalculatePriceWithVat(double price, Category category)
+    {
+        var priceVat = price + CalculateVat(price, category);
+        return priceVat;
+    }
+}
+</code></pre>
+<p>It is not currently important what the code does, we will step through it and investigate, when we start the debugging.</p>
+
+</div>
+<div class="tab">
+<h1>Create Category</h1>
+<p>Next up, we need an enum, called Category:</p>
+<pre><code class="line-numbers language-csharp">public enum Category
+{
+    Electronics,
+    Grocery,
+    Clothes
+}
+</code></pre>
+
+</div>
+<div class="tab">
+<h1>Product class</h1>
+<p>Now we need the product class:</p>
+<pre><code class="line-numbers language-csharp">public class Product
+{
+    public string Name { get; set; }
+    public Category Category { get; set; }
+    public double Price { get; set; }
+
+    public Product(string name, Category category, double price)
+    {
+        Name = name;
+        Category = category;
+        Price = price;
+    }
+}
+</code></pre>
+
+</div>
+<div class="tab">
+<h1>Program class</h1>
+<p>Finally, we need the Program.cs. When you created a console application, the Program.cs will have been created for you.
+You just need to modify it to look like this:</p>
+<pre><code class="line-numbers language-csharp">public class Program
+{
+    public static void Main(string[] args)
+    {
+        ShowPricesWithVat();
+    }
+
+    private static void ShowPricesWithVat()
+    {
+        Console.WriteLine(&quot;Product prices incl. VAT:&quot;);
+
+        foreach (var product in Products)
+        {
+            var vat = Utils.CalculateVat(product.Price, product.Category);
+            var priceWithVat = Math.Round(product.Price + vat, 2);
+            Console.WriteLine($&quot;{product.Name}: {priceWithVat} EUR&quot;);
+        }
+    }
+
+    private static readonly IEnumerable&lt;Product&gt; Products = new List&lt;Product&gt;
+    {
+        new Product(&quot;Batteries&quot;, Category.Electronics, 2.50),
+        new Product(&quot;SD Card&quot;, Category.Electronics, 10),
+        new Product(&quot;T-shirt&quot;, Category.Electronics, 15),
+        new Product(&quot;Parmesan Cheese&quot;, Category.Grocery, 7.50),
+        new Product(&quot;Tomatoes&quot;, Category.Grocery, 2),
+    };
+}
+</code></pre>
+<p>You will probably have to fix some namespace using. The Program.cs will have been put in a namespace named after the project.
+The previous classes, you created, may not have been given a namespace.</p>
+<p>Fix any import mistakes.</p>
+<p>Your program should now compile.</p>
+<p>If you run it, you should get the below output in the console:</p>
+<pre><code class="line-numbers language-console">Product prices incl. VAT:
+Batteries: 2.98 EUR
+SD Card: 11.9 EUR
+T-shirt: 17.85 EUR
+Parmesan Cheese: 8.02 EUR
+Tomatoes: 2.14 EUR
+</code></pre>
+<p>The project looks like this:</p>
+<p><img src="img.png" alt="img.png" /></p>
+
+</div>
+<div class="tab">
+<h1>Setting a breakpoint</h1>
+<p>Breakpoints are placed next to lines of code. When running your program in <em>debug mode</em> (shown later),
+your program will pause execution at the break point, and you can inspect all kinds of information.</p>
+<p>A breakpoint is placed in the <em>gutter</em>.</p>
+<p>Now, suppose we don't like the numbers and want to understand how the calculations are made by debugging our program.</p>
+<p>In our program, all calculation results are shown by the <code>ShowPricesWithVat</code> method, so, let's put a breakpoint on the first line of this method, and run the program in debug mode, like so:</p>
+<p><img src="PlacingBreakpoint.gif" alt="" /></p>
+<p>Let your program be paused here, and continue to the next slide.</p>
+
+</div>
+<div class="tab">
+<h1>The Debug Window</h1>
+<p>After we start debugging, the program stops at the breakpoint. To examine the state of the paused program, we use the <em>Debug</em> window.</p>
+<p>This window contains all kinds of information:</p>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+<ol>
+<li>Here we see the active threads. The current threads is selected <code>@32028</code>. You usually don't need to care about this part.</li>
+<li>Here we see the call stack, these are the methods called in order to reach the breakpoint. On my stack there are only two methods. First <code>Main()</code> was called, and from that we called <code>ShowPricesWithVat()</code>.
+<ol>
+<li>You can click on the <code>Main()</code> in the stack, and the debugger will take you to that place, and show you information. You will see in the window below (3) that the <code>args</code> variable of the <code>Main()</code> method is shown. The variable is empty.</li>
+<li>Click back on <code>ShowPricesWithWat()</code> in (2)</li>
+</ol>
+</li>
+<li>These are your buttons to navigate execution of your code. We will come back to these.</li>
+</ol>
+
+</div>
+<div class="tab">
+<h1>Advancing execution</h1>
+<p>During debugging we step through the program to examine the program state at various execution points.
+There are two main ways you can step through code:</p>
+<ol>
+<li><code>Step Into</code> [F7]: if a line of code runs a function, you will step inside it and stop at the beginning of this function.</li>
+<li><code>Step Over</code> [F8]: if you're not interested in the function, debugger will execute the call and stop at the next statement.</li>
+</ol>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+<p>We'll take a look at both.</p>
+
+</div>
+<div class="tab">
+<h1>Stepping over code</h1>
+<p>Your program should still be paused at the <code>Console.WriteLine()</code>. Otherwise stop execution, and restart with the debugging button.</p>
+<p>Let's begin with stepping over the <code>Utils.CalculateVat</code> function in the <code>foreach</code>-loop:</p>
+<p><img src="SteppingOverCode.gif" alt="" /></p>
+<p>Notice how the information below changes for each step, as more/different information is available.</p>
+<p>When the program is paused again at the <code>Console.WriteLine()</code> inside the for-loop, the current information is this:</p>
+<p><img src="img_3.png" alt="img_3.png" /></p>
+<p>We can see that the variable <code>priceWithVat</code> has the value 2.98.</p>
+<p>We can inspect the <code>product</code> variable, by clicking the little expand arrow, and see that:</p>
+<ul>
+<li>The <code>Category</code> of the product is <code>Electronics</code></li>
+<li>The <code>Name</code> is Batteries</li>
+<li>The <code>Price</code> is 2.5</li>
+</ul>
+<p>You should also note that values and information are shown, not only in the debugging window, but also directly in your code:</p>
+<p><img src="img_4.png" alt="img_4.png" /></p>
+
+</div>
+<div class="tab">
+<h1>Stepping Into Code</h1>
+<p>Press the step over button [F8] a few times, until the exeuction point reaches the line with <code>var vat = Utils.CalculateVat(...</code></p>
+<p><img src="img_5.png" alt="img_5.png" /></p>
+<p>Now, we want to <em>step into</em>, which means we enter the method <code>CalculateVat</code>, and continue from there.</p>
+<p>Press the step into button or [F7].</p>
+<p><img src="img_6.png" alt="img_6.png" /></p>
+<p>That should take your execution to the first line of <code>CalculateVat</code>, line 9 here:</p>
+<p><img src="img_7.png" alt="img_7.png" /></p>
+<p>Press the <em>step over</em> button a number of times until you exit the method again. Inspect the values in the debug window along the way.</p>
+
+</div>
+<div class="tab">
+<h1>Resuming the program</h1>
+<p>At any time, you can resume program execution. The program will run till the next breakpoint, if any.</p>
+<p>E.g. if you have a loop with several lines of code, and your are looking for something specific after a couple of iterations, maybe you don't want to use step-over all the way.
+Put a break point at the beginning, and use <em>resume</em> to iterate through loops.</p>
+<p>Let's create a breakpoint inside the <code>Utils.CalculateVat()</code> and check how it works:</p>
+<p>Add a break point here in Utils.cs:</p>
+<p><img src="img_8.png" alt="img_8.png" /></p>
+<p>Your program should currently be paused in the for-loop in Program.cs. Press the resume-program button:</p>
+<p><img src="img_9.png" alt="img_9.png" /></p>
+<p>The program will resume execution and then stop at our newly created breakpoint.</p>
+
+</div>
+<div class="tab">
+<h1>Evaluating expressions</h1>
+<p>During debugging, you can evaluate any expression in the context of the current execution point.
+Say, we want to evaluate the insides of our <code>if</code> block:</p>
+<p><img src="img_10.png" alt="img_10.png" /></p>
+<p>We can select part sof the code and use the <code>Evaluate Expression</code> feature to execute that piece of code, like this:</p>
+<p><img src="EvaluateCode.gif" alt="" /></p>
+<p>Alternatively, you can often hold down [alt] key, and left click on expressions, methods, or other, to evaluate it.</p>
+<p>Note that you can evaluate just about <strong>any</strong> arbitrary expression. The only requirement is the variables you use exist in the current context.</p>
+
+</div>
+<div class="tab">
+<h1>Adding watches</h1>
+<p>f you're interested in how a particular expression changes during program execution,
+you can add it to <code>Watches</code>.
+By default, watches are shown together with local variables and updated at each step through the application.
+Let's add our expression to <code>Watches</code>:</p>
+<ol>
+<li>Select the expression category == Category.Grocery.</li>
+<li>In the context menu (right click), select Add to Watches. Or create a watch manually, see below.</li>
+<li>Press [F9] or click the Resume Program button in the Debug window.</li>
+<li>Note how the watched value changes.</li>
+</ol>
+<p><img src="InspectingWatch.gif" alt="" /></p>
+
+</div>
+<div class="tab">
+<h1>The end</h1>
+<p>That was the introduction to debugging. This is a common tool available in all modern IDEs, across most programming languages.</p>
+<p>Whenever your code does not behave as expected, you should probably start debugging.
+Put break points before the affected area, and step through the code, inspecting values along the way, until you find something specific.</p>
+<p>You will probably often encounter null-pointer exceptions when doing exercises and projects. The exception stack trace should tell you which line of code in which class produce the exception.
+Put a breakpoint at that line or a few lines before, to inspect what happens up to the expcetion.</p>
+<p>Debugging is a powerful tool, and an entire skillset in itself. Mastering this tool is very important.</p>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showTab(currentTab);
+</script>
+
+</body>
+</html>

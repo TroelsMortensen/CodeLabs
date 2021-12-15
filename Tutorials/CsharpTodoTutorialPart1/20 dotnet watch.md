@@ -19,7 +19,7 @@ C:\TRMO\RiderProjects\BlazorTodoApp
 
 You must enter the Blazor project folder, with the `cd` command, and in here, you can type `dotnet watch run`. This will run your app with the watch, i.e. auto-update, enabled:
 
-```
+```terminal
 PS C:\TRMO\RiderProjects\BlazorTodoApp> cd .\Blazor\
 PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor> dotnet watch run
 ```
