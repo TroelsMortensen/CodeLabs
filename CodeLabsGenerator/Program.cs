@@ -6,7 +6,7 @@
 
         static void Main(string[] args)
         {
-            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\DML";
+            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\BlazorLogin";
             Generator.GenerateHtmlPageFromMdFiles(folderPathToMdSteps, basePagePath);
         }
     }

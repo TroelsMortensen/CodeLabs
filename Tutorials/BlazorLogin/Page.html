@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Welcome</li>
+<li class="step" onclick="setTab(1)">2 The project</li>
+<li class="step" onclick="setTab(2)">3 Wrap in auth</li>
+<li class="step" onclick="setTab(3)">4 Disable server-side rendering</li>
+<li class="step" onclick="setTab(4)">5 User class</li>
+<li class="step" onclick="setTab(5)">6 Authentication service interface</li>
+<li class="step" onclick="setTab(6)">7 AuthenticationStateProvider</li>
+<li class="step" onclick="setTab(7)">8 IAuthService implementation</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<h1>Welcome to Blazor-server login</h1>
+<p>This tutorial will take you through how to set up a simple login system for Blazor-server. It can possibly be converted to Blazor-wasm, but I haven't attempted that.</p>
+<p>This approach will use your own User/Profile/Account type, or whatever you call it. You will manage storage of the users.
+We will use the built in <code>AuthenticationStateProvider</code> class, extend it to provide the necessary authorization information.</p>
+<p>We will not be using the Identity framework. That's a different approach.</p>
+<p>This is mostly a toy example to be used for your semester projects.</p>
+<p>We will go through how to set it up from a default Blazor project. Later, you can then reuse the steps to add login/authorization functionality to other Blazor-server apps.</p>
+
+</div>
+<div class="tab">
+<h1>New solution, new project</h1>
+<p>First, you need a solution. That could be an existing, or a new one.</p>
+<p>Inside this solution, create a new Blazor-server project.</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>And then:</p>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+<ol>
+<li>Select ASP.NET</li>
+<li>Choose a name for the project</li>
+<li>Select <em>Blazor Server App</em></li>
+<li>choose <em>no authentication</em>. This is where you alternatively could choose the Identity framework.</li>
+<li>Create the project</li>
+</ol>
+
+</div>
+<div class="tab">
+<h1>Wrap the app in authentication</h1>
+<p>We must make available the authentication state to the entire app. We this by wrapping the app in a CascadingAuthenticationState component.</p>
+<p>Open the file app.razor, and modify it to the yellow highlighted, like so:</p>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+<p>You update those tree places.</p>
+
+</div>
+<div class="tab">
+<h1>Disable server-side pre-rendering</h1>
+<p>Blender has two modes:</p>
+<ul>
+<li>Server Render a marker where the component should be rendered interactively by the Blazor Server app.</li>
+<li>ServerPrerendered Statically prerender the component along with a marker to indicate the component should later be rendered interactively by the Blazor Server app.</li>
+</ul>
+<p>As explained <a href="https://devblogs.microsoft.com/aspnet/asp-net-core-and-blazor-updates-in-net-core-3-0-preview-9/">here</a>.</p>
+<p>It's not particularly important for you to understand the differences. But we must change the render mode from <em>ServerPrerendered</em> to <em>Server</em>.
+This is because javascript is only available, when we do not prerender, and we need this later.</p>
+<p>Open the file Pages/_Host.cshtml.</p>
+<p>Modify the following:</p>
+<p><img src="img_3.png" alt="img_3.png" /></p>
+<p>If we do not do this, later, we will get an expception about javascript interop not being available.</p>
+
+</div>
+<div class="tab">
+<h1>The user class</h1>
+<p>This class holds information about the user.</p>
+<p>Create a new directory, call it Authentication.</p>
+<p>Inside this directory, create a new class, User, or whatever you wish. It looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class User
+{
+    public string Name { get; set; }
+    public string Password { get; set; }
+    public string Role { get; set; }
+    public int SecurityLevel { get; set; }
+}
+</code></pre>
+<p>You may define your User with other fields, but these are the ones we will use in this example.
+With this, we can demonstrate privilege by level and privilege by role. Two different approaches.</p>
+<p><img src="img_4.png" alt="img_4.png" /></p>
+<p>With privilege by level, each security level is allowed more access than the one before it.
+This could often be seen as &quot;guest&quot;, &quot;registered user&quot;, &quot;admin&quot;.</p>
+<p>With the roles, we can provide access to different places of the system, to different types of users.</p>
+<p><img src="img_5.png" alt="img_5.png" /></p>
+<p>There is not necessarily a hierarchy here, where one can do more than the other. Instead each type is allowed access to different parts of the system.</p>
+<p>I have here tried to imply that the Product manager may access <em>some</em> customer data, maybe view certain things, but not modify. I.e. only <em>read access</em>.</p>
+<p>Maybe the Customer Service Assistant view some product orders by customers, but not modify anything.</p>
+
+</div>
+<div class="tab">
+<h1>Authentication service interface</h1>
+<p>We need a class, which can handle logging in and logging out.</p>
+<p>Initially we will just create the interface. We will provide the implementation later.</p>
+<p>Inside the Authentication directory, create the following interface:</p>
+<pre><code class="line-numbers language-csharp">using System.Security.Claims;
+
+namespace BlazorLoginApp.Authentication;
+
+public interface IAuthService
+{
+    public Task LoginAsync(User user);
+    public Task LogoutAsync();
+    internal Task&lt;ClaimsPrincipal&gt; GetAuthAsync();
+
+    internal Action&lt;ClaimsPrincipal&gt; OnAuthStateChanged { get; set; }
+}
+</code></pre>
+<p>This interface (and its implementation) will be used in the Blazor app, whenever we wish to log in or out.</p>
+<p>What does <code>internal</code> mean? It's only accessible inside the namespace. Similar to package-protected in Java.</p>
+<p>The property at the bottom is an Action. The idea is that another class will listen to the IAuthService implementation for changes in authentication state, i.e. an event will be fired whenever someone logs in or out.</p>
+
+</div>
+<div class="tab">
+<h1>AuthenticationStateProvider</h1>
+<p>This is an abstract class which exists in the Blazor framework. It is used to provide information about who is logged in, and what priviliges they have.</p>
+<p>We must extend this class, and override the method which is called by Blazor to get the login/auth information.</p>
+<p>Create a new directory, call it Authentication.</p>
+<p>In this folder, create a new class, SimpleAuthenticationStateProvider, or whatever you want to call it.</p>
+<p>It looks like this, code is explained below.</p>
+<pre><code class="line-numbers language-csharp">using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
+
+namespace BlazorLoginApp.Authentication;
+
+public class SimpleAuthenticationStateProvider : AuthenticationStateProvider
+{
+    private readonly IAuthService authService;
+
+    public SimpleAuthenticationStateProvider(IAuthService authService)
+    {
+        this.authService = authService;
+        authService.OnAuthStateChanged += AuthStateChanged;
+    }
+
+    public override async Task&lt;AuthenticationState&gt; GetAuthenticationStateAsync()
+    {
+        ClaimsPrincipal principal = await authService.GetAuthAsync();
+        return await Task.FromResult(new AuthenticationState(principal));
+    }
+
+    private void AuthStateChanged(ClaimsPrincipal principal)
+    {
+        NotifyAuthenticationStateChanged(
+            Task.FromResult(
+                new AuthenticationState(principal)
+            )
+        );
+    }
+}
+</code></pre>
+<p>So, a few things to understand.</p>
+<p>We get an instance of IAuthService through the constructor, i.e. constructor dependency injection.
+If we register an IAuthService as a service in Program.cs, the framework will create an instance for us automatically.</p>
+<p>The method <code>GetAuthenticationStateAsync()</code> is called by the framework whenever we have a page or component, which requires any kind of authorization.
+Maybe you are accessing a page that is secured by a requirement to be an <em>admin</em>. Blazor will ask the above class, if the current user should have access.<br />
+Or maybe you have some parts of a page, which should only be shown, if someone is logged in. Then Blazor will ask this class, if anyone is logged in.</p>
+<p>So, it's used a lot.</p>
+<p>In the constructor, the second line, we subscribe to events from the IAuthService, i.e. when you log in, an event will be fired.
+In that case, we want the SimpleAuthenticationStateProvider to notify the blazor app about a change to the current authentication state: The method <code>AuthStateChanged</code> is called upon such an event, and this method itself notifies the app about a change.</p>
+<h3>Register the service</h3>
+<p>We need to register this class as a service, so the app can create it when needed.</p>
+<p>Open Program.cs.</p>
+<p>In here, add the following line:</p>
+<p><img src="img_6.png" alt="img_6.png" /></p>
+
+</div>
+<div class="tab">
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showTab(currentTab);
+</script>
+
+</body>
+</html>
