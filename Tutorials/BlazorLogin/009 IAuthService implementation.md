@@ -117,7 +117,7 @@ We will take chunks out of the above class, and explain small parts at a time.
 
 But first, two classes:
 
-###### *ClaimsIdentity and ClaimsPrincipal*
+#### *ClaimsIdentity and ClaimsPrincipal*
 The `ClaimsPrincipal` is a class the blazor authentication framework knows about. This is essentially its own user type. You have created a `User`, or Account or Profile or whatever. Blazor uses a `ClaimsPrincipal`.
 
 Your `User` contains information about the user. The `ClaimsPrincipal` also contains information. 

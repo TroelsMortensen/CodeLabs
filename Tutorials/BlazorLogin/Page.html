@@ -344,7 +344,7 @@ public class AuthServiceImpl : IAuthService
 <p>Of course, if instead of <code>User</code> you want another type, like Profile or Account, then you would have to swap that out.</p>
 <p>We will take chunks out of the above class, and explain small parts at a time.</p>
 <p>But first, two classes:</p>
-<h6><em>ClaimsIdentity and ClaimsPrincipal</em></h6>
+<h4><em>ClaimsIdentity and ClaimsPrincipal</em></h4>
 <p>The <code>ClaimsPrincipal</code> is a class the blazor authentication framework knows about. This is essentially its own user type. You have created a <code>User</code>, or Account or Profile or whatever. Blazor uses a <code>ClaimsPrincipal</code>.</p>
 <p>Your <code>User</code> contains information about the user. The <code>ClaimsPrincipal</code> also contains information.
 This information is put into a <code>ClaimsIdentity</code>, which is essentially just a map of key-value pairs. E.g.:</p>
@@ -792,6 +792,7 @@ After a page refresh, the blazor authorization would retrieve this updated user 
 }
 </code></pre>
 <p>This would make tampering with the user info a lot harder.</p>
+<h3>Last minor optimization</h3>
 <p>As mentioned earlier, we could also store the ClaimsPrincipal to improve efficiency, something like this:</p>
 <pre><code class="line-numbers language-csharp">public async Task&lt;ClaimsPrincipal&gt; GetAuthAsync()
 {

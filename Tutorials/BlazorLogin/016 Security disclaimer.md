@@ -51,6 +51,7 @@ public async Task<ClaimsPrincipal> GetAuthAsync()
 ```
 This would make tampering with the user info a lot harder.
 
+### Last minor optimization
 As mentioned earlier, we could also store the ClaimsPrincipal to improve efficiency, something like this:
 ```csharp
 public async Task<ClaimsPrincipal> GetAuthAsync()
