@@ -29,6 +29,8 @@
 <li class="step" onclick="setTab(10)">11 Registering services</li>
 <li class="step" onclick="setTab(11)">12 Login page code</li>
 <li class="step" onclick="setTab(12)">13 Login page view</li>
+<li class="step" onclick="setTab(13)">14 Testing</li>
+<li class="step" onclick="setTab(14)">15 Button component</li>
 
         </ol>
     </div>
@@ -103,14 +105,14 @@ This is because javascript is only available, when we do not prerender, and we n
 
 public class User
 {
-    public string Name { get; private set; }
+    public string Name { get;  set; }
 
-    public string Password { get; private set; }
+    public string Password { get;  set; }
 
-    public string Role { get; private set; }
+    public string Role { get;  set; }
 
-    public int SecurityLevel { get; private set; }
-    public int BirthYear { get; private set; }
+    public int SecurityLevel { get;  set; }
+    public int BirthYear { get;  set; }
 
     public User(string name, string password, string role, int securityLevel, short birthYear)
     {
@@ -561,6 +563,7 @@ We inject an IAuthService, and a NavigationManager.</p>
 
     private async Task LoginAsync()
     {
+        errorLabel = &quot;&quot;;
         try
         {
             await authService.LoginAsync(userName, password);
@@ -574,8 +577,10 @@ We inject an IAuthService, and a NavigationManager.</p>
 }
 </code></pre>
 <p>Here, fields for holding username, password, and any error messages.</p>
-<p>And a method to be called, when we wish to log in.</p>
-<p>Next up the page-view</p>
+<p>And a method to be called, when we wish to log in. If any exceptions are thrown from <code>LoginAsync(...)</code>, e.g. upon failure in validation,
+the exception is caught, and the errorLabel is updated with a message, so that the user is informed of any errors.</p>
+<p>Upon successful login, we use the <code>NavigationManager</code> to change the page to the home page. If you open Index.razor, you will see the @page directive point to &quot;/&quot;.</p>
+<p>Next up the page-view.</p>
 
 </div>
 <div class="tab">
@@ -608,6 +613,7 @@ We inject an IAuthService, and a NavigationManager.</p>
     padding-right: 10px;
 }
 </code></pre>
+<p>You may of course change the styling to your liking.</p>
 <h3>html</h3>
 <p>Next up, the actual view:</p>
 <pre><code class="line-numbers language-razor">&lt;AuthorizeView&gt;
@@ -639,14 +645,6 @@ We inject an IAuthService, and a NavigationManager.</p>
         &lt;div class=&quot;card&quot;&gt;
             &lt;h3&gt;Hello, @context.User.Identity.Name&lt;/h3&gt;
         &lt;/div&gt;
-        @if (!string.IsNullOrEmpty(errorLabel))
-        {
-            &lt;div class=&quot;field&quot;&gt;
-                &lt;label style=&quot;color: red&quot;&gt;
-                    @errorLabel
-                &lt;/label&gt;
-            &lt;/div&gt;
-        }
     &lt;/Authorized&gt;
 &lt;/AuthorizeView&gt;
 </code></pre>
@@ -654,11 +652,41 @@ We inject an IAuthService, and a NavigationManager.</p>
 <p>Inside this tag, we have two others: <code>&lt;NotAuthorized&gt;</code> and <code>&lt;Authorized&gt;</code>.<br />
 If no-one is logged in, the html inside <code>&lt;NotAuthorized&gt;</code> will be shown.<br />
 If someone is logged in, the html inside <code>&lt;Authorized&gt;</code> will be shown.</p>
+<p>In line 7 above, we define the user name input field, the type is &quot;text&quot;, and we bind the value to the <code>userName</code> field variable.<br />
+Similarly, in line 11, we have an input field of type &quot;password&quot;, so that the inputted text is replaced with ***. Also here, we bind to a field variable.</p>
+<p>In line 13, we have an <code>if-statement</code>, so that this <code>&lt;div&gt;</code> is only rendered, if there is actually something in the <code>errorLabel</code>.</p>
+<p>Line 22 holds the button, with the <code>onclick</code> action that calls the method <code>LoginAsync</code>.</p>
+<p>In line 28 you may notice an example of how to retrieve information about the logged in user.
+The <code>context</code> variable is available inside <code>&lt;AuthorizedView&gt;</code>-tags. The <code>User</code> accessed, is not <em>your</em> User class,
+it is the <code>ClaimsPrincipal.</code></p>
+<h3>UI</h3>
 <p>The login view will look like this:</p>
 <p><img src="img_10.png" alt="img_10.png" /></p>
 <p>Here, we can input user name and password. Then click the log in button.</p>
 <p>If any errors occur, e.g. no user found, or incorrect password, an error will be shown:</p>
 <p><img src="img_9.png" alt="img_9.png" /></p>
+
+</div>
+<div class="tab">
+<h1>Testing</h1>
+<p>We can now test the login functionality, and verify everything works as expected.</p>
+<p>Run your blazor app. When it's open, go to the uri field, to append &quot;/Login&quot; and thereby manually navigate to the login page:</p>
+<p><img src="img_11.png" alt="img_11.png" /></p>
+<p>That should take you to the login page.</p>
+<p>Type in credentials for one of your users, if you just copied mine, you can try</p>
+<ol>
+<li>Username: &quot;Troels&quot;</li>
+<li>Password: &quot;Troels1234&quot;</li>
+</ol>
+<p>Click Log in button, which should take you to the home page.</p>
+<p>You can then manually navigate back to the Login page again, but because you are logged in, it should now just display this:</p>
+<p><img src="img_12.png" alt="img_12.png" /></p>
+<p>So far, so good.</p>
+<p>But we can still not easily navigate to the Login page, and we cannot log out again. That's the next step.</p>
+
+</div>
+<div class="tab">
+<h1>Button component</h1>
 
 </div>
 
