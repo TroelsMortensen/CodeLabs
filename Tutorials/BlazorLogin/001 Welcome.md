@@ -9,3 +9,5 @@ We will not be using the Identity framework. That's a different approach.
 This is mostly a toy example to be used for your semester projects.
 
 We will go through how to set it up from a default Blazor project. Later, you can then reuse the steps to add login/authorization functionality to other Blazor-server apps.
+
+### As always you can find the entire example on GitHub [here](https://github.com/TroelsMortensen/BlazorLogin)
