@@ -179,7 +179,8 @@ We get a `User?` back, here the '?' indicates the `user` may be null, this happe
 
 Then the returned User object is validated. The method is shown later, but it just checks if the user is not null and that the provided password matches the password of the user. If either fails, an exception is thrown.
 
-If all is good, we then cache the user. This means we take the user object, and store it in the browser.
+If all is good, we then cache the user. This means we take the user object, and store it in the browser. Why is this necessary? There are alternatives, but this approach seems to work well. 
+The IAuthService will be added as scoped, i.e. a new instance is created whenever a new tab is opened, or the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthService instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.  
 
 We create a new ClaimsPrincipal based on the user. Blazor authentication framework works with ClaimsPrincipals. It's just a class to hold information about the user.
 
