@@ -33,6 +33,8 @@ In the `AuthServiceImpl` class, the method `GetAuthAsync()`, here we fetch the s
 ```
 
 After the user is deserialized, we can use the `userService` to fetch the User from the database again, meaning we update the information of the User object.
+Thereby overwriting any changes a mischievous user may have made to the json user.
+
 ```csharp
 public async Task<ClaimsPrincipal> GetAuthAsync()
 {

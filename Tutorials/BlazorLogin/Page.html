@@ -775,7 +775,8 @@ After a page refresh, the blazor authorization would retrieve this updated user 
         return principal;
     }
 </code></pre>
-<p>After the user is deserialized, we can use the <code>userService</code> to fetch the User from the database again, meaning we update the information of the User object.</p>
+<p>After the user is deserialized, we can use the <code>userService</code> to fetch the User from the database again, meaning we update the information of the User object.
+Thereby overwriting any changes a mischievous user may have made to the json user.</p>
 <pre><code class="line-numbers language-csharp">public async Task&lt;ClaimsPrincipal&gt; GetAuthAsync()
 {
     string userAsJson = await jsRuntime.InvokeAsync&lt;string&gt;(&quot;sessionStorage.getItem&quot;, &quot;currentUser&quot;);
