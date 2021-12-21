@@ -99,9 +99,16 @@ namespace CodeLabsGenerator
             sb.Append("<div class=\"tab\">").Append('\n');
             {
                 sb.Append(mdAsHtml).Append('\n');
+                InsertHorizontalLine(sb);
             }
             sb.Append("</div>");
             return sb.ToString();
+        }
+
+        private static void InsertHorizontalLine(StringBuilder sb)
+        {
+            sb.Replace("</h1>", "</h1><hr/>");
+            sb.Replace("<h1", "<hr/><h1");
         }
     }
 }

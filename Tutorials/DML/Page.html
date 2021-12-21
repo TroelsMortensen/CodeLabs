@@ -37,7 +37,7 @@
         <!-- One "tab" for each step in the form: -->
 
         <div class="tab">
-<h1 id="data-manipulation-language-sql">Data Manipulation Language (SQL)</h1>
+<hr/><h1 id="data-manipulation-language-sql">Data Manipulation Language (SQL)</h1><hr/>
 <p>This tutorial will introduce how to manipulate the data in a database. This includes:</p>
 <ul>
 <li>Inserting data</li>
@@ -47,7 +47,7 @@
 
 </div>
 <div class="tab">
-<h1 id="inserting-data">Inserting data</h1>
+<hr/><h1 id="inserting-data">Inserting data</h1><hr/>
 <p>There are a few different ways of inserting data into the database. The first step here is to insert data by explicitly specifying the data.</p>
 <p>Assume the following table, and columns</p>
 <p><img src="Employee.png" alt="Employee" /></p>
@@ -80,7 +80,7 @@ VALUES ('Troels', 'Mortensen', 'SW', 42, '01-08-2016'),
 
 </div>
 <div class="tab">
-<h1 id="insert-data-from-query-result">Insert data from query result</h1>
+<hr/><h1 id="insert-data-from-query-result">Insert data from query result</h1><hr/>
 <p>Sometimes you wish to insert data based on a query result. Perhaps you are given a messy table with all data, and wish to split it out into separate tables.</p>
 <p>Assume again the below Employee table, and another table, Names:</p>
 <p><img src="EmployeeAndNames.png" alt="EmployeeAndNames" /></p>
@@ -95,7 +95,7 @@ We can do this by first getting the required data with a query, and then using t
 
 </div>
 <div class="tab">
-<h1 id="updating-existing-data">Updating existing data</h1>
+<hr/><h1 id="updating-existing-data">Updating existing data</h1><hr/>
 <p>We often need to update existing data. This slide contains a couple of examples.</p>
 <p>The basic syntax for updating is as follows:</p>
 <pre><code class="line-numbers language-sql">UPDATE table_name
@@ -137,7 +137,7 @@ WHERE employ_id = 42;
 
 </div>
 <div class="tab">
-<h1 id="deleting-data">Deleting data</h1>
+<hr/><h1 id="deleting-data">Deleting data</h1><hr/>
 <p>We can remove all kinds of data:</p>
 <ul>
 <li>rows</li>
@@ -158,7 +158,7 @@ You can then append <code>CASCADE</code>, meaning all rows will be deleted as we
 
 </div>
 <div class="tab">
-<h1 id="deleting-rows">Deleting rows</h1>
+<hr/><h1 id="deleting-rows">Deleting rows</h1><hr/>
 <p>You can delete all rows from a table with the below command. This will not <code>DROP</code> the table itself, just remove all data in it.</p>
 <pre><code class="line-numbers language-sql">DELETE FROM &lt;table name&gt;
 [WHERE condition]
