@@ -44,4 +44,4 @@ INSERT INTO employee(firstname, lastname, department, employ_id, startdate)
 VALUES ('Troels', 'Mortensen', 'SW', 42, '01-08-2016'),
        ('Peter', 'Jensen', 'GBE', 57, '01-02-2018');
 ```
-Here, two sets of data are provided, separate with a comma.
+Here, two sets of data are provided, separated with a comma.

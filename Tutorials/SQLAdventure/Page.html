@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Welcome</li>
+<li class="step" onclick="setTab(1)">2 Install Postgres</li>
+<li class="step" onclick="setTab(2)">3 Create a schema</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<h1>Introduction</h1>
+<p>This tutorial takes you through a few different ways of interacting with a PostgreSQL database.</p>
+<p>You will be setting up the database, inserting data, removing data again, and breaking down the database in the end.</p>
+
+</div>
+<div class="tab">
+<h1>Install the database and DataGrip</h1>
+<p>At this point, hopefully you have already installed Postgres. If not, watch a video here on how to set it up:</p>
+<p>XXX link XXX</p>
+<p>You need an IDE to interact with the database. Several exists, e.g. Postgres has made their own, PGAdmin. It has, however, often been expressed by students that PGAdmin may not be a friendly IDE.</p>
+<p>I will be using DataGrip, this is from JetBrains. It is downloaded from here:
+<a href="https://www.jetbrains.com/datagrip/download/download-thanks.html?platform=windows">Download DataGrip</a></p>
+<p>The above video should also show how to setup a connection to your Postgres database.</p>
+
+</div>
+<div class="tab">
+<h1>Creating a schema</h1>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showTab(currentTab);
+</script>
+
+</body>
+</html>

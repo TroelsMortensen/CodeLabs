@@ -93,7 +93,8 @@ namespace CodeLabsGenerator
         private static string ConstructSingleTab(string mdFile)
         {
             string mdFileContent = File.ReadAllText(mdFile);
-            string mdAsHtml = Markdown.ToHtml(mdFileContent);
+            MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            string mdAsHtml = Markdown.ToHtml(mdFileContent, pipeline);
             StringBuilder sb = new();
             sb.Append("<div class=\"tab\">").Append('\n');
             {
