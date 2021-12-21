@@ -144,3 +144,9 @@ tbody tr:nth-of-type(even) {
 tbody tr:last-of-type {
     border-bottom: 2px solid #464646;
 }
+
+blockquote {
+    background-color: #eaeaea;
+    padding: 5px;
+
+}

@@ -59,6 +59,7 @@ DELETE FROM albums WHERE id = 1;
 It would result in an error message like the following:
 
 > [2021-04-05 15:02:25] [23503] ERROR: update or delete on table "album" violates foreign key constraint "photo_album_id_fkey" on table "photo"
+> 
 > [2021-04-05 15:02:25] Detail: Key (id)=(1) is still referenced from table "photo".
 
 It tells us we are violating a foreign key constraint, because rows in `images`, the images with ids: 1 and 7,  are referencing the album row we are trying to delete.
