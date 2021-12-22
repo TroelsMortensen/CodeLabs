@@ -1,5 +1,5 @@
 # Creating a schema
-In the console, start by creating a database.
+In the console, we will start by creating a schema.
 
 Schemas are used similar to packages in Java, it's a way to organize your database.\
 Create a database schema by entering `CREATE SCHEMA StarCompany;` in a console window and pressing the 'Execute' button (green arrow), or by Ctrl+Enter.
