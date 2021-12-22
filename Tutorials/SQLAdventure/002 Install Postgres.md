@@ -3,7 +3,7 @@ At this point, hopefully you have already installed Postgres. If not, watch a vi
 
 You need an IDE to interact with the database. Several exists, e.g. Postgres has made their own, PGAdmin. It has, however, often been expressed by students that PGAdmin may not be a friendly IDE.
 
-I will be using DataGrip, this is from JetBrains. It is downloaded from here:
+I recommend DataGrip, this is from JetBrains. It is downloaded from here:
 [Download DataGrip](https://www.jetbrains.com/datagrip/download/download-thanks.html?platform=windows)
 
 The above video should also show how to setup a connection to your Postgres database.
