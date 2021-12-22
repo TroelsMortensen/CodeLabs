@@ -155,3 +155,9 @@ blockquote {
     padding: 5px;
 
 }
+
+summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: cadetblue;
+}

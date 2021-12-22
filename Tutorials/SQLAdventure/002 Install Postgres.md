@@ -1,7 +1,5 @@
 # Install the database and DataGrip
-At this point, hopefully you have already installed Postgres. If not, watch a video here on how to set it up:
-
-XXX link XXX
+At this point, hopefully you have already installed Postgres. If not, watch a video _**[here](https://www.youtube.com/watch?v=EX81bDA-mkA&t=4s)**_ on how to set it up.
 
 You need an IDE to interact with the database. Several exists, e.g. Postgres has made their own, PGAdmin. It has, however, often been expressed by students that PGAdmin may not be a friendly IDE.
 

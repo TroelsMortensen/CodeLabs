@@ -19,6 +19,16 @@
             <li class="step" onclick="setTab(0)">1 Welcome</li>
 <li class="step" onclick="setTab(1)">2 Install Postgres</li>
 <li class="step" onclick="setTab(2)">3 Create a schema</li>
+<li class="step" onclick="setTab(3)">4 Create table</li>
+<li class="step" onclick="setTab(4)">5 Inserting data</li>
+<li class="step" onclick="setTab(5)">6 Verifying the data</li>
+<li class="step" onclick="setTab(6)">7 Altering tables</li>
+<li class="step" onclick="setTab(7)">8 Updating data</li>
+<li class="step" onclick="setTab(8)">9 More updates</li>
+<li class="step" onclick="setTab(9)">10 Query data</li>
+<li class="step" onclick="setTab(10)">11 Deleting data</li>
+<li class="step" onclick="setTab(11)">12 Summing data</li>
+<li class="step" onclick="setTab(12)">13 Removing tables</li>
 
         </ol>
     </div>
@@ -34,15 +44,14 @@
         <!-- One "tab" for each step in the form: -->
 
         <div class="tab">
-<h1>Introduction</h1>
+<hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>This tutorial takes you through a few different ways of interacting with a PostgreSQL database.</p>
 <p>You will be setting up the database, inserting data, removing data again, and breaking down the database in the end.</p>
 
 </div>
 <div class="tab">
-<h1>Install the database and DataGrip</h1>
-<p>At this point, hopefully you have already installed Postgres. If not, watch a video here on how to set it up:</p>
-<p>XXX link XXX</p>
+<hr/><h1 id="install-the-database-and-datagrip">Install the database and DataGrip</h1><hr/>
+<p>At this point, hopefully you have already installed Postgres. If not, watch a video <em><strong><a href="https://www.youtube.com/watch?v=EX81bDA-mkA&amp;t=4s">here</a></strong></em> on how to set it up.</p>
 <p>You need an IDE to interact with the database. Several exists, e.g. Postgres has made their own, PGAdmin. It has, however, often been expressed by students that PGAdmin may not be a friendly IDE.</p>
 <p>I will be using DataGrip, this is from JetBrains. It is downloaded from here:
 <a href="https://www.jetbrains.com/datagrip/download/download-thanks.html?platform=windows">Download DataGrip</a></p>
@@ -50,7 +59,238 @@
 
 </div>
 <div class="tab">
-<h1>Creating a schema</h1>
+<hr/><h1 id="creating-a-schema">Creating a schema</h1><hr/>
+<p>In the console, start by creating a database.</p>
+<p>Schemas are used similar to packages in Java, it's a way to organize your database.<br />
+Create a database schema by entering <code>CREATE SCHEMA StarCompany;</code> in a console window and pressing the 'Execute' button (green arrow), or by Ctrl+Enter.</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>Open Schemas in the browser to the left to see the change. A StarCompany schema should appear under the Schemas section.</p>
+<p><img src="img1.png" alt="" /></p>
+<p>Execute the command <code>SET SCHEMA 'starcompany';</code> by writing the command in the console, selecting it and pressing the execute button. This sets StarCompany as the current schema.</p>
+<p>The effect of this is that everything we subsequently execute will be executed against this schema.</p>
+<h3 id="a-note-about-lower-casing">A note about lower casing</h3>
+<p>Notice how postgresql lower cases all your names, for schemas, tables, attributes/columns. Nothing we can do about that.</p>
+<h3 id="a-note-about-upper-casing">A note about upper casing</h3>
+<p>Also notice, how some <em>keywords</em> in sql are all uppercase, like <code>SET SCHEMA</code> or <code>CREATE SCHEMA</code>.<br />
+This is not strictly required, but just an old convention to improve readability that people generally still follow.
+Nowadays your IDE will syntax highlight your SQL, e.g. in the above screenshots SQL keywords are orange.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="creating-your-first-table">Creating your first table</h1><hr/>
+<p>In the following, write and execute all SQL statements in the console, we have used so far.</p>
+<p>Each statement can be highlighted, and executed in isolation.</p>
+<h3 id="the-case">The case</h3>
+<p>The StarCompany wants to keep track of their employees and data related to them.<br />
+Therefore, you are going to make a table in the database with this data represented.<br />
+The table will include information about the employees' first name, last name,
+which department they are attached to, their salary (per month) and a unique identification number for each person.</p>
+<h3 id="creating-the-table">Creating the table</h3>
+<p>Execute the following SQL command to create a table for the data:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE employee(
+    firstname varchar(15), 
+    lastname varchar(15), 
+    department varchar(3), 
+    salary bigint, 
+    employid smallint
+);
+</code></pre>
+<p>Above, we have created a table called &quot;employee&quot;, with some information about each employee.
+Similar to <code>int</code> in Java, <code>bigint</code> and <code>smallint</code> are data types, just with various number of digits. The type <code>varchar</code> is your basic <code>string</code>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="insert-employees">Insert employees</h1><hr/>
+<p>Next up, we will add a couple of employees to the database. Do this by executing SQL commands in the console, as before.</p>
+<p>You must insert at least 6 different employees, and they should belong to at least 3 different departments, e.g. &quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;.<br />
+A department is just a 3-character code.<br />
+Remember, the data type was <code>varchar(3)</code>, meaning a string of maximum 3 characters.</p>
+<p>The following statement will insert a single employee:</p>
+<pre><code class="line-numbers language-sql">INSERT INTO Employee (firstname, lastname, department, salary, employid) 
+Values ('Anders', 'Hansen', 'A2', 18900, 24);
+</code></pre>
+<p>This is Ander Hansen, employed to department &quot;A2&quot;, with a salary of 18900 kr/month. His employee ID is 24.</p>
+<p>Insert another five employees.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="verifying-the-data">Verifying the data</h1><hr/>
+<p>Now that we have inserted employees into the table, we just want to verify the data is actually present.</p>
+<p>To retrieve data from tables, we use a <code>SELECT</code> statement. These can be somewhat advanced, depending on what kind of data you want to retrive.<br />
+We will start simple.</p>
+<p>Execute the following select-statement</p>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM employee;
+</code></pre>
+<p>This will <em>query</em> the employee table, and retrieve everything, because of the *.</p>
+<p>You should at the bottom in DataGrip see the result as a table with the employees.</p>
+<p>Alternatively, you can also double click on the table in the browser view to the left, nested under the starcompany schema.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="altering-a-table">Altering a table</h1><hr/>
+<p>Since you created the employee table, the StarCompany management has decided they also wants to register the date, where each employee was hired.<br />
+For this, we need to make a modification to the employee table.</p>
+<h3 id="adding-start-date">Adding start date</h3>
+<p>Execute the following statement to add another column:</p>
+<pre><code class="line-numbers language-sql">ALTER TABLE employee add startdate DATE;
+</code></pre>
+<p>We are saying we want to change the table called employee. We want to add a new column (attribute/field/property) called <code>startdate</code>, and the data type is <code>DATE</code>.</p>
+<h3 id="adding-age">Adding age</h3>
+<p>The company also want the age of the employee. Add another column of type <code>smallint</code> to hold an employee's age.</p>
+<p>See the answer below</p>
+<details>
+<summary>Hint</summary>
+<pre><code class="line-numbers language-sql">ALTER TABLE employee add age smallint;
+</code></pre>
+</details>
+<h3 id="more-employees">More employees</h3>
+<p>Add another 3 employees, you can reuse the previous <code>INSERT</code> statement, but need to modify it to match the updated table data, i.e. include age and startdate.<br />
+A date is formatted like this <code>'yyyy-mm-dd'</code>, so e.g. <code>'2007-04-16'</code>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="updating-existing-data">Updating existing data</h1><hr/>
+<p>The first 6 employees you inserted into the database does not have age or start date, because this information was added afterwards.</p>
+<p>So, we have to update the first employees, to fill in this data.</p>
+<p>You can update an employee with the following statement:</p>
+<pre><code class="line-numbers language-sql">UPDATE employee
+SET startdate = '2007-04-16'
+WHERE employid = 24;
+</code></pre>
+<p>Here we are saying, we want to set the start date of the employee with id 24.</p>
+<p>Now, update a couple of employees with various ages and start dates.</p>
+<p>To verify, you can <em>query</em> the database for data with</p>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM employee;
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="updating-existing-values">Updating existing values</h1><hr/>
+<p>Department &quot;A1&quot; is doing very well, and so they have all been granted a pay raise of 10%.</p>
+<p>Use a <code>UPDATE</code> statement in increase the pay of all employees in department &quot;A1&quot; (or another one, with more than one employee) by 10%.</p>
+<p>Give a thought yourself first, and see if you can figure it out. If you're stuck, theres a hint below:</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">UPDATE employee
+SET salary = salary * 1.1
+WHERE department='A1';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="query-data">Query data</h1><hr/>
+<h3 id="who-works-in-department-a3">Who works in department A3?</h3>
+<p>Write a statement to retrieve all employees, who work in department &quot;A3&quot; (or another, if you don't have A3).<br />
+Use the <code>SELECT</code> statement</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM employee
+WHERE department = 'A3';
+</code></pre>
+</details>
+<h3 id="who-has-a-high-salary">Who has a high salary?</h3>
+<p>Write a <code>SELECT</code> statement to retrieve all employees, who have a salary higher than 19000 (or some other number, which will return more employees).</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM employee
+WHERE salary &gt; 19000;
+</code></pre>
+</details>
+<p>Now, the management is too lazy to count the number of rows themselves, so they just want to know how many employees have a pay highger than 19000.</p>
+<p>We can do that with the following statement:</p>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM Employee
+WHERE salary &gt; 19000;
+</code></pre>
+<p>The <code>COUNT(*)</code> will just count how many rows are returned.</p>
+<p>See if you can figure out, how to write a statement, which will calculate the average pay of all employees.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">SELECT AVG(*)
+FROM employee
+</code></pre>
+</details>
+<h3 id="complex-where">&quot;Complex&quot; <code>WHERE</code></h3>
+<p>The company expanded april 1st, 1997, and wants to celebrate that.
+Make a list of employees that were hired before the expansion
+and get less than 21000 per month in salary (or some other number).</p>
+<p>Use the <code>SELECT</code> statement. When you have more than 1 condition you separate them with an <code>AND</code>.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM employee
+WHERE startdate &lt; '01-04-1997' 
+  AND salary &lt; 21000
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-data-from-table">Delete data from table</h1><hr/>
+<h3 id="delete-some">Delete some</h3>
+<p>The company has way too many expenses and wants to get rid of all employees with a salary bigger than 300.000 <strong>per year</strong>.</p>
+<p>The template-command for deleting:</p>
+<pre><code class="line-numbers language-sql">DELETE FROM ?
+WHERE ? ;
+</code></pre>
+<p>See if you can delete the specific employees.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">DELETE FROM employee
+WHERE salary * 12 &gt; 300000;
+</code></pre>
+</details>
+<h3 id="delete-more">Delete more</h3>
+<p>In the meantime things are going much worse! All employees hired later than 2006 must be fired.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">DELETE FROM employee
+WHERE EXTRACT(year FROM startdate) &gt; 2006;
+</code></pre>
+</details>
+<h3 id="and-even-more">And even more</h3>
+<p>Now things go completely wrong! The whole department A3 must be removed! <br />
+Delete every employee in department A3 (or some other department).</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">DELETE FROM employee
+WHERE department = 'A3';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="summing-data">Summing data</h1><hr/>
+<p>It was not enough. The company has gone bankrupt but owes salary for the last month to the remaining employees.
+Find out how much that is.</p>
+<p>Use the select statement with <code>SUM(salary)</code>.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-sql">SELECT SUM(salary)
+FROM employee
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="removing-an-entire-table">Removing an entire table</h1><hr/>
+<p>First, delete any leftover employees:</p>
+<pre><code class="line-numbers language-sql">DELETE FROM employee;
+</code></pre>
+<p>Once the table is empty, you can remove the table itself:</p>
+<pre><code class="line-numbers language-sql">DROP TABLE employee;
+</code></pre>
+<p>The <code>DROP</code> keyword is generally used to remove anything that isn't a row in a table.</p>
+<h3 id="removing-the-schema">Removing the schema</h3>
+<p>Now that the company is shut down, and all employees are fired, we might as well remove the starcompany schema too:</p>
+<pre><code class="line-numbers language-sql">DROP SCHEMA starcompany;
+</code></pre>
+<hr/><h1 id="thanks-for-joining-in-on-the-sql-adventure">Thanks for joining in on the SQL adventure!</h1><hr/>
 
 </div>
 
