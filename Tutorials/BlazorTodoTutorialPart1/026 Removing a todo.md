@@ -49,7 +49,7 @@ An alternative approach would be to re-fetch all the todos through the `TodoHome
 Next up, we need to add that new column with the delete button to the table.\
 Update the relevant part of the view like this:
 
-```razor {3}
+```razor{3}
 else
 {
     <table class="table">
