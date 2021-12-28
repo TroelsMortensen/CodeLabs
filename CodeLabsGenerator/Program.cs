@@ -8,7 +8,7 @@ namespace CodeLabsGenerator
 
         static void Main(string[] args)
         {
-            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\LineHighlight";
+            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\BlazorTodoTutorialPart1";
             Console.WriteLine("Generating \"" + folderPathToMdSteps.Split("\\")[^1] + "\" ...");
             Generator.GenerateHtmlPageFromMdFiles(folderPathToMdSteps, basePagePath);
             Console.WriteLine("Done!");

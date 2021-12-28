@@ -49,7 +49,7 @@ An alternative approach would be to re-fetch all the todos through the `TodoHome
 Next up, we need to add that new column with the delete button to the table.\
 Update the relevant part of the view like this:
 
-```razor{3}
+```razor{10,21-27,33-36}
 else
 {
     <table class="table">
@@ -88,8 +88,26 @@ else
 }
 ```
 
+Notice the highlighted changes.
 
+In **line 10**, a new column header is added.
 
+**Lines 21-27**: a new cell per row is added. This contains a label with the content `&#x2717;` which will become a fancy _x_. The styling here is inlined in the `<label>` tag.
+You are welcome to move this to a style-behind, if you wish. In general that is probably better practice.
+
+In **line 23** we have the `onclick` action, i.e. what happens, when this icon is clicked: We execute a lambda expression. 
+We use a lambda expression to call the `RemoveTodo()` method, and parse the argument `item.Id`, which we get from the `item` variable of the surrounding `foreach`-loop. 
+
+With previous buttons, we were able to directly reference a method just be the name, but because we need a variable argument passed along in this case, we need to use a lambda expression instead.
+
+**Lines 33-36** is the `errorLabel` to display any errors, if needed. This is perhaps a crude way, and a popup or something other, could be more user-friendly. This could be an exercise left to the reader.
+
+### Result
+Now, you should have a view looking something like this:
+
+![img.png](Resources/RemoveTodoResultView.png)
+
+And you can test it by clicking one of the red crosses, and either go to another page and back or refresh. Just to make sure the removal is persisted to the json-file.
 
 
 ![img.png](Resources/AbsolutelyWonderful.png)

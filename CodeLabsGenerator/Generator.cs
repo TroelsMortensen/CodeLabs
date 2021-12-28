@@ -29,8 +29,8 @@ namespace CodeLabsGenerator
             foreach (Match match in matchCollection)
             {
                 string existingHtml = match.Value;
-                Regex regex = new Regex("{(.*?)}");
-                Match dataLineValueMatch = regex.Match(existingHtml);
+                // Regex regex = new Regex("{(.*?)}");
+                // Match dataLineValueMatch = regex.Match(existingHtml);
                 string dataLineValue = match.Groups[1].Value;
                 
                 string replacementHtml = Regex.Replace(existingHtml, @"{(.*?)}", "");
@@ -39,11 +39,7 @@ namespace CodeLabsGenerator
             }
 
 
-            // var replace = Regex.Replace(mainBuilder.ToString(), "\"line-numbers language-[a-z]{0,15}\\{\\d\\}\"","");
-            // // var replace = Regex.Replace(mainBuilder.ToString(), "/<pre><code class=\\\"line-numbers language-[a-z]{0,15}\\{\\d\\}\\\">","");
-            //
-            // mainBuilder.Clear();
-            // mainBuilder.Append(replace);
+         
         }
 
         private static void AddLineNumberClassToCodeTag(StringBuilder basePage)

@@ -193,7 +193,7 @@ pre[data-line] {
     padding: inherit 0;
     margin-top: 1em;
     background: hsla(24, 20%, 50%, .08);
-    background: linear-gradient(90deg, rgba(255,205,0,0.0) 0%, rgba(255,205,0,0.30) 15%, rgba(255,255,255,0.25) 80%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(90deg, rgba(255,205,0,0.0) 0%, rgba(255,205,0,0.10) 15%, rgba(255,255,255,0.05) 80%, rgba(255,255,255,0) 100%);
     pointer-events: none;
     line-height: inherit;
     white-space: pre
