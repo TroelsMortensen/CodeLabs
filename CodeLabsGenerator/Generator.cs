@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using Markdig;
 
 namespace CodeLabsGenerator
@@ -15,7 +17,33 @@ namespace CodeLabsGenerator
             InsertStepsOverview(pathToMdSteps, mainBuilder);
             InsertAllTabsFromMdFiles(pathToMdSteps, mainBuilder);
             AddLineNumberClassToCodeTag(mainBuilder);
+            MoveLineHighlightingAttributes(mainBuilder);
             WriteFinalPageToFile(pathToMdSteps, mainBuilder);
+        }
+
+        private static void MoveLineHighlightingAttributes(StringBuilder mainBuilder)
+        {
+            // Regex pattern = new Regex("<pre><code class=\"line-numbers language-(?<language>[a-z]){0,15}\\{\\d\\}\">");
+            Regex pattern = new Regex("<pre><code class=\"line-numbers language-[a-z]{0,15}{(.*?)}\">");
+            MatchCollection matchCollection = pattern.Matches(mainBuilder.ToString());
+            foreach (Match match in matchCollection)
+            {
+                string existingHtml = match.Value;
+                Regex regex = new Regex("{(.*?)}");
+                Match dataLineValueMatch = regex.Match(existingHtml);
+                string dataLineValue = match.Groups[1].Value;
+                
+                string replacementHtml = Regex.Replace(existingHtml, @"{(.*?)}", "");
+                replacementHtml = replacementHtml.Replace("pre", $"pre data-line=\"{dataLineValue}\"");
+                mainBuilder.Replace(existingHtml, replacementHtml);
+            }
+
+
+            // var replace = Regex.Replace(mainBuilder.ToString(), "\"line-numbers language-[a-z]{0,15}\\{\\d\\}\"","");
+            // // var replace = Regex.Replace(mainBuilder.ToString(), "/<pre><code class=\\\"line-numbers language-[a-z]{0,15}\\{\\d\\}\\\">","");
+            //
+            // mainBuilder.Clear();
+            // mainBuilder.Append(replace);
         }
 
         private static void AddLineNumberClassToCodeTag(StringBuilder basePage)
@@ -37,7 +65,7 @@ namespace CodeLabsGenerator
         private static void InsertStepsOverview(string pathToMdSteps, StringBuilder mainBuilder)
         {
             // TODO at some point, remove any leading numbering of file name, and prefix automatically by the i variable in the loop. I foresee that when changes are made to the tutorial steps, we will see numberings like 3.1, and 3.05 etc. The final output should number better
-            
+
             var mdFiles = GetAndSortMdFiles(pathToMdSteps);
 
             StringBuilder sb = new();
@@ -79,7 +107,7 @@ namespace CodeLabsGenerator
         private static void InsertAllTabsFromMdFiles(string pathToMdSteps, StringBuilder mainBuilder)
         {
             List<string> mdFiles = GetAndSortMdFiles(pathToMdSteps);
-            
+
             StringBuilder sb = new();
             foreach (string mdFile in mdFiles)
             {

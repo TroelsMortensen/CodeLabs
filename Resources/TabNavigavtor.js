@@ -1,9 +1,15 @@
-﻿var currentTab = 0; // Current tab is set to be the first tab (0)
+﻿
+var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the current tab
 
+
 function showTab(n) {
+    
     // This function will display the specified tab of the form...
     var x = document.getElementsByClassName("tab");
+    if(x.length == 0) {
+        
+    }
     x[n].style.display = "block";
     //... and fix the Previous/Next buttons:
     if (n == 0) {
@@ -35,6 +41,7 @@ function setTab(n) {
 
     // Otherwise, display the correct tab:
     showTab(currentTab);
+    updateLineHighlight();
 }
 
 function nextPrev(n) {
@@ -55,6 +62,7 @@ function nextPrev(n) {
     } else {
         // Otherwise, display the correct tab:
         showTab(currentTab);
+        updateLineHighlight();
     }
 }
 
@@ -68,3 +76,21 @@ function fixStepIndicator(n) {
     //... and adds the "active" class on the current step:
     x[n].className += " active";
 }
+
+function c(e) {
+    return !(!e || !/pre/i.test(e.nodeName)) && (!!e.hasAttribute("data-line") || !(!e.id || !Prism.util.isActive(e, s)))
+}
+function b(e) {
+    e()
+}
+function v(e, t) {
+    return Array.prototype.slice.call((t || document).querySelectorAll(e))
+}
+
+function updateLineHighlight(){
+    v("pre").filter(c).map(function (e) {
+        console.log("updating");
+        return Prism.plugins.lineHighlight.highlightLines(e)
+    }).forEach(b)
+}
+
