@@ -39,7 +39,9 @@
 <li class="step" onclick="setTab(20)">21 Todo validation</li>
 <li class="step" onclick="setTab(21)">22 Add todo page</li>
 <li class="step" onclick="setTab(22)">23 Add todo view</li>
-<li class="step" onclick="setTab(23)">23 Test add todo</li>
+<li class="step" onclick="setTab(23)">24 Add todo styling</li>
+<li class="step" onclick="setTab(24)">25 Test add todo</li>
+<li class="step" onclick="setTab(25)">26 Removing a todo</li>
 
         </ol>
     </div>
@@ -55,7 +57,7 @@
         <!-- One "tab" for each step in the form: -->
 
         <div class="tab">
-<h1>Introduction</h1>
+<hr/><h1 id="introduction">Introduction</h1><hr/>
 <p><img src="Resources/TodoIcon.png" alt="Todo list" /></p>
 <p>This tutorial will initially introduce you to Blazor-server. You will create a web app to manage todo items. You can consider it a very simple Trello clone.</p>
 <p>You will create basic features, such as</p>
@@ -76,7 +78,7 @@
 
 </div>
 <div class="tab">
-<h1>Creating a new solution</h1>
+<hr/><h1 id="creating-a-new-solution">Creating a new solution</h1><hr/>
 <p>For previous exercises, you have most likely put them all in the same solution, and created a new project for each exercise.</p>
 <p>This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. As such, we wish to have a better code-structure for our application. You have been taught the SOLID design principles. They usually apply to single methods, or classes. In this project we will attempt to apply <em>Clean Architecture</em>, which is basically applying the SOLID principles on a larger scale.</p>
 <p>Therefore, we're going to need a new, <strong>empty solution</strong>. You can name it TodoApp.</p>
@@ -95,7 +97,7 @@
 
 </div>
 <div class="tab">
-<h1>Project structure</h1>
+<hr/><h1 id="project-structure">Project structure</h1><hr/>
 <p>You have previously heard about layered systems on second semester, a simple example could look like this:</p>
 <p><img src="Resources/SimpleArch.png" alt="img.png" /></p>
 <p>The above would be a basic structure for a local desktop app, e.g. SEP1, roughly sketched.<br />
@@ -125,9 +127,9 @@ Components can be considered a bit like lego-building blocks, with the intention
 
 </div>
 <div class="tab">
-<h1>The Domain component</h1>
+<hr/><h1 id="the-domain-component">The Domain component</h1><hr/>
 <p>First, we need the model classes. In this first iteration of the tutorial, we will just need a Todo object. Later we will add Users.</p>
-<h3>New project (component)</h3>
+<h3 id="new-project-component">New project (component)</h3>
 <p>Create a new Library project, by right-clicking your solution:</p>
 <p><img src="Resources/CreateLibrary1.png" alt="img.png" /></p>
 <p>This will open a familiar dialog, where you can create a Class Library (1). Give the project a name (2), I have called mine <em>Domain</em>, in some examples it is called <em>Entities</em>. In your case, you can probably only select net6.0 (3). Finally press Create (4).</p>
@@ -138,7 +140,7 @@ Your Domain component will just contain the domain model classes, there is nothi
 
 </div>
 <div class="tab">
-<h1>Todo model class</h1>
+<hr/><h1 id="todo-model-class">Todo model class</h1><hr/>
 <p>You can start by deleting the default class that comes with the project: Class1.cs.</p>
 <p>Inside your Domain project, create a new directory, name it Models. In here we put the model classes.</p>
 <p>Create a new class, call it <code>Todo</code>:</p>
@@ -163,7 +165,7 @@ Your Domain component will just contain the domain model classes, there is nothi
 
 </div>
 <div class="tab">
-<h1>A tale of three components</h1>
+<hr/><h1 id="a-tale-of-three-components">A tale of three components</h1><hr/>
 <p>We are going to need two more components for this first part of the tutorial:
 a Blazor-server component, and another component to save data to a file.
 The relationship between the components will be like below:</p>
@@ -174,7 +176,7 @@ Because of this separation, we can at a later point easily swap out which implem
 
 </div>
 <div class="tab">
-<h1>Creating blazor-server component</h1>
+<hr/><h1 id="creating-blazor-server-component">Creating blazor-server component</h1><hr/>
 <p>First, we create the blazor-server component. Right-click your solution folder again, to add a new project:</p>
 <p><img src="Resources/img_3.png" alt="img_3.png" /></p>
 <ol>
@@ -190,7 +192,7 @@ Because of this separation, we can at a later point easily swap out which implem
 
 </div>
 <div class="tab">
-<h1>File data component</h1>
+<hr/><h1 id="file-data-component">File data component</h1><hr/>
 <p>Create a new project again, this time a library:</p>
 <p><img src="Resources/img_5.png" alt="img_5.png" /></p>
 <p>Again, delete the Class1.cs.</p>
@@ -203,7 +205,7 @@ Inside the FileData component, right-click the Dependencies:</p>
 
 </div>
 <div class="tab">
-<h1>FileContext</h1>
+<hr/><h1 id="filecontext">FileContext</h1><hr/>
 <p>We will now create the class, which can save and retrieve data.
 We will be serializing objects to JSON, and write to a file. It's a pretty simple substitute for a database.</p>
 <p>Inside the FileData component: Create a new directory, DataAccess.</p>
@@ -211,13 +213,13 @@ We will be serializing objects to JSON, and write to a file. It's a pretty simpl
 <p><img src="Resources/img_6.png" alt="img_6.png" /></p>
 <p>Below, the content of the FileContext will be explained.
 The final version of the class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs">here</a></p>
-<h3>Fields</h3>
+<h3 id="fields">Fields</h3>
 <p>You need to define the file, which should hold the data. And we need a collection of Todo objects:</p>
 <pre><code class="line-numbers language-csharp">private string todoFilePath = &quot;todos.json&quot;;
 private ICollection&lt;Todo&gt; todos;
 </code></pre>
 <p>We use a collection, because this class should not have get-methods to access objects at an index. This is to simulate how you will work with a database in the future.</p>
-<h3>Constructor</h3>
+<h3 id="constructor">Constructor</h3>
 <p>Then we need a constructor. We wish to insert some dummy data into the file, if nothing exists, just so we have
 something to work with. The constructor looks like this:</p>
 <pre><code class="line-numbers language-csharp">public FileContext()
@@ -258,7 +260,7 @@ something to work with. The constructor looks like this:</p>
 </code></pre>
 <p>In the above method an array of Todos are created. Notice here, we manually set the Id of each todo. We only do this for this specific dummy data.
 In the end the array is stored in the <code>todos</code> field variable. And then we call a currently-non-existing method, <code>SaveChanges</code>.</p>
-<h3>Save changes</h3>
+<h3 id="save-changes">Save changes</h3>
 <p>The purpose of this method is to take the content of the <code>todos</code> field, and put into the file.</p>
 <pre><code class="line-numbers language-csharp">public void SaveChanges()
 {
@@ -267,7 +269,7 @@ In the end the array is stored in the <code>todos</code> field variable. And the
 }
 </code></pre>
 <p>Later, when we work with databases through Entity Framework Core, you will also need to call SaveChanges after interacting with the database. So, we practice the workflow here.</p>
-<h3>Load data</h3>
+<h3 id="load-data">Load data</h3>
 <p>We need a method to read from the file, so we can retrieve data.</p>
 <pre><code class="line-numbers language-csharp">private void LoadData()
 {
@@ -279,7 +281,7 @@ In the end the array is stored in the <code>todos</code> field variable. And the
 <p>The method is private, because this class should be responsible for determining when to load data.<br />
 We read all the content of the file, it returns a string.<br />
 Then that string is deserialized into a <code>List&lt;Todo&gt;</code>, and assigned to the field variable.</p>
-<h3>Accessing data</h3>
+<h3 id="accessing-data">Accessing data</h3>
 <p>Finally, we need a way to actually get the data. We'll make a property, not a get-method. This is, again, to simulate the way you'll interact with the database in the future.</p>
 <pre><code class="line-numbers language-csharp">public ICollection&lt;Todo&gt; Todos
 {
@@ -296,7 +298,7 @@ Then that string is deserialized into a <code>List&lt;Todo&gt;</code>, and assig
 
 </div>
 <div class="tab">
-<h1>Data access interfaces</h1>
+<hr/><h1 id="data-access-interfaces">Data access interfaces</h1><hr/>
 <p>As mentioned previously, our Blazor app will initially get data from the just created FileContext.
 Later we wish to change this, so the data comes from a server.
 I.e. we wish to swap out the implementation of these interfaces.</p>
@@ -308,7 +310,7 @@ It will eventually look something like this:</p>
 it should be little work to swap from using file storage,
 to using a client to get data from a server.</p>
 <p>But first, we need to define the interface.</p>
-<h3>ITodoService</h3>
+<h3 id="itodoservice">ITodoService</h3>
 <p>Inside the Domain component, create a new directory. I have called mine &quot;Contracts&quot;. &quot;Interfaces&quot; imply the same thing.
 But interfaces are essentially a contract between two classes: Class A, which needs some functionality, and Class B which provides some functionality.
 The interface is then a Contract, so class B knows what functionality to deliver, and Class A knows what functionality it will get.</p>
@@ -333,7 +335,7 @@ public interface ITodoHome
 
 </div>
 <div class="tab">
-<h1>Data Access Object</h1>
+<hr/><h1 id="data-access-object">Data Access Object</h1><hr/>
 <p>We currently only have one type of domain object, so we just need a single DAO to provide CRUD operations on Todos.</p>
 <p>The finished class is found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/TodoFileDAO.cs">here</a>.</p>
 <p>This DAO should be located in the FileData component, either put it in the DataAccess directory or create a new.</p>
@@ -356,7 +358,7 @@ methods.</p>
 generally a good approach. Remember SDJ2 and MVVM:
 Controllers, VMs, and Models got what they needed through constructors. We will get the framework to handle this dependency
 injection for us.</p>
-<h3>Getting all todos</h3>
+<h3 id="getting-all-todos">Getting all todos</h3>
 <p>We'll start with the <code>GetAsync()</code> method:</p>
 <pre><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
 {
@@ -366,7 +368,7 @@ injection for us.</p>
 </code></pre>
 <p>Here we just retrieve the <code>Todos</code> from the <code>fileContext</code>, and return the collection. The method is marked <code>async</code>, even though we don't have any asynchronous code here.
 This is future proofing, because when we change to retrieving data from a server, that will be asynchronous.</p>
-<h3>Get todo by id</h3>
+<h3 id="get-todo-by-id">Get todo by id</h3>
 <p>This method should return a Todo by its id:</p>
 <pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; GetById(int id)
 {
@@ -374,7 +376,7 @@ This is future proofing, because when we change to retrieving data from a server
 }
 </code></pre>
 <p>The <code>First()</code> method takes a predicate and returns the first Todo, which matches the criteria. We know the Id is unique, so there should be no problems here.</p>
-<h3>Add Todo</h3>
+<h3 id="add-todo">Add Todo</h3>
 <p>In this method we need to implement the functionality of auto-setting the Id of the provided Todo item. The method looks like this:</p>
 <pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; AddAsync(Todo todo)
 {
@@ -392,16 +394,16 @@ We assign that Id to the provided todo.<br />
 We add the todo to the fileContext.<br />
 We call <code>SaveChanges()</code> so that the Todos are written to the file.<br />
 Finally, we return the finalized todo object, now with a correct Id.</p>
-<h3>The other methods</h3>
+<h3 id="the-other-methods">The other methods</h3>
 <p>Give the other methods a try on your own, and look up the solution on GitHub (link at the top) if needed.</p>
 <p>DeleteAsync: Remove a todo from the collection of todos, based on the given id, in the <code>fileContext</code>, remember to call <code>SaveChangesAsync</code></p>
 <p>UpdateAsync: First find the existing Todo, by using <code>todo.Id</code>. Take the <code>OwnerId</code> and <code>IsCompleted</code> from the argument, and overwrite the values of the Todo from the <code>fileContext</code>. Then call <code>SaveChanges()</code></p>
 
 </div>
 <div class="tab">
-<h1>Adding services</h1>
+<hr/><h1 id="adding-services">Adding services</h1><hr/>
 <p>Now that we have our data persistence in place, we are ready to start working on the Blazor side of things.</p>
-<h3>Managing component dependencies</h3>
+<h3 id="managing-component-dependencies">Managing component dependencies</h3>
 <p>The first step is to make sure that our Blazor app knows about our ITodoHome, and TodoFileDAO so that we can use it to persist data.</p>
 <p>Now, in the <code>Program.cs</code> class of the Blazor component, we can register services, so that the framework can create these as needed, and inject into whatever class needs a given service. This is the dependency injection, the Blazor framework can handle this automatically for us. That's pretty nifty. It makes it easier to retain loose coupling.</p>
 <p>We encounter a problem here. In order to register a service of type FileContext and TodoFileDAO, the Blazor component must know about the FileData component.</p>
@@ -409,7 +411,7 @@ Finally, we return the finalized todo object, now with a correct Id.</p>
 We would have liked to avoid this knowledge, but it is only the <code>Program.cs</code> class which will be &quot;tainted&quot; like this, and that's okay.</p>
 <p>We need a dependency from Blazor to FileData:</p>
 <p><img src="Resources/DependBlazorToFileData.gif" alt="" /></p>
-<h3>Adding the services</h3>
+<h3 id="adding-the-services">Adding the services</h3>
 <p>Then, in <code>Program.cs</code> we need to add services. It goes like this:</p>
 <p><img src="Resources/AddingServices.gif" alt="" /></p>
 <p>Now, whenever a page request a class, which has been added as a service, the framework will create that for us.
@@ -419,7 +421,7 @@ If we request a class, which hasn't been added, the framework will give an error
 <pre><code>builder.Services.AddScoped&lt;ITodoHome, TodoFileDAO&gt;();
 </code></pre>
 <p>we are saying, that whenever the blazor app requests an instance of <code>ITodoHome</code>, it will get a <code>TodoFileDAO</code>. In the future, when we wish to provide a different implementation, we just need to change this single line of code, and our entire app will get data from a server somewhere, instead of a file.</p>
-<h3>Multithreading problem?</h3>
+<h3 id="multithreading-problem">Multithreading problem?</h3>
 <p>In our case here, we could potentially have two clients, who wishes to create Todo items at the same time,
 cause two different instances of FileContext to attempt to write to the same file. That will cause an error.<br />
 We could use a singleton and synchronize the FileContext class to make it thread safe,
@@ -427,7 +429,7 @@ but that's out of scope of this exercise, given that the FileContext is just tem
 
 </div>
 <div class="tab">
-<h1>Viewing todo items</h1>
+<hr/><h1 id="viewing-todo-items">Viewing todo items</h1><hr/>
 <p>We are now ready for our first UI element. We need a page, where we can view existing Todo items. Select <em>Blazor Component</em>, not the <em>Page</em>!</p>
 <p><img src="Resources/AddNewPage.png" alt="img.png" /></p>
 <p>This will open a new dialogue, where you can type in the name (e.g. <em>Todos</em>) of the new page, and pick either Component or Page.
@@ -449,15 +451,15 @@ This means we can navigate to this page with a URI.</p>
 
 </div>
 <div class="tab">
-<h1>Navigate to todos overview</h1>
-<h3>Changing layout</h3>
+<hr/><h1 id="navigate-to-todos-overview">Navigate to todos overview</h1><hr/>
+<h3 id="changing-layout">Changing layout</h3>
 <p>The default blazor app comes with the left side navigation bar. For this tutorial, we will just expand on that. You can, however, rework the entire layout of the app at a later point, if you wish.
 This is done in the file <code>MainLayout.razor</code></p>
 <p><img src="Resources/MainLayout.png" alt="img.png" /></p>
 <p>In this file you can see a bit of html, which define the layout. You will also notice the <code>&lt;NavMenu/&gt;</code>, which is a reference to the NavMenu component, the look and functionality of which, is defined in the NavMenu.razor file. The NavMenu is a component, i.e. a piece of UI, which can be inserted into other pages or components.
 It can be very beneficial to organize UI pieces into components for re-usability.</p>
 <p>In MainLayout.razor you will also notice <code>@Body</code>. This must always be present, if you start reworking the layout. This variable will be replaced with whatever page you open.</p>
-<h3>Adding to NavMenu</h3>
+<h3 id="adding-to-navmenu">Adding to NavMenu</h3>
 <p>Open the NavMenu.razor:</p>
 <p><img src="Resources/NavMenuPlace.png" alt="img.png" /></p>
 <p>As mentioned, this defines the left hand side navigation menu. We want to add a new menu item, so we can open the Todos overview.</p>
@@ -494,7 +496,7 @@ It can be very beneficial to organize UI pieces into components for re-usability
 
 </div>
 <div class="tab">
-<h1>TESTING, TESTING, 1, 2, TESTING</h1>
+<hr/><h1 id="testing-testing-1-2-testing">TESTING, TESTING, 1, 2, TESTING</h1><hr/>
 <p>Let us see what the current app looks like. It is not particularly interesting, but let us just verify the Todos page is working, and you can navigate to it.</p>
 <p>Now, in .NET6, the Program.cs no longer has an explicit main method. You are probably used to having a little green play arrow next to the main method in IntelliJ.<br />
 We have that for explicit main methods in Rider too. But at the time of writing, not for implicit main methods.</p>
@@ -508,7 +510,7 @@ We have that for explicit main methods in Rider too. But at the time of writing,
 
 </div>
 <div class="tab">
-<h1>Todos page code</h1>
+<hr/><h1 id="todos-page-code">Todos page code</h1><hr/>
 <p>The result can be found on my GitHub project <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/Todos.razor">here</a>.</p>
 <p>Open your Todos.razor file.</p>
 <p>We will start by updating the code, then the view. Modify the page like so:</p>
@@ -544,7 +546,7 @@ always ask for them with the @inject</p>
 
 </div>
 <div class="tab">
-<h1>Todos page view</h1>
+<hr/><h1 id="todos-page-view">Todos page view</h1><hr/>
 <p>We wish to show the Todo items in a table, at least initially.</p>
 <p>This means we must update the view part of the page, i.e. just below <code>&lt;h3&gt;Todos&gt;/h3&gt;</code>, and above the <code>@code {</code>.</p>
 <p>Insert the following:</p>
@@ -596,43 +598,43 @@ Or, in the future, maybe the todos should be generated as cards, and the html fo
 
 </div>
 <div class="tab">
-<h1>Testing again.</h1>
+<hr/><h1 id="testing-again">Testing again.</h1><hr/>
 <p>Run your app, like previous, navigate to the Todos page.</p>
 <p>You should see something like this:</p>
 <p><img src="Resources/TodosOverview.png" alt="img.png" /></p>
 
 </div>
 <div class="tab">
-<h1>Cleaning up</h1>
+<hr/><h1 id="cleaning-up">Cleaning up</h1><hr/>
 <p><img src="Resources/CleanUp.png" alt="img.png" /></p>
 <p>The default project comes with various classes/functionality, we don't really need. E.g. the weather data stuff and counter incrementer.
 We might as well remove this, so we don't clutter our app.</p>
-<h3>NavMenu</h3>
+<h3 id="navmenu">NavMenu</h3>
 <p>First, the nav menu, open that file. Remove the part highlighted below, that's the counter and weather data:</p>
 <p><img src="Resources/CleanNavMenu.png" alt="img.png" /></p>
 <p>We now only have two menu items, the Todos overview and the home page, which is nice to have. We can expand on that later.</p>
-<h3>Pages</h3>
+<h3 id="pages">Pages</h3>
 <p>In the pages folder, remove the highlited razor components:</p>
 <p><img src="Resources/CleanRazorComponents.png" alt="img.png" /></p>
-<h3>Program.cs</h3>
+<h3 id="program.cs">Program.cs</h3>
 <p>Open Program.cs, we wish to remove the WeatherForecastService, delete the highlighted line:</p>
 <p><img src="Resources/CleanProgramCs.png" alt="img.png" /></p>
 <p>Also, at the top of the class remove the <code>using Blazor.Data;</code> statement.</p>
-<h3>Classes</h3>
+<h3 id="classes">Classes</h3>
 <p>Finally, delete the Data directory, with its content: <code>WeatherForecast.cs</code> and <code>WeatherForecastService.cs</code>.</p>
 <p><img src="Resources/CleanClasses.png" alt="img.png" /></p>
-<h3>Test</h3>
+<h3 id="test">Test</h3>
 <p>Now it is time to confirm we didn't break anything. Run your app, verify the two nav menu items are gone, and that your Todos page still works.</p>
 
 </div>
 <div class="tab">
-<h1>dotnet watch run (optional step)</h1>
+<hr/><h1 id="dotnet-watch-run-optional-step">dotnet watch run (optional step)</h1><hr/>
 <p>So far, whenever you have made a change to your blazor app, you need to stop the app, and start it again, for the changes to take effect.</p>
 <p>If you are fine with this, you can just skip this step.</p>
 <p>However, there is another approach, which might increase your workflow speed. It's the watch command, which will automatically update a running blazor app, whenever changes are made.
 This just means that in most cases, you don't have to restart your app to see changes. Whenever you save a file, the running blazor app will update. In theory, at least.</p>
 <p>There are two ways to enable this:</p>
-<h3>Approach 1</h3>
+<h3 id="approach-1">Approach 1</h3>
 <p>At the bottom in Rider, there is a tab called Terminal:</p>
 <p><img src="Resources/TerminalTab.png" alt="img.png" /></p>
 <p>When you open this tab, you probably start at your current solution folder, at the time of writing, mine is</p>
@@ -642,7 +644,7 @@ This just means that in most cases, you don't have to restart your app to see ch
 PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor&gt; dotnet watch run
 </code></pre>
 <p>When you want to close the app again, you need to click somewhere in the terminal tab and press [ctrl] + [c] a couple of times.</p>
-<h3>Approach 2</h3>
+<h3 id="approach-2">Approach 2</h3>
 <p>You can also setup a launch configuration, so you can use the little green play button up to the top right of Rider.</p>
 <p>Click the drop down, and click the <em>Edit Configurations...</em>:</p>
 <p><img src="Resources/EditConfigurations.png" alt="img.png" /></p>
@@ -658,12 +660,12 @@ PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor&gt; dotnet watch run
 <li>Click OK.</li>
 </ol>
 <p>Now you have a new launch configuration from the drop down, you can run. This time with the <em>watch</em> enabled.</p>
-<h3>Note:</h3>
+<h3 id="note">Note:</h3>
 <p>This <em>watch</em> is still under development, and you may still sometimes have to restart your app.</p>
 
 </div>
 <div class="tab">
-<h1>Todo validation rules</h1>
+<hr/><h1 id="todo-validation-rules">Todo validation rules</h1><hr/>
 <p>Now that we can view all Todos, it's time to add new Todo items.</p>
 <p>First, we want to make sure, that whenever we add a Todo, the data is valid.</p>
 <p>We can do this by adding Validation attributes to the <code>Todo</code> class, like so:</p>
@@ -691,7 +693,7 @@ This one says that the valid values for <code>OwnerId</code> is 1 to the maximum
 Required means that this property is not allowed to be <code>null</code>. MaxLength means that the <code>Title</code> can contain a maximum of 128 characters.</p>
 <p>We don't have any requirements for <code>IsCompleted</code>, so the default value will just be <code>false</code>.</p>
 <p>There are various validation attributes, you can google for examples. They are used by certain Blazor components to validate data, and later, they are used by the Web API</p>
-<h3>Empty constructor</h3>
+<h3 id="empty-constructor">Empty constructor</h3>
 <p>For the next part, we are also going to need an empty constructor in <code>Todo</code>:</p>
 <pre><code class="line-numbers language-csharp">public Todo() { }
 </code></pre>
@@ -699,7 +701,7 @@ Required means that this property is not allowed to be <code>null</code>. MaxLen
 
 </div>
 <div class="tab">
-<h1>Add Todo page</h1>
+<hr/><h1 id="add-todo-page">Add Todo page</h1><hr/>
 <p>The final class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/AddTodo.razor">here</a> for reference.</p>
 <p>We are going to need a new page for adding todos, so create a new page, similar to the Todos page previously. In the Pages folder. Call it AddTodo.</p>
 <p>The result should be in that file should be</p>
@@ -761,7 +763,7 @@ If something <em>does</em> go wrong, we <code>return</code> i.e. exit the method
 
 </div>
 <div class="tab">
-<h1>The view part of adding a new Todo item</h1>
+<hr/><h1 id="the-view-part-of-adding-a-new-todo-item">The view part of adding a new Todo item</h1><hr/>
 <p>In the view part of the page, insert the below:</p>
 <pre><code class="line-numbers language-razor">&lt;EditForm Model=&quot;@newTodoItem&quot; OnValidSubmit=&quot;@AddNewTodo&quot;&gt;
     &lt;DataAnnotationsValidator/&gt; 
@@ -810,7 +812,144 @@ and if there are no problems, the <code>AddNewTodo</code> method will be called.
 
 </div>
 <div class="tab">
-<h1>Can we add a Todo?</h1>
+<hr/><h1 id="add-todo-styling">Add todo styling</h1><hr/>
+<p>Currently, when you open the Add Todo page, it should look something like this:</p>
+<p><img src="Resources/CurrentAddTodo.png" alt="img.png" /></p>
+<p>If you are happy with that, you can skip to the next slide. You can also apply some styling of your own.</p>
+<p>Or use the styling explained below.</p>
+<h3 id="style-behind">Style behind</h3>
+<p>First, add a style behind:</p>
+<p><img src="Resources/AddTodoStyleBehind.png" alt="img" /></p>
+<p>In this file, put the following css:</p>
+<pre><code class="line-numbers language-css">.box {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 250px;
+    padding: 25px;
+    text-align: center;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.field {
+    margin-top: 20px;
+}
+
+.acceptbtn {
+    background-color:lightgreen;
+    border-radius: 5px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.acceptbtn:hover {
+    background-color: #00d900;
+}
+</code></pre>
+<h3 id="view-modifications">View modifications</h3>
+<p>Then we need to add the styles to the view part of the page.</p>
+<p><img src="Resources%5CAddTodoCss.png" alt="" /></p>
+<p>Surround everything with a <code>&lt;div&gt;</code> with the class &quot;box&quot;.<br />
+The divs inside need the &quot;field&quot; class.<br />
+The button gets the &quot;acceptbtn&quot; class.<br />
+The <code>errorLabel</code> is only shown, if it is not empty. Otherwise, it may take up some whitespace.</p>
+<h3 id="result">Result</h3>
+<p>Your page should now look like this:</p>
+<p><img src="Resources%5CAddTodoResult.png" alt="" /></p>
+<p>With the box centered in the view.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="can-we-add-a-todo">Can we add a Todo?</h1><hr/>
+<p>Now is the time to test, if we can add a todo.</p>
+<p>Navigate to the page. Without putting anything in either field, press the &quot;Create&quot; button, and verify you get an error message.</p>
+<p><img src="Resources/ErrorMsg.png" alt="img.png" /></p>
+<p>The red outlines are to indicate where the input errors are. The text at the top comes from the component <code>&lt;ValidationSummary/&gt;</code>,
+which was added almost at the top of the <code>&lt;EditForm&gt;</code>.</p>
+<p>Next:</p>
+<ul>
+<li>Type in a User Id larger than 0</li>
+<li>And put in a title</li>
+</ul>
+<p>Press the &quot;Create&quot; button.</p>
+<p>You should be taken to the &quot;Todos&quot; page, and at the bottom row, your todo is shown. Notice the <code>TodoID</code> has been set correctly.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="removing-a-todo">Removing a Todo</h1><hr/>
+<p>Next up, we want to be able to delete a Todo. You have a todo about doing the dishes, but don't want to? Just delete it.</p>
+<p>For this part, we will modify the existing <code>Todos.razor</code> file, so, moving forward, the solution will proceed on a new branch:</p>
+<p><a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/Part2">Part 2</a></p>
+<h3 id="first-the-goal">First, the goal</h3>
+<p>The goal is to add an extra column to the table view of the Todos overview. This column will contain a delete button, which will delete the Todo of that row.</p>
+<p>The result will look something like this:</p>
+<p><img src="Resources/TodosOverviewWithRemove.png" alt="img.png" /></p>
+<h3 id="code-block">Code block</h3>
+<p>We will start by adding a method in the code block of <code>Todos.razor</code>, which can delete a Todo item. It looks like this:</p>
+<pre><code class="line-numbers language-csharp">private async Task RemoveTodo(int id)
+{
+    errorLabel = &quot;&quot;;
+    try
+    {
+        Todo todoToRemove = todos.First(todo =&gt; todo.Id == id);
+        await TodoHome.DeleteAsync(id);
+        todos.Remove(todoToRemove);
+    }
+    catch (Exception e)
+    {
+        errorLabel = e.Message;
+    }
+}
+</code></pre>
+<p>Let us go over the method.<br />
+First, in line 3 we have a <code>string errorLabel</code>, that means you must also add this as a field variable.
+It is, as always, used to provide a message to the user, if something goes wrong. That is also the reason of the try-catch.</p>
+<p>Line 6 uses the <code>First()</code> method to find the first <code>Todo</code> in the <code>todos</code> collection, which matches the given <code>id</code>.
+In line 7 we make an asynchronous call to the <code>TodoHome</code> to delete by id. This call is <code>await</code>ed.
+Finally, in line 8, we also remove the relevant <code>Todo</code> from the <code>todos</code> collection, i.e. the collection displayed in the table.<br />
+An alternative approach would be to re-fetch all the todos through the <code>TodoHome</code>.</p>
+<h3 id="the-view">The view</h3>
+<p>Next up, we need to add that new column with the delete button to the table.<br />
+Update the relevant part of the view like this:</p>
+<pre data-line="5"><code class="line-numbers language-razor">else
+{
+    &lt;table class=&quot;table&quot;&gt;
+        &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Owner ID&lt;/th&gt;
+            &lt;th&gt;Todo ID&lt;/th&gt;
+            &lt;th&gt;Title&lt;/th&gt;
+            &lt;th&gt;Completed?&lt;/th&gt;
+            &lt;th&gt;Remove&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        @foreach (var item in todos)
+        {
+            &lt;tr&gt;
+                &lt;td&gt;@item.OwnerId&lt;/td&gt; 
+                &lt;td&gt;@item.Id&lt;/td&gt; 
+                &lt;td&gt;@item.Title&lt;/td&gt; 
+               &lt;td&gt;@item.IsCompleted&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;label 
+                    @onclick=&quot;@(() =&gt; RemoveTodo(item.Id))&quot; 
+                    style=&quot;cursor:pointer; color: red; font-weight: bold&quot;&gt;
+                        &amp;#x2717;
+                    &lt;/label&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        }
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+}
+@if (!string.IsNullOrEmpty(errorLabel))
+{
+    &lt;label style=&quot;color: red&quot;&gt;@errorLabel&lt;/label&gt;
+}
+</code></pre>
+<p><img src="Resources/AbsolutelyWonderful.png" alt="img.png" /></p>
 
 </div>
 

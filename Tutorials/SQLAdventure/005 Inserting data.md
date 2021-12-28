@@ -13,6 +13,6 @@ INSERT INTO Employee (firstname, lastname, department, salary, employid)
 Values ('Anders', 'Hansen', 'A2', 18900, 24);
 ```
 
-This is Ander Hansen, employed to department "A2", with a salary of 18900 kr/month. His employee ID is 24.
+This is Anders Hansen, employed to department "A2", with a salary of 18900 kr/month. His employee ID is 24.
 
 Insert another five employees.

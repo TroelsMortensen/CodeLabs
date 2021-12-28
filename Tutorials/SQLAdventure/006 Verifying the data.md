@@ -3,6 +3,7 @@
 Now that we have inserted employees into the table, we just want to verify the data is actually present.
 
 To retrieve data from tables, we use a `SELECT` statement. These can be somewhat advanced, depending on what kind of data you want to retrive.\
+
 We will start simple.
 
 Execute the following select-statement

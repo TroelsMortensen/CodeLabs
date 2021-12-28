@@ -1,5 +1,5 @@
 /* PrismJS 1.25.0
-https://prismjs.com/download.html#themes=prism-coy&languages=markup+css+clike+javascript+aspnet+c+csharp+cpp+dart+docker+excel-formula+fsharp+graphql+http+hpkp+hsts+java+javadoc+javadoclike+javastacktrace+json+json5+jsonp+kotlin+latex+markdown+markup-templating+matlab+mongodb+objectivec+php+phpdoc+php-extras+plsql+python+cshtml+regex+ruby+rust+sql+typescript+typoscript+uri+wasm&plugins=line-highlight+line-numbers */
+https://prismjs.com/download.html#themes=prism-coy&languages=markup+css+clike+javascript+aspnet+c+csharp+cpp+dart+diff+docker+excel-formula+fsharp+graphql+http+hpkp+hsts+java+javadoc+javadoclike+javastacktrace+json+json5+jsonp+kotlin+latex+markdown+markup-templating+matlab+mongodb+objectivec+php+phpdoc+php-extras+plsql+python+cshtml+regex+ruby+rust+sql+typescript+typoscript+uri+wasm&plugins=line-highlight+line-numbers */
 code[class*=language-], pre[class*=language-] {
     color: #000;
     background: 0 0;
@@ -17,13 +17,14 @@ code[class*=language-], pre[class*=language-] {
     -webkit-hyphens: none;
     -moz-hyphens: none;
     -ms-hyphens: none;
-    hyphens: none;
+    hyphens: none
 }
 
 pre[class*=language-] {
     position: relative;
+    margin: .5em 0;
     overflow: visible;
-    padding: 1px;
+    padding: 1px
 }
 
 pre[class*=language-] > code {
@@ -35,8 +36,7 @@ pre[class*=language-] > code {
     background-image: linear-gradient(transparent 50%, rgba(69, 142, 209, .04) 50%);
     background-size: 3em 3em;
     background-origin: content-box;
-    background-attachment: local;
-    
+    background-attachment: local
 }
 
 code[class*=language-] {
@@ -44,8 +44,7 @@ code[class*=language-] {
     height: inherit;
     padding: 0 1em;
     display: block;
-    overflow: auto;
-    
+    overflow: auto
 }
 
 :not(pre) > code[class*=language-], pre[class*=language-] {
@@ -80,8 +79,7 @@ pre[class*=language-]:after, pre[class*=language-]:before {
     -moz-transform: rotate(-2deg);
     -ms-transform: rotate(-2deg);
     -o-transform: rotate(-2deg);
-    transform: rotate(-2deg);
-    
+    transform: rotate(-2deg)
 }
 
 pre[class*=language-]:after {
@@ -189,12 +187,13 @@ pre[data-line] {
 
 .line-highlight {
     position: absolute;
+    z-index: 1;
     left: 0;
     right: 0;
     padding: inherit 0;
     margin-top: 1em;
     background: hsla(24, 20%, 50%, .08);
-    background: linear-gradient(to right, hsla(24, 20%, 50%, .1) 70%, hsla(24, 20%, 50%, 0));
+    background: linear-gradient(90deg, rgba(255,205,0,0.30) 0%, rgba(255,255,255,0.25) 70%, rgba(255,255,255,0) 100%);
     pointer-events: none;
     line-height: inherit;
     white-space: pre
@@ -254,7 +253,7 @@ pre[class*=language-].line-numbers {
 
 pre[class*=language-].line-numbers > code {
     position: relative;
-    white-space: inherit;
+    white-space: inherit
 }
 
 .line-numbers .line-numbers-rows {
