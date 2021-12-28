@@ -12,7 +12,7 @@ The goal is to add an extra column to the table view of the Todos overview. This
 
 The result will look something like this:
 
-![img.png](Resources/TodosOverviewWithRemove.png)
+![img.png](Resources/RemoveTodoResultView.png)
 
 ### Code block
 
