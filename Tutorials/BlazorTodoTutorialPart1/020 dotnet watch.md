@@ -1,7 +1,7 @@
 # dotnet watch run (optional step)
 So far, whenever you have made a change to your blazor app, you need to stop the app, and start it again, for the changes to take effect.
 
-If you are fine with this, you can just skip this step.
+**If you are fine with this, you can just skip this step.**
 
 However, there is another approach, which might increase your workflow speed. It's the watch command, which will automatically update a running blazor app, whenever changes are made.
 This just means that in most cases, you don't have to restart your app to see changes. Whenever you save a file, the running blazor app will update. In theory, at least.

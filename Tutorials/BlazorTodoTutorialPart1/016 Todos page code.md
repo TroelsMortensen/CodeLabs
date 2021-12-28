@@ -30,11 +30,11 @@ What's going on?
 **Line 2-3**: Here we import namespaces from the Domain component, the Models and Contracts.
 
 **Line 4**: This here is important. 
-We *inject* a dependecy, of type ITodoHome. Whenever this page is opened, 
-the framework will create an instance of ITodoHome (currently that is TodoFileDAO). 
+We _inject_ a dependecy, of type `ITodoHome`. Whenever this page is opened, 
+the framework will create an instance of `ITodoHome` (currently that is `TodoFileDAO`). 
 This means our page just knows about the interface, and we can later, easily, swap out which implementation is used. 
 This is pretty cool. This is the standard approach, you should probably never create a new service manually in your pages, 
-always ask for them with the @inject
+always ask for them with the `@inject`.
 
 **Line 9**: This field holds our todos, which will be shown on the page.
 

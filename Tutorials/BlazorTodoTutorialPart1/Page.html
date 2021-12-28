@@ -216,7 +216,7 @@ The final version of the class can be found <a href="https://github.com/TroelsMo
 <h3 id="fields">Fields</h3>
 <p>You need to define the file, which should hold the data. And we need a collection of Todo objects:</p>
 <pre><code class="line-numbers language-csharp">private string todoFilePath = &quot;todos.json&quot;;
-private ICollection&lt;Todo&gt; todos;
+public ICollection&lt;Todo&gt; Todos { get; private set; }
 </code></pre>
 <p>We use a collection, because this class should not have get-methods to access objects at an index. This is to simulate how you will work with a database in the future.</p>
 <h3 id="constructor">Constructor</h3>
@@ -228,12 +228,14 @@ something to work with. The constructor looks like this:</p>
     {
         Seed();
     }
+    LoadData();
 }
 </code></pre>
 <p>What's going on?</p>
 <p>Lines:<br />
 3 Here we check if there is already a file at the given path.<br />
-5 If there's no file, we call the <code>Seed()</code>method. This will be implemented shortly. Its purpose is to insert dummy data.</p>
+5 If there's no file, we call the <code>Seed()</code>method. This will be implemented shortly. Its purpose is to insert dummy data.
+7 We load the data from the file into the collection.</p>
 <p>We now need the <code>Seed()</code> method. It looks like this:</p>
 <pre><code class="line-numbers language-csharp">private void Seed()
 {
@@ -254,17 +256,17 @@ something to work with. The constructor looks like this:</p>
             Id = 5,
         },
     };
-    todos = ts.ToList();
+    Todos = ts.ToList();
     SaveChanges();
 }
 </code></pre>
 <p>In the above method an array of Todos are created. Notice here, we manually set the Id of each todo. We only do this for this specific dummy data.
-In the end the array is stored in the <code>todos</code> field variable. And then we call a currently-non-existing method, <code>SaveChanges</code>.</p>
+In the end the array is stored in the <code>Todos</code> property. And then we call a currently-non-existing method, <code>SaveChanges</code>.</p>
 <h3 id="save-changes">Save changes</h3>
-<p>The purpose of this method is to take the content of the <code>todos</code> field, and put into the file.</p>
+<p>The purpose of this method is to take the content of the <code>Todos</code> field, and put into the file.</p>
 <pre><code class="line-numbers language-csharp">public void SaveChanges()
 {
-    string serialize = JsonSerializer.Serialize(todos);
+    string serialize = JsonSerializer.Serialize(Todos);
     File.WriteAllText(todoFilePath,serialize);
 }
 </code></pre>
@@ -274,27 +276,20 @@ In the end the array is stored in the <code>todos</code> field variable. And the
 <pre><code class="line-numbers language-csharp">private void LoadData()
 {
     string content = File.ReadAllText(todoFilePath);
-    todos = JsonSerializer.Deserialize&lt;List&lt;Todo&gt;&gt;(content);
+    Todos = JsonSerializer.Deserialize&lt;List&lt;Todo&gt;&gt;(content);
 }
 </code></pre>
 <p>What's going on here?</p>
 <p>The method is private, because this class should be responsible for determining when to load data.<br />
 We read all the content of the file, it returns a string.<br />
-Then that string is deserialized into a <code>List&lt;Todo&gt;</code>, and assigned to the field variable.</p>
+Then that string is deserialized into a <code>List&lt;Todo&gt;</code>, and assigned to the field variable. <code>ICollection</code> is an interface of <code>List</code>, so we can make this assignment.</p>
 <h3 id="accessing-data">Accessing data</h3>
-<p>Finally, we need a way to actually get the data. We'll make a property, not a get-method. This is, again, to simulate the way you'll interact with the database in the future.</p>
-<pre><code class="line-numbers language-csharp">public ICollection&lt;Todo&gt; Todos
-{
-    get
-    {
-        LoadData();
-        return todos;
-    }
-}
+<p>Finally, we need a way to actually get the data. But, we already have that inlined in our property. This is, again, to simulate the way you'll interact with the database in the future.</p>
+<pre><code class="line-numbers language-csharp">public ICollection&lt;Todo&gt; Todos { get; private set; }
 </code></pre>
-<p>Here, whenever someone wants to get the collection of Todos, they will call the <code>Todos</code> property. This will call <code>LoadData()</code> to instantiate the collection, and then return it.</p>
+<p>A property defined like this does actually have a hidden field variable as well. We can <code>get</code> the <code>ICollection</code> from the outside, but we cannot <code>set</code> it.</p>
 <p>The next step will be to add a Data Access Object with the usual <a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> operations.</p>
-<p>The final version of the class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs">here</a></p>
+<p>The final version of the FileContext can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs">here</a></p>
 
 </div>
 <div class="tab">
@@ -534,11 +529,11 @@ We have that for explicit main methods in Rider too. But at the time of writing,
 <p><strong>Line 1</strong>: The page directive, meaning we can navigate to this page by URI: https://localhost:7140/Todos.</p>
 <p><strong>Line 2-3</strong>: Here we import namespaces from the Domain component, the Models and Contracts.</p>
 <p><strong>Line 4</strong>: This here is important.
-We <em>inject</em> a dependecy, of type ITodoHome. Whenever this page is opened,
-the framework will create an instance of ITodoHome (currently that is TodoFileDAO).
+We <em>inject</em> a dependecy, of type <code>ITodoHome</code>. Whenever this page is opened,
+the framework will create an instance of <code>ITodoHome</code> (currently that is <code>TodoFileDAO</code>).
 This means our page just knows about the interface, and we can later, easily, swap out which implementation is used.
 This is pretty cool. This is the standard approach, you should probably never create a new service manually in your pages,
-always ask for them with the @inject</p>
+always ask for them with the <code>@inject</code>.</p>
 <p><strong>Line 9</strong>: This field holds our todos, which will be shown on the page.</p>
 <p><strong>Line 11</strong>: This method is automatically called, whenever the page is opened. That means, we can use this method to load relevant data, or set things up.</p>
 <p><strong>Line 13</strong>: Here we fetch the todos from the ITodoHome instance (the TodoFileDAO, which uses FileContext). We <em>await</em> the method call, because this may potentially take some time, and we want to release control, so the process can do other stuff. In general, we use async wherever we can in our pages.</p>
@@ -630,7 +625,7 @@ We might as well remove this, so we don't clutter our app.</p>
 <div class="tab">
 <hr/><h1 id="dotnet-watch-run-optional-step">dotnet watch run (optional step)</h1><hr/>
 <p>So far, whenever you have made a change to your blazor app, you need to stop the app, and start it again, for the changes to take effect.</p>
-<p>If you are fine with this, you can just skip this step.</p>
+<p><strong>If you are fine with this, you can just skip this step.</strong></p>
 <p>However, there is another approach, which might increase your workflow speed. It's the watch command, which will automatically update a running blazor app, whenever changes are made.
 This just means that in most cases, you don't have to restart your app to see changes. Whenever you save a file, the running blazor app will update. In theory, at least.</p>
 <p>There are two ways to enable this:</p>
@@ -884,7 +879,7 @@ which was added almost at the top of the <code>&lt;EditForm&gt;</code>.</p>
 <h3 id="first-the-goal">First, the goal</h3>
 <p>The goal is to add an extra column to the table view of the Todos overview. This column will contain a delete button, which will delete the Todo of that row.</p>
 <p>The result will look something like this:</p>
-<p><img src="Resources/TodosOverviewWithRemove.png" alt="img.png" /></p>
+<p><img src="Resources/RemoveTodoResultView.png" alt="img.png" /></p>
 <h3 id="code-block">Code block</h3>
 <p>We will start by adding a method in the code block of <code>Todos.razor</code>, which can delete a Todo item. It looks like this:</p>
 <pre><code class="line-numbers language-csharp">private async Task RemoveTodo(int id)
@@ -957,9 +952,9 @@ You are welcome to move this to a style-behind, if you wish. In general that is 
 We use a lambda expression to call the <code>RemoveTodo()</code> method, and parse the argument <code>item.Id</code>, which we get from the <code>item</code> variable of the surrounding <code>foreach</code>-loop.</p>
 <p>With previous buttons, we were able to directly reference a method just be the name, but because we need a variable argument passed along in this case, we need to use a lambda expression instead.</p>
 <p><strong>Lines 33-36</strong> is the <code>errorLabel</code> to display any errors, if needed. This is perhaps a crude way, and a popup or something other, could be more user-friendly. This could be an exercise left to the reader.</p>
-<h3 id="result">Result</h3>
-<p>Now, you should have a view looking something like this:</p>
-<p><img src="Resources/RemoveTodoResultView.png" alt="img.png" /></p>
+<h3 id="test">Test</h3>
+<p>Now, you should have a view looking something like the one shown above.</p>
+<p><img src="Resources/Test.png" alt="img.png" /></p>
 <p>And you can test it by clicking one of the red crosses, and either go to another page and back or refresh. Just to make sure the removal is persisted to the json-file.</p>
 <p><img src="Resources/AbsolutelyWonderful.png" alt="img.png" /></p>
 

@@ -102,10 +102,10 @@ With previous buttons, we were able to directly reference a method just be the n
 
 **Lines 33-36** is the `errorLabel` to display any errors, if needed. This is perhaps a crude way, and a popup or something other, could be more user-friendly. This could be an exercise left to the reader.
 
-### Result
-Now, you should have a view looking something like this:
+### Test
+Now, you should have a view looking something like the one shown above.
 
-![img.png](Resources/RemoveTodoResultView.png)
+![img.png](Resources/Test.png)
 
 And you can test it by clicking one of the red crosses, and either go to another page and back or refresh. Just to make sure the removal is persisted to the json-file.
 
