@@ -66,6 +66,7 @@ function nextPrev(n) {
     }
 }
 
+// Everything below is stolen from prism.js, and it is used to add line-highlighting to code blocks. No idea how.
 
 function fixStepIndicator(n) {
     // This function removes the "active" class of all steps...
