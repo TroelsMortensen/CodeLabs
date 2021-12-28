@@ -69,7 +69,7 @@ else
                 <td>@item.OwnerId</td> 
                 <td>@item.Id</td> 
                 <td>@item.Title</td> 
-               <td>@item.IsCompleted</td>
+                <td>@item.IsCompleted</td>
                 <td>
                     <label 
                     @onclick="@(() => RemoveTodo(item.Id))" 
