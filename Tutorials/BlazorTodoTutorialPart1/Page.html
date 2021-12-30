@@ -42,6 +42,7 @@
 <li class="step" onclick="setTab(23)">24 Add todo styling</li>
 <li class="step" onclick="setTab(24)">25 Test add todo</li>
 <li class="step" onclick="setTab(25)">26 Removing a todo</li>
+<li class="step" onclick="setTab(26)">27 Completed status</li>
 
         </ol>
     </div>
@@ -305,11 +306,11 @@ It will eventually look something like this:</p>
 it should be little work to swap from using file storage,
 to using a client to get data from a server.</p>
 <p>But first, we need to define the interface.</p>
-<h3 id="itodoservice">ITodoService</h3>
+<h3 id="itodohome">ITodoHome</h3>
 <p>Inside the Domain component, create a new directory. I have called mine &quot;Contracts&quot;. &quot;Interfaces&quot; imply the same thing.
 But interfaces are essentially a contract between two classes: Class A, which needs some functionality, and Class B which provides some functionality.
 The interface is then a Contract, so class B knows what functionality to deliver, and Class A knows what functionality it will get.</p>
-<p>Inside the Contracts directory, create a new interface, ITodoHome:</p>
+<p>Inside the Contracts directory, create a new interface, ITodoHome. I have used *Home here, other choices could have been DAO, Service, Repository, Manager, etc. Pick either one.</p>
 <pre><code class="line-numbers language-csharp">using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -486,8 +487,8 @@ It can be very beneficial to organize UI pieces into components for re-usability
 <p>You can find more included icons <a href="https://iconify.design/icon-sets/oi/">here</a> and <a href="https://useiconic.com/open">here</a>.</p>
 <p>Rider is also pretty good at auto completing html. E.g. for more icons place your cursor here:</p>
 <p><img src="Resources/AutoComplete.png" alt="img.png" /></p>
-<p>And press [ctrl] + [space], assuming default IntelliJ Keymapping.</p>
-<p>Addiditionally, you can click on an html tag (or in general just about anything) and press [ctrl]+[q] to get more information about something, a class, a tag, a method, a variable.</p>
+<p>And press <kbd>ctrl</kbd> + <kbd>space</kbd>, assuming default IntelliJ Keymapping.</p>
+<p>Addiditionally, you can click on an html tag (or in general just about anything) and press <kbd>ctrl</kbd>+<kbd>q</kbd> to get more information about something, a class, a tag, a method, a variable.</p>
 
 </div>
 <div class="tab">
@@ -875,7 +876,7 @@ which was added almost at the top of the <code>&lt;EditForm&gt;</code>.</p>
 <hr/><h1 id="removing-a-todo">Removing a Todo</h1><hr/>
 <p>Next up, we want to be able to delete a Todo. You have a todo about doing the dishes, but don't want to? Just delete it.</p>
 <p>For this part, we will modify the existing <code>Todos.razor</code> file, so, moving forward, the solution will proceed on a new branch:</p>
-<p><a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/Part2">Part 2</a></p>
+<p><a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/2DeleteFeature">Delete feature</a></p>
 <h3 id="first-the-goal">First, the goal</h3>
 <p>The goal is to add an extra column to the table view of the Todos overview. This column will contain a delete button, which will delete the Todo of that row.</p>
 <p>The result will look something like this:</p>
@@ -959,6 +960,125 @@ We use a lambda expression to call the <code>RemoveTodo()</code> method, and par
 <p><img src="Resources/AbsolutelyWonderful.png" alt="img.png" /></p>
 
 </div>
+<div class="tab">
+<hr/><h1 id="toggling-the-completed-status">Toggling the completed status</h1><hr/>
+<p>Sometimes it is a bit of a crude solution to just delete a Todo, and you do actually have to finish the task.
+The good part though, is that you to mark that task as completed.</p>
+<p>This next step will introduce that feature.</p>
+<p>We need to modify the <code>Todos.razor</code> file again, so that also means the solution to the following feature is in a new branch <a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/3ToggleStatusFeature">here</a>.</p>
+<p>We are aiming for this view:</p>
+<p><img src="Resources/ToggleStatus.png" alt="img.png" /></p>
+<h3 id="code-block">Code block</h3>
+<p>First, a method to be called, whenever the <em>completed</em> status of a Todo is changed. We add that to the codeblock:</p>
+<pre><code class="line-numbers language-razor">private async Task ToggleStatus(bool status, Todo todo)
+{
+    errorLabel = &quot;&quot;;            
+    todo.IsCompleted = status;
+    try
+    {
+        await TodoHome.UpdateAsync(todo);
+    }
+    catch (Exception e)
+    {
+        errorLabel = e.Message;
+    }
+}
+</code></pre>
+<p>This method takes a boolean and a <code>Todo</code>, and assigns the boolean as the <code>IsCompleted</code> of that <code>Todo</code>.<br />
+The method is asynchronous, so we can await the call to <code>TodoHome</code>.</p>
+<h3 id="the-view">The view</h3>
+<p>We need to update the &quot;Completed?&quot; column to hold a new toggle button. Update the table-for-loop as follows, notice the highlighted lines 7-14:</p>
+<pre data-line="7-14"><code class="line-numbers language-razor">@foreach (var item in todos)
+{
+    &lt;tr&gt;
+        &lt;td&gt;@item.OwnerId&lt;/td&gt;
+        &lt;td&gt;@item.Id&lt;/td&gt;
+        &lt;td&gt;@item.Title&lt;/td&gt;
+        &lt;td&gt;
+            &lt;label class=&quot;switch&quot;&gt;
+                &lt;input type=&quot;checkbox&quot; 
+                    checked=@item.IsCompleted 
+                    @onchange=&quot;@((arg) =&gt; ToggleStatus((bool)arg.Value, item))&quot;&gt;
+                &lt;span class=&quot;slider round&quot;&gt;&lt;/span&gt;
+            &lt;/label&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+            &lt;label @onclick=&quot;@(() =&gt; RemoveTodo(item.Id))&quot; style=&quot;cursor:pointer; color: red; font-weight: bold&quot;&gt;
+                &amp;#x2717;
+            &lt;/label&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+}
+</code></pre>
+<p>It is a bit more html than is strictly needed, we could have made do with just the <code>&lt;input&gt;</code> tag, but I wanted to style it a little afterwards. See sub-section below.</p>
+<p>There is a <code>&lt;label&gt;</code> and <code>&lt;span&gt;</code> just for some styling.</p>
+<p>The interesting part happens in the <code>&lt;input&gt;</code> tag. We set the <code>checked</code> attribute of the <code>&lt;input&gt;</code> tag to be the value of the <code>todo</code> item with <code>=@item.IsCompleted</code>.<br />
+We add an <code>@onchange</code> handler, a lambda expression, here taking an argument <code>arg</code>, which is a <code>ChangeEventArgs</code>, containing information about what changed. In this case the new boolean value.
+Then the <code>ToggleStatus()</code> method is called, passing along the boolean value and which <code>Todo</code> item should be updated.</p>
+<h3 id="style-behind">Style behind</h3>
+<p>The above view should just give you a simple checkbox. That can be fine, the functionality should work.</p>
+<p>If you want a toggle like the ones shown in the top screenshot, you can add the following styling:</p>
+<pre><code class="line-numbers language-css">.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: &quot;&quot;;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+</code></pre>
+<p>This was just stolen from an example on <a href="https://www.w3schools.com/howto/howto_css_switch.asp">w3schools</a>.</p>
+<h3 id="test">Test</h3>
+<p>Test that the functionality works, by changing the status of a <code>Todo</code> and refreshing the page, or opening a different page and go back to the overview again.</p>
+
+</div>
 
 
 
@@ -974,7 +1094,6 @@ We use a lambda expression to call the <code>RemoveTodo()</code> method, and par
 </div>
 <script>
     showTab(currentTab);
-    Prism.plugins
 </script>
 
 </body>

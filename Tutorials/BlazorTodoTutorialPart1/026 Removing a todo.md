@@ -4,7 +4,7 @@ Next up, we want to be able to delete a Todo. You have a todo about doing the di
 
 For this part, we will modify the existing `Todos.razor` file, so, moving forward, the solution will proceed on a new branch:
 
-[Part 2](https://github.com/TroelsMortensen/BlazorTodoApp/tree/Part2)
+[Delete feature](https://github.com/TroelsMortensen/BlazorTodoApp/tree/2DeleteFeature)
 
 ### First, the goal
 

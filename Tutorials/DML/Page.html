@@ -17,11 +17,11 @@
     <div>
         <ol>
             <li class="step" onclick="setTab(0)">1 Welcome</li>
-<li class="step" onclick="setTab(1)">2 Insert data</li>
-<li class="step" onclick="setTab(2)">3 Insert data from query</li>
-<li class="step" onclick="setTab(3)">4 Update data</li>
-<li class="step" onclick="setTab(4)">5 Delete data</li>
-<li class="step" onclick="setTab(5)">6 Delete rows</li>
+            <li class="step" onclick="setTab(1)">2 Insert data</li>
+            <li class="step" onclick="setTab(2)">3 Insert data from query</li>
+            <li class="step" onclick="setTab(3)">4 Update data</li>
+            <li class="step" onclick="setTab(4)">5 Delete data</li>
+            <li class="step" onclick="setTab(5)">6 Delete rows</li>
 
         </ol>
     </div>
@@ -37,264 +37,310 @@
         <!-- One "tab" for each step in the form: -->
 
         <div class="tab">
-<hr/><h1 id="data-manipulation-language-sql">Data Manipulation Language (SQL)</h1><hr/>
-<p>This tutorial will introduce how to manipulate the data in a database. This includes:</p>
-<ul>
-<li>Inserting data</li>
-<li>Updating existing data</li>
-<li>Deleting data</li>
-</ul>
+            <hr/>
+            <h1 id="data-manipulation-language-sql">Data Manipulation Language (SQL)</h1>
+            <hr/>
+            <p>This tutorial will introduce how to manipulate the data in a database. This includes:</p>
+            <ul>
+                <li>Inserting data</li>
+                <li>Updating existing data</li>
+                <li>Deleting data</li>
+            </ul>
 
-</div>
-<div class="tab">
-<hr/><h1 id="inserting-data">Inserting data</h1><hr/>
-<p>There are a few different ways of inserting data into the database. The first step here is to insert data by explicitly specifying the data.</p>
-<p>Assume the following table, and columns</p>
-<p><img src="Employee.png" alt="Employee" /></p>
-<p>We wish to insert a new <code>Employee</code>, and can do so in different ways.</p>
-<h3 id="explicit-all-columns">Explicit, all columns</h3>
-<pre><code class="line-numbers language-sql">INSERT INTO Employee(firstname, lastname, department, salary, employ_id, startdate, age)
+        </div>
+        <div class="tab">
+            <hr/>
+            <h1 id="inserting-data">Inserting data</h1>
+            <hr/>
+            <p>There are a few different ways of inserting data into the database. The first step here is to insert data
+                by explicitly specifying the data.</p>
+            <p>Assume the following table, and columns</p>
+            <p><img src="Employee.png" alt="Employee"/></p>
+            <p>We wish to insert a new <code>Employee</code>, and can do so in different ways.</p>
+            <h3 id="explicit-all-columns">Explicit, all columns</h3>
+            <pre><code class="line-numbers language-sql">INSERT INTO Employee(firstname, lastname, department, salary, employ_id, startdate, age)
 VALUES('Troels', 'Mortensen', 'SW', 5000, 42, '01-08-2016', 34);
 </code></pre>
-<p>In the first line we specify we wish to <code>INSERT</code> data into the <code>Employee</code> table. We also provide a list of the columns, we wish to insert data into.<br />
-In the second line, we define what <code>VALUES</code> to insert.</p>
-<h3 id="implicit-all-columns">Implicit, all columns</h3>
-<p>The second approach can be used, if you just wish to insert data into all columns. The result will be the same as above.</p>
-<pre><code class="line-numbers language-sql">INSERT INTO Employee
+            <p>In the first line we specify we wish to <code>INSERT</code> data into the <code>Employee</code> table. We
+                also provide a list of the columns, we wish to insert data into.<br/>
+                In the second line, we define what <code>VALUES</code> to insert.</p>
+            <h3 id="implicit-all-columns">Implicit, all columns</h3>
+            <p>The second approach can be used, if you just wish to insert data into all columns. The result will be the
+                same as above.</p>
+            <pre><code class="line-numbers language-sql">INSERT INTO Employee
 VALUES('Troels', 'Mortensen', 'SW', 5000, 42, '01-08-2016', 34);
 </code></pre>
-<p>Here we have left out the column names, and so it is implicit that all columns are chosen, and the order is the same is in the table definition.</p>
-<h3 id="explicit-some-columns">Explicit, some columns</h3>
-<p>You may wish to only insert data into some of the columns. Instead of using either of the above, and providing empty (e.g. <code>null</code>) values for some columns, you can instead specify which columns, you wish to insert data into. Like so:</p>
-<pre><code class="line-numbers language-sql">INSERT INTO Employee(firstname, lastname, department, employ_id, startdate)
+            <p>Here we have left out the column names, and so it is implicit that all columns are chosen, and the order
+                is the same is in the table definition.</p>
+            <h3 id="explicit-some-columns">Explicit, some columns</h3>
+            <p>You may wish to only insert data into some of the columns. Instead of using either of the above, and
+                providing empty (e.g. <code>null</code>) values for some columns, you can instead specify which columns,
+                you wish to insert data into. Like so:</p>
+            <pre><code class="line-numbers language-sql">INSERT INTO Employee(firstname, lastname, department, employ_id, startdate)
 VALUES('Troels', 'Mortensen', 'SW', 42, '01-08-2016');
 </code></pre>
-<p>In the first line, we have specified the five columns for which we want to provide data. In the second row, the values are given. All columns not mentioned above will be set to <code>null</code></p>
-<h3 id="multiple-inserts">Multiple inserts</h3>
-<p>You can insert multiple rows (in this example Employees) into the table with one statement, if you comma-separate the provided values like so:</p>
-<pre><code class="line-numbers language-sql">INSERT INTO employee(firstname, lastname, department, employ_id, startdate)
+            <p>In the first line, we have specified the five columns for which we want to provide data. In the second
+                row, the values are given. All columns not mentioned above will be set to <code>null</code></p>
+            <h3 id="multiple-inserts">Multiple inserts</h3>
+            <p>You can insert multiple rows (in this example Employees) into the table with one statement, if you
+                comma-separate the provided values like so:</p>
+            <pre><code class="line-numbers language-sql">INSERT INTO employee(firstname, lastname, department, employ_id, startdate)
 VALUES ('Troels', 'Mortensen', 'SW', 42, '01-08-2016'),
        ('Peter', 'Jensen', 'GBE', 57, '01-02-2018');
 </code></pre>
-<p>Here, two sets of data are provided, separated with a comma.</p>
+            <p>Here, two sets of data are provided, separated with a comma.</p>
 
-</div>
-<div class="tab">
-<hr/><h1 id="insert-data-from-query-result">Insert data from query result</h1><hr/>
-<p>Sometimes you wish to insert data based on a query result. Perhaps you are given a messy table with all data, and wish to split it out into separate tables.</p>
-<p>Assume again the below Employee table, and another table, Names:</p>
-<p><img src="EmployeeAndNames.png" alt="EmployeeAndNames" /></p>
-<p>We now wish to take the <code>firstname</code> and <code>lastname</code> from all rows of the Employee table, and insert that data into the Names table.<br />
-We can do this by first getting the required data with a query, and then using that as the data to insert:</p>
-<pre><code class="line-numbers language-sql">INSERT INTO Names(f_name, l_name)
+        </div>
+        <div class="tab">
+            <hr/>
+            <h1 id="insert-data-from-query-result">Insert data from query result</h1>
+            <hr/>
+            <p>Sometimes you wish to insert data based on a query result. Perhaps you are given a messy table with all
+                data, and wish to split it out into separate tables.</p>
+            <p>Assume again the below Employee table, and another table, Names:</p>
+            <p><img src="EmployeeAndNames.png" alt="EmployeeAndNames"/></p>
+            <p>We now wish to take the <code>firstname</code> and <code>lastname</code> from all rows of the Employee
+                table, and insert that data into the Names table.<br/>
+                We can do this by first getting the required data with a query, and then using that as the data to
+                insert:</p>
+            <pre><code class="line-numbers language-sql">INSERT INTO Names(f_name, l_name)
 (SELECT firstname, lastname FROM Employee);
 </code></pre>
-<p>The second row is the query which returns the firstname and lastname of all rows in Employee. This result is then inserted into Names. Notice that the number of columns queried and inserted into, must be the same. The same is true for the data type of the columns, e.g. f_name and firstname must have the same type.</p>
-<p><em><strong><a href="https://www.postgresql.org/docs/12/dml-insert.html">Here</a></strong></em> you can find some introduction examples on the postgresql site.</p>
-<p>The postgresql documentation for <code>INSERT</code> is found <em><strong><a href="https://www.postgresql.org/docs/9.5/sql-insert.html">here</a></strong></em>. About half way down you will find some examples.</p>
+            <p>The second row is the query which returns the firstname and lastname of all rows in Employee. This result
+                is then inserted into Names. Notice that the number of columns queried and inserted into, must be the
+                same. The same is true for the data type of the columns, e.g. f_name and firstname must have the same
+                type.</p>
+            <p><em><strong><a href="https://www.postgresql.org/docs/12/dml-insert.html">Here</a></strong></em> you can
+                find some introduction examples on the postgresql site.</p>
+            <p>The postgresql documentation for <code>INSERT</code> is found <em><strong><a
+                    href="https://www.postgresql.org/docs/9.5/sql-insert.html">here</a></strong></em>. About half way
+                down you will find some examples.</p>
 
-</div>
-<div class="tab">
-<hr/><h1 id="updating-existing-data">Updating existing data</h1><hr/>
-<p>We often need to update existing data. This slide contains a couple of examples.</p>
-<p>The basic syntax for updating is as follows:</p>
-<pre><code class="line-numbers language-sql">UPDATE table_name
+        </div>
+        <div class="tab">
+            <hr/>
+            <h1 id="updating-existing-data">Updating existing data</h1>
+            <hr/>
+            <p>We often need to update existing data. This slide contains a couple of examples.</p>
+            <p>The basic syntax for updating is as follows:</p>
+            <pre><code class="line-numbers language-sql">UPDATE table_name
 SET column_name_1 = data_value_1
     [,column_name_2 = data_value_2]
 [WHERE condition]
 </code></pre>
-<p>The parts within [ ] are optional. E.g. you can update the values in one or multiple columns.
-You can also specify a <code>WHERE</code> condition, so only matching rows are updated. Otherwise, all rows are affected.</p>
-<p>Below we update the employee with <code>employ_id = 24</code> so that their salary is 25000.</p>
-<pre><code class="line-numbers language-sql">UPDATE employee
+            <p>The parts within [ ] are optional. E.g. you can update the values in one or multiple columns.
+                You can also specify a <code>WHERE</code> condition, so only matching rows are updated. Otherwise, all
+                rows are affected.</p>
+            <p>Below we update the employee with <code>employ_id = 24</code> so that their salary is 25000.</p>
+            <pre><code class="line-numbers language-sql">UPDATE employee
 SET salary = 25000
 WHERE employ_id=24;
 </code></pre>
-<p>You can expand on the <code>WHERE</code> condition with more constraints, as needed.</p>
-<p>In the following we update three employees, specifically the ones with <code>employ_id</code> 17, 25, and 23.
-The idea is that these employees moved to another department, identified by 'A9'. The start date is also updated.</p>
-<pre><code class="line-numbers language-sql">UPDATE employee
+            <p>You can expand on the <code>WHERE</code> condition with more constraints, as needed.</p>
+            <p>In the following we update three employees, specifically the ones with <code>employ_id</code> 17, 25, and
+                23.
+                The idea is that these employees moved to another department, identified by 'A9'. The start date is also
+                updated.</p>
+            <pre><code class="line-numbers language-sql">UPDATE employee
 SET department = 'A9',
     startdate=CURRENT_DATE
 WHERE employ_id IN (17, 25, 23);
 </code></pre>
-<p>What if we want to give every employee a 3% salary raise?</p>
-<pre><code class="line-numbers language-sql">UPDATE employee
+            <p>What if we want to give every employee a 3% salary raise?</p>
+            <pre><code class="line-numbers language-sql">UPDATE employee
 SET salary = salary*1.03;
 </code></pre>
-<p>But, maybe the managers deserve a bit more, say, another 5% raise:</p>
-<pre><code class="line-numbers language-sql">UPDATE employee
+            <p>But, maybe the managers deserve a bit more, say, another 5% raise:</p>
+            <pre><code class="line-numbers language-sql">UPDATE employee
 SET salary = salary*1.05
 WHERE position = ‘Manager’;
 </code></pre>
-<p>Let us promote one of our employees, 42, to a manager position, including a change to salary:</p>
-<pre><code class="line-numbers language-sql">UPDATE employee
+            <p>Let us promote one of our employees, 42, to a manager position, including a change to salary:</p>
+            <pre><code class="line-numbers language-sql">UPDATE employee
 SET position = ‘Manager’, salary = 27000
 WHERE employ_id = 42;
 </code></pre>
-<p>Again, you can find some extra examples <em><strong><a href="https://www.postgresql.org/docs/13/dml-update.html">here</a></strong></em>.</p>
-<p>And the full documentation <em><strong><a href="https://www.postgresql.org/docs/9.1/sql-update.html">here</a></strong></em>.</p>
+            <p>Again, you can find some extra examples <em><strong><a
+                    href="https://www.postgresql.org/docs/13/dml-update.html">here</a></strong></em>.</p>
+            <p>And the full documentation <em><strong><a
+                    href="https://www.postgresql.org/docs/9.1/sql-update.html">here</a></strong></em>.</p>
 
-</div>
-<div class="tab">
-<hr/><h1 id="deleting-data">Deleting data</h1><hr/>
-<p>We can remove all kinds of data:</p>
-<ul>
-<li>rows</li>
-<li>tables</li>
-<li>schemas</li>
-<li>domains</li>
-<li>constraints</li>
-</ul>
-<p>The syntax is somewhat similar, except for rows, we will do those on the next slide.</p>
-<p>If you wish to delete any of the other types of data, we use the <code>DROP</code> keyword:</p>
-<pre><code class="line-numbers language-sql">DROP TABLE [IF EXISTS] employee [CASCADE];
+        </div>
+        <div class="tab">
+            <hr/>
+            <h1 id="deleting-data">Deleting data</h1>
+            <hr/>
+            <p>We can remove all kinds of data:</p>
+            <ul>
+                <li>rows</li>
+                <li>tables</li>
+                <li>schemas</li>
+                <li>domains</li>
+                <li>constraints</li>
+            </ul>
+            <p>The syntax is somewhat similar, except for rows, we will do those on the next slide.</p>
+            <p>If you wish to delete any of the other types of data, we use the <code>DROP</code> keyword:</p>
+            <pre><code class="line-numbers language-sql">DROP TABLE [IF EXISTS] employee [CASCADE];
 </code></pre>
-<p>This will delete the table <code>employee</code>. If the table contains any rows, you will get an error.
-You can then append <code>CASCADE</code>, meaning all rows will be deleted as well. Be careful with this.</p>
-<p>If the table you are trying to drop does not exist, you will get an error. You can include <code>IF EXISTS</code> to only drop the table, if it actually exists.</p>
-<p>More information about dropping tables <em><strong><a href="https://www.postgresql.org/docs/9.1/sql-droptable.html">here</a></strong></em>.</p>
-<p>In a similar way you can drop other things. A full list can be found <em><strong><a href="https://www.postgresql.org/docs/9.1/sql-commands.html">here</a></strong></em>. It is an overview of all commands, just scroll down to the <code>DROP [SOMETHING]</code>.</p>
+            <p>This will delete the table <code>employee</code>. If the table contains any rows, you will get an error.
+                You can then append <code>CASCADE</code>, meaning all rows will be deleted as well. Be careful with
+                this.</p>
+            <p>If the table you are trying to drop does not exist, you will get an error. You can include <code>IF
+                EXISTS</code> to only drop the table, if it actually exists.</p>
+            <p>More information about dropping tables <em><strong><a
+                    href="https://www.postgresql.org/docs/9.1/sql-droptable.html">here</a></strong></em>.</p>
+            <p>In a similar way you can drop other things. A full list can be found <em><strong><a
+                    href="https://www.postgresql.org/docs/9.1/sql-commands.html">here</a></strong></em>. It is an
+                overview of all commands, just scroll down to the <code>DROP [SOMETHING]</code>.</p>
 
-</div>
-<div class="tab">
-<hr/><h1 id="deleting-rows">Deleting rows</h1><hr/>
-<p>You can delete all rows from a table with the below command. This will not <code>DROP</code> the table itself, just remove all data in it.</p>
-<pre><code class="line-numbers language-sql">DELETE FROM &lt;table name&gt;
+        </div>
+        <div class="tab">
+            <hr/>
+            <h1 id="deleting-rows">Deleting rows</h1>
+            <hr/>
+            <p>You can delete all rows from a table with the below command. This will not <code>DROP</code> the table
+                itself, just remove all data in it.</p>
+            <pre><code class="line-numbers language-sql">DELETE FROM &lt;table name&gt;
 [WHERE condition]
 </code></pre>
-<p>You must specify the table name. If no <code>WHERE</code> clause is included, all rows are removed.</p>
-<p>If you include a <code>WHERE</code> condition, only matching rows are removed.</p>
-<p>Say the employee with id 24 resigns their job. We will then remove them from the database:</p>
-<pre><code class="line-numbers language-sql">DELETE FROM employee
+            <p>You must specify the table name. If no <code>WHERE</code> clause is included, all rows are removed.</p>
+            <p>If you include a <code>WHERE</code> condition, only matching rows are removed.</p>
+            <p>Say the employee with id 24 resigns their job. We will then remove them from the database:</p>
+            <pre><code class="line-numbers language-sql">DELETE FROM employee
 WHERE employ_id = 24;
 </code></pre>
-<p>More information can be found <em><strong><a href="https://www.postgresql.org/docs/9.1/sql-delete.html">here</a></strong></em>.</p>
-<h3 id="on-delete-constraints">ON DELETE constraints</h3>
-<p>When deleting something, you may get constraint errors, if you have not defined <code>ON DELETE</code> behaviours of foreign keys point to the table, you are deleting from.</p>
-<p>For example, assume you have two tables, <code>albums</code> and <code>images</code>:</p>
-<p><img src="img.png" alt="img.png" /></p>
-<p>It is a 1:* relation, notice image has a foreign key reference to <code>album(album_id)</code>.</p>
-<p>We could have the following data in <code>albums</code>:</p>
-<table>
-<thead>
-<tr>
-<th>id</th>
-<th>title</th>
-<th>description</th>
-<th>date_created</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>quidem</td>
-<td>quam nostrum impedit mollitia   quod et dolor</td>
-<td>20-03-2019</td>
-</tr>
-<tr>
-<td>2</td>
-<td>sunt qui</td>
-<td>ut pariatur rerum ipsum natus repellendus praesentium</td>
-<td>12-03-2017</td>
-</tr>
-<tr>
-<td>3</td>
-<td>omnis laborum</td>
-<td>et rem non provident vel ut</td>
-<td>25-11-2018</td>
-</tr>
-<tr>
-<td>4</td>
-<td>non esse</td>
-<td>id non nostrum expedita</td>
-<td>11-01-2013</td>
-</tr>
-</tbody>
-</table>
-<p>and in <code>images</code> we could have:</p>
-<table>
-<thead>
-<tr>
-<th>id</th>
-<th>title</th>
-<th>description</th>
-<th>date_created</th>
-<th>url</th>
-<th>album_id</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td>odio</td>
-<td>aut ipsam quos</td>
-<td>24-09-2011</td>
-<td><a href="https://via.placeholder.com/600/323599">https://via.placeholder.com/600/323599</a></td>
-<td>1</td>
-</tr>
-<tr>
-<td>2</td>
-<td>voluptate</td>
-<td>ut esse id</td>
-<td>19-05-2012</td>
-<td><a href="https://via.placeholder.com/600/1224bd">https://via.placeholder.com/600/1224bd</a></td>
-<td>2</td>
-</tr>
-<tr>
-<td>3</td>
-<td>tenetur</td>
-<td>et soluta est</td>
-<td>19-03-2016</td>
-<td><a href="https://via.placeholder.com/600/a19891">https://via.placeholder.com/600/a19891</a></td>
-<td>3</td>
-</tr>
-<tr>
-<td>4</td>
-<td>expedita</td>
-<td>quam quos dolor eum</td>
-<td>26-06-2017</td>
-<td><a href="https://via.placeholder.com/600/224566">https://via.placeholder.com/600/224566</a></td>
-<td>2</td>
-</tr>
-<tr>
-<td>5</td>
-<td>neque</td>
-<td>magni nulla et   dolores</td>
-<td>08-07-2017</td>
-<td><a href="https://via.placeholder.com/600/40591">https://via.placeholder.com/600/40591</a></td>
-<td>3</td>
-</tr>
-<tr>
-<td>6</td>
-<td>praesentium</td>
-<td>et corrupti nihil cumque</td>
-<td>03-01-2018</td>
-<td><a href="https://via.placeholder.com/600/1fb08b">https://via.placeholder.com/600/1fb08b</a></td>
-<td>4</td>
-</tr>
-<tr>
-<td>7</td>
-<td>quidem</td>
-<td>quod non quae</td>
-<td>16-10-2019</td>
-<td><a href="https://via.placeholder.com/600/14ba42">https://via.placeholder.com/600/14ba42</a></td>
-<td>1</td>
-</tr>
-</tbody>
-</table>
-<p>What would happen, if we tried executing the following command?</p>
-<pre><code class="line-numbers language-sql">DELETE FROM albums WHERE id = 1;
+            <p>More information can be found <em><strong><a href="https://www.postgresql.org/docs/9.1/sql-delete.html">here</a></strong></em>.
+            </p>
+            <h3 id="on-delete-constraints">ON DELETE constraints</h3>
+            <p>When deleting something, you may get constraint errors, if you have not defined <code>ON DELETE</code>
+                behaviours of foreign keys point to the table, you are deleting from.</p>
+            <p>For example, assume you have two tables, <code>albums</code> and <code>images</code>:</p>
+            <p><img src="img.png" alt="img.png"/></p>
+            <p>It is a 1:* relation, notice image has a foreign key reference to <code>album(album_id)</code>.</p>
+            <p>We could have the following data in <code>albums</code>:</p>
+            <table>
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>title</th>
+                    <th>description</th>
+                    <th>date_created</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>quidem</td>
+                    <td>quam nostrum impedit mollitia quod et dolor</td>
+                    <td>20-03-2019</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>sunt qui</td>
+                    <td>ut pariatur rerum ipsum natus repellendus praesentium</td>
+                    <td>12-03-2017</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>omnis laborum</td>
+                    <td>et rem non provident vel ut</td>
+                    <td>25-11-2018</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>non esse</td>
+                    <td>id non nostrum expedita</td>
+                    <td>11-01-2013</td>
+                </tr>
+                </tbody>
+            </table>
+            <p>and in <code>images</code> we could have:</p>
+            <table>
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>title</th>
+                    <th>description</th>
+                    <th>date_created</th>
+                    <th>url</th>
+                    <th>album_id</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>odio</td>
+                    <td>aut ipsam quos</td>
+                    <td>24-09-2011</td>
+                    <td><a href="https://via.placeholder.com/600/323599">https://via.placeholder.com/600/323599</a></td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>voluptate</td>
+                    <td>ut esse id</td>
+                    <td>19-05-2012</td>
+                    <td><a href="https://via.placeholder.com/600/1224bd">https://via.placeholder.com/600/1224bd</a></td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>tenetur</td>
+                    <td>et soluta est</td>
+                    <td>19-03-2016</td>
+                    <td><a href="https://via.placeholder.com/600/a19891">https://via.placeholder.com/600/a19891</a></td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>expedita</td>
+                    <td>quam quos dolor eum</td>
+                    <td>26-06-2017</td>
+                    <td><a href="https://via.placeholder.com/600/224566">https://via.placeholder.com/600/224566</a></td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>neque</td>
+                    <td>magni nulla et dolores</td>
+                    <td>08-07-2017</td>
+                    <td><a href="https://via.placeholder.com/600/40591">https://via.placeholder.com/600/40591</a></td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>praesentium</td>
+                    <td>et corrupti nihil cumque</td>
+                    <td>03-01-2018</td>
+                    <td><a href="https://via.placeholder.com/600/1fb08b">https://via.placeholder.com/600/1fb08b</a></td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>quidem</td>
+                    <td>quod non quae</td>
+                    <td>16-10-2019</td>
+                    <td><a href="https://via.placeholder.com/600/14ba42">https://via.placeholder.com/600/14ba42</a></td>
+                    <td>1</td>
+                </tr>
+                </tbody>
+            </table>
+            <p>What would happen, if we tried executing the following command?</p>
+            <pre><code class="line-numbers language-sql">DELETE FROM albums WHERE id = 1;
 </code></pre>
-<p>It would result in an error message like the following:</p>
-<blockquote>
-<p>[2021-04-05 15:02:25] [23503] ERROR: update or delete on table &quot;album&quot; violates foreign key constraint &quot;photo_album_id_fkey&quot; on table &quot;photo&quot;</p>
-<p>[2021-04-05 15:02:25] Detail: Key (id)=(1) is still referenced from table &quot;photo&quot;.</p>
-</blockquote>
-<p>It tells us we are violating a foreign key constraint, because rows in <code>images</code>, the images with ids: 1 and 7,  are referencing the album row we are trying to delete.</p>
-<p>Either, we will have to &quot;clean up&quot; first, meaning we manually delete all images referencing the album, we want to delete.<br />
-Or we should have added an <code>ON DELETE</code> behaviour when declaring the <code>images</code> table:</p>
-<pre><code class="line-numbers language-sql">CREATE TABLE images (
+            <p>It would result in an error message like the following:</p>
+            <blockquote>
+                <p>[2021-04-05 15:02:25] [23503] ERROR: update or delete on table &quot;album&quot; violates foreign key
+                    constraint &quot;photo_album_id_fkey&quot; on table &quot;photo&quot;</p>
+                <p>[2021-04-05 15:02:25] Detail: Key (id)=(1) is still referenced from table &quot;photo&quot;.</p>
+            </blockquote>
+            <p>It tells us we are violating a foreign key constraint, because rows in <code>images</code>, the images
+                with ids: 1 and 7, are referencing the album row we are trying to delete.</p>
+            <p>Either, we will have to &quot;clean up&quot; first, meaning we manually delete all images referencing the
+                album, we want to delete.<br/>
+                Or we should have added an <code>ON DELETE</code> behaviour when declaring the <code>images</code>
+                table:</p>
+            <pre><code class="line-numbers language-sql">CREATE TABLE images (
     id SERIAL PRIMARY KEY,
     title VARCHAR(50),
     description VARCHAR(250),
@@ -303,15 +349,16 @@ Or we should have added an <code>ON DELETE</code> behaviour when declaring the <
     album_id INTEGER REFERENCES album(id) ON DELETE [CASCADE / SET NULL]
 )
 </code></pre>
-<p>Here, if you pick:</p>
-<ul>
-<li>CASCADE: all rows in <code>images</code> referencing the deleted album, will also get deleted</li>
-<li>SET NULL: all rows in <code>images</code> referencing the deleted album, will get their <code>album_id</code> attribute set to <code>NULL</code>, i.e. they are no longer part of any albums.</li>
-</ul>
-<p>This was discussed in the session about Data Definition Language.</p>
+            <p>Here, if you pick:</p>
+            <ul>
+                <li>CASCADE: all rows in <code>images</code> referencing the deleted album, will also get deleted</li>
+                <li>SET NULL: all rows in <code>images</code> referencing the deleted album, will get their <code>album_id</code>
+                    attribute set to <code>NULL</code>, i.e. they are no longer part of any albums.
+                </li>
+            </ul>
+            <p>This was discussed in the session about Data Definition Language.</p>
 
-</div>
-
+        </div>
 
 
         <div style="overflow:auto;">
@@ -321,7 +368,7 @@ Or we should have added an <code>ON DELETE</code> behaviour when declaring the <
                 <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
             </div>
         </div>
-        
+
     </div>
 </div>
 <script>

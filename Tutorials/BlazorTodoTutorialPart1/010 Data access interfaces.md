@@ -17,12 +17,12 @@ to using a client to get data from a server.
 But first, we need to define the interface.
 
 
-### ITodoService
+### ITodoHome
 Inside the Domain component, create a new directory. I have called mine "Contracts". "Interfaces" imply the same thing. 
 But interfaces are essentially a contract between two classes: Class A, which needs some functionality, and Class B which provides some functionality. 
 The interface is then a Contract, so class B knows what functionality to deliver, and Class A knows what functionality it will get. 
 
-Inside the Contracts directory, create a new interface, ITodoHome:
+Inside the Contracts directory, create a new interface, ITodoHome. I have used *Home here, other choices could have been DAO, Service, Repository, Manager, etc. Pick either one.
 
 ```csharp
 using System.Collections.Generic;
@@ -39,6 +39,7 @@ public interface ITodoHome
     public Task UpdateAsync(Todo todo);
 }
 ```
+
 We are using asynchronous programming, so all methods returns a Task, and method names are suffixed 'Async'.
 
 We have here the standard CRUD operations. Notice how the `AddAsync` method returns a Todo object. This is because the Todo object is finalized when storing it, i.e. it gets an Id assigned from the FileData component, at some later point. We return it, so the finalized object can be displayed to the user, should we want to.

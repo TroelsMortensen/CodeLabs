@@ -37,9 +37,6 @@ namespace CodeLabsGenerator
                 replacementHtml = replacementHtml.Replace("pre", $"pre data-line=\"{dataLineValue}\"");
                 mainBuilder.Replace(existingHtml, replacementHtml);
             }
-
-
-         
         }
 
         private static void AddLineNumberClassToCodeTag(StringBuilder basePage)

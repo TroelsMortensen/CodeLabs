@@ -54,6 +54,7 @@ Rider is also pretty good at auto completing html. E.g. for more icons place you
 
 ![img.png](Resources/AutoComplete.png)
 
-And press [ctrl] + [space], assuming default IntelliJ Keymapping.
+And press <kbd>ctrl</kbd> + <kbd>space</kbd>, assuming default IntelliJ Keymapping.
 
-Addiditionally, you can click on an html tag (or in general just about anything) and press [ctrl]+[q] to get more information about something, a class, a tag, a method, a variable.
+Addiditionally, you can click on an html tag (or in general just about anything) and press <kbd>ctrl</kbd>+<kbd>q</kbd> to get more information about something, a class, a tag, a method, a variable.
+
