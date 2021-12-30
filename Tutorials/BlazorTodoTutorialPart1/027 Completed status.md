@@ -136,4 +136,6 @@ input:checked + .slider:before {
 This was just stolen from an example on [w3schools](https://www.w3schools.com/howto/howto_css_switch.asp).
 
 ### Test
+
+![img.png](Resources/Test1.png)
 Test that the functionality works, by changing the status of a `Todo` and refreshing the page, or opening a different page and go back to the overview again.
