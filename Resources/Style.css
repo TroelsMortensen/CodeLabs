@@ -21,6 +21,12 @@ body {
     text-align: center;
 }
 
+h6 {
+    font-size: medium;
+    color: gray;
+    font-style: italic;
+}
+
 .tab {
     font-family: Arial;
 }

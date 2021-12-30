@@ -43,6 +43,8 @@
 <li class="step" onclick="setTab(24)">25 Test add todo</li>
 <li class="step" onclick="setTab(25)">26 Removing a todo</li>
 <li class="step" onclick="setTab(26)">27 Completed status</li>
+<li class="step" onclick="setTab(27)">28 Filtering data</li>
+<li class="step" onclick="setTab(28)">29 Filtering data problem</li>
 
         </ol>
     </div>
@@ -1078,6 +1080,271 @@ input:checked + .slider:before {
 <h3 id="test">Test</h3>
 <p><img src="Resources/Test1.png" alt="img.png" />
 Test that the functionality works, by changing the status of a <code>Todo</code> and refreshing the page, or opening a different page and go back to the overview again.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="filtering-todos">Filtering todos</h1><hr/>
+<p>We would like to be able to filter the table view based on <code>OwnerId</code>.
+This requires more changes to <code>Todos.razor</code> and a new GitHub branch for this feature,
+and the resulting file is found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/4Filtering/Blazor/Pages/Todos.razor">here</a>.</p>
+<p>The result will look like this:</p>
+<p><img src="Resources/FilteringTodos.png" alt="img.png" /></p>
+<p>We will first update the code, then the view, then apply styling at the end.</p>
+<h3 id="code">Code</h3>
+<p>We need to make a few changes to the code, in various places. There are two approaches to this, we will take the simple approach, and the &quot;better&quot; is left to the reader to solve, described later.</p>
+<h6 id="fields">Fields</h6>
+<p>First, we need to keep track of <em>all todos</em> and we need to keep track of which <em>todos to currently display</em>, based on the applied filters.<br />
+We also need to fields to hold filtering information, and a field which determines whether the filters are shown or not.</p>
+<pre><code class="line-numbers language-csharp">private ICollection&lt;Todo&gt; allTodos, todosToShow;
+private string errorLabel;
+
+private int? ownerIdFilter;
+private bool? isCompletedFilter;
+private bool doShowFilters;
+</code></pre>
+<p>First, the two collections: All the todos, and the todos to be shown.<br />
+We still have the <code>errorLabel</code>.<br />
+Then a field of type <code>int?</code>, where the &quot;?&quot; means that this <code>int</code> can be <code>null</code>.
+This is relevant, because we need a value to indicate that this filter should not be applied, i.e. when the filter-value is <code>null</code>.<br />
+Similarly, the next field is of type <code>bool?</code>, meaning the <code>isCompletedFilter</code> can have the following values: <code>null</code>, <code>true</code>, or <code>false</code>.<br />
+Finally, a bool to indicate whether the filters should be shown or not.</p>
+<h6 id="two-lists">Two lists</h6>
+<p>Initially the <code>allTodos</code> and <code>todosToShow</code> will be the same.
+That happens in the method <code>OnInitializedAsync()</code>, the method which is called when this page is loaded:</p>
+<pre><code class="line-numbers language-csharp">protected override async Task OnInitializedAsync()
+{
+    allTodos = await TodoHome.GetAsync();
+    todosToShow = allTodos;
+}
+</code></pre>
+<h6 id="showhide-filters">Show/hide filters</h6>
+<p>The filters will not initially be shown. We will introduce a button to show the filters or hide them.
+That button must call the following method:</p>
+<pre><code class="line-numbers language-csharp">private void OpenCloseFilters()
+{
+    doShowFilters = !doShowFilters;
+    if (!doShowFilters)
+    {
+        ownerIdFilter = null;
+        isCompletedFilter = null;
+        todosToShow = allTodos;
+    }
+}
+</code></pre>
+<p>Whether the filters are shown or not is determined by the bool field variable <code>doShowFilters</code>.
+This method is used to toggle visibility, which is done by flipping the boolean value, in <strong>line 3</strong>.</p>
+<p>When the filters are hidden again, we want to remove any filtering. That's done inside the <code>if</code>-statement.</p>
+<h6 id="owner-id-filter">Owner ID filter</h6>
+<p>Whenever a value is input/changed in the Owner ID filter field, we want to update the shown todos.
+We do that by calling the following method upon input-field change:</p>
+<pre><code class="line-numbers language-csharp">private void UpdateOwnerFilter(ChangeEventArgs args)
+{
+    string value = (string)args.Value;
+    if (string.IsNullOrEmpty(value))
+    {
+        ownerIdFilter = null;
+        ApplyFilters();
+        return;
+    }
+    int idFilter = int.Parse(value);
+    if (idFilter &lt; 0)
+    {
+        return;
+    }
+    
+    ownerIdFilter = idFilter;
+    ApplyFilters();
+}
+</code></pre>
+<p>The <code>arg</code> argument contains the new value of the input-field, an <code>int</code>, but represented as a <code>string</code>.<br />
+So, if the value is <code>null</code> or empty, then we don't apply the &quot;Owner ID&quot; filter.<br />
+If there is a value, we parse it to an int. Owner IDs cannot be less than 0. We upddate the <code>ownerIdFilter</code> value, and call a yet-to-be-written method <code>ApplyFilters</code>.</p>
+<h6 id="is-completed-filter">Is completed filter</h6>
+<p>The following method will be called, whenever the value in the drop-down changes, i.e. to indicate whether to filter by completed status or not.</p>
+<pre><code class="line-numbers language-csharp">private void UpdateCompletedStatusFilter(ChangeEventArgs args)
+{
+    string value = (string)args.Value;
+
+    try
+    {
+        isCompletedFilter = bool.Parse(value);
+    }
+    catch (Exception e)
+    {
+        isCompletedFilter = null;
+    }
+    ApplyFilters();
+}
+</code></pre>
+<p>Again, the value provided by the change event is a string. We try to parse that string to a bool.
+If that succeeds, <code>isCompletedFilter</code> is either <code>true</code> or <code>false</code>.
+If it doesn't succeed, because the value is <code>&quot;&quot;</code> or <code>null</code>, then an exception is thrown, an caught, and <code>isCompletedFilter</code> is set to <code>null</code>, indicating that specific filter should be ignored.<br />
+Again, the <code>ApplyFilters</code> are shown. That method is described below.</p>
+<h6 id="apply-the-filters">Apply the filters</h6>
+<p>The below method is called whenever we want to apply our filters. This is a decent and scalable approach to apply many more filters in the future.</p>
+<pre><code class="line-numbers language-csharp">private void ApplyFilters()
+{
+    todosToShow = allTodos;
+    if (isCompletedFilter != null)
+    {
+        todosToShow = todosToShow.
+                            Where(todo =&gt; todo.IsCompleted == isCompletedFilter).
+                            ToList();
+    }
+    if (ownerIdFilter != null)
+    {
+        todosToShow = todosToShow.
+                            Where(todo =&gt; todo.OwnerId == ownerIdFilter).
+                            ToList();
+    }
+}
+</code></pre>
+<p>Initially, we start with all the todos in a list.<br />
+If the user wants to filter by completed status, then <code>isCompletedFilter</code> is not <code>null</code>, and in line 6 we use the following piece of code</p>
+<pre><code class="line-numbers language-csharp">todosToShow.Where(todo =&gt; todo.IsCompleted == isCompletedFilter)
+</code></pre>
+<p>This means: from <code>todosToShow</code> pick all todos which matches the predicate argument, i.e. <code>todo.IsCompleted == isCompletedFilter</code>. We then call <code>ToList()</code> to return the result as a new list.</p>
+<p>This is a bit similar to a <code>SELECT</code> statement from SQL.</p>
+<p>We do the same, just for the Owner ID filter.</p>
+<p>So, for each filter, we whittle down the initial list more and more. With this approach, you can easily introduce more filters, and they will all work together.</p>
+<p>This was all the changes to the code block. You may just want to compare to <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/4Filtering/Blazor/Pages/Todos.razor">my solution</a>.</p>
+<h3 id="view">View</h3>
+<p>Now the view, the change goes between the header <code>&lt;h3&gt;</code> and the stuff about displaying the todos:</p>
+<p><img src="Resources/WhereToPutFilterHtml.png" alt="img.png" /></p>
+<h6 id="icons">Icons</h6>
+<p>In my example I use two icons:</p>
+<p><img src="Resources/TwoFunnels.png" alt="img.png" /></p>
+<p>You can either find your own or download mine. The <em>existing</em> &quot;wwwroot&quot; folder in your project is the folder for all resources.
+Create a new folder inside, called &quot;img&quot;. Put the two funnel icons in the &quot;img&quot; folder.</p>
+<p>You can find the two icons <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/4Filtering/Blazor/wwwroot/img/funnel.png">here</a> and <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/4Filtering/Blazor/wwwroot/img/clear_funnel.png">here</a>.</p>
+<h6 id="html">html</h6>
+<p>We need the following piece of html and razor syntax, placed as explained above:</p>
+<pre><code class="line-numbers language-razor">&lt;div class=&quot;filterbar&quot;&gt;
+    &lt;div class=&quot;filterscontainer&quot;&gt;
+        &lt;img src=&quot;img/@(doShowFilters?&quot;clear_&quot; : &quot;&quot;)funnel.png&quot; 
+        class=&quot;funnel&quot; 
+        @onclick=&quot;OpenCloseFilters&quot;/&gt;
+        
+        @if (doShowFilters)
+        {
+            &lt;div class=&quot;filter&quot;&gt;
+                &lt;div&gt;
+                    &lt;label&gt;Owner ID:&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;input type=&quot;number&quot; 
+                    class=&quot;owneridfield&quot; 
+                    @oninput=&quot;args =&gt; UpdateOwnerFilter(args)&quot; 
+                    min=&quot;0&quot;/&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;filter&quot;&gt;
+                &lt;div&gt;
+                    &lt;label style=&quot;text-align: center&quot;&gt;Is completed?&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                    &lt;select class=&quot;completedstatusfield&quot; 
+                    @onchange=&quot;args =&gt; UpdateCompletedStatusFilter(args)&quot;&gt;
+                        &lt;option value=&quot;all&quot;&gt;all&lt;/option&gt;
+                        &lt;option value=&quot;true&quot;&gt;true&lt;/option&gt;
+                        &lt;option value=&quot;false&quot;&gt;false&lt;/option&gt;
+                    &lt;/select&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        }
+    &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>There is a bit to unpack. First, a bunch of <code>&lt;div&gt;</code>s all over the place to organize things.</p>
+<p><strong>Line 3-5</strong> This is the funnel icon which, when clicked, will either show or hide the filter options.
+It is a <code>&lt;img&gt;</code> tag. In <strong>line 3</strong> the source is defined, but in a strange way:</p>
+<pre><code class="line-numbers language-razor">src=&quot;img/@(doShowFilters?&quot;clear_&quot; : &quot;&quot;)funnel.png&quot;
+</code></pre>
+<p>We have mixed razor syntax in here, with the @(...) part. It is a ternary expression on the format:</p>
+<pre><code>&lt;condition&gt; ? &lt;option a&gt; : &lt;option b&gt;
+</code></pre>
+<p>It will evaluate the condition, in this case <code>doShowFilters</code>. If the condition is true, the string &quot;clear_&quot; is inserted. If the value is false, nothing is inserted.<br />
+The result is that the src can be either:</p>
+<blockquote>
+<p>clear_funnel.png</p>
+</blockquote>
+<p>or</p>
+<blockquote>
+<p>funnel_png</p>
+</blockquote>
+<p>based on the value of <code>doShowFilters</code>.</p>
+<p><strong>Line 5</strong> is the on-click action, i.e. when this img is clicked, call the method <code>OpenCloseFilters</code>, which was described above.</p>
+<p>Then an if-statement in <strong>line 7</strong>. So, if <code>doShowFilters</code> is true, then the html inside the if-statement is rendered.</p>
+<p>The divs with class &quot;filter&quot; is a box containing a filter-name and an input. First the number-input, then the drop-down.</p>
+<p><strong>Lines 14-17</strong> is the number input field. There's a css class. And an &quot;oninput&quot; action, which is fired whenever the content of the field changes.
+I.e. it is different from the &quot;onchange&quot; action, which fires when the input field loses focus, or enter is pressed.<br />
+The lambda expression calls the <code>UpdateOwnerFilter</code> method.<br />
+<strong>Line 17</strong> says the minimum value of the input is &quot;0&quot;.</p>
+<p><strong>Lines 24-29</strong> defines the drop-down menu, with the options of &quot;all&quot;, &quot;true&quot;, or &quot;false&quot;.<br />
+Also here an &quot;onchange&quot; action, to call <code>UpdateCompletedStatusFilter()</code> method, when the user selects an option.</p>
+<h3 id="style">Style</h3>
+<p>Finally, the styling, to organize things.</p>
+<p>Put the following in the style-behind:</p>
+<pre><code class="line-numbers language-css">/* filters */
+.filterbar {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 5px;
+    display: inline-block;
+    
+}
+
+.filterscontainer{
+    display: flex;
+}
+
+.filter {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+    text-align: center;
+}
+
+.completedstatusfield {
+    width: 100px;
+    text-align: center;
+    font-size: large;
+    height: 30px;
+}
+
+.owneridfield {
+    width: 100px;
+    text-align: center;
+}
+
+.funnel{
+    width:30px; 
+    height:30px;
+    cursor: pointer;
+}
+</code></pre>
+<p>We will not get into details about this.</p>
+<h3 id="test">Test</h3>
+<p>That should be all the setup required.</p>
+<p>Now, test the following, by running the app and opening the todos page.</p>
+<ol>
+<li>Click the funnel icon, and notice it changes between the two icons. It also shows/hides the filterings.</li>
+<li>Insert an owner id number, and notice how the displayed todos update, each time you type in a new value.</li>
+<li>Use the arrows to the right side of the input field to increment and decrement the value, and notice the todos change.</li>
+<li>Verify you cannot insert a number less than 0, or use the arrows to scroll below 0. I notice -3 is insertable, but no event seems to be fired.</li>
+<li>Clear the Owner Id field</li>
+<li>Make sure you have both completed and uncompleted todos.</li>
+<li>Use the Is completed filter, and notice the changes.</li>
+<li>Make sure you have a user with at least 3 todo items. You may need to make new.</li>
+<li>Play around with applying both filters at the same time.</li>
+</ol>
+
+</div>
+<div class="tab">
+<hr/><h1 id="filtering-data-problem">Filtering data problem</h1><hr/>
+<p>As mentioned on the previous slide, the &quot;simple&quot; approach was used over the &quot;better&quot; approach.</p>
+<p>It is not a problem in this tiny toy example, but it is not scalable. Here is the problem.</p>
 
 </div>
 
