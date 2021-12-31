@@ -24,11 +24,18 @@ Maybe someday it will be updated to Blazor-WASM.
 Through the generator class, I have made support for a few extra things.
 
 ### Code syntax highlighting
-With the help of prism, a code block can be syntax-highlighted like this:
+With the help of prism, a code block can be syntax-highlighted by putting the programming language name after the three single-quotes.
 ```
 ```csharp
 public static void Main(string[] args) {
+...
+```
+### Code line highlighting
+To expand upon the above, one or more lines of code can be highlighted in yellow by putting e.g. {3} after the programming language name, to highlight line 3.
 
-}
-```
-```
+Options:
+* {x} to highlight line x
+* {x,y,z} to highlight lines x, y, and z
+* {x-y} to highlight lines x through y
+
+The above can be mixed, separated with comma: {x-y,z,w}.
