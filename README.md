@@ -50,3 +50,6 @@ public static void Main(string[] args) {
 ### Keyboard buttons
 To indicate a keyboard button, like [space], you can do 
 `<kbd>space</kbd>`
+
+### Red circle step indicators
+Sometimes, you write something like "in step 1 do x, in step 2 do y". These steps can be highlighted by doing ((x)) or ((3)).
