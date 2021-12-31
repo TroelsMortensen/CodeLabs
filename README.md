@@ -19,3 +19,16 @@ Tutorials folder structure must be strictly as above: A folder inside Tutorials,
 Prismjs is used for styling the code.
 
 Maybe someday it will be updated to Blazor-WASM.
+
+## MD Syntax
+Through the generator class, I have made support for a few extra things.
+
+### Code syntax highlighting
+With the help of prism, a code block can be syntax-highlighted like this:
+```
+```csharp
+public static void Main(string[] args) {
+
+}
+```
+```
