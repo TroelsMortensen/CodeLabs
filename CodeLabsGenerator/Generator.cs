@@ -18,7 +18,21 @@ namespace CodeLabsGenerator
             InsertAllTabsFromMdFiles(pathToMdSteps, mainBuilder);
             AddLineNumberClassToCodeTag(mainBuilder);
             MoveLineHighlightingAttributes(mainBuilder);
+            InsertNumberedRingSteps(mainBuilder);
             WriteFinalPageToFile(pathToMdSteps, mainBuilder);
+        }
+
+        private static void InsertNumberedRingSteps(StringBuilder mainBuilder)
+        {
+            Regex pattern = new(@"\(\(\d*\)\)");
+            MatchCollection matchCollection = pattern.Matches(mainBuilder.ToString());
+            foreach (Match match in matchCollection)
+            {
+                string theMatch = match.Value;
+                string stepNumber = theMatch.Replace("((", "").Replace("))", "");
+                string replacementHtml = $"<span class=\"numberCircle\"><span>{stepNumber}</span></span>";
+                mainBuilder.Replace(theMatch, replacementHtml);
+            }
         }
 
         private static void MoveLineHighlightingAttributes(StringBuilder mainBuilder)
