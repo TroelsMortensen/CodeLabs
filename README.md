@@ -40,6 +40,13 @@ Options:
 
 The above can be mixed, separated with comma: {x-y,z,w}.
 
+E.g.:
+```
+```csharp{3-}
+public static void Main(string[] args) {
+...
+```
+
 ### Keyboard buttons
 To indicate a keyboard button, like [space], you can do 
 `<kbd>space</kbd>`
