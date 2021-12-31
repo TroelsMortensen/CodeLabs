@@ -36,7 +36,7 @@ The following markdown
 
 results in this output:
 
-```csharp{1,3,5-8}
+```csharp{1,3,6-8}
 public static void GenerateHtmlPageFromMdFiles(string pathToMdSteps, string basePagePath)
 {
     StringBuilder mainBuilder = new();
