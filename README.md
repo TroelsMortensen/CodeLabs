@@ -39,3 +39,6 @@ Options:
 * {x-y} to highlight lines x through y
 
 The above can be mixed, separated with comma: {x-y,z,w}.
+
+### Keyboard buttons
+To indicate a keyboard button, like [space], you can do <kbd>space</kbd>
