@@ -41,4 +41,5 @@ Options:
 The above can be mixed, separated with comma: {x-y,z,w}.
 
 ### Keyboard buttons
-To indicate a keyboard button, like [space], you can do <pre><kbd>space</kbd></pre>
+To indicate a keyboard button, like [space], you can do 
+`<kbd>space</kbd>`
