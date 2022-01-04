@@ -40,23 +40,24 @@ That's the setup.
 
 ### Creating the relationship
 
-Create a new class, where the diamon should be, the name of the class is the name of the relationship.\
+Create a new class, where the diamond should be, the name of the class is the name of the relationship.\
 In this example a _doctor_ **treats** a _patient_ for a _disease_. I.e. **treats** is the relationship.
 
 ![img_14.png](img_14.png)
 
-Select the **treats** class. In the left side menu, there is a Stereotype tab ((1)), open it. Add a new stereotype ((2)), and call it "complex" ((3)), like the Stereotype icon name above.
+Select the **treats** class. In the left side menu, there is a Stereotype tab ((1)), open it. 
+Add a new stereotype ((2)), and call it "complex" ((3)), like the Stereotype icon name above.
 
 ![img_15.png](img_15.png)
 
 Right-click the **treats** class and select "Set Customized Icon". 
-This shows a popup, double click on the diamon image.
+This shows a popup, double click on the diamond image.
 
 Your **treats** class should now look like the diamond image. 
 
 ![](ConvertToDiamond.gif)
 
-Then change the diamon size, and draw relationships. 
+Then change the diamond size, and draw relationships. 
 
 ![](ScaleAndDrawRelationships.gif)
 
