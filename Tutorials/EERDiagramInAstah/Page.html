@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 Creating the file</li>
+<li class="step" onclick="setTab(2)">3 Initial visibility settings</li>
+<li class="step" onclick="setTab(3)">4 After visibility settings</li>
+<li class="step" onclick="setTab(4)">5 Simple relationships</li>
+<li class="step" onclick="setTab(5)">6 Relationship attributes</li>
+<li class="step" onclick="setTab(6)">7 Complex relationships</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="introduction">Introduction</h1><hr/>
+<p>This short tutorial will show how to use Astah to create an EER diagram using UML for your database.</p>
+<p>There are certain relevant tools needed so that you can use a class diagram to document an EER diagram.</p>
+<p>We will use a UML class diagram as the basis, and hide various information not needed for EER diagrams.</p>
+<p>We will see how to make relationships, both simple and complex.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="creating-the-diagram-file">Creating the diagram file</h1><hr/>
+<p>When you open Astah, you will most likely see a blank canvas, as no file or diagram is open.</p>
+<p>Create a new file:</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>Then, right-click the little &quot;P&quot; folder icon. We are going to create a new class diagram:</p>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+<p>You will notice further down in the above context menu,
+there is actually an option to create an &quot;ER diagram&quot;.
+However, this will not be UML, but a different notation language.
+We don't use that.</p>
+<p>We want UML.</p>
+<p>So, a class diagram it is.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="inital-visibility-settings">Inital visibility settings</h1><hr/>
+<p>A normal class diagram will have information such as methods, types, visibility. We don't want that.</p>
+<p>Open the &quot;Class Diagram0&quot; file, the one you created in the previous step (see image below). When it is selected in the &quot;Structure&quot; view, you get various settings in the bottom of the left side panel.</p>
+<p>First, on the left side panel, we want to remove the <strong>Frame Visibility</strong> (not strictly necessary, just a looks a bit cleaner):</p>
+<p><img src="img_5.png" alt="img_5.png" /></p>
+<p>Then, we need to set the Initial Visibility of several things.</p>
+<p>That is found in the left side menu:</p>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+<p><strong>Uncheck</strong> the following options:</p>
+<ul>
+<li>Operation Compartment</li>
+<li>Attribute and Operation Visibility Kind</li>
+<li>Attribute Type</li>
+</ul>
+<p><img src="img_4.png" alt="img_4.png" /></p>
+<p>Now, whenever you create a new class, either by double clicking on the canvas of the &quot;Class Diagram0&quot; file, or use the class tool:</p>
+<p><img src="img_3.png" alt="img_3.png" /></p>
+<p>You will get a class which looks more like an ER entity:</p>
+<p><img src="img_6.png" alt="img_6.png" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="changing-visibility-settings-after">Changing visibility settings after</h1><hr/>
+<p>What if you forget the initial visibility settings, and now you have a diagram like this:</p>
+<p><img src="img_18.png" alt="img_18.png" /></p>
+<p>With types, and visibility, and operation compartment.</p>
+<p>Drag-select all. Right click. Set three visibility settings:</p>
+<p><span class="numberCircle"><span>1</span></span> Operation Compartment Visibility<br />
+<span class="numberCircle"><span>2</span></span> Visibility Kind<br />
+<span class="numberCircle"><span>3</span></span> Attribute Type</p>
+<p><img src="img_19.png" alt="img_19.png" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="simple-relationships">Simple relationships</h1><hr/>
+<p>Relationships are drawn with an association line without end arrows like this. The drag direction (from -&gt; to) is relevant.</p>
+<p><img src="CreatingRelationship.gif" alt="" /></p>
+<p>When the relationship is selected, you can put on the multiplicity.</p>
+<p>The relationship needs a description and reading direction.
+So, with the relationship selected, go to the left-hand-side menu again, under the &quot;Base&quot; tab, and type in a name</p>
+<p><img src="img_7.png" alt="img_7.png" /></p>
+<p>This results in the following:</p>
+<p><img src="img_8.png" alt="img_8.png" /></p>
+<p>In case you mess up the arrow direction of the name, you can right-click the relationship line and flip the name direction:</p>
+<p><img src="img_9.png" alt="img_9.png" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="relationship-attributes">Relationship attributes</h1><hr/>
+<p>These kind of attributes belong to a relationship between two entities.</p>
+<p>For example, a Customer can buy multiple tickets to some Event.<br />
+The number of tickets bought cannot be on neither Customer, nor Event, but is something which exists for each pair of Customer and Event.
+Therefore, we make it a relationship attribute.</p>
+<p>It looks like this:</p>
+<p><img src="img_17.png" alt="img_17.png" /></p>
+<p>The full drawn line is the relationship, the dotted line goes to the relationship attributes.
+Notice Astah needs a name for this box, which also becomes the name of the relationship.
+I have found no way around this.</p>
+<p>It is done as follows:</p>
+<p><img src="RelationshipAttributes1.gif" alt="" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="complex-relationships">Complex relationships</h1><hr/>
+<p>Sometimes 3 or more entities are involved in a relationship, called a complex relationship (or ternary relationship, if there are 3 entities).</p>
+<p>This is represented with a diamond.</p>
+<p>In Astah this is not possible out of the box, so we need to set up some things.</p>
+<h3 id="setup">Setup</h3>
+<p>First, we need an icon for the diamond. I have just drawn the below in Inkscape:</p>
+<p><img src="Ternary_Icon.png" alt="img" /></p>
+<p>You should be able to right-click the image and download. Or create your own.</p>
+<p>Then the settings.</p>
+<p>Open the menu: Tools -&gt; Project Settings -&gt; Set Icon for Stereotype:</p>
+<p><img src="img_10.png" alt="img_10.png" /></p>
+<p>In this menu, go to Profile Stereotype <span class="numberCircle"><span>1</span></span> and create a new <span class="numberCircle"><span>2</span></span>:</p>
+<p><img src="img_12.png" alt="img_12.png" /></p>
+<p>Then double click on the new stereotype <span class="numberCircle"><span>3</span></span>.</p>
+<p>In this menu, change the Stereotype name <span class="numberCircle"><span>1</span></span>, and click on the &quot;...&quot; <span class="numberCircle"><span>2</span></span> to select an icon.</p>
+<p><img src="img_11.png" alt="img_11.png" /></p>
+<p>Select the diamond image.</p>
+<p><img src="img_13.png" alt="img_13.png" /></p>
+<p>Click <kbd>OK</kbd>, then <kbd>Close</kbd></p>
+<p>That's the setup.</p>
+<h3 id="creating-the-relationship">Creating the relationship</h3>
+<p>Create a new class, where the diamon should be, the name of the class is the name of the relationship.<br />
+In this example a <em>doctor</em> <strong>treats</strong> a <em>patient</em> for a <em>disease</em>. I.e. <strong>treats</strong> is the relationship.</p>
+<p><img src="img_14.png" alt="img_14.png" /></p>
+<p>Select the <strong>treats</strong> class. In the left side menu, there is a Stereotype tab <span class="numberCircle"><span>1</span></span>, open it. Add a new stereotype <span class="numberCircle"><span>2</span></span>, and call it &quot;complex&quot; <span class="numberCircle"><span>3</span></span>, like the Stereotype icon name above.</p>
+<p><img src="img_15.png" alt="img_15.png" /></p>
+<p>Right-click the <strong>treats</strong> class and select &quot;Set Customized Icon&quot;.
+This shows a popup, double click on the diamon image.</p>
+<p>Your <strong>treats</strong> class should now look like the diamond image.</p>
+<p><img src="ConvertToDiamond.gif" alt="" /></p>
+<p>Then change the diamon size, and draw relationships.</p>
+<p><img src="ScaleAndDrawRelationships.gif" alt="" /></p>
+<p>The name of the complex relationship is now below the diamond. It would be nice to put it inside, but I have not figured that out yet.</p>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showTab(currentTab);
+</script>
+
+</body>
+</html>

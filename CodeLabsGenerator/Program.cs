@@ -9,7 +9,7 @@ namespace CodeLabsGenerator
         static void Main(string[] args)
         {
             // string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\BlazorTodoTutorialPart1";
-            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\CodelabsDoc";
+            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\EERDiagramInAstah";
             Console.WriteLine("Generating \"" + folderPathToMdSteps.Split("\\")[^1] + "\" ...");
             Generator.GenerateHtmlPageFromMdFiles(folderPathToMdSteps, basePagePath);
             Console.WriteLine("Done!");
