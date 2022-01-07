@@ -61,4 +61,21 @@ Then change the diamond size, and draw relationships.
 
 ![](ScaleAndDrawRelationships.gif)
 
-The name of the complex relationship is now below the diamond. It would be nice to put it inside, but I have not figured that out yet.
+The name of the complex relationship is now below the diamond. With a dirty hack, we can move the name inside the diamond.
+
+### Name in diamond
+
+Double click on the name, "treats", so it's editable:
+
+![img_22.png](img_22.png)
+
+Then replace the name with a white space " ".
+
+After that, use the Text tool to create a text label inside the diamond.
+
+![img_23.png](img_23.png)
+
+
+Final result: 
+
+![img_24.png](img_24.png)
