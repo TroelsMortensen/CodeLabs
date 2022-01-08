@@ -26,6 +26,7 @@
 .card:hover {
     transition: 0.25s;
     border-radius: 0px;
+    margin: 10px;
 }
 
 .center {
@@ -44,4 +45,19 @@
 
 h4 {
     padding-left: 10px;
+}
+
+.videocard {
+    border: 1px #858585 solid;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.videocard p {
+    font-size: small;
+}
+
+.card h3 {
+    font-style: italic;
 }
