@@ -26,7 +26,7 @@ public class AuthServiceImpl : IAuthService
 
     public async Task LoginAsync(string username, string password)
     {
-        User? user = await userService.GetUserAsync(username);
+        User user = await userService.GetUserAsync(username);
 
         ValidateLoginCredentials(password, user);
 
@@ -44,10 +44,10 @@ public class AuthServiceImpl : IAuthService
         OnAuthStateChanged?.Invoke(principal);
     }
 
-    public async Task<ClaimsPrincipal> IAuthService.GetAuthAsync()
+    public async Task<ClaimsPrincipal> GetAuthAsync()
     {
         string userAsJson = await jsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser");
-        User? user = null;
+        User user = null;
         if (!string.IsNullOrEmpty(userAsJson))
         {
             user = JsonSerializer.Deserialize<User>(userAsJson);
