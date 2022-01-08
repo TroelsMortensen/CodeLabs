@@ -1,6 +1,6 @@
 # Disable server-side pre-rendering
 
-Blender has two modes:
+Blazor-server has two render modes:
 * Server Render a marker where the component should be rendered interactively by the Blazor Server app.
 * ServerPrerendered Statically prerender the component along with a marker to indicate the component should later be rendered interactively by the Blazor Server app.
 
