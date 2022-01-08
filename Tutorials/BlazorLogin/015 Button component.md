@@ -1,5 +1,7 @@
 # Button component
 
+We are going to add icons to the top bar to login and logout
+
 ### Icons
 
 First, we need some icons.
@@ -82,5 +84,35 @@ The view part is equally simple:
 Again, everything is wrapped in `<AuthorizeView` so that we can show different things based on whether the user is logged in or not.
 
 If there is an authorized user, the image of Logout.png is shown, otherwise the Login.png. There is also an onclick handler on both.
+
+### Adding to top bar
+Open the MainLayout.razor, and add the new component. 
+Notice we import the Login namespace. And the `<LoginButtons>` component is added as well.
+
+```razor{2,13}
+@inherits LayoutComponentBase
+@using Login
+
+<PageTitle>BlazorServerUI</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu/>
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <LoginButtons/>
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+```
+
+Now, in the top bar, next to the "About", you should see the login icon.
 
 That should be all. The last slide is about how secure this system is. Or isn't.
