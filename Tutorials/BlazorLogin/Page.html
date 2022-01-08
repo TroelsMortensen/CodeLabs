@@ -374,7 +374,7 @@ The <code>IJSRuntime</code> is a class which can call javascript methods. We nee
 <h3 id="log-in">Log in</h3>
 <pre><code class="line-numbers language-csharp">public async Task LoginAsync(string username, string password)
 {
-    User? user = await userService.GetUserAsync(username);
+    User user = await userService.GetUserAsync(username);
 
     ValidateLoginCredentials(password, user);
 
@@ -408,10 +408,10 @@ We then create a <code>ClaimsPrincipal</code> from 'nothing', i.e. null. This wi
 Then we notify the <code>SimpleAuthenticationStateProvider</code> that the user has logged out.</p>
 <h3 id="get-authentication">Get authentication</h3>
 <p>This method is used by <code>SimpleAuthenticationStateProvider</code> whenever the user is accessing a page with any kind of authentication/authorization requirement. <code>SimpleAuthenticationStateProvider</code> will call this method to retrieve information about the logged in user.</p>
-<pre><code class="line-numbers language-csharp">public async Task&lt;ClaimsPrincipal&gt; IAuthService.GetAuthAsync()
+<pre><code class="line-numbers language-csharp">public async Task&lt;ClaimsPrincipal&gt; GetAuthAsync()
 {
     string userAsJson = await jsRuntime.InvokeAsync&lt;string&gt;(&quot;sessionStorage.getItem&quot;, &quot;currentUser&quot;);
-    User? user = null;
+    User user = null;
     if (!string.IsNullOrEmpty(userAsJson))
     {
         user = JsonSerializer.Deserialize&lt;User&gt;(userAsJson);

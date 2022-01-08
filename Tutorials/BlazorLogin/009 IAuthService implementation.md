@@ -157,7 +157,7 @@ The constructor receives relevant arguments.
 ```csharp
 public async Task LoginAsync(string username, string password)
 {
-    User? user = await userService.GetUserAsync(username);
+    User user = await userService.GetUserAsync(username);
 
     ValidateLoginCredentials(password, user);
 
@@ -206,10 +206,10 @@ Then we notify the `SimpleAuthenticationStateProvider` that the user has logged 
 This method is used by `SimpleAuthenticationStateProvider` whenever the user is accessing a page with any kind of authentication/authorization requirement. `SimpleAuthenticationStateProvider` will call this method to retrieve information about the logged in user.
 
 ```csharp
-public async Task<ClaimsPrincipal> IAuthService.GetAuthAsync()
+public async Task<ClaimsPrincipal> GetAuthAsync()
 {
     string userAsJson = await jsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser");
-    User? user = null;
+    User user = null;
     if (!string.IsNullOrEmpty(userAsJson))
     {
         user = JsonSerializer.Deserialize<User>(userAsJson);
