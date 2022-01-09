@@ -48,6 +48,7 @@
 <li class="step" onclick="setTab(29)">30 Editing a todo</li>
 <li class="step" onclick="setTab(30)">31 Edit from overview</li>
 <li class="step" onclick="setTab(31)">32 Components</li>
+<li class="step" onclick="setTab(32)">33 Toggle component</li>
 
         </ol>
     </div>
@@ -1575,9 +1576,19 @@ use components, but they are very powerful for re-usability.</p>
 &lt;/label&gt;
 </code></pre>
 <p>But if you want a uniform look on your app, you will have to update multiple places, if the look of the toggle button changes.</p>
-<p>Let's try and extract a ToggleComponent as an example.</p>
-<p>Code is found in <a href="">this branch</a></p>
-<h3 id="toggle-component">Toggle Component</h3>
+<p>There are several third party libraries which provides many different UI elements:</p>
+<ul>
+<li>Blazor fluent UI, found <a href="https://www.blazorfluentui.net/">here</a></li>
+<li>Radzen, found <a href="https://www.radzen.com/">here</a></li>
+<li>Syncfusion, found <a href="https://www.syncfusion.com/blazor-components">here</a></li>
+<li>Blazored, found <a href="https://giters.com/Blazored">here</a></li>
+</ul>
+<p>On the next slide we will extract a ToggleComponent as an example.</p>
+<p>Code is found in <a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/6ToggleComponent">this branch</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="toggle-component">Toggle Component</h1><hr/>
 <p>First, we need some organization. Currently all pages are just in the pages directory, but that can eventually get messy.</p>
 <p>Create a new directory in Pages, called UIElements.</p>
 <p>Inside here create a new blazor component (it's just a page without the @page directive at the top), call it Toggle.razor.
@@ -1668,20 +1679,24 @@ input:checked + .slider:before {
 </code></pre>
 <p><strong>Line 1:</strong> Whenever blazor components are split across different directories, we need to use namespaces.
 Here we have defined that the Toggle-component is located in UIElements namespace. Other components who wants to use the Toggle must then have a <code>@using UIElements</code>.</p>
-<p><strong>Lines 3-8:</strong> This was mainly stolen from the Todos.razor. With a few minor changes. Notice the <code>&lt;input&gt;</code> element is split across multiple lines for readability.</p>
-<p><strong>Line 4:</strong> We define the <code>&lt;input&gt;</code> as a checkbox.
-<strong>Line 5:</strong> We say the checked-status, i.e. checked or un-checked, is read from the property <code>IsCompleted</code>, in the code block.
-<strong>Line 6:</strong> We define the method to be called (lambda expression) when the value of the checkbox changes, i.e. from checked to un-checked or vice versa.<br />
-What we do, is call a type of delegate, the Callback with the value of the checkbox. It is sort of like an observer pattern. Other components can subscribe to this event, and get the boolean value.
+<p><strong>Lines 3-8:</strong> This was mainly stolen from the Todos.razor.
+With a few minor changes. Notice the <code>&lt;input&gt;</code> element is split across multiple lines (4-6) for readability.</p>
+<p><strong>Line 4:</strong> We define the <code>&lt;input&gt;</code> as a checkbox.</p>
+<p><strong>Line 5:</strong> We say the checked-status, i.e. checked or un-checked, is read from the property <code>IsCompleted</code>, in the code block.
+The value is provided from the outside of the component.</p>
+<p><strong>Line 6:</strong> We define the method to be called (lambda expression) when the value of the checkbox changes, i.e. from checked to un-checked or vice versa.<br />
+What we do, is call a type of delegate, the <code>Callback</code>, with the value of the checkbox, <code>arg.Value</code>.
+It is sort of like an observer pattern.
+Other components can subscribe methods to this event, and get the boolean value.
 This is a <em>very</em> common approach to component-communication.<br />
-We have previously seen the page directive argument, which is another way of component-communication.</p>
+We have previously seen the page directive argument, which is another way of components communicating.</p>
 <p>In the code block we have two properties, marked as <code>[Parameter]</code>, meaning this value can be set from the outside.</p>
 <p>The <code>EventCallback&lt;bool&gt;</code> is a delegate, meaning methods/lambda expressions can be added to it, and when the Callback is invoked, all added methods are called.</p>
-<p>The bool is just for the checked/un-checked value of the checkbox.</p>
+<p>The bool property is just for the checked/un-checked value of the checkbox.</p>
 <h3 id="usage">Usage</h3>
 <p>Now that we have the component, how is it used?</p>
 <p>In Todos.razor we must make changes.</p>
-<p>First, at the top, we must declare a using statement to get access to UIElements:</p>
+<p>First, at the top, we must declare a using statement to get access to the UIElements namespace:</p>
 <pre data-line="4"><code class="line-numbers language-razor">@page &quot;/Todos&quot;
 @using Domain.Models
 @using Domain.Contracts
@@ -1712,10 +1727,12 @@ We have previously seen the page directive argument, which is another way of com
 }
 </code></pre>
 <p>Notice lines 7-9 previously contained the html/code for the toggle.
-Now it is just a reference to our Toggle component. We pass to arguments, you can compare this to constructor arguments.</p>
-<p>The Toggle asked for a bool, which we give it through <code>IsCompleted=&quot;@item.IsCompleted&quot;</code>.
+Now it is just a reference to our Toggle component. We pass two arguments, you can compare this to constructor arguments.</p>
+<p>The Toggle asked for a bool, which we give to it through <code>IsCompleted=&quot;@item.IsCompleted&quot;</code>.
 It also asked for a method for the Callback, and here we give it a lambda expression.
 <code>b</code> is the bool-value from the checkbox, we pass that together with the todo <code>item</code> to the <code>ToggleStatus()</code> method.</p>
+<p>That should be all. Run a test of the app to make sure nothing broke.</p>
+<p>You can now use the Toggle component in a similar way all over your app, good for consistency and reusability.</p>
 
 </div>
 
