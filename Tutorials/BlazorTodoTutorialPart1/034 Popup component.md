@@ -85,7 +85,7 @@ Next, a bunch of `<div>` tags to organize everything. This was taken from an exa
 
 There are some important parts, though:
 
-**Line 6-13** defines a header of the popup. 
+**Lines 6-13** defines a header of the popup. 
 You may notice in the `<h3>` tag we have the `@Title`, i.e. the title of this Toast, which is provided as a `[Parameter]`.\
 In the header we also have a button, which invokes a CallBack.
 

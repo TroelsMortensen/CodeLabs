@@ -76,13 +76,13 @@ The view is just updated at the end, after the `<EditForm>`, so the below is a f
 
 The first if-statement was already present. The second, `@if(showModal)` is new. The modal tag is spread across multiple lines for readability.
 
-Lines 8-11 are various arguments: The title of the modal, then the text on the accept button.
+**Lines 8-11** are various arguments: The title of the modal, then the text on the accept button.
 
-Line 10 defines which method, `Proceed()`, should be called, when the accept button is clicked.
+**Line 10** defines which method, `Proceed()`, should be called, when the accept button is clicked.
 
-Line 11 happens when the little top-right <kbd>x</kbd> is pressed, i.e. we just turn off the modal.
+**Line 11** happens when the little top-right <kbd>x</kbd> is pressed, i.e. we just turn off the modal.
 
-Line 13 is the `ChildContent`. I have just added a simple piece of html, a `<p>` tag with a message, but you can put anything here, and it will be put in the Modal.
+**Line 13** is the `ChildContent`. I have just added a simple piece of html, a `<p>` tag with a message, but you can put anything here, and it will be put in the Modal.
 
 The result, when adding a Todo, is now:
 
