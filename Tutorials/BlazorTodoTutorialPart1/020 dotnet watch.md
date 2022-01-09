@@ -4,11 +4,15 @@ So far, whenever you have made a change to your blazor app, you need to stop the
 **If you are fine with this, you can just skip this step.**
 
 However, there is another approach, which might increase your workflow speed. It's the watch command, which will automatically update a running blazor app, whenever changes are made.
-This just means that in most cases, you don't have to restart your app to see changes. Whenever you save a file, the running blazor app will update. In theory, at least.
+This just means that in most cases, you don't have to restart your app to see changes. 
+Whenever you save a file, the running blazor app will update. 
+In theory, at least, sometimes you will be asked to restart the app.
 
-There are two ways to enable this:
 
-### Approach 1
+
+### Watch
+I recommend just using the first approach. However, for the SEP project, maybe approach 2 below is better.
+
 At the bottom in Rider, there is a tab called Terminal:
 
 ![img.png](Resources/TerminalTab.png)
@@ -21,12 +25,18 @@ You must enter the Blazor project folder, with the `cd` command, and in here, yo
 
 ```terminal
 PS C:\TRMO\RiderProjects\BlazorTodoApp> cd .\Blazor\
-PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor> dotnet watch run
+PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor> dotnet watch
 ```
 
-When you want to close the app again, you need to click somewhere in the terminal tab and press [ctrl] + [c] a couple of times.
+When you want to close the app again, you need to click somewhere in the terminal tab and press <kbd>ctrl</kbd> + <kbd>c</kbd> a couple of times.
+
+Sometimes the terminal will also ask you, if you wish to restart the app. Click somewhere in the terminal and press <kbd>y</kbd>. 
+This usually happens if you change methods headers. 
+
+Sometimes style sheet class are not updated correctly either, which will require a manual restart.
 
 ### Approach 2
+This approach requires a bit 
 You can also setup a launch configuration, so you can use the little green play button up to the top right of Rider. 
 
 Click the drop down, and click the *Edit Configurations...*:

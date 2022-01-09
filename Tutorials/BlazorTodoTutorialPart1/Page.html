@@ -45,6 +45,9 @@
 <li class="step" onclick="setTab(26)">27 Completed status</li>
 <li class="step" onclick="setTab(27)">28 Filtering data</li>
 <li class="step" onclick="setTab(28)">29 Filtering data problem</li>
+<li class="step" onclick="setTab(29)">30 Editing a todo</li>
+<li class="step" onclick="setTab(30)">31 Edit from overview</li>
+<li class="step" onclick="setTab(31)">32 Components</li>
 
         </ol>
     </div>
@@ -635,20 +638,26 @@ We might as well remove this, so we don't clutter our app.</p>
 <p>So far, whenever you have made a change to your blazor app, you need to stop the app, and start it again, for the changes to take effect.</p>
 <p><strong>If you are fine with this, you can just skip this step.</strong></p>
 <p>However, there is another approach, which might increase your workflow speed. It's the watch command, which will automatically update a running blazor app, whenever changes are made.
-This just means that in most cases, you don't have to restart your app to see changes. Whenever you save a file, the running blazor app will update. In theory, at least.</p>
-<p>There are two ways to enable this:</p>
-<h3 id="approach-1">Approach 1</h3>
+This just means that in most cases, you don't have to restart your app to see changes.
+Whenever you save a file, the running blazor app will update.
+In theory, at least, sometimes you will be asked to restart the app.</p>
+<h3 id="watch">Watch</h3>
+<p>I recommend just using the first approach. However, for the SEP project, maybe approach 2 below is better.</p>
 <p>At the bottom in Rider, there is a tab called Terminal:</p>
 <p><img src="Resources/TerminalTab.png" alt="img.png" /></p>
 <p>When you open this tab, you probably start at your current solution folder, at the time of writing, mine is</p>
 <p>C:\TRMO\RiderProjects\BlazorTodoApp</p>
 <p>You must enter the Blazor project folder, with the <code>cd</code> command, and in here, you can type <code>dotnet watch run</code>. This will run your app with the watch, i.e. auto-update, enabled:</p>
 <pre><code class="line-numbers language-terminal">PS C:\TRMO\RiderProjects\BlazorTodoApp&gt; cd .\Blazor\
-PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor&gt; dotnet watch run
+PS C:\TRMO\RiderProjects\BlazorTodoApp\Blazor&gt; dotnet watch
 </code></pre>
-<p>When you want to close the app again, you need to click somewhere in the terminal tab and press [ctrl] + [c] a couple of times.</p>
+<p>When you want to close the app again, you need to click somewhere in the terminal tab and press <kbd>ctrl</kbd> + <kbd>c</kbd> a couple of times.</p>
+<p>Sometimes the terminal will also ask you, if you wish to restart the app. Click somewhere in the terminal and press <kbd>y</kbd>.
+This usually happens if you change methods headers.</p>
+<p>Sometimes style sheet class are not updated correctly either, which will require a manual restart.</p>
 <h3 id="approach-2">Approach 2</h3>
-<p>You can also setup a launch configuration, so you can use the little green play button up to the top right of Rider.</p>
+<p>This approach requires a bit
+You can also setup a launch configuration, so you can use the little green play button up to the top right of Rider.</p>
 <p>Click the drop down, and click the <em>Edit Configurations...</em>:</p>
 <p><img src="Resources/EditConfigurations.png" alt="img.png" /></p>
 <p>This opens a dialog. Click the top left plus to add a new configuration, select <em>Native Executable</em></p>
@@ -1350,6 +1359,363 @@ Also here an &quot;onchange&quot; action, to call <code>UpdateCompletedStatusFil
 <hr/><h1 id="filtering-data-problem">Filtering data problem</h1><hr/>
 <p>As mentioned on the previous slide, the &quot;simple&quot; approach was used over the &quot;better&quot; approach.</p>
 <p>It is not a problem in this tiny toy example, but it is not scalable. Here is the problem.</p>
+<p>When the <code>Todos.razor</code> page is shown, initially we fetch the data to be shown, in the following method:</p>
+<pre><code class="line-numbers language-csharp">protected override async Task OnInitializedAsync()
+{
+    allTodos = await TodoHome.GetAsync();
+    todosToShow = allTodos;
+
+</code></pre>
+<p>I.e. we load <em>all</em> todos. If this application were to be used by many users, there could be thousands of todos, and it is not efficient to load that many.
+We are essentially loading the entire database.</p>
+<p>Often, it is better to just fetch what is needed. Most websites will not show you everything initially, you have to search for it.</p>
+<p>We could do something similar here, by not loading anything initially, but instead have a search button to load todos based on the search parameters.</p>
+<p>We could also filter by who is logged in, if we added that kind of feature.</p>
+<p>We will not dig deeper into the problem here, other than saying it is generally a bad idea to just load the entire database. It does not scale very well.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="editing-a-todo">Editing a Todo</h1><hr/>
+<p>We will add a new feature, so that we can edit existing Todos.
+The main take-away from this feature is how to pass arguments/information from one page to another.</p>
+<p>The code is in a new branch, <a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/5EditTodo">here</a></p>
+<h3 id="edit-page">Edit page</h3>
+<p>First, we need a new page to edit the todo. It is going to look a lot like the page for adding Todos.</p>
+<p>Create a new page, call it EditTodo.razor.</p>
+<h3 id="dao">DAO</h3>
+<p>We already have a method in the TodoFileDAO.cs about updating a Todo, but it currently only updates the <code>IsCompleted</code> and <code>OwnerId</code>.<br />
+We need to be able to update the <code>Title</code> as well. Make the below changes:</p>
+<pre><code class="line-numbers language-csharp{1,">public Task UpdateAsync(Todo todo)
+{
+    Todo toUpdate = fileContext.Todos.First(t =&gt; t.Id == todo.Id);
+    toUpdate.IsCompleted = todo.IsCompleted;
+    toUpdate.OwnerId = todo.OwnerId;
+    toUpdate.Title = todo.Title;
+    fileContext.SaveChanges();
+    return Task.CompletedTask;
+}
+</code></pre>
+<p>Notice a change in lines 1, 6 and 8.</p>
+<p>1 - The <code>async</code> keyword was removed, as I have realized it wasn't necessary. It is not critical, just a bit of a waste. I will update the rest eventually. You can go ahead and change the other methods in TodoFileDAO similarly, as none of them are doing anything asynchronously.</p>
+<p>6 - We now update the <code>Title</code>.</p>
+<p>8 - We return <code>Task.CompletedTask</code>. We need to do this, because we removed the <code>async</code> keyword from the method header.
+Later, when we add a database, we will actually make use the async, so the return type of Task remains.</p>
+<h3 id="code">Code</h3>
+<p>The code of the page should look like this:</p>
+<pre><code class="line-numbers language-razor">@page &quot;/EditTodo/{Id:int}&quot;
+@using Domain.Models
+@using Domain.Contracts
+
+@inject ITodoHome todoHome
+@inject NavigationManager navMgr
+
+&lt;h3&gt;EditTodo&lt;/h3&gt;
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Todo todoToEdit;
+    private string errorLabel = String.Empty;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        todoToEdit = await todoHome.GetByIdAsync(Id);
+    }
+
+    private async Task Save()
+    {
+        errorLabel = &quot;&quot;;
+        try
+        {
+            await todoHome.UpdateAsync(todoToEdit);
+            navMgr.NavigateTo(&quot;/Todos&quot;);
+        }
+        catch (Exception e)
+        {
+            errorLabel = e.Message;
+        }
+    }
+}
+</code></pre>
+<p>A few things to notice here.</p>
+<p><strong>Line 1:</strong> Notice the page directive looks different from what we have seen so far. We have added a <em>route parameter</em>: The <code>/{Id:int}</code>.
+It means that we can open this page with a URI like &quot;/EditTodo/7&quot;, which means we want to edit Todo with id 7.
+The <code>:int</code> is a constraint saying to convert the parameter to <code>int</code>. Otherwise it will just be a string.
+Notice the property <code>Id</code> in the code block, it is marked with the attribute <code>[Parameter]</code>. That means the value can be set from the outside, e.g. with a route parameter.</p>
+<p><strong>Lines 5-6:</strong> We inject needed services.</p>
+<p><strong>Lines 18-21:</strong> When the page loads, we get the <code>Todo</code> by <code>Id</code>.</p>
+<p><strong>Lines 23-35:</strong> Here we save the changes. If the update goes through (i.e. no exceptions), we are taken back to the Todos overview.</p>
+<h3 id="view">View</h3>
+<p>Next, the view part.</p>
+<pre><code class="line-numbers language-razor">&lt;div class=&quot;box&quot;&gt;
+    &lt;h3&gt;Edit Todo&lt;/h3&gt;
+    &lt;EditForm Model=&quot;@todoToEdit&quot; OnValidSubmit=&quot;@Save&quot;&gt;
+        &lt;DataAnnotationsValidator/&gt;
+        &lt;ValidationSummary/&gt;
+        &lt;div class=&quot;form-group field&quot;&gt;
+            &lt;span&gt;
+                &lt;label&gt;User Id:&lt;/label&gt;
+            &lt;/span&gt;
+            &lt;span&gt;
+                &lt;InputNumber @bind-Value=&quot;todoToEdit.OwnerId&quot;/&gt;
+            &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;form-group field&quot;&gt;
+            &lt;span&gt;
+                &lt;label&gt;Title:&lt;/label&gt;
+            &lt;/span&gt;
+            &lt;span&gt;
+                &lt;InputTextArea rows=&quot;4&quot; @bind-Value=&quot;todoToEdit.Title&quot;/&gt;
+            &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;p class=&quot;actions&quot;&gt;
+            &lt;button class=&quot;acceptbtn&quot; type=&quot;submit&quot;&gt;Update&lt;/button&gt;
+        &lt;/p&gt;
+    &lt;/EditForm&gt;
+    @if (!string.IsNullOrEmpty(errorLabel))
+    {
+        &lt;label&gt;@errorLabel&lt;/label&gt;
+    }
+&lt;/div&gt;
+</code></pre>
+<p>You may notice heavy similarities to the AddTodo page. It was essentially copied, and a few variables needed changing.</p>
+<h3 id="styling">Styling</h3>
+<p>You can make a style-behind and just copy everything from the <code>AddTodo.razor.css</code>.</p>
+<p>Alternatively, since we are now using the same styling multiple place, it would indicate that if the style changes, we might want it to change for both AddTodo and EditTodo.</p>
+<p>This would require the styling to be put a shared place, like the wwwroot/css/site.css style sheet.</p>
+<p>If you do move the css here, you should not have duplicate css in your style behinds.</p>
+<h3 id="test">Test</h3>
+<p>If you run your app, you can manually type in a URI like: <code>https://localhost:7140/EditTodo/1</code>.</p>
+<p>Next slide will update the Todos over view, so we can click an edit button.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="updating-the-overview-to-edit-todo">Updating the overview to edit Todo</h1><hr/>
+<p>Once again, we need a new column to keep a button for editing a Todo.</p>
+<p>We need an icon for edit. I found a gif from <a href="https://icons8.com/icons/set/edit">this icon site</a></p>
+<p>You can find the gif I use <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/5EditTodo/Blazor/wwwroot/img/edit.gif">here</a>, just right-click and save as on the gif.</p>
+<pre data-line="8,25-27"><code class="line-numbers language-razor">    &lt;table class=&quot;table&quot;&gt;
+        &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Owner ID&lt;/th&gt;
+            &lt;th&gt;Todo ID&lt;/th&gt;
+            &lt;th&gt;Title&lt;/th&gt;
+            &lt;th&gt;Completed?&lt;/th&gt;
+            &lt;th&gt;Edit&lt;/th&gt;
+            &lt;th&gt;Remove&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        @foreach (var item in todosToShow)
+        {
+            &lt;tr&gt;
+                &lt;td&gt;@item.OwnerId&lt;/td&gt;
+                &lt;td&gt;@item.Id&lt;/td&gt;
+                &lt;td&gt;@item.Title&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;label class=&quot;switch&quot;&gt;
+                        &lt;input type=&quot;checkbox&quot; checked=@item.IsCompleted @onchange=&quot;@((arg) =&gt; ToggleStatus((bool)arg.Value, item))&quot;&gt;
+                        &lt;span class=&quot;slider round&quot;&gt;&lt;/span&gt;
+                    &lt;/label&gt;
+                &lt;/td&gt;
+                &lt;td&gt;
+                    &lt;img src=&quot;img/edit.gif&quot; class=&quot;funnel&quot; @onclick=&quot;@(() =&gt; Edit(item.Id))&quot;/&gt;
+                &lt;/td&gt;
+                &lt;td&gt;
+                    &lt;label @onclick=&quot;@(() =&gt; RemoveTodo(item.Id))&quot; style=&quot;cursor:pointer; color: red; font-weight: bold&quot;&gt;
+                        &amp;#x2717;
+                    &lt;/label&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        }
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+</code></pre>
+<p>Notice the new <code>&lt;th&gt;</code> in line 8.</p>
+<p>The corresponding column is defined in lines 25-27. I reference the gif, the class is <code>funnel</code>, a bit of a hack. Alternatively you can create a new style class for this gif icon, with the following settings:</p>
+<pre><code class="line-numbers language-css">width:30px; 
+height:30px;
+cursor: pointer;
+</code></pre>
+<p>This should display the icon nicely.</p>
+<p>You must inject a <code>NavigationManager</code> at the top: <code>@inject NavigationManager navMgr</code></p>
+<p>Last part is the <code>Edit</code> method:</p>
+<pre><code class="line-numbers language-csharp">private void Edit(int itemId)
+{
+    navMgr.NavigateTo($&quot;EditTodo/{itemId}&quot;);
+}
+</code></pre>
+<h3 id="test">Test</h3>
+<p>You should now be able to</p>
+<ol>
+<li>open the Todos page</li>
+<li>click on the edit icon for one of the rows</li>
+<li>this takes you to the edit page, with the current Todo data shown</li>
+<li>Modify the data</li>
+<li>Click <kbd>Update</kbd> which takes you back to Todos overview</li>
+<li>Verify the changes.</li>
+</ol>
+
+</div>
+<div class="tab">
+<hr/><h1 id="components">Components</h1><hr/>
+<p>So far, we have mostly worked with pages, but not really utilized components. It may take some practice to get used to
+use components, but they are very powerful for re-usability.</p>
+<p>The smallest UI elements can be made into components. Take the toggle button, we use to set a Todo as completed:</p>
+<p><img src="Resources/Toggles.png" alt="img.png" /></p>
+<p>These are essentially checkboxes, just with a bunch of styling applied to make them look nicer (or at least different).</p>
+<p>If we wanted to use these again in a different place of the app, your initial thought might be to just copy the code:</p>
+<pre><code class="line-numbers language-razor">&lt;label class=&quot;switch&quot;&gt;
+    &lt;input  type=&quot;checkbox&quot; 
+            checked=@item.IsCompleted 
+            @onchange=&quot;@((arg) =&gt; ToggleStatus((bool)arg.Value, item))&quot;&gt;
+    &lt;span class=&quot;slider round&quot;&gt;&lt;/span&gt;
+&lt;/label&gt;
+</code></pre>
+<p>But if you want a uniform look on your app, you will have to update multiple places, if the look of the toggle button changes.</p>
+<p>Let's try and extract a ToggleComponent as an example.</p>
+<p>Code is found in <a href="">this branch</a></p>
+<h3 id="toggle-component">Toggle Component</h3>
+<p>First, we need some organization. Currently all pages are just in the pages directory, but that can eventually get messy.</p>
+<p>Create a new directory in Pages, called UIElements.</p>
+<p>Inside here create a new blazor component (it's just a page without the @page directive at the top), call it Toggle.razor.
+We will also need a style-behind.</p>
+<p><img src="Resources/UIElementsFolder.png" alt="img.png" /></p>
+<h3 id="styling">Styling</h3>
+<p>Let's start with the styling. The current toggle in Todos.razor has some classes, located in the <code>Todos.razor.css</code>, we can just copy those, and so your <code>Toggle.razor.css</code> looks like this:</p>
+<pre><code class="line-numbers language-css">.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: &quot;&quot;;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    /*box-shadow: 0 0 1px #2196F3;*/
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+</code></pre>
+<p>You may not need everything, but I just copied an example from w3 schools, and am not entirely sure what's going on.</p>
+<p>You can now delete the same styling from Todos.razor.css.</p>
+<h3 id="the-component">The component</h3>
+<p>The component is fairly simple, the entire class looks like this:</p>
+<pre><code class="line-numbers language-razor">@namespace UIElements
+
+&lt;label class=&quot;switch&quot;&gt;
+    &lt;input  type=&quot;checkbox&quot; 
+            checked=@IsCompleted 
+            @onchange=&quot;@((arg) =&gt; Callback.InvokeAsync((bool)arg.Value))&quot;&gt;
+    &lt;span class=&quot;slider round&quot;&gt;&lt;/span&gt;
+&lt;/label&gt;
+
+@code {
+    [Parameter]
+    public EventCallback&lt;bool&gt; Callback { get; set; }
+
+    [Parameter]
+    public bool IsCompleted { get; set; }
+}
+</code></pre>
+<p><strong>Line 1:</strong> Whenever blazor components are split across different directories, we need to use namespaces.
+Here we have defined that the Toggle-component is located in UIElements namespace. Other components who wants to use the Toggle must then have a <code>@using UIElements</code>.</p>
+<p><strong>Lines 3-8:</strong> This was mainly stolen from the Todos.razor. With a few minor changes. Notice the <code>&lt;input&gt;</code> element is split across multiple lines for readability.</p>
+<p><strong>Line 4:</strong> We define the <code>&lt;input&gt;</code> as a checkbox.
+<strong>Line 5:</strong> We say the checked-status, i.e. checked or un-checked, is read from the property <code>IsCompleted</code>, in the code block.
+<strong>Line 6:</strong> We define the method to be called (lambda expression) when the value of the checkbox changes, i.e. from checked to un-checked or vice versa.<br />
+What we do, is call a type of delegate, the Callback with the value of the checkbox. It is sort of like an observer pattern. Other components can subscribe to this event, and get the boolean value.
+This is a <em>very</em> common approach to component-communication.<br />
+We have previously seen the page directive argument, which is another way of component-communication.</p>
+<p>In the code block we have two properties, marked as <code>[Parameter]</code>, meaning this value can be set from the outside.</p>
+<p>The <code>EventCallback&lt;bool&gt;</code> is a delegate, meaning methods/lambda expressions can be added to it, and when the Callback is invoked, all added methods are called.</p>
+<p>The bool is just for the checked/un-checked value of the checkbox.</p>
+<h3 id="usage">Usage</h3>
+<p>Now that we have the component, how is it used?</p>
+<p>In Todos.razor we must make changes.</p>
+<p>First, at the top, we must declare a using statement to get access to UIElements:</p>
+<pre data-line="4"><code class="line-numbers language-razor">@page &quot;/Todos&quot;
+@using Domain.Models
+@using Domain.Contracts
+@using UIElements
+@inject ITodoHome TodoHome
+@inject NavigationManager navMgr
+</code></pre>
+<p>Next, we modify the table:</p>
+<pre data-line="7-9"><code class="line-numbers language-razor">@foreach (var item in todosToShow)
+{
+    &lt;tr&gt;
+        &lt;td&gt;@item.OwnerId&lt;/td&gt;
+        &lt;td&gt;@item.Id&lt;/td&gt;
+        &lt;td&gt;@item.Title&lt;/td&gt;
+        &lt;td&gt;
+            &lt;Toggle IsCompleted=&quot;@item.IsCompleted&quot; Callback=&quot;@(b =&gt; ToggleStatus(b, item))&quot;/&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+            &lt;img src=&quot;img/edit.gif&quot; class=&quot;funnel&quot; @onclick=&quot;@(() =&gt; Edit(item.Id))&quot;/&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+            &lt;label @onclick=&quot;@(() =&gt; RemoveTodo(item.Id))&quot; 
+                style=&quot;cursor:pointer; color: red; font-weight: bold&quot;&gt;
+                &amp;#x2717;
+            &lt;/label&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+}
+</code></pre>
+<p>Notice lines 7-9 previously contained the html/code for the toggle.
+Now it is just a reference to our Toggle component. We pass to arguments, you can compare this to constructor arguments.</p>
+<p>The Toggle asked for a bool, which we give it through <code>IsCompleted=&quot;@item.IsCompleted&quot;</code>.
+It also asked for a method for the Callback, and here we give it a lambda expression.
+<code>b</code> is the bool-value from the checkbox, we pass that together with the todo <code>item</code> to the <code>ToggleStatus()</code> method.</p>
 
 </div>
 
