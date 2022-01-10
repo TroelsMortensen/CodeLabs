@@ -19,6 +19,7 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     width: 300px;
     margin: 5px;
+    padding: 10px;
     transition: 0.25s;
     border-radius: 10px;
 }
@@ -58,6 +59,12 @@ h4 {
     font-size: small;
 }
 
+.card h1 {
+    font-style: italic;
+    text-align: center;
+}
+
 .card h3 {
     font-style: italic;
+    text-align: center;
 }

@@ -1,0 +1,3 @@
+﻿using IndexGenerator;
+
+Generator.GenerateIndexPage();
