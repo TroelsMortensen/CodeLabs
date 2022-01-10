@@ -36,9 +36,24 @@ public class Generator
     {
         StringBuilder mainBuilder = new StringBuilder();
         ConvertAllMdFiles(mainBuilder);
-        string indexBasePageAsText = File.ReadAllText(indexBasePagePath);
-        var result = indexBasePageAsText.Replace("###CARDS###", mainBuilder.ToString());
+        string indexBasePageAsText = GetIndexBasePageAsString();
+        var result = InsertMdHtmlIntoBasePage(indexBasePageAsText, mainBuilder);
+        OutFinalIndexPage(result);
+    }
+
+    private static void OutFinalIndexPage(string result)
+    {
         File.WriteAllText(indexPagePath, result);
+    }
+
+    private static string InsertMdHtmlIntoBasePage(string indexBasePageAsText, StringBuilder mainBuilder)
+    {
+        return indexBasePageAsText.Replace("###CARDS###", mainBuilder.ToString());
+    }
+
+    private static string GetIndexBasePageAsString()
+    {
+        return File.ReadAllText(indexBasePagePath);
     }
 
     private static void ConvertAllMdFiles(StringBuilder mainBuilder)
