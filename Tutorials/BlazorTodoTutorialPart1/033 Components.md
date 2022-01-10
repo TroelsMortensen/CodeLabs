@@ -27,6 +27,8 @@ There are several third party libraries which provides many different UI element
 * Radzen, found [here](https://www.radzen.com/)
 * Syncfusion, found [here](https://www.syncfusion.com/blazor-components)
 * Blazored, found [here](https://giters.com/Blazored)
+* AntBlazor, found [here](https://antblazor.com/en-US/)
+* MudBlazor, found [here](https://mudblazor.com/)
 
 
 On the next slide we will extract a ToggleComponent as an example.
