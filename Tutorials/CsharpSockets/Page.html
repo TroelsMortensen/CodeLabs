@@ -5,20 +5,20 @@
 <link href="./../../Resources/Style.css" rel="stylesheet">
 <link href="./../../Resources/prism.css" rel="stylesheet">
 <script src="./../../Resources/TabNavigavtor.js"></script>
-<link  rel="shortcut icon"  href="./../../Resources/CodeIcon.png">
-
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
 <body>
 <script src="./../../Resources/prism.js"></script>
 
 <div>
     <a href="./../../index.html" class="homelink">HOME</a>
 </div>
-<div  style="display:flex;width:100%;height:100%;padding-top:64px">
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
     <div>
         <ol>
-            <li class="step" onclick="setTab(0)">1. Welcome</li>
-<li class="step" onclick="setTab(1)">2. ServerSide</li>
-<li class="step" onclick="setTab(2)">3. ClientSide</li>
+            <li class="step" onclick="setTab(0)">1 Welcome</li>
+<li class="step" onclick="setTab(1)">2 ServerSide</li>
+<li class="step" onclick="setTab(2)">3 ClientSide</li>
 
         </ol>
     </div>
@@ -34,7 +34,7 @@
         <!-- One "tab" for each step in the form: -->
 
         <div class="tab">
-<h1>Sockets in C#</h1>
+<hr/><h1 id="sockets-in-c">Sockets in C#</h1><hr/>
 <p><img src="Socket.png" alt="socket" /></p>
 <p>In this short tutorial, you will see how to make a socket connection in C# between a client and a server.</p>
 <p>Multiple clients cannot be handled out of the box, and you must use multi-threading, similarly to what you were taught in SDJ2.<br />
@@ -42,7 +42,7 @@ This is, however, not covered in this tutorial.</p>
 
 </div>
 <div class="tab">
-<h1>Server Side</h1>
+<hr/><h1 id="server-side">Server Side</h1><hr/>
 <p>The below code shows a simple server program. It is an echo server, so it reads a string from the client, and returns it back to the client.</p>
 <pre><code class="line-numbers language-csharp">class Program {
     static void Main(string[] args) {
@@ -122,7 +122,7 @@ Over and over and over and...</p>
 
 </div>
 <div class="tab">
-<h1>Client Side</h1>
+<hr/><h1 id="client-side">Client Side</h1><hr/>
 <p>This is the client side of the example. It sends a string to the server, and receives a string back again.<br />
 You will notice similarities to the server with regards to reading and writing data.</p>
 <p>Below is a main method with the client program:</p>
@@ -155,6 +155,14 @@ You will notice similarities to the server with regards to reading and writing d
 
 
 
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
     </div>
 </div>
 <script>

@@ -5,15 +5,15 @@
 <link href="./../../Resources/Style.css" rel="stylesheet">
 <link href="./../../Resources/prism.css" rel="stylesheet">
 <script src="./../../Resources/TabNavigavtor.js"></script>
-<link  rel="shortcut icon"  href="./../../Resources/CodeIcon.png">
-
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
 <body>
 <script src="./../../Resources/prism.js"></script>
 
 <div>
     <a href="./../../index.html" class="homelink">HOME</a>
 </div>
-<div  style="display:flex;width:100%;height:100%;padding-top:64px">
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
     <div>
         <ol>
             <li class="step" onclick="setTab(0)">1 Welcome</li>
@@ -37,15 +37,15 @@
         <!-- One "tab" for each step in the form: -->
 
         <div class="tab">
-<h1>Multi-threading in C#</h1>
+<hr/><h1 id="multi-threading-in-c">Multi-threading in C#</h1><hr/>
 <p>This tutorial will take you through the basics of how to work with threads in C#. The concept is very similar to that of Java-threads.</p>
 
 </div>
 <div class="tab">
-<h1>Multi-threading overview</h1>
+<hr/><h1 id="multi-threading-overview">Multi-threading overview</h1><hr/>
 <p>The threading functionality exists in the namespace <strong>System.Threading</strong></p>
 <p>This namespace provides classes and interfaces which enable multithreaded programming, i.e. parallel execution of code, and leveraging threads.</p>
-<h3>Example usage</h3>
+<h3 id="example-usage">Example usage</h3>
 <ul>
 <li>Separate heavy calculations from UI (to avoid freezes)</li>
 <li>Regularly query external service, and notify application if new data arrived (polling)</li>
@@ -56,7 +56,7 @@
 
 </div>
 <div class="tab">
-<h1>Starting a thread, and printing numbers</h1>
+<hr/><h1 id="starting-a-thread-and-printing-numbers">Starting a thread, and printing numbers</h1><hr/>
 <p>In Java the <code>Thread</code> constructor takes an instance of a class, which implements the interface <code>Runnable</code>.<br />
 In C# the <code>Thread</code> constructor takes a delegate, i.e. either a lambda expression, or a method reference.</p>
 <p>As an example, we would like to execute the following method in a new thread:</p>
@@ -79,7 +79,7 @@ When the <code>Start()</code> method is called on the <code>thread</code> a new 
 
 </div>
 <div class="tab">
-<h1>Passing arguments</h1>
+<hr/><h1 id="passing-arguments">Passing arguments</h1><hr/>
 <p>In the previous example, we just referenced a method. This can be done, when we don't need to pass any arguments.</p>
 <p>The below method also prints numbers, but requires an argument.</p>
 <pre><code class="line-numbers language-csharp">public void PrintNumbers(int count)
@@ -102,7 +102,7 @@ The <code>=&gt;</code> is the lambda operator, so the right hand side is the fun
 
 </div>
 <div class="tab">
-<h1>Calling a method on another class</h1>
+<hr/><h1 id="calling-a-method-on-another-class">Calling a method on another class</h1><hr/>
 <p>Sometimes we would like to keep the behaviour in a separate class. E.g. in Java we usually create a separate class, which implements the <code>Runnable</code> interface, and so the <code>run()</code> is called, when the thread is started. We can do something similar in C#.</p>
 <p>Below is a class, which has a method to print numbers, like previous examples.</p>
 <pre><code class="line-numbers language-csharp">public class NumberPrinterClass
@@ -129,7 +129,7 @@ In the below main method, a new instance of the above class is created, and then
 
 </div>
 <div class="tab">
-<h1>More thread methods</h1>
+<hr/><h1 id="more-thread-methods">More thread methods</h1><hr/>
 <p>Similar to Java, we have a couple of methods available for the threads. Relevant methods are:</p>
 <ul>
 <li>Thread.sleep(milliseconds : long)</li>
@@ -141,6 +141,14 @@ In the below main method, a new instance of the above class is created, and then
 
 
 
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
     </div>
 </div>
 <script>
