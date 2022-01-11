@@ -10,25 +10,27 @@
 }
 
 .cardcontainer {
-    display: flex;
-    flex-wrap: wrap;
-    margin: auto;
+    /*display: flex;*/
+    /*flex-wrap: wrap;*/
+    /*margin: auto;*/
 }
 
 .card {
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
-    width: 300px;
+    /*width: 300px;*/
+    width: 95%;
     margin: 5px;
     padding: 10px;
     transition: 0.25s;
     border-radius: 10px;
+    break-inside: avoid;
 }
 
 .card:hover {
     transition: 0.25s;
     border-radius: 15px;
     box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.8);
-    width: 305px;
+    width: 95%;
 }
 
 .center {
@@ -68,4 +70,39 @@ h4 {
 .card h3 {
     font-style: italic;
     text-align: center;
+}
+
+
+/* columnn management*/
+@media (min-width:350px) {
+    .card-columns {
+        column-count: 1;
+    }
+}
+
+@media (min-width:700px) {
+    .card-columns {
+        column-count: 2;
+    }
+}
+@media (min-width:1050px) {
+    .card-columns {
+        -webkit-column-count:3;
+        -moz-column-count:3;
+        column-count:3;
+    }
+}
+@media (min-width:1400px) {
+    .card-columns {
+        -webkit-column-count:4;
+        -moz-column-count:4;
+        column-count:4;
+    }
+}
+@media (min-width:1750px) {
+    .card-columns {
+        -webkit-column-count:5;
+        -moz-column-count:5;
+        column-count:5;
+    }
 }
