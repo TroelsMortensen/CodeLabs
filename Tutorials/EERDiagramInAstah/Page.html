@@ -24,7 +24,8 @@
 <li class="step" onclick="setTab(5)">6 Relationship attributes</li>
 <li class="step" onclick="setTab(6)">7 Complex relationships</li>
 <li class="step" onclick="setTab(7)">8 Complex relationship attributes</li>
-<li class="step" onclick="setTab(8)">9 Export diagram</li>
+<li class="step" onclick="setTab(8)">9 Inheritance</li>
+<li class="step" onclick="setTab(9)">10 Export diagram</li>
 
         </ol>
     </div>
@@ -180,8 +181,25 @@ This shows a popup, double click on the diamond image.</p>
 <hr/><h1 id="complex-relationship-attributes">Complex relationship attributes</h1><hr/>
 <p>Sometimes, a complex relationship also needs relationship attributes.
 This cannot be done in the same way as previous, where only two entities were involved.</p>
-<p>A solution is under investigation.</p>
-<p><img src="img_20.png" alt="img_20.png" /></p>
+<p>The follow hack can be used.</p>
+<p>Create a new class to hold the relationship attributes, you should name it as the relationship:</p>
+<p><img src="img_25.png" alt="img_25.png" /></p>
+<p>Now, we use the &quot;Line&quot;</p>
+<p><img src="img_26.png" alt="img_26.png" /></p>
+<p>to draw a line between the <em>treats</em> diamond, and the <em>treats</em> class. Then, select the line, and change the type:</p>
+<p><img src="img_27.png" alt="" /></p>
+<p>This is not a particularly good solution, because the line is not anchored to anything, so if you drag around either the diamond or the treats class, the line does not follow along. You will have to pay attention to that detail.</p>
+<h3 id="alternative-idea">Alternative idea</h3>
+<p>Currently, the diamond shape is &quot;see-through&quot;.
+If you made a shape with white interior, you could create a note <span class="numberCircle"><span>1</span></span>, scale it down,
+connect the note with a note anchor <span class="numberCircle"><span>2</span></span> to the treats class.
+Then move the note into the diamond and send it to the back <span class="numberCircle"><span>3</span></span> to hide it.</p>
+<p><img src="img_28.png" alt="" /></p>
+<p>Using this approach, the dotted line is at least anchored at one end.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="working-on-it">working on it..</h1><hr/>
 
 </div>
 <div class="tab">
