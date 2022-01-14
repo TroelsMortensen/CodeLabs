@@ -24,6 +24,7 @@
     transition: 0.25s;
     border-radius: 10px;
     break-inside: avoid;
+    /*position: relative;*/
 }
 
 .card:hover {

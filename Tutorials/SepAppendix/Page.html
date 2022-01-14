@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Appendix structure</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="structuring-your-appendix-in-sep">Structuring your appendix in SEP</h1><hr/>
+<p>In SEP it's important to have a good appendix structure, so that the examiner can easily their way around, and don't have to play hide and seek with your documents.</p>
+<p>I recommend the following:</p>
+<ul>
+<li>Every file starts with an Id, e.g. A, B, C... and also a name that says something about what the folder contains</li>
+<li>You have a root folder called Appendix</li>
+<li>Inside Appendix you have only folders</li>
+<li>Inside these folders, you can organize your files
+<ul>
+<li>It can become confusing if you mix folders and files</li>
+</ul>
+</li>
+<li>It is good to include source files, e.g. your Astah files, but you cannot expect an external examiner to have Astah.\</li>
+</ul>
+<p>Generally, all files must also be available as pdf, png, or svg.</p>
+<p>So, what could it cook like?</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>Now, you can easily make references to your appendix, e.g. &quot;Below you can see a use case description for how to add a new product. Other use case descriptions can be found in Appendix A.A&quot;</p>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showTab(currentTab);
+</script>
+
+</body>
+</html>

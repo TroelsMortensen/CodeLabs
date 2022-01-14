@@ -2,7 +2,7 @@
 
 ### Documentation
 
-...
+[How to structure your appendix](./Tutorials/SepAppendix/Page.html)
 
 ### Videos
 
