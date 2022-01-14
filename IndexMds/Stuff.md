@@ -1,3 +1,5 @@
 ﻿# Stuff
 
-[Wheel of fortune](./Stuff/wheel.html)
+[Uniform wheel of fortune](./Stuff/uniformwheel.html)
+
+[Weighted wheel of fortune](./Stuff/weightedwheel.html)

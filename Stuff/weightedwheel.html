@@ -1,0 +1,252 @@
+<html>
+<style>
+    #wheelOfFortune {
+        position: relative;
+        overflow: hidden;
+        margin: 0 auto;
+        border-radius: 250px;
+        box-shadow: 0px 1px 2px 0px rgb(60 64 67), 0px 2px 6px 2px rgb(60 64 67);
+    }
+
+    #wheel {
+    }
+
+    #spin {
+        font: 1.5em/0 sans-serif;
+        user-select: none;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 30%;
+        height: 30%;
+        margin: -15%;
+        background: #fff;
+        color: #fff;
+        box-shadow: 0 0 0 8px currentColor, 0 0px 15px 5px rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        transition: 0.8s;
+    }
+
+    #spin::after {
+        content: "";
+        position: absolute;
+        top: -17px;
+        border: 10px solid transparent;
+        border-bottom-color: currentColor;
+        border-top: none;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+    }
+</style>
+
+<div class="container">
+    <div id="wheelOfFortune">
+        <canvas id="wheel" width="300" height="300"></canvas>
+        <div id="spin">SPIN</div>
+    </div>
+</div>
+<div class="container" style="margin-top:50px">
+    <input type="number" id="numOfSlices" min="1" max="12" width="5px"/>
+</div>
+
+<script>
+    // maximum 12 sectors available. Could just be increased.
+    const preDefSectors = [
+        {color: "#0bf", label: "1"},
+        {color: "#fb0", label: "2"},
+        {color: "#0fb", label: "3"},
+        {color: "#b0f", label: "4"},
+        {color: "#f0b", label: "5"},
+        {color: "#bf0", label: "6"},
+        {color: "#09ff00", label: "7"},
+        {color: "#676bff", label: "8"},
+        {color: "#ff2020", label: "9"},
+        {color: "#0f9a00", label: "10"},
+        {color: "#bb54ff", label: "11"},
+        {color: "#ff8000", label: "12"},
+    ];
+
+    var weights = [1.0, 1.0];
+
+    var questionNumberDrawn = 0;
+
+    // Don't really use these initial values.
+    var sectors = [
+        {color: "#0bf", label: "1"},
+        {color: "#fb0", label: "2"},
+        {color: "#0fb", label: "3"},
+        {color: "#b0f", label: "4"},
+        {color: "#f0b", label: "5"},
+        {color: "#bf0", label: "6"},
+    ];
+
+    const rand = (m, M) => Math.random() * (M - m) + m;
+    var tot = sectors.length;
+    const EL_spin = document.querySelector("#spin");
+    const sliceInput = document.querySelector("#numOfSlices");
+    sliceInput.value = "2";
+    const ctx = document.querySelector("#wheel").getContext('2d');
+    const dia = ctx.canvas.width;
+    const radius = dia / 2;
+    const PI = Math.PI;
+    const TAU = 2 * PI;
+    var arc = TAU / sectors.length;
+
+    const friction = 0.99; // 0.995=soft, 0.99=mid, 0.98=hard
+    let angVel = 0; // Angular velocity
+    let ang = 0; // Angle in radians
+
+    const getIndex = () => Math.floor(tot - ang / TAU * tot) % tot;
+
+    function drawSector(sector, i) {
+        const ang = arc * i;
+        ctx.save();
+        // COLOR
+        ctx.beginPath();
+        ctx.fillStyle = sector.color;
+        ctx.moveTo(radius, radius);
+        ctx.arc(radius, radius, radius, ang, ang + arc);
+        ctx.lineTo(radius, radius);
+        ctx.fill();
+        // TEXT
+        ctx.translate(radius, radius);
+        ctx.rotate(ang + arc / 2);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#000000";
+        ctx.font = "bold 30px sans-serif";
+        ctx.fillText(sector.label, radius - 10, 10);
+        //
+        ctx.restore();
+    };
+
+    function rotate() {
+        const sector = sectors[getIndex()];
+        ctx.canvas.style.transform = `rotate(${ang - PI / 2}rad)`;
+        EL_spin.textContent = !angVel ? "SPIN" : sector.label;
+        EL_spin.style.background = sector.color;
+    }
+
+    function frame() {
+        if (!angVel) return;
+        
+        // as the wheel slows down, I generally lessen the friction
+        if (angVel > 0.2) {
+            angVel *= 0.98; // Decrement velocity by hard friction
+        } else if (angVel > 0.1) {
+            angVel *= 0.99; // Decrement velocity by medium friction
+        } else if (angVel > 0.05) {
+            angVel *= 0.995; // Decrement velocity by soft friction
+        } else {
+            angVel *= 0.9999; // Decrement velocity by super soft friction 
+            const sector = sectors[getIndex()];
+
+            // however, if the arrow is over the slice of the selected question, we heavy increase the friction, to ensure the wheel stops on the correct slice
+            if (parseInt(sector.label) === questionNumberDrawn) {
+                var scaledFriction = sectors.length / 100; // this is a scaled friction. If slices are larger, we don't need as much friction to ensure, we land on the correct slice
+                angVel *= 0.95 - scaledFriction;
+            }
+        }
+        if (angVel < 0.002) angVel = 0; // Bring to stop
+        ang += angVel; // Update angle
+        ang %= TAU; // Normalize angle
+        rotate();
+    }
+
+    function engine() {
+        frame();
+        requestAnimationFrame(engine)
+    }
+
+    // INIT
+    updateSlices();
+    sectors.forEach(drawSector);
+    rotate(); // Initial rotation
+    engine(); // Start engine
+
+    EL_spin.addEventListener("click", () => {
+        
+        if (angVel > 0) return; // cannot spin more while the wheel is already spinning.
+
+        questionNumberDrawn = getQuestion() + 1;
+
+        console.log("Question drawn: " + questionNumberDrawn);
+
+        angVel += angVel + rand(4.0, 6.0);
+
+    });
+
+    function getQuestion() {
+        // This shouldn't be necessary, just let maxValue = weights.length. But I'm playing safe.
+        // find the maximum possible random value by summing the random-weights of all slices.
+        var maxValue = 0.0;
+        for (var i = 0; i < weights.length; i++) {
+            maxValue += weights[i];
+        }
+
+        var randomNumber = parseFloat(maxValue) * Math.random();
+
+        
+        // find the slice to land on
+        var current = 0;
+        var questionNumber = 0;
+        for (var i = 0; i < weights.length; i++) {
+            current += weights[i];
+            if (randomNumber <= current) {
+                questionNumber = i;
+                break;
+            }
+        }
+        
+        var prevWeight = weights[questionNumber];
+
+        // reduce selected slice's weight, to lessen the chance of landing on it again 
+        weights[questionNumber] = weights[questionNumber] * 0.5;
+
+        
+        // increase the other slice's weights slightly, so the total weight sum remains the same.
+        var increaseToOthers = (prevWeight - weights[questionNumber]) / (weights.length - 1);
+
+        // increase the weights of all other slices.
+        for (var i = 0; i < weights.length; i++) {
+            if (i !== questionNumber) {
+                weights[i] = weights[i] + increaseToOthers;
+            }
+        }
+
+        // printWeights();
+        return questionNumber;
+    }
+
+    function printWeights() {
+        var weightValues = "";
+        for (var i = 0; i < weights.length; i++) {
+            weightValues += " " + weights[i]
+        }
+        console.log("all weights: " + weightValues);
+    }
+
+    function updateSlices() {
+        angVel = 0;
+        var sliceCount = sliceInput.value;
+        sectors = preDefSectors.slice(0, parseInt(sliceCount));
+        tot = sectors.length;
+        arc = TAU / sectors.length;
+        sectors.forEach(drawSector);
+        weights = [];
+        for (var i = 1; i <= sliceCount; i++) {
+            weights.push(1.0);
+        }
+    }
+
+    sliceInput.addEventListener("input", (arg) => {
+        updateSlices();
+    });
+</script>
+</html>
