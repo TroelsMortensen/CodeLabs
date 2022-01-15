@@ -1,3 +1,4 @@
+
 .indextitle {
     text-align: center;
 }
@@ -29,10 +30,8 @@
 
 .card:hover {
     transition: 0.25s;
-    border-radius: 15px;
-    /*border: -1px #000000 solid;*/
-    box-shadow: 0 12px 24px 0 rgba(0, 0, 0, 0.8);
-    width: 95%;
+    border-radius: 50px 0 50px 0;
+    filter: brightness(110%);
 }
 
 .center {
@@ -53,16 +52,16 @@ h4 {
     padding-left: 10px;
 }
 
-.videocard {
-    border: 1px #858585 solid;
-    border-radius: 10px;
-    padding: 5px;
-    margin: 5px;
-}
+/*.videocard {*/
+/*    border: 1px #858585 solid;*/
+/*    border-radius: 10px;*/
+/*    padding: 5px;*/
+/*    margin: 5px;*/
+/*}*/
 
-.videocard span {
-    font-size: small;
-}
+/*.videocard span {*/
+/*    font-size: small;*/
+/*}*/
 
 .card h1 {
     font-style: italic;
