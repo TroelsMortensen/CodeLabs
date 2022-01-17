@@ -8,7 +8,7 @@ namespace CodeLabsGenerator
 
         static void Main(string[] args)
         {
-            string tutorial = "SepAppendix";
+            string tutorial = "BlazorTodoTutorialPart1";
 
             
             string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\" + tutorial;

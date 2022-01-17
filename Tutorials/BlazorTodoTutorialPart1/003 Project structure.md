@@ -9,10 +9,16 @@ In SEP2 you expanded to a client/server system, using JFX. Such a system could b
 ![img_1.png](Resources/CSArch.png)
 
 The same approach applies: Layers have different responsibilites, and each layer is separated by interfaces. In SEP2 you probably divided layers into different packages.
-The next step is to separate into *components*. In Java it's called a module, in .NET it's called a *project*. 
+The next step is to separate into *components*. 
+I will steal the following explanation from Robert C. Martin's book "Clean Architecture":
+
+> Components are unit of deployment. They are the smallets entities  that can be deployed as part of a system. In Java, they are jar files. In .NET they are DDLs.
+> 
+
+In Java components are often organized in modules, in .NET components can be organized into various *projects*. 
 Components can be considered a bit like lego-building blocks, with the intention that you used these blocks til construct the system. They provide modularity, so building-blocks can easily be swapped out.
 
-This means your .NET app will be structured using an approach like below, roughly sketched. Notice that some "packages" have a little upside-down two-pronged fork above the name. This indicates a "sub-system" in Astah, we use it to represent components/projects/modules. Inside each, you can have packages. Inside packages, you find interfaces and classes.
+This means your .NET app could be structured using an approach like below, roughly sketched. Notice that some "packages" have a little upside-down two-pronged fork above the name. This indicates a "sub-system" in Astah, we use it to represent components/projects/modules. Inside each, you can have packages. Inside packages, you find interfaces, classes, and the like.
 
 ![](Resources/FinalAppStructure.png)
 
