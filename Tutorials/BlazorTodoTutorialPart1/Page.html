@@ -67,7 +67,7 @@
 
         <!-- One "tab" for each step in the form: -->
 
-        <div class="tab" style="display:block">
+        <div class="tab">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p><img src="Resources/TodoIcon.png" alt="Todo list" /></p>
 <p>This tutorial will initially introduce you to Blazor-server. You will create a web app to manage todo items. You can consider it a very simple Trello clone.</p>
@@ -88,7 +88,7 @@
 <p><img src="Resources/img_4.png" alt="img_4.png" /></p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="creating-a-new-solution">Creating a new solution</h1><hr/>
 <p>For previous exercises, you have most likely put them all in the same solution, and created a new project for each exercise.</p>
 <p>This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. As such, we wish to have a better code-structure for our application. You have been taught the SOLID design principles. They usually apply to single methods, or classes. In this project we will attempt to apply <em>Clean Architecture</em>, which is basically applying the SOLID principles on a larger scale.</p>
@@ -107,7 +107,7 @@
 <p>I.e. it's pretty empty. Next up, we will talk about the solution structure.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="project-structure">Project structure</h1><hr/>
 <p>You have previously heard about layered systems on second semester, a simple example could look like this:</p>
 <p><img src="Resources/SimpleArch.png" alt="img.png" /></p>
@@ -142,7 +142,7 @@ Components can be considered a bit like lego-building blocks, with the intention
 <p><img src="Resources/HakunaMatata.png" alt="img.png" /></p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="the-domain-component">The Domain component</h1><hr/>
 <p>First, we need the model classes. In this first iteration of the tutorial, we will just need a Todo object. Later we will add Users.</p>
 <h3 id="new-project-component">New project (component)</h3>
@@ -160,7 +160,7 @@ If you make custom Exceptions, they could also go here. We will also add certain
 <p>This component will contain things that are needed across the application.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="todo-model-class">Todo model class</h1><hr/>
 <p>You can start by deleting the default class that comes with the project: Class1.cs.</p>
 <p>Inside your Domain project, create a new directory, name it Models. In here we put the model classes.</p>
@@ -185,7 +185,7 @@ If you make custom Exceptions, they could also go here. We will also add certain
 <p>We might consider adding a feature of reassigning todos to other users. At a later point.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="a-tale-of-three-components">A tale of three components</h1><hr/>
 <p>We are going to need two more components for this first part of the tutorial:
 a Blazor-server component, and another component to save data to a file.
@@ -196,7 +196,7 @@ Because of this separation, we can at a later point easily swap out which implem
 <p>There is a small detail that we will have to require Blazor to know about the FileData component, that cannot be avoided, but it will have a microscopic impact, and it is still very easy to remove FileData, and input something else. We'll get back to this later.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="creating-blazor-server-component">Creating blazor-server component</h1><hr/>
 <p>First, we create the blazor-server component. Right-click your solution folder again, to add a new project:</p>
 <p><img src="Resources/img_3.png" alt="img_3.png" /></p>
@@ -212,7 +212,7 @@ Because of this separation, we can at a later point easily swap out which implem
 <p>We will leave the component for now, and move on to data access.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="file-data-component">File data component</h1><hr/>
 <p>Create a new project again, this time a library:</p>
 <p><img src="Resources/img_5.png" alt="img_5.png" /></p>
@@ -225,7 +225,7 @@ Inside the FileData component, right-click the Dependencies:</p>
 <p>This means your FileData component can now access namespaces and classes in the Domain component.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="filecontext">FileContext</h1><hr/>
 <p>We will now create the class, which can save and retrieve data.
 We will be serializing objects to JSON, and write to a file. It's a pretty simple substitute for a database.</p>
@@ -313,7 +313,7 @@ Then that string is deserialized into a <code>List&lt;Todo&gt;</code>, and assig
 <p>The final version of the FileContext can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs">here</a></p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="data-access-interfaces">Data access interfaces</h1><hr/>
 <p>As mentioned previously, our Blazor app will initially get data from the just created FileContext.
 Later we wish to change this, so the data comes from a server.
@@ -350,7 +350,7 @@ public interface ITodoHome
 <p>Next up, we need the adapters to let the Blazor app get data from the FileContext. These are our Data Access Objects.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="data-access-object">Data Access Object</h1><hr/>
 <p>We currently only have one type of domain object, so we just need a single DAO to provide CRUD operations on Todos.</p>
 <p>The finished class is found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/TodoFileDAO.cs">here</a>.</p>
@@ -416,7 +416,7 @@ Finally, we return the finalized todo object, now with a correct Id.</p>
 <p>UpdateAsync: First find the existing Todo, by using <code>todo.Id</code>. Take the <code>OwnerId</code> and <code>IsCompleted</code> from the argument, and overwrite the values of the Todo from the <code>fileContext</code>. Then call <code>SaveChanges()</code></p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="adding-services">Adding services</h1><hr/>
 <p>Now that we have our data persistence in place, we are ready to start working on the Blazor side of things.</p>
 <h3 id="managing-component-dependencies">Managing component dependencies</h3>
@@ -444,7 +444,7 @@ We could use a singleton and synchronize the FileContext class to make it thread
 but that's out of scope of this exercise, given that the FileContext is just temporary.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="viewing-todo-items">Viewing todo items</h1><hr/>
 <p>We are now ready for our first UI element. We need a page, where we can view existing Todo items. Select <em>Blazor Component</em>, not the <em>Page</em>!</p>
 <p><img src="Resources/AddNewPage.png" alt="img.png" /></p>
@@ -466,7 +466,7 @@ This means we can navigate to this page with a URI.</p>
 <p>We don't have the model, which you are used to from SDJ2, but in Blazor you can basically consider it to be any type of service-interface, your code block uses. That will in a short while be the ITodoHome interface.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="navigate-to-todos-overview">Navigate to todos overview</h1><hr/>
 <h3 id="changing-layout">Changing layout</h3>
 <p>The default blazor app comes with the left side navigation bar. For this tutorial, we will just expand on that. You can, however, rework the entire layout of the app at a later point, if you wish.
@@ -511,7 +511,7 @@ It can be very beneficial to organize UI pieces into components for re-usability
 <p>Addiditionally, you can click on an html tag (or in general just about anything) and press <kbd>ctrl</kbd>+<kbd>q</kbd> to get more information about something, a class, a tag, a method, a variable.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="testing-testing-1-2-testing">TESTING, TESTING, 1, 2, TESTING</h1><hr/>
 <p>Let us see what the current app looks like. It is not particularly interesting, but let us just verify the Todos page is working, and you can navigate to it.</p>
 <p>Now, in .NET6, the Program.cs no longer has an explicit main method. You are probably used to having a little green play arrow next to the main method in IntelliJ.<br />
@@ -525,7 +525,7 @@ We have that for explicit main methods in Rider too. But at the time of writing,
 <p>The app should open, you should be able to click Todos in the nav menu, and open the world's most bland page. Let's improve that.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="todos-page-code">Todos page code</h1><hr/>
 <p>The result can be found on my GitHub project <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/Todos.razor">here</a>.</p>
 <p>Open your Todos.razor file.</p>
@@ -563,7 +563,7 @@ always ask for them with the <code>@inject</code>.</p>
 The <code>errorLabel</code> is currently not introduced until the delete feature is implemented.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="todos-page-view">Todos page view</h1><hr/>
 <p>We wish to show the Todo items in a table, at least initially.</p>
 <p>This means we must update the view part of the page, i.e. just below <code>&lt;h3&gt;Todos&gt;/h3&gt;</code>, and above the <code>@code {</code>.</p>
@@ -615,14 +615,14 @@ Or, in the future, maybe the todos should be generated as cards, and the html fo
 <p>Again, the result of this file can be found on my GitHub project <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/Todos.razor">here</a>.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="testing-again">Testing again.</h1><hr/>
 <p>Run your app, like previous, navigate to the Todos page.</p>
 <p>You should see something like this:</p>
 <p><img src="Resources/TodosOverview.png" alt="img.png" /></p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="cleaning-up">Cleaning up</h1><hr/>
 <p><img src="Resources/CleanUp.png" alt="img.png" /></p>
 <p>The default project comes with various classes/functionality, we don't really need. E.g. the weather data stuff and counter incrementer.
@@ -645,7 +645,7 @@ We might as well remove this, so we don't clutter our app.</p>
 <p>Now it is time to confirm we didn't break anything. Run your app, verify the two nav menu items are gone, and that your Todos page still works.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="dotnet-watch-run-optional-step">dotnet watch run (optional step)</h1><hr/>
 <p>So far, whenever you have made a change to your blazor app, you need to stop the app, and start it again, for the changes to take effect.</p>
 <p><strong>If you are fine with this, you can just skip this step.</strong></p>
@@ -688,7 +688,7 @@ You can also setup a launch configuration, so you can use the little green play 
 <p>This <em>watch</em> is still under development, and you may still sometimes have to restart your app.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="todo-validation-rules">Todo validation rules</h1><hr/>
 <p>Now that we can view all Todos, it's time to add new Todo items.</p>
 <p>First, we want to make sure, that whenever we add a Todo, the data is valid.</p>
@@ -724,7 +724,7 @@ Required means that this property is not allowed to be <code>null</code>. MaxLen
 <p>This is need by the upcoming blazor page.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="add-todo-page">Add Todo page</h1><hr/>
 <p>The final class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/AddTodo.razor">here</a> for reference.</p>
 <p>We are going to need a new page for adding todos, so create a new page, similar to the Todos page previously. In the Pages folder. Call it AddTodo.</p>
@@ -786,7 +786,7 @@ If something <em>does</em> go wrong, we <code>return</code> i.e. exit the method
 <p><strong>Line 27</strong>: We ask the <code>NavigationManager</code> to open the Todos overview page.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="the-view-part-of-adding-a-new-todo-item">The view part of adding a new Todo item</h1><hr/>
 <p>In the view part of the page, insert the below:</p>
 <pre><code class="line-numbers language-razor">&lt;EditForm Model=&quot;@newTodoItem&quot; OnValidSubmit=&quot;@AddNewTodo&quot;&gt;
@@ -835,7 +835,7 @@ and if there are no problems, the <code>AddNewTodo</code> method will be called.
 <p>The final class can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/Blazor/Pages/AddTodo.razor">here</a></p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="add-todo-styling">Add todo styling</h1><hr/>
 <p>Currently, when you open the Add Todo page, it should look something like this:</p>
 <p><img src="Resources/CurrentAddTodo.png" alt="img.png" /></p>
@@ -884,7 +884,7 @@ The <code>errorLabel</code> is only shown, if it is not empty. Otherwise, it may
 <p>With the box centered in the view.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="can-we-add-a-todo">Can we add a Todo?</h1><hr/>
 <p>Now is the time to test, if we can add a todo.</p>
 <p>Navigate to the page. Without putting anything in either field, press the &quot;Create&quot; button, and verify you get an error message.</p>
@@ -900,7 +900,7 @@ which was added almost at the top of the <code>&lt;EditForm&gt;</code>.</p>
 <p>You should be taken to the &quot;Todos&quot; page, and at the bottom row, your todo is shown. Notice the <code>TodoID</code> has been set correctly.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="removing-a-todo">Removing a Todo</h1><hr/>
 <p>Next up, we want to be able to delete a Todo. You have a todo about doing the dishes, but don't want to? Just delete it.</p>
 <p>For this part, we will modify the existing <code>Todos.razor</code> file, so, moving forward, the solution will proceed on a new branch:</p>
@@ -990,7 +990,7 @@ We use a lambda expression to call the <code>RemoveTodo()</code> method, and par
 <p><img src="Resources/AbsolutelyWonderful.png" alt="img.png" /></p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="toggling-the-completed-status">Toggling the completed status</h1><hr/>
 <p>Sometimes it is a bit of a crude solution to just delete a Todo, and you do actually have to finish the task.
 The good part though, is that you to mark that task as completed.</p>
@@ -1110,7 +1110,7 @@ input:checked + .slider:before {
 Test that the functionality works, by changing the status of a <code>Todo</code> and refreshing the page, or opening a different page and go back to the overview again.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="filtering-todos">Filtering todos</h1><hr/>
 <p>We would like to be able to filter the table view based on <code>OwnerId</code>.
 This requires more changes to <code>Todos.razor</code> and a new GitHub branch for this feature,
@@ -1369,7 +1369,7 @@ Also here an &quot;onchange&quot; action, to call <code>UpdateCompletedStatusFil
 </ol>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="filtering-data-problem">Filtering data problem</h1><hr/>
 <p>As mentioned on the previous slide, the &quot;simple&quot; approach was used over the &quot;better&quot; approach.</p>
 <p>It is not a problem in this tiny toy example, but it is not scalable. Here is the problem.</p>
@@ -1388,7 +1388,7 @@ We are essentially loading the entire database.</p>
 <p>We will not dig deeper into the problem here, other than saying it is generally a bad idea to just load the entire database. It does not scale very well.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="editing-a-todo">Editing a Todo</h1><hr/>
 <p>We will add a new feature, so that we can edit existing Todos.
 The main take-away from this feature is how to pass arguments/information from one page to another.</p>
@@ -1505,7 +1505,7 @@ Notice the property <code>Id</code> in the code block, it is marked with the att
 <p>Next slide will update the Todos over view, so we can click an edit button.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="updating-the-overview-to-edit-todo">Updating the overview to edit Todo</h1><hr/>
 <p>Once again, we need a new column to keep a button for editing a Todo.</p>
 <p>We need an icon for edit. I found a gif from <a href="https://icons8.com/icons/set/edit">this icon site</a></p>
@@ -1573,7 +1573,7 @@ cursor: pointer;
 </ol>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="status">Status</h1><hr/>
 <p>Now you have been through the basics of Blazor.</p>
 <p>You have seen how to mix html and razor-syntax to dynamically render pages.<br />
@@ -1588,7 +1588,7 @@ Use of components are not strictly necessary, you can get far without, but they 
 <p>In process..</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="components">Components</h1><hr/>
 <p>So far, we have mostly worked with pages, but not really utilized components. It may take some practice to get used to
 use components, but they are very powerful for re-usability.</p>
@@ -1617,7 +1617,7 @@ use components, but they are very powerful for re-usability.</p>
 <p>Code is found in <a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/6ToggleComponent">this branch</a></p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="toggle-component">Toggle Component</h1><hr/>
 <p>First, we need some organization. Currently all pages are just in the pages directory, but that can eventually get messy.</p>
 <p>Create a new directory in Pages, called UIElements.</p>
@@ -1765,7 +1765,7 @@ It also asked for a method for the Callback, and here we give it a lambda expres
 <p>You can now use the Toggle component in a similar way all over your app, good for consistency and reusability.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="popup-component">Popup component</h1><hr/>
 <p>We will continue to play a bit with components, this time we will create a popup to show messages.</p>
 <p>There are several libraries, mentioned in step 32, which can do this, but let's start with a manual approach.
@@ -1855,7 +1855,7 @@ And then two CallBacks, on for pressing the <kbd>x</kbd> to close the modal, and
 <p>Let us try it out, se if we can make it work.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="show-popup-when-todo-is-added-successfully">Show popup when Todo is added successfully</h1><hr/>
 <p>We will edit the AddTodo.razor, so that the modal is shown when a Todo is added.</p>
 <h3 id="code">Code</h3>
@@ -1929,7 +1929,7 @@ If you use is as an error message, instead of our usual <code>errorLabel</code>,
 <p>If you click accept, you are taken to the todos overview.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="update-todo-in-modal">Update todo in modal</h1><hr/>
 <p>Having to navigate to a new page just to update an existing todo may feel unnecessary.
 Instead, we can use our new modal component to show a popup in which we can edit the todo data.</p>
@@ -1950,8 +1950,7 @@ Instead, we can use our new modal component to show a popup in which we can edit
     </div>
 </div>
 <script>
-
-    showTab(currentTab);
+    showFirstOrSpecificTab();
 </script>
 
 </body>

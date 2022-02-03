@@ -43,13 +43,13 @@
 
         <!-- One "tab" for each step in the form: -->
 
-        <div class="tab" style="display:block">
+        <div class="tab">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>This tutorial takes you through a few different ways of interacting with a PostgreSQL database.</p>
 <p>You will be setting up the database, inserting data, removing data again, and breaking down the database in the end.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="install-the-database-and-datagrip">Install the database and DataGrip</h1><hr/>
 <p>At this point, hopefully you have already installed Postgres. If not, watch a video <em><strong><a href="https://www.youtube.com/watch?v=EX81bDA-mkA&amp;t=4s">here</a></strong></em> on how to set it up.</p>
 <p>You need an IDE to interact with the database. Several exists, e.g. Postgres has made their own, PGAdmin. It has, however, often been expressed by students that PGAdmin may not be a friendly IDE.</p>
@@ -58,7 +58,7 @@
 <p>The above video should also show how to setup a connection to your Postgres database.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="creating-a-schema">Creating a schema</h1><hr/>
 <p>In the console, we will start by creating a schema.</p>
 <p>Schemas are used similar to packages in Java, it's a way to organize your database.<br />
@@ -76,7 +76,7 @@ This is not strictly required, but just an old convention to improve readability
 Nowadays your IDE will syntax highlight your SQL, e.g. in the above screenshots SQL keywords are orange.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="creating-your-first-table">Creating your first table</h1><hr/>
 <p>In the following, write and execute all SQL statements in the console, we have used so far.</p>
 <p>Each statement can be highlighted, and executed in isolation.</p>
@@ -99,7 +99,7 @@ which department they are attached to, their salary (per month) and a unique ide
 Similar to <code>int</code> in Java, <code>bigint</code> and <code>smallint</code> are data types, just with various number of digits. The type <code>varchar</code> is your basic <code>string</code>.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="insert-employees">Insert employees</h1><hr/>
 <p>Next up, we will add a couple of employees to the database. Do this by executing SQL commands in the console, as before.</p>
 <p>You must insert at least 6 different employees, and they should belong to at least 3 different departments, e.g. &quot;A1&quot;, &quot;A2&quot;, &quot;A3&quot;.<br />
@@ -113,7 +113,7 @@ Values ('Anders', 'Hansen', 'A2', 18900, 24);
 <p>Insert another five employees.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="verifying-the-data">Verifying the data</h1><hr/>
 <p>Now that we have inserted employees into the table, we just want to verify the data is actually present.</p>
 <p>To retrieve data from tables, we use a <code>SELECT</code> statement. These can be somewhat advanced, depending on what kind of data you want to retrive.\</p>
@@ -127,7 +127,7 @@ FROM employee;
 <p>Alternatively, you can also double click on the table in the browser view to the left, nested under the starcompany schema.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="altering-a-table">Altering a table</h1><hr/>
 <p>Since you created the employee table, the StarCompany management has decided they also wants to register the date, where each employee was hired.<br />
 For this, we need to make a modification to the employee table.</p>
@@ -149,7 +149,7 @@ For this, we need to make a modification to the employee table.</p>
 A date is formatted like this <code>'yyyy-mm-dd'</code>, so e.g. <code>'2007-04-16'</code>.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="updating-existing-data">Updating existing data</h1><hr/>
 <p>The first 6 employees you inserted into the database does not have age or start date, because this information was added afterwards.</p>
 <p>So, we have to update the first employees, to fill in this data.</p>
@@ -166,7 +166,7 @@ FROM employee;
 </code></pre>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="updating-existing-values">Updating existing values</h1><hr/>
 <p>Department &quot;A1&quot; is doing very well, and so they have all been granted a pay raise of 10%.</p>
 <p>Use a <code>UPDATE</code> statement in increase the pay of all employees in department &quot;A1&quot; (or another one, with more than one employee) by 10%.</p>
@@ -180,7 +180,7 @@ WHERE department='A1';
 </details>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="query-data">Query data</h1><hr/>
 <h3 id="who-works-in-department-a3">Who works in department A3?</h3>
 <p>Write a statement to retrieve all employees, who work in department &quot;A3&quot; (or another, if you don't have A3).<br />
@@ -230,7 +230,7 @@ WHERE startdate &lt; '01-04-1997'
 </details>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="delete-data-from-table">Delete data from table</h1><hr/>
 <h3 id="delete-some">Delete some</h3>
 <p>The company has way too many expenses and wants to get rid of all employees with a salary bigger than 300.000 <strong>per year</strong>.</p>
@@ -264,7 +264,7 @@ WHERE department = 'A3';
 </details>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="summing-data">Summing data</h1><hr/>
 <p>It was not enough. The company has gone bankrupt but owes salary for the last month to the remaining employees.
 Find out how much that is.</p>
@@ -277,7 +277,7 @@ FROM employee
 </details>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="removing-an-entire-table">Removing an entire table</h1><hr/>
 <p>First, delete any leftover employees:</p>
 <pre><code class="line-numbers language-sql">DELETE FROM employee;

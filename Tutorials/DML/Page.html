@@ -36,7 +36,7 @@
 
         <!-- One "tab" for each step in the form: -->
 
-        <div class="tab" style="display:block">
+        <div class="tab">
 <hr/><h1 id="data-manipulation-language-sql">Data Manipulation Language (SQL)</h1><hr/>
 <p>This tutorial will introduce how to manipulate the data in a database. This includes:</p>
 <ul>
@@ -46,7 +46,7 @@
 </ul>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="inserting-data">Inserting data</h1><hr/>
 <p>There are a few different ways of inserting data into the database. The first step here is to insert data by explicitly specifying the data.</p>
 <p>Assume the following table, and columns</p>
@@ -79,7 +79,7 @@ VALUES ('Troels', 'Mortensen', 'SW', 42, '01-08-2016'),
 <p>Here, two sets of data are provided, separated with a comma.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="insert-data-from-query-result">Insert data from query result</h1><hr/>
 <p>Sometimes you wish to insert data based on a query result. Perhaps you are given a messy table with all data, and wish to split it out into separate tables.</p>
 <p>Assume again the below Employee table, and another table, Names:</p>
@@ -94,7 +94,7 @@ We can do this by first getting the required data with a query, and then using t
 <p>The postgresql documentation for <code>INSERT</code> is found <em><strong><a href="https://www.postgresql.org/docs/9.5/sql-insert.html">here</a></strong></em>. About half way down you will find some examples.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="updating-existing-data">Updating existing data</h1><hr/>
 <p>We often need to update existing data. This slide contains a couple of examples.</p>
 <p>The basic syntax for updating is as follows:</p>
@@ -136,7 +136,7 @@ WHERE employ_id = 42;
 <p>And the full documentation <em><strong><a href="https://www.postgresql.org/docs/9.1/sql-update.html">here</a></strong></em>.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="deleting-data">Deleting data</h1><hr/>
 <p>We can remove all kinds of data:</p>
 <ul>
@@ -157,7 +157,7 @@ You can then append <code>CASCADE</code>, meaning all rows will be deleted as we
 <p>In a similar way you can drop other things. A full list can be found <em><strong><a href="https://www.postgresql.org/docs/9.1/sql-commands.html">here</a></strong></em>. It is an overview of all commands, just scroll down to the <code>DROP [SOMETHING]</code>.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="deleting-rows">Deleting rows</h1><hr/>
 <p>You can delete all rows from a table with the below command. This will not <code>DROP</code> the table itself, just remove all data in it.</p>
 <pre><code class="line-numbers language-sql">DELETE FROM &lt;table name&gt;
@@ -325,8 +325,7 @@ Or we should have added an <code>ON DELETE</code> behaviour when declaring the <
     </div>
 </div>
 <script>
-
-    showTab(currentTab);
+    showFirstOrSpecificTab();
 </script>
 
 </body>

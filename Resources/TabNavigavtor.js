@@ -11,11 +11,10 @@ function showFirstOrSpecificTab() {
         return;
     }
     var slideIdx = parseInt(slide);
-    if (isNaN(slideIdx)) {
-        showTab(currentTab);
-        return;
+    if (!isNaN(slideIdx)) {
+        currentTab = slideIdx - 1;
     }
-    showTab(slideIdx - 1);
+    showTab(currentTab);
 }
 
 function showTab(n) {
@@ -25,7 +24,7 @@ function showTab(n) {
     if (x.length == 0) {
 
     }
-    // x[n].style.display = "block";
+    x[n].style.display = "block";
 
     //... and fix the Previous/Next buttons:
     if (n == 0) {

@@ -131,7 +131,7 @@ namespace CodeLabsGenerator
             MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             string mdAsHtml = Markdown.ToHtml(mdFileContent, pipeline);
             StringBuilder sb = new();
-            sb.Append("<div class=\"tab\" style=\"display:block\">").Append('\n');
+            sb.Append("<div class=\"tab\">").Append('\n');
             {
                 sb.Append(mdAsHtml).Append('\n');
                 InsertHorizontalLine(sb);

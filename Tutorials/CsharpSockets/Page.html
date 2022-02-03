@@ -33,7 +33,7 @@
 
         <!-- One "tab" for each step in the form: -->
 
-        <div class="tab" style="display:block">
+        <div class="tab">
 <hr/><h1 id="sockets-in-c">Sockets in C#</h1><hr/>
 <p><img src="Socket.png" alt="socket" /></p>
 <p>In this short tutorial, you will see how to make a socket connection in C# between a client and a server.</p>
@@ -41,7 +41,7 @@
 This is, however, not covered in this tutorial.</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="server-side">Server Side</h1><hr/>
 <p>The below code shows a simple server program. It is an echo server, so it reads a string from the client, and returns it back to the client.</p>
 <pre><code class="line-numbers language-csharp">class Program {
@@ -121,7 +121,7 @@ The data is converted to a byte array, again using an encoding, in this case ASC
 Over and over and over and...</p>
 
 </div>
-<div class="tab" style="display:block">
+<div class="tab">
 <hr/><h1 id="client-side">Client Side</h1><hr/>
 <p>This is the client side of the example. It sends a string to the server, and receives a string back again.<br />
 You will notice similarities to the server with regards to reading and writing data.</p>
@@ -166,8 +166,7 @@ You will notice similarities to the server with regards to reading and writing d
     </div>
 </div>
 <script>
-
-    showTab(currentTab);
+    showFirstOrSpecificTab();
 </script>
 
 </body>
