@@ -43,3 +43,6 @@ always ask for them with the `@inject`.
 **Line 13**: Here we fetch the todos from the ITodoHome instance (the TodoFileDAO, which uses FileContext). We *await* the method call, because this may potentially take some time, and we want to release control, so the process can do other stuff. In general, we use async wherever we can in our pages.
 
 That's all for the code, for now. Next the view.
+
+Note: The `TodoHome.GetAsync()` call could actually fail, if something goes wrong behind the scenes. We should surround it with a try-catch, and inside the catch, we update an `errorLabel`. The slide and code on GitHub will be updated later to reflect this.
+The `errorLabel` is currently not introduced until the delete feature is implemented.

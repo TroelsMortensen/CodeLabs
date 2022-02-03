@@ -45,14 +45,14 @@
 
         <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
-<h1>Welcome to debugging in C# with Rider</h1>
+        <div class="tab" style="display:block">
+<hr/><h1 id="welcome-to-debugging-in-c-with-rider">Welcome to debugging in C# with Rider</h1><hr/>
 <p>This tutorial will introduce the debugging tool in Rider. The tutorial can be used for other IDEs as well, though some descriptions or images will not match e.g. Visual Studio.</p>
 <p>Still, the same code can be used, and the same debugging functionality will most likely exist.</p>
 
 </div>
-<div class="tab">
-<h1>The code</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="the-code">The code</h1><hr/>
 <p>The code introduced over the next few slides is what we will use for this example. There are four classes:</p>
 <ul>
 <li>Category</li>
@@ -61,12 +61,12 @@
 <li>Utils</li>
 </ul>
 <p>The program is about products and calculating prices, nothing too fancy.</p>
-<h3>New project</h3>
+<h3 id="new-project">New project</h3>
 <p>First, you'll need a new console project. It can be in an existing solution, or a new one.</p>
 
 </div>
-<div class="tab">
-<h1>Create Utils class</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="create-utils-class">Create Utils class</h1><hr/>
 <p>Inside your new project, create a class called Utils, it looks like this:</p>
 <pre><code class="line-numbers language-csharp">public class Utils
 {
@@ -95,8 +95,8 @@
 <p>It is not currently important what the code does, we will step through it and investigate, when we start the debugging.</p>
 
 </div>
-<div class="tab">
-<h1>Create Category</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="create-category">Create Category</h1><hr/>
 <p>Next up, we need an enum, called Category:</p>
 <pre><code class="line-numbers language-csharp">public enum Category
 {
@@ -107,8 +107,8 @@
 </code></pre>
 
 </div>
-<div class="tab">
-<h1>Product class</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="product-class">Product class</h1><hr/>
 <p>Now we need the product class:</p>
 <pre><code class="line-numbers language-csharp">public class Product
 {
@@ -126,8 +126,8 @@
 </code></pre>
 
 </div>
-<div class="tab">
-<h1>Program class</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="program-class">Program class</h1><hr/>
 <p>Finally, we need the Program.cs. When you created a console application, the Program.cs will have been created for you.
 You just need to modify it to look like this:</p>
 <pre><code class="line-numbers language-csharp">public class Program
@@ -175,8 +175,8 @@ Tomatoes: 2.14 EUR
 <p><img src="img.png" alt="img.png" /></p>
 
 </div>
-<div class="tab">
-<h1>Setting a breakpoint</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="setting-a-breakpoint">Setting a breakpoint</h1><hr/>
 <p>Breakpoints are placed next to lines of code. When running your program in <em>debug mode</em> (shown later),
 your program will pause execution at the break point, and you can inspect all kinds of information.</p>
 <p>A breakpoint is placed in the <em>gutter</em>.</p>
@@ -186,8 +186,8 @@ your program will pause execution at the break point, and you can inspect all ki
 <p>Let your program be paused here, and continue to the next slide.</p>
 
 </div>
-<div class="tab">
-<h1>The Debug Window</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="the-debug-window">The Debug Window</h1><hr/>
 <p>After we start debugging, the program stops at the breakpoint. To examine the state of the paused program, we use the <em>Debug</em> window.</p>
 <p>This window contains all kinds of information:</p>
 <p><img src="img_1.png" alt="img_1.png" /></p>
@@ -203,8 +203,8 @@ your program will pause execution at the break point, and you can inspect all ki
 </ol>
 
 </div>
-<div class="tab">
-<h1>Advancing execution</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="advancing-execution">Advancing execution</h1><hr/>
 <p>During debugging we step through the program to examine the program state at various execution points.
 There are two main ways you can step through code:</p>
 <ol>
@@ -215,8 +215,8 @@ There are two main ways you can step through code:</p>
 <p>We'll take a look at both.</p>
 
 </div>
-<div class="tab">
-<h1>Stepping over code</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="stepping-over-code">Stepping over code</h1><hr/>
 <p>Your program should still be paused at the <code>Console.WriteLine()</code>. Otherwise stop execution, and restart with the debugging button.</p>
 <p>Let's begin with stepping over the <code>Utils.CalculateVat</code> function in the <code>foreach</code>-loop:</p>
 <p><img src="SteppingOverCode.gif" alt="" /></p>
@@ -234,8 +234,8 @@ There are two main ways you can step through code:</p>
 <p><img src="img_4.png" alt="img_4.png" /></p>
 
 </div>
-<div class="tab">
-<h1>Stepping Into Code</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="stepping-into-code">Stepping Into Code</h1><hr/>
 <p>Press the step over button [F8] a few times, until the exeuction point reaches the line with <code>var vat = Utils.CalculateVat(...</code></p>
 <p><img src="img_5.png" alt="img_5.png" /></p>
 <p>Now, we want to <em>step into</em>, which means we enter the method <code>CalculateVat</code>, and continue from there.</p>
@@ -246,8 +246,8 @@ There are two main ways you can step through code:</p>
 <p>Press the <em>step over</em> button a number of times until you exit the method again. Inspect the values in the debug window along the way.</p>
 
 </div>
-<div class="tab">
-<h1>Resuming the program</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="resuming-the-program">Resuming the program</h1><hr/>
 <p>At any time, you can resume program execution. The program will run till the next breakpoint, if any.</p>
 <p>E.g. if you have a loop with several lines of code, and your are looking for something specific after a couple of iterations, maybe you don't want to use step-over all the way.
 Put a break point at the beginning, and use <em>resume</em> to iterate through loops.</p>
@@ -259,8 +259,8 @@ Put a break point at the beginning, and use <em>resume</em> to iterate through l
 <p>The program will resume execution and then stop at our newly created breakpoint.</p>
 
 </div>
-<div class="tab">
-<h1>Evaluating expressions</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="evaluating-expressions">Evaluating expressions</h1><hr/>
 <p>During debugging, you can evaluate any expression in the context of the current execution point.
 Say, we want to evaluate the insides of our <code>if</code> block:</p>
 <p><img src="img_10.png" alt="img_10.png" /></p>
@@ -270,8 +270,8 @@ Say, we want to evaluate the insides of our <code>if</code> block:</p>
 <p>Note that you can evaluate just about <strong>any</strong> arbitrary expression. The only requirement is the variables you use exist in the current context.</p>
 
 </div>
-<div class="tab">
-<h1>Adding watches</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="adding-watches">Adding watches</h1><hr/>
 <p>f you're interested in how a particular expression changes during program execution,
 you can add it to <code>Watches</code>.
 By default, watches are shown together with local variables and updated at each step through the application.
@@ -285,8 +285,8 @@ Let's add our expression to <code>Watches</code>:</p>
 <p><img src="InspectingWatch.gif" alt="" /></p>
 
 </div>
-<div class="tab">
-<h1>The end</h1>
+<div class="tab" style="display:block">
+<hr/><h1 id="the-end">The end</h1><hr/>
 <p>That was the introduction to debugging. This is a common tool available in all modern IDEs, across most programming languages.</p>
 <p>Whenever your code does not behave as expected, you should probably start debugging.
 Put break points before the affected area, and step through the code, inspecting values along the way, until you find something specific.</p>
@@ -309,6 +309,7 @@ Put a breakpoint at that line or a few lines before, to inspect what happens up 
     </div>
 </div>
 <script>
+
     showTab(currentTab);
 </script>
 

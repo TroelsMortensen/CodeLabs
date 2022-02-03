@@ -10,3 +10,9 @@ These are the basic elements, are you can make quite fancy apps with just this.
 
 The next topic is more advanced, it is about how to use components for reusability in your app. 
 Use of components are not strictly necessary, you can get far without, but they make many things much easier.
+
+### Class Diagram
+In proges...
+
+### Sequence Diagram
+In process..

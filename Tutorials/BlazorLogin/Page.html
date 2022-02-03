@@ -46,7 +46,7 @@
 
         <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+        <div class="tab" style="display:block">
 <hr/><h1 id="welcome-to-blazor-server-login">Welcome to Blazor-server login</h1><hr/>
 <p>This tutorial will take you through how to set up a simple login system for Blazor-server. It can possibly be converted to Blazor-wasm, but I haven't attempted that.</p>
 <p>This approach will use your own User/Profile/Account type, or whatever you call it. You will manage storage of the users.
@@ -57,7 +57,7 @@ We will use the built in <code>AuthenticationStateProvider</code> class, extend 
 <h3 id="as-always-you-can-find-the-entire-example-on-github-here">As always you can find the entire example on GitHub <a href="https://github.com/TroelsMortensen/BlazorLogin">here</a></h3>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="new-solution-new-project">New solution, new project</h1><hr/>
 <p>First, you need a solution. That could be an existing, or a new one.</p>
 <p>Inside this solution, create a new Blazor-server project.</p>
@@ -73,7 +73,7 @@ We will use the built in <code>AuthenticationStateProvider</code> class, extend 
 </ol>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="wrap-the-app-in-authentication">Wrap the app in authentication</h1><hr/>
 <p>We must make available the authentication state to the entire app. We this by wrapping the app in a CascadingAuthenticationState component.</p>
 <p>Open the file app.razor, and modify it to the yellow highlighted, like so:</p>
@@ -81,7 +81,7 @@ We will use the built in <code>AuthenticationStateProvider</code> class, extend 
 <p>You update those tree places.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="disable-server-side-pre-rendering">Disable server-side pre-rendering</h1><hr/>
 <p>Blazor-server has two render modes:</p>
 <ul>
@@ -97,7 +97,7 @@ This is because javascript is only available, when we do not prerender, and we n
 <p>If we do not do this, later, we will get an expception about javascript interop not being available.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="the-user-class">The user class</h1><hr/>
 <p>This class holds information about the user.</p>
 <p>Create a new directory, call it Models.</p>
@@ -137,7 +137,7 @@ This could often be seen as &quot;guest&quot;, &quot;registered user&quot;, &quo
 <p>Maybe the Customer Service Assistant view some product orders by customers, but not modify anything.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="authentication-service-interface">Authentication service interface</h1><hr/>
 <p>We need a class, which can handle logging in and logging out.</p>
 <p>Initially we will just create the interface. We will provide the implementation later.</p>
@@ -160,7 +160,7 @@ public interface IAuthService
 <p>The property at the bottom is an Action. The idea is that another class will listen to the IAuthService implementation for changes in authentication state, i.e. an event will be fired whenever someone logs in or out.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="authenticationstateprovider">AuthenticationStateProvider</h1><hr/>
 <p>This is an abstract class which exists in the Blazor framework. It is used to provide information about who is logged in, and what priviliges they have.</p>
 <p>We must extend this class, and override the method which is called by Blazor to get the login/auth information.</p>
@@ -214,7 +214,7 @@ In that case, we want the SimpleAuthenticationStateProvider to notify the blazor
 <p><img src="img_6.png" alt="img_6.png" /></p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="iuserservice">IUserService</h1><hr/>
 <p>We need an interface which can provide us with user objects. We will put this in a different directory, because it is not directly associated with authentication.<br />
 This isn't really all that relevant, you can put things wherever you wish. But still.</p>
@@ -232,7 +232,7 @@ public interface IUserService
 <p>Later, we could add other methods for adding, removing, getting all users, updating a user, etc. That is, however, not relevant in this tutorial.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="iauthservice-implementation">IAuthService implementation</h1><hr/>
 <p>Now that we have the IUserService, we can create a class that uses it.</p>
 <p>In the directory Authentication, create the following class. Explanation below.</p>
@@ -499,7 +499,7 @@ Again, with '?' to indicate we may have no user stored, which result in  a <code
 <p>In the end, the ClaimsIdentity is returned.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="iuserservice-inmemory-implementation">IUserService InMemory implementation</h1><hr/>
 <p>The IUserService is an interface which promises functionality to get users (and, later perhaps, create, update, delete
 as well).</p>
@@ -533,7 +533,7 @@ public class InMemoryUserService : IUserService
 But that is out of scope for this tutorial.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="registering-services">Registering services</h1><hr/>
 <p>The last part of the setup is just to register the services, we have created. We already registered the <code>SimpleAuthenticationStateProvider</code>.</p>
 <p>Again, open the Program.cs.</p>
@@ -543,7 +543,7 @@ But that is out of scope for this tutorial.</p>
 <p>The next step is to add some login functionality.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="login-page-code">Login page code</h1><hr/>
 <p>We need a page where we can log in.</p>
 <p>Create a new Page:</p>
@@ -585,7 +585,7 @@ the exception is caught, and the errorLabel is updated with a message, so that t
 <p>Next up the page-view.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="login-page-view">Login page view</h1><hr/>
 <p>Next up, we will define the view of the login page.</p>
 <h3 id="css">css</h3>
@@ -669,7 +669,7 @@ it is the <code>ClaimsPrincipal.</code></p>
 <p><img src="img_9.png" alt="img_9.png" /></p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="testing">Testing</h1><hr/>
 <p>We can now test the login functionality, and verify everything works as expected.</p>
 <p>Run your blazor app. When it's open, go to the uri field, to append &quot;/Login&quot; and thereby manually navigate to the login page:</p>
@@ -687,7 +687,7 @@ it is the <code>ClaimsPrincipal.</code></p>
 <p>But we can still not easily navigate to the Login page, and we cannot log out again. That's the next step.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="button-component">Button component</h1><hr/>
 <p>We are going to add icons to the top bar to login and logout</p>
 <h3 id="icons">Icons</h3>
@@ -778,7 +778,7 @@ Notice we import the Login namespace. And the <code>&lt;LoginButtons&gt;</code> 
 <p>That should be all. The last slide is about how secure this system is. Or isn't.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="security">Security</h1><hr/>
 <p>This login system is a toy system. It is meant to show how to play around with the authorization of a blazor app. However, it is not particularly secure.</p>
 <p>After you log in, you can right-click to inspect the page (1), then you can open the Application tab (2), you may need to click (3) to find it.</p>
@@ -859,6 +859,7 @@ Thereby overwriting any changes a mischievous user may have made to the json use
     </div>
 </div>
 <script>
+
     showTab(currentTab);
 </script>
 

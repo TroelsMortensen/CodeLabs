@@ -1,16 +1,32 @@
-﻿
-var currentTab = 0; // Current tab is set to be the first tab (0)
-showTab(currentTab); // Display the current tab
+﻿var currentTab = 0; // Current tab is set to be the first tab (0)
+//showTab(currentTab); // Display the current tab
 
+function showFirstOrSpecificTab() {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const slide = urlParams.get('slide')
+
+    if (slide == "" || slide == null) {
+        showTab(currentTab);
+        return;
+    }
+    var slideIdx = parseInt(slide);
+    if (isNaN(slideIdx)) {
+        showTab(currentTab);
+        return;
+    }
+    showTab(slideIdx - 1);
+}
 
 function showTab(n) {
-    
+
     // This function will display the specified tab of the form...
     var x = document.getElementsByClassName("tab");
-    if(x.length == 0) {
-        
+    if (x.length == 0) {
+
     }
-    x[n].style.display = "block";
+    // x[n].style.display = "block";
+
     //... and fix the Previous/Next buttons:
     if (n == 0) {
         document.getElementById("prevBtn").style.display = "none";
@@ -56,7 +72,7 @@ function nextPrev(n) {
     // if you have reached the end of the form...
     if (currentTab >= x.length) {
         // starting over
-        window.location.href ="/CodeLabs/index.html";
+        window.location.href = "/CodeLabs/index.html";
         // currentTab = 0;
         // setTab(0);
     } else {
@@ -81,14 +97,16 @@ function fixStepIndicator(n) {
 function c(e) {
     return !(!e || !/pre/i.test(e.nodeName)) && (!!e.hasAttribute("data-line") || !(!e.id || !Prism.util.isActive(e, s)))
 }
+
 function b(e) {
     e()
 }
+
 function v(e, t) {
     return Array.prototype.slice.call((t || document).querySelectorAll(e))
 }
 
-function updateLineHighlight(){
+function updateLineHighlight() {
     v("pre").filter(c).map(function (e) {
         console.log("updating");
         return Prism.plugins.lineHighlight.highlightLines(e)

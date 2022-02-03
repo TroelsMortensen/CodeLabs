@@ -44,6 +44,10 @@ In line 7 we make an asynchronous call to the `TodoHome` to delete by id. This c
 Finally, in line 8, we also remove the relevant `Todo` from the `todos` collection, i.e. the collection displayed in the table.\
 An alternative approach would be to re-fetch all the todos through the `TodoHome`.
 
+Note: Now we have the `errorLabel` and as mentioned earlier, the `TodoHome.GetAsync()` call in the `OnInitializedAsync()` method could actually fail, if something goes wrong behind the scenes. 
+We should surround it with a try-catch, and inside the catch, we update the `errorLabel` with an error message. The slide and code on GitHub will be updated later to reflect this.
+
+
 ### The view
 
 Next up, we need to add that new column with the delete button to the table.\
@@ -111,3 +115,4 @@ And you can test it by clicking one of the red crosses, and either go to another
 
 
 ![img.png](Resources/AbsolutelyWonderful.png)
+

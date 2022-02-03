@@ -40,7 +40,7 @@
 
         <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+        <div class="tab" style="display:block">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>This short tutorial will show how to use Astah to create an EER diagram using UML for your database.</p>
 <p>There are certain relevant tools needed so that you can use a class diagram to document an EER diagram.</p>
@@ -54,7 +54,7 @@
 </ol>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="creating-the-diagram-file">Creating the diagram file</h1><hr/>
 <p>When you open Astah, you will most likely see a blank canvas, as no file or diagram is open.</p>
 <p>Create a new file:</p>
@@ -69,7 +69,7 @@ We don't use that.</p>
 <p>So, a class diagram it is.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="inital-visibility-settings">Inital visibility settings</h1><hr/>
 <p>A normal class diagram will have information such as methods, types, visibility. We don't want that.</p>
 <p>Open the &quot;Class Diagram0&quot; file, the one you created in the previous step (see image below). When it is selected in the &quot;Structure&quot; view, you get various settings in the bottom of the left side panel.</p>
@@ -91,7 +91,7 @@ We don't use that.</p>
 <p><img src="img_6.png" alt="img_6.png" /></p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="changing-visibility-settings-after">Changing visibility settings after</h1><hr/>
 <p>What if you forget the initial visibility settings, and now you have a diagram like this:</p>
 <p><img src="img_18.png" alt="img_18.png" /></p>
@@ -103,7 +103,7 @@ We don't use that.</p>
 <p><img src="img_19.png" alt="img_19.png" /></p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="simple-relationships">Simple relationships</h1><hr/>
 <p>Relationships are drawn with an association line without end arrows like this. The drag direction (from -&gt; to) is relevant.</p>
 <p><img src="CreatingRelationship.gif" alt="" /></p>
@@ -117,7 +117,7 @@ So, with the relationship selected, go to the left-hand-side menu again, under t
 <p><img src="img_9.png" alt="img_9.png" /></p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="relationship-attributes">Relationship attributes</h1><hr/>
 <p>These kind of attributes belong to a relationship between two entities.</p>
 <p>For example, a Customer can buy multiple tickets to some Event.<br />
@@ -132,7 +132,7 @@ I have found no way around this.</p>
 <p><img src="RelationshipAttributes1.gif" alt="" /></p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="complex-relationships">Complex relationships</h1><hr/>
 <p>Sometimes 3 or more entities are involved in a relationship, called a complex relationship (or ternary relationship, if there are 3 entities).</p>
 <p>This is represented with a diamond.</p>
@@ -177,7 +177,7 @@ This shows a popup, double click on the diamond image.</p>
 <p><img src="img_24.png" alt="img_24.png" /></p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="complex-relationship-attributes">Complex relationship attributes</h1><hr/>
 <p>Sometimes, a complex relationship also needs relationship attributes.
 This cannot be done in the same way as previous, where only two entities were involved.</p>
@@ -198,11 +198,11 @@ Then move the note into the diamond and send it to the back <span class="numberC
 <p>Using this approach, the dotted line is at least anchored at one end.</p>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="working-on-it">working on it..</h1><hr/>
 
 </div>
-<div class="tab">
+<div class="tab" style="display:block">
 <hr/><h1 id="how-to-export-the-diagram">How to export the diagram</h1><hr/>
 <p>Sometimes these diagrams must be included in a report.</p>
 <p>It is important to export <em>all</em> your diagrams from Astah as .svg files. This is &quot;scalable vector graphics&quot;, which will prevent the diagram from becoming pixelated in the report pdf document.</p>
@@ -225,6 +225,7 @@ Then move the note into the diamond and send it to the back <span class="numberC
     </div>
 </div>
 <script>
+
     showTab(currentTab);
 </script>
 

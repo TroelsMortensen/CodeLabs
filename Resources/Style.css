@@ -29,6 +29,7 @@ h6 {
 
 .tab {
     font-family: Arial;
+    display: block;
 }
 
 .tab img {
