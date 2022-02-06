@@ -8,6 +8,8 @@
 
 [EER diagrams in Astah](Tutorials/EERDiagramInAstah/Page.html)
 
+[DVD rental exercises](Tutorials/DvdRentalExercises/Page.html)
+
 ### Videos
 
 **[Installing postgres and setting up DataGrip](https://youtu.be/EX81bDA-mkA)**
