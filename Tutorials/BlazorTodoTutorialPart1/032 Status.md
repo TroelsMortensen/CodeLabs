@@ -12,7 +12,7 @@ The next topic is more advanced, it is about how to use components for reusabili
 Use of components are not strictly necessary, you can get far without, but they make many things much easier.
 
 ### Class Diagram
-In proges...
+In progess..
 
 ### Sequence Diagram
 In process..
