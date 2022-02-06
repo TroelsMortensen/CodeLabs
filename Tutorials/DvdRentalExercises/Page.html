@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Dvd Rental Exercises</li>
+<li class="step" onclick="setTab(1)">2 Exercise 1</li>
+<li class="step" onclick="setTab(2)">3 Exercise 2</li>
+<li class="step" onclick="setTab(3)">4 Exercise 3</li>
+<li class="step" onclick="setTab(4)">5 Exercise 4</li>
+<li class="step" onclick="setTab(5)">6 Exercise 5</li>
+<li class="step" onclick="setTab(6)">7 Exercise 6</li>
+<li class="step" onclick="setTab(7)">8 Exercise 7</li>
+<li class="step" onclick="setTab(8)">9 Exercise 8</li>
+<li class="step" onclick="setTab(9)">10 Exercise 9</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="dvd-rental-exercises">DVD Rental Exercises</h1><hr/>
+<p>In these exercises we will use a new data set, about a DVD rental business.</p>
+<p>You must first import this data set. Download the ddl file from here:</p>
+<p><a href="DVD_rental_DDL.sql">DVD rental ddl</a></p>
+<p>You must import this by running the ddl code, like this:</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>Right click on your <em>schema</em> folder, and select the &quot;Run SQL Script...&quot;.</p>
+<p>This should import a new schema, the dvd rental.</p>
+<p>Then, you must import data. Download the data her:</p>
+<p><a href="DVD_rental_data.sql">DVD rental data</a></p>
+<p>And then run it, in the same way as before. You should now have a &quot;dvdrental&quot; schema with data. Verify this.</p>
+<p>The below is a Global Relations Diagram to get an overview of the database:</p>
+<p><img src="GR%20diagram.svg" alt="GR" /></p>
+<p>You may want to right click the above, and open the image in a new tab, if it is too small.</p>
+<p>Over the following slides, you will be asked questions, which must be answered by querying the dvdrental database.<br />
+All questions can be answered with a single sql statement (consider this a challange), but sometimes it is easier to do multiple statements.</p>
+<p>For most questions, you can also find the answer as a hint. Do give it a serious try first, before you look at the answer.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-1">Exercise 1</h1><hr/>
+<p>Create a list of all stores.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT * FROM store;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-2">Exercise 2</h1><hr/>
+<p>Create a list of films (title and description) longer than 120 minutes.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_2.png" alt="img_3.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT title, description
+FROM film
+WHERE lenght &gt; 120;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-3">Exercise 3</h1><hr/>
+<p>What are the addresses of each store?</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_3.png" alt="img_3.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM address
+WHERE address_id IN (
+    SELECT address_id
+    FROM store
+    );
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-4">Exercise 4</h1><hr/>
+<p>What is the name of the customer who lives in the city 'Apeldoorn'?</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_4.png" alt="img_4.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT first_name, last_name
+FROM customer
+WHERE address_id IN (
+    SELECT address_id
+    FROM address
+    WHERE city_id = (
+        SELECT city_id
+        FROM city
+        WHERE city = 'Apeldoorn'
+        )
+    );
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-5">Exercise 5</h1><hr/>
+<p>What are the categories of the film 'ARABIA DOGMA'?</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_5.png" alt="img_5.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT name FROM category, film_category
+WHERE category.category_id = film_category.category_id
+AND film_category.film_id = (
+    SELECT film_id
+    FROM film
+    WHERE title = 'ARABIA DOGMA'
+    );
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-6">Exercise 6</h1><hr/>
+<p>Which actors (their names) were in the film 'INTERVIEW LIAISONS'?</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_6.png" alt="img_6.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT first_name, last_name
+FORM actor, film_actor
+WHERE film_actor.actor_id=actor.actor_id
+AND film_actor.film_id IN (
+    SELECT film_id
+    FROM film
+    WHERE title='INTERVIEW LIAISONS'
+    );
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-7">Exercise 7</h1><hr/>
+<p>What is the name of the staff who rented a copy of 'HUNCHBACK IMPOSSIBLE' to customer KURT EMMONS?</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_7.png" alt="img_7.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT customer_id, rental.staff_id, first_name, last_name
+FROM rental, staff
+WHERE rental.staff_id=staff.staff_id
+AND inventory_id IN (
+    SELECT inventory_id
+    FROM inventory
+    WHERE film_id = (
+        SELECT film_id
+        FROM film
+        WHERE title = 'HUNCHBACK IMPOSSIBLE'
+        )
+    );
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-8">Exercise 8</h1><hr/>
+<p>Show how many inventory items are available at each store.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_8.png" alt="img_8.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT store.store_id, COUNT(inventory_id)
+FROM store, inventory
+WHERE inventory.store_id = store.store_id
+GROUP BY store.store_id;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-9">Exercise 9</h1><hr/>
+<p>How many times have VIVIAN RUIZ rented something?</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_9.png" alt="img_9.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT first_name, last_name, COUNT(payment.customer_id) AS rent_count
+FROM payment, customer
+WHERE payment.customer_id = customer.customer_id
+AND payment.customer_id = (
+    SELECT customer_id
+    FROM customer
+    WHERE fist_name = 'VIVIAN'
+    AND last_name = 'RUIZ'
+    );
+</code></pre>
+</details>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>

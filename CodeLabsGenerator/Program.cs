@@ -9,8 +9,8 @@ namespace CodeLabsGenerator
 
         static void Main(string[] args)
         {
-            // GenerateOne("CsharpThreads");
-            GenerateMany();
+            GenerateOne("DvdRentalExercises");
+            // GenerateMany();
         }
 
         private static void GenerateOne(string tutorial)
