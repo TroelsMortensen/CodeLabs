@@ -10,6 +10,8 @@
 
 [DVD rental exercises](Tutorials/DvdRentalExercises/Page.html)
 
+[Web shop exercises](Tutorials/WebshopExercises/Page.html)
+
 ### Videos
 
 **[Installing postgres and setting up DataGrip](https://youtu.be/EX81bDA-mkA)**

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Exercise 1</li>
+<li class="step" onclick="setTab(1)">2 Exercise 2</li>
+<li class="step" onclick="setTab(2)">3 Exercise 3</li>
+<li class="step" onclick="setTab(3)">4 Exercise 4</li>
+<li class="step" onclick="setTab(4)">5 Exercise 5</li>
+<li class="step" onclick="setTab(5)">6 Exercise 6</li>
+<li class="step" onclick="setTab(6)">7 Exercise 7</li>
+<li class="step" onclick="setTab(7)">8 Exercise 8</li>
+<li class="step" onclick="setTab(8)">9 Exercise 9</li>
+<li class="step" onclick="setTab(9)">10 Exercise 10</li>
+<li class="step" onclick="setTab(10)">11 Exercise 11</li>
+<li class="step" onclick="setTab(11)">12 Exercise 12</li>
+<li class="step" onclick="setTab(12)">13 Exercise 13</li>
+<li class="step" onclick="setTab(13)">14 Exercise 14</li>
+<li class="step" onclick="setTab(14)">15 Exercise 15</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="webshop-sql-exercises">Webshop SQL Exercises</h1><hr/>
+<p>First exercise is to get the necessary data set up.</p>
+<p>If you don't have the webshop schema with data, you first need to download the files, create the schema and tables, then import the data.</p>
+<p>Download first the dll file here:</p>
+<p><a href="webshop_DDL.sql">webshop dll</a></p>
+<p>You must import this by running the ddl code, like this:</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>Right click on your <em>schema</em> folder, and select the &quot;Run SQL Script...&quot;.</p>
+<p>This should import a new schema, the dvd rental.</p>
+<p>Then, download the data from here:</p>
+<p><a href="webshop_data.sql">webshop data</a></p>
+<p>Import the data the same way.</p>
+<p>Verify you now have a webshop schema, with tables, and data in the tables.</p>
+<p>A Global Relations diagram for the schema is shown below:</p>
+<p><img src="WebshopGR.svg" alt="" /></p>
+<p>You may want to right-click and open in a new tab, to increase the size, or download.</p>
+<p>Over the following slides, you will be asked questions, which must be answered by querying the dvdrental database.
+All questions can be answered with a single sql statement (consider this a challange), but sometimes it is easier to do multiple statements.</p>
+<p>For most questions, you can also find the an/swer as a hint. Do give it a serious try first, before you look at the answer. Some of these questions are tough, and you need to google for extra SQL &quot;tools&quot;.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-2">Exercise 2</h1><hr/>
+<p>Find all customers whose first name starts with 'Jo'. Create a list of id and names.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT customer_id, first_name, middle_name, last_name
+FROM customer
+WHERE first_name LIKE 'Jo%';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-3">Exercise 3</h1><hr/>
+<p>Find all customers whose first name contains 'ella' and who does not have a middle name.</p>
+<p>Create a list of id and names.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT customer_id, first_name, middle_name, last_name
+FROM customer
+WHERE first_name LIKE '%ella%'
+    AND middle_name ISNULL;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-4">Exercise 4</h1><hr/>
+<p>Find customers who have ordered mored than 4 items.</p>
+<p>Show first name, last name, and the number of ordered items.</p>
+<p>Sort by highest count, then first name.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_3.png" alt="img_3.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT first_name, last_name, COUNT(*) AS no_orders
+FROM customer c,
+     &quot;order&quot; o
+WHERE c.customer_id = o.customer_id
+GROUP BY first_name, last_name
+HAVING COUNT(*) &gt; 4
+ORDER BY no_orders DESC, first_name;
+</code></pre>
+<p>Notice here the &quot;order&quot;. This table name is in quotes because <em>order</em> is a keyword in SQL.</p>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-5">Exercise 5</h1><hr/>
+<p>Find the customer id of Neysa Aldins (first and last name).</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_4.png" alt="img_4.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT customer_id
+FROM customer
+WHERE first_name = 'Neysa'
+    AND last_name = 'Aldins';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-6">Exercise 6</h1><hr/>
+<p>What is the price of the most expensive product?</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_5.png" alt="img_5.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT MAX(product_price)
+FROM product;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-7">Exercise 7</h1><hr/>
+<p>Find the most expensive product.</p>
+<p>Display the product_id, product_name, and the price.</p>
+<p>You can use your previous answer as a sub-query</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_6.png" alt="img_6.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT product_id, product_name, product_price
+FROM product
+WHERE product_price = (
+    SELECT MAX(product_price)
+    FROM product
+);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-8">Exercise 8</h1><hr/>
+<p>Find the sum of the quantity ordered of the most expensive product,
+i.e. how many of the most expensive product have been ordered.
+Again, you may find it useful to use (a slightly modified version) of the previous query as a subquery.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_7.png" alt="img_7.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT SUM(quantity)
+FROM orderedproduct
+WHERE product_id = (
+    SELECT product_id
+    FROM product
+    WHERE product_price = (
+        SELECT MAX(product_price)
+        FROM product
+        )
+    );
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-9">Exercise 9</h1><hr/>
+<p>Who have ordered the most expensive product? Return their full names as a string, e.g. &quot;Neysa Aldins&quot;.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_8.png" alt="img_8.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sq">SELECT CONCAT_WS(' ', first_name, middle_name, last_name) AS full_name
+FROM    customer c,
+        &quot;order&quot; om
+        orderedproduct op
+WHERE c.customer_id = o.customer_id
+AND o.order_id = op.order_id
+AND op.product_id = (
+    SELECT product_id
+    FROM product
+    WHERE product_price = (
+        SELECT MAX(product_price)
+        FROM product
+    )
+);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-10">Exercise 10</h1><hr/>
+<p>Return the first name of all female customers whose last name's second letter is 'o', and who were born in the eighties.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_9.png" alt="img_9.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT first_name
+FROM customer
+WHERE gender = 'F'
+    AND last_name LIKE '_o%'
+    AND birthdate BETWEEN '1980-01-01' AND '1989-12-31';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-11">Exercise 11</h1><hr/>
+<p>How many customers have not placed any orders?</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_10.png" alt="img_10.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(customer_id) AS no_order_customers
+FROM customer
+WHERE customer_id NOT IN (SELECT customer_id FROM &quot;order&quot;);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-12">Exercise 12</h1><hr/>
+<p>Which customers have birthday today? Return names as a string and their age. Note: answer will vary, the
+query is the same.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_11.png" alt="img_11.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT  CONCAT_WS(' ', first_name, middle_name, last_name) AS fulle_name,
+        DATE_PART('year', AGE(birthdate)) AS age
+FROM customer
+WHERE DATE_PART('day', birthdate) = DATE_PART('day', CURRENT_TIMESTAMP)
+    AND DATE_PART('month', birthdate) = DATE_PART('month', CURRENT_TIMESTAMP);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-13">Exercise 13</h1><hr/>
+<p>Find the first name and age of all customers from Denmark.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_12.png" alt="img_12.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT first_name, date_part('year', age(birthdate)) as age
+FROM    customer c,
+        address a,
+        zipcode z,
+        country co
+WHERE c.customer_id = a.customer_id
+AND a.zip_code = z.zip_code
+AND z.country_code = co.country_code
+AND co.country_name = 'Denmark';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-14">Exercise 14</h1><hr/>
+<p>Find the name of the products, sorted alphabetically, who have reviews that contain any of the keywords: 'Great', 'Super', 'Excellent', 'Good'
+but with no case-sensitivity.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_13.png" alt="img_13.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT DISTINCT product_name
+FROM    review r,
+        product p 
+WHERE r.product_id = p.product_id
+AND review_text ILIKE ANY (ARRAY ['%Great%', '%Super%', ''%Excellent%', '%Good%'])
+ORDER BY product_name;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="exercise-15">Exercise 15</h1><hr/>
+<p>Find the name of the products sorted alphabetically who have reviews that contain ALL of the keywords: 'Great', 'Super', 'Excellent', 'Good'
+but with no case-sensitivity.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_15.png" alt="img_15.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT DISTINCT product_name
+FROM    review r,
+        product p 
+WHERE r.product_id = p.product_id
+AND review_text ILIKE ALL (ARRAY ['%Great%', '%Super%', ''%Excellent%', '%Good%'])
+ORDER BY product_name;
+</code></pre>
+</details>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>
