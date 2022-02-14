@@ -1,8 +1,11 @@
 # Program class
-Finally, we need the Program.cs. When you created a console application, the Program.cs will have been created for you.
+Finally, we need to update the `Program.cs`. 
+When you created a console application, the `Program.cs` will have been created for you.
 You just need to modify it to look like this:
 
 ```csharp
+namespace PutYourNameSpaceHere;
+
 public class Program
 {
     public static void Main(string[] args)
@@ -33,8 +36,8 @@ public class Program
 }
 ```
 
-You will probably have to fix some namespace using. The Program.cs will have been put in a namespace named after the project. 
-The previous classes, you created, may not have been given a namespace.
+You will have to fix the namespace, I just added a dummy name. 
+The previously created classes would by default get a namespace corresponding to the Project name, e.g. "DebugBasics".
 
 Fix any import mistakes. 
 

@@ -28,3 +28,5 @@ public class Utils
 ```
 
 It is not currently important what the code does, we will step through it and investigate, when we start the debugging.
+
+The class depends on a `Category`, so we will create that next.

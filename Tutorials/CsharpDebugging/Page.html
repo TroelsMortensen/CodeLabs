@@ -47,7 +47,9 @@
 
         <div class="tab">
 <hr/><h1 id="welcome-to-debugging-in-c-with-rider">Welcome to debugging in C# with Rider</h1><hr/>
-<p>This tutorial will introduce the debugging tool in Rider. The tutorial can be used for other IDEs as well, though some descriptions or images will not match e.g. Visual Studio.</p>
+<p>This tutorial will introduce the debugging tool in Rider.
+The tutorial can be used for other IDEs as well,
+though some descriptions or images will not match, e.g. Visual Studio.</p>
 <p>Still, the same code can be used, and the same debugging functionality will most likely exist.</p>
 
 </div>
@@ -60,7 +62,7 @@
 <li>Program</li>
 <li>Utils</li>
 </ul>
-<p>The program is about products and calculating prices, nothing too fancy.</p>
+<p>The application is about products and calculating prices, nothing too fancy.</p>
 <h3 id="new-project">New project</h3>
 <p>First, you'll need a new console project. It can be in an existing solution, or a new one.</p>
 
@@ -93,6 +95,7 @@
 }
 </code></pre>
 <p>It is not currently important what the code does, we will step through it and investigate, when we start the debugging.</p>
+<p>The class depends on a <code>Category</code>, so we will create that next.</p>
 
 </div>
 <div class="tab">
@@ -105,6 +108,9 @@
     Clothes
 }
 </code></pre>
+<p>When creating a new class, there is actually an option to make it an enum right away:</p>
+<p><img src="img_11.png" alt="img_11.png" /></p>
+<p>Alterntively, just create a normal class, and change out <code>class</code> with <code>enum</code>.</p>
 
 </div>
 <div class="tab">
@@ -128,9 +134,12 @@
 </div>
 <div class="tab">
 <hr/><h1 id="program-class">Program class</h1><hr/>
-<p>Finally, we need the Program.cs. When you created a console application, the Program.cs will have been created for you.
+<p>Finally, we need to update the <code>Program.cs</code>.
+When you created a console application, the <code>Program.cs</code> will have been created for you.
 You just need to modify it to look like this:</p>
-<pre><code class="line-numbers language-csharp">public class Program
+<pre><code class="line-numbers language-csharp">namespace PutYourNameSpaceHere;
+
+public class Program
 {
     public static void Main(string[] args)
     {
@@ -159,8 +168,8 @@ You just need to modify it to look like this:</p>
     };
 }
 </code></pre>
-<p>You will probably have to fix some namespace using. The Program.cs will have been put in a namespace named after the project.
-The previous classes, you created, may not have been given a namespace.</p>
+<p>You will have to fix the namespace, I just added a dummy name.
+The previously created classes would by default get a namespace corresponding to the Project name, e.g. &quot;DebugBasics&quot;.</p>
 <p>Fix any import mistakes.</p>
 <p>Your program should now compile.</p>
 <p>If you run it, you should get the below output in the console:</p>
