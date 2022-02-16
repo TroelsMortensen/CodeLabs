@@ -9,7 +9,7 @@ namespace CodeLabsGenerator
 
         static void Main(string[] args)
         {
-            GenerateOne("CsharpDebugging");
+            GenerateOne("SQLAdventure");
             // GenerateMany();
         }
 

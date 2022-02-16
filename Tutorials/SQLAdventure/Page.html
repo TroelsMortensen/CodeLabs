@@ -106,7 +106,7 @@ Similar to <code>int</code> in Java, <code>bigint</code> and <code>smallint</cod
 A department is just a 3-character code.<br />
 Remember, the data type was <code>varchar(3)</code>, meaning a string of maximum 3 characters.</p>
 <p>The following statement will insert a single employee:</p>
-<pre><code class="line-numbers language-sql">INSERT INTO Employee (firstname, lastname, department, salary, employid) 
+<pre><code class="line-numbers language-sql">INSERT INTO employee (firstname, lastname, department, salary, employid) 
 Values ('Anders', 'Hansen', 'A2', 18900, 24);
 </code></pre>
 <p>This is Anders Hansen, employed to department &quot;A2&quot;, with a salary of 18900 kr/month. His employee ID is 24.</p>
@@ -204,7 +204,7 @@ WHERE salary &gt; 19000;
 <p>Now, the management is too lazy to count the number of rows themselves, so they just want to know how many employees have a pay highger than 19000.</p>
 <p>We can do that with the following statement:</p>
 <pre><code class="line-numbers language-sql">SELECT COUNT(*)
-FROM Employee
+FROM employee
 WHERE salary &gt; 19000;
 </code></pre>
 <p>The <code>COUNT(*)</code> will just count how many rows are returned.</p>

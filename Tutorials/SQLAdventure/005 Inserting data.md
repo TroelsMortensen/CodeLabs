@@ -9,7 +9,7 @@ Remember, the data type was `varchar(3)`, meaning a string of maximum 3 characte
 The following statement will insert a single employee:
 
 ```sql
-INSERT INTO Employee (firstname, lastname, department, salary, employid) 
+INSERT INTO employee (firstname, lastname, department, salary, employid) 
 Values ('Anders', 'Hansen', 'A2', 18900, 24);
 ```
 

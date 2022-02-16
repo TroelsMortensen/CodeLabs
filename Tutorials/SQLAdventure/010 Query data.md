@@ -36,7 +36,7 @@ We can do that with the following statement:
 
 ```sql
 SELECT COUNT(*)
-FROM Employee
+FROM employee
 WHERE salary > 19000;
 ```
 
