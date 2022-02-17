@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Exercise</li>
+<li class="step" onclick="setTab(1)">2 Exercise</li>
+<li class="step" onclick="setTab(2)">3 Exercise</li>
+<li class="step" onclick="setTab(3)">4 Exercise</li>
+<li class="step" onclick="setTab(4)">5 Exercise</li>
+<li class="step" onclick="setTab(5)">6 Exercise</li>
+<li class="step" onclick="setTab(6)">7 Exercise</li>
+<li class="step" onclick="setTab(7)">8 Exercise</li>
+<li class="step" onclick="setTab(8)">9 Exercise</li>
+<li class="step" onclick="setTab(9)">10 Exercise</li>
+<li class="step" onclick="setTab(10)">11 Exercise</li>
+<li class="step" onclick="setTab(11)">12 Exercise</li>
+<li class="step" onclick="setTab(12)">13 Exercise</li>
+<li class="step" onclick="setTab(13)">14 Exercise</li>
+<li class="step" onclick="setTab(14)">15 Exercise</li>
+<li class="step" onclick="setTab(15)">16 Exercise</li>
+<li class="step" onclick="setTab(16)">17 Exercise</li>
+<li class="step" onclick="setTab(17)">18 Exercise</li>
+<li class="step" onclick="setTab(18)">19 Exercise</li>
+<li class="step" onclick="setTab(19)">20 Exercise</li>
+<li class="step" onclick="setTab(20)">30 Advanced Exercises</li>
+<li class="step" onclick="setTab(21)">31 Exercise</li>
+<li class="step" onclick="setTab(22)">32 Exercise</li>
+<li class="step" onclick="setTab(23)">33 Exercise</li>
+<li class="step" onclick="setTab(24)">34 Exercise</li>
+<li class="step" onclick="setTab(25)">35 Exercise</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="load-data">Load data</h1><hr/>
+<p>In these exercises we will use the data set &quot;Goodreads V2&quot;.</p>
+<p>You must first import this data set. Download the ddl file from here:</p>
+<p><a href="GoodreadsV2_DDL.sql">Goodreads ddl</a></p>
+<p>You must import this by running the ddl code, like this:</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>Right click on your <em>schema</em> folder, and select the &quot;Run SQL Script...&quot;.</p>
+<p>This should import a new schema, the dvd rental.</p>
+<p>Then, you must import data. Download the data her:</p>
+<p><a href="GoodreadsV2_Data.sql">Goodreads data</a></p>
+<p>And then run it, in the same way as before. You should now have a &quot;dvdrental&quot; schema with data. Verify this.</p>
+<p>The below is a Global Relations Diagram to get an overview of the database:</p>
+<p><img src="Goodreads_V2_Gr.svg" alt="GR" /></p>
+<p>You may want to right click the above, and open the image in a new tab, if it is too small.</p>
+<p>Over the following slides, you will be asked questions, which must be answered by querying the dvdrental database.<br />
+All questions can be answered with a single sql statement (consider this a challange), but sometimes it is easier to do multiple statements.</p>
+<p>For most questions, you can also find the answer as a hint. Do give it a serious try first, before you look at the answer.</p>
+
+</div>
+<div class="tab">
+<p>What is the first and last name of the author with id 23</p>
+<details>
+<summary>Show answer</summary>
+<p>23,Jim,Butcher</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT id, first_name, last_name
+FROM author
+WHERE id=23;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>What book has the id 24358527?</p>
+<details>
+<summary>Show answer</summary>
+<p>Angles of Attack (Frontlines,  #3)</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT title
+FROM book
+WHERE id = 24358527;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many profiles are there?</p>
+<details>
+<summary>Show answer</summary>
+<p>793</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM profile;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many profiles have the first name 'Jaxx'?</p>
+<details>
+<summary>Show answer</summary>
+<p>3</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM profile
+WHERE first_name='Jaxx';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many profiles have the first name 'Jaxx'?</p>
+<details>
+<summary>Show answer</summary>
+<p>3</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM profile
+WHERE first_name='Jaxx';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Create a list of book titles and their page count, order by the book with the highest page count first.</p>
+<details>
+<summary>Show answer</summary>
+<p>N/A</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT title, page_count
+FROM book
+ORDER BY page_count DESC;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>The previous exercise would show 15 books without a page count first. We don't care about those now.</p>
+<p>Create a list of book titles and their page count, order by the book with the highest page count first, but remove books without a page count.</p>
+<details>
+<summary>Show answer</summary>
+<p>N/A</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT title, page_count
+FROM book
+WHERE page_count IS NOT NULL
+ORDER BY page_count DESC;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show the books published in 2017.</p>
+<details>
+<summary>Show answer</summary>
+<p>N/A</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM book
+WHERE year_published = 2017;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Who published 'Tricked (The Iron Druid Chronicles,  #4)'</p>
+<details>
+<summary>Show answer</summary>
+<p>Random House Publishing Group,169</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT publisher_name, id
+FROM publisher
+WHERE id = (SELECT publisher_id
+            FROM book
+            WHERE title = 'Tricked (The Iron Druid Chronicles,  #4)');
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>What's the binding type of 'Fly by Night'?</p>
+<details>
+<summary>Show answer</summary>
+<p>Hardcover</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT type
+FROM binding_type
+WHERE id = (SELECT binding_id
+            FROM book
+            WHERE title = 'Fly by Night');
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many books do not have an ISBN number?</p>
+<details>
+<summary>Show answer</summary>
+<p>200</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM book
+WHERE isbn IS NULL;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many authors have a middle name?</p>
+<details>
+<summary>Show answer</summary>
+<p>47</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM author
+WHERE middle_name IS NOT NULL;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show an overview of author id and how many books they have written. Order by highest count at the top.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+<p>and more..</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT author_id, COUNT(*) as count
+FROM book
+GROUP BY author_id
+ORDER BY count DESC;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>What is the highest page count?</p>
+<details>
+<summary>Show answer</summary>
+<p>1248</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT MAX(page_count)
+FROM book;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>What is the title of the book with the highest page count?</p>
+<details>
+<summary>Show answer</summary>
+<p>Oathbringer (The Stormlight Archive,  #3)</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT title
+FROM book
+WHERE page_count = (
+    SELECT MAX(page_count)
+    FROM book);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many books has the reader with the profile name 'Venom_Fate' read?</p>
+<details>
+<summary>Show answer</summary>
+<p>179</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM book_read
+WHERE status = 'read'
+  AND profile_id = (
+    SELECT id
+    FROM profile
+    WHERE profile_name = 'Venom_Fate'
+);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many books are written by Brandon Sanderson?</p>
+<details>
+<summary>Show answer</summary>
+<p>41</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM book
+WHERE author_id =
+      (SELECT id
+       FROM author
+       WHERE first_name = 'Brandon'
+         AND last_name = 'Sanderson');
+);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many readers have read the book 'Gullstruck Island'?</p>
+<details>
+<summary>Show answer</summary>
+<p>189</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM book_read
+WHERE status = 'read'
+  AND book_id = (
+    SELECT id
+    FROM book
+    WHERE title = 'Gullstruck Island'
+);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many books have the author Ray Porter co-authored?</p>
+<details>
+<summary>Show answer</summary>
+<p>3</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT COUNT(*)
+FROM co_authors
+WHERE author_id =
+      (SELECT id
+       FROM author
+       WHERE first_name = 'Ray'
+         AND last_name = 'Porter');
+
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-following-advanced-exercises-will-require-knowledge-of-joins">The following advanced exercises will require knowledge of joins</h1><hr/>
+
+</div>
+<div class="tab">
+<p>Who are the names of the author of the book which contains 'The Summer Dragon' in its title?</p>
+<details>
+<summary>Show answer</summary>
+<p>Todd,Lockwood,&quot;The Summer Dragon (The Evertide,  #1)&quot;</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT first_name, last_name, title
+FROM book, author
+WHERE book.author_id = author.id
+  AND title LIKE '%The Summer Dragon%';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>What type of binding does 'Dead Iron (Age of Steam,  #1)' have?</p>
+<details>
+<summary>Show answer</summary>
+<p>Paperback</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT type
+from binding_type, book
+WHERE book.binding_id=binding_type.id
+  AND book.title='Dead Iron (Age of Steam,  #1)';
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show a list of each binding type and how many books are using that type.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT type, COUNT(*)
+FROM binding_type bt, book b
+WHERE bt.id=b.binding_id
+GROUP BY type;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>For each profile, show how many books they have read.</p>
+<details>
+<summary>Show answer</summary>
+<p><img src="img_3.png" alt="" /></p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT profile_name, COUNT(*) count
+FROM profile, book_read
+WHERE book_read.status='read'
+  AND profile.id=book_read.profile_id
+GROUP BY profile_name
+ORDER BY count DESC;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show all the genres of the book 'Hand of Mars (Starship's Mage,  #2)'.</p>
+<details>
+<summary>Show answer</summary>
+<p>science-fiction
+fantasy
+space
+space-opera
+magic
+war
+military-fiction
+military-science-fiction
+fiction
+science-fiction-fantasy
+adventure</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT genre
+FROM genre g, book_genre bg, book b
+WHERE g.id = bg.genre_id AND bg.book_id=b.id
+  AND b.title='Hand of Mars (Starship''s Mage,  #2)';
+</code></pre>
+</details>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>
