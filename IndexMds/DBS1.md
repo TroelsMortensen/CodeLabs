@@ -12,6 +12,8 @@
 
 [Web shop exercises](Tutorials/WebshopExercises/Page.html)
 
+[Goodreads exercises](Tutorials/GoodreadsExercises/Page.html)
+
 ### Videos
 
 **[Installing postgres and setting up DataGrip](https://youtu.be/EX81bDA-mkA)**
