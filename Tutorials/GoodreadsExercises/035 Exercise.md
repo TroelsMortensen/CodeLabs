@@ -3,16 +3,16 @@
 <details>
 <summary>Show answer</summary>
 
-science-fiction
-fantasy
-space
-space-opera
-magic
-war
-military-fiction
-military-science-fiction
-fiction
-science-fiction-fantasy
+science-fiction\
+fantasy\
+space\
+space-opera\
+magic\
+war\
+military-fiction\
+military-science-fiction\
+fiction\
+science-fiction-fantasy\
 adventure
 
 

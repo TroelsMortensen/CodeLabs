@@ -42,6 +42,21 @@
 <li class="step" onclick="setTab(23)">33 Exercise</li>
 <li class="step" onclick="setTab(24)">34 Exercise</li>
 <li class="step" onclick="setTab(25)">35 Exercise</li>
+<li class="step" onclick="setTab(26)">36 Exercise</li>
+<li class="step" onclick="setTab(27)">37 Exercise</li>
+<li class="step" onclick="setTab(28)">38 Exercise</li>
+<li class="step" onclick="setTab(29)">39 Exercise</li>
+<li class="step" onclick="setTab(30)">40 Exercise</li>
+<li class="step" onclick="setTab(31)">41 Exercise</li>
+<li class="step" onclick="setTab(32)">42 Exercise</li>
+<li class="step" onclick="setTab(33)">43 Exercise</li>
+<li class="step" onclick="setTab(34)">44 Exercise</li>
+<li class="step" onclick="setTab(35)">45 Exercise</li>
+<li class="step" onclick="setTab(36)">46 Exercise</li>
+<li class="step" onclick="setTab(37)">47 Exercise</li>
+<li class="step" onclick="setTab(38)">48 Exercise</li>
+<li class="step" onclick="setTab(39)">49 Exercise</li>
+<li class="step" onclick="setTab(40)">50 Exercises</li>
 
         </ol>
     </div>
@@ -486,16 +501,16 @@ ORDER BY count DESC;
 <p>Show all the genres of the book 'Hand of Mars (Starship's Mage,  #2)'.</p>
 <details>
 <summary>Show answer</summary>
-<p>science-fiction
-fantasy
-space
-space-opera
-magic
-war
-military-fiction
-military-science-fiction
-fiction
-science-fiction-fantasy
+<p>science-fiction<br />
+fantasy<br />
+space<br />
+space-opera<br />
+magic<br />
+war<br />
+military-fiction<br />
+military-science-fiction<br />
+fiction<br />
+science-fiction-fantasy<br />
 adventure</p>
 </details>
 <br/>
@@ -507,6 +522,492 @@ WHERE g.id = bg.genre_id AND bg.book_id=b.id
   AND b.title='Hand of Mars (Starship''s Mage,  #2)';
 </code></pre>
 </details>
+
+</div>
+<div class="tab">
+<p>Show a list of both author and co-authors for the book with title 'Dark One'.</p>
+<details>
+<summary>Show answer</summary>
+<table>
+<thead>
+<tr>
+<th>first_name</th>
+<th>last_name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Brandon</td>
+<td>Sanderson</td>
+</tr>
+<tr>
+<td>Collin</td>
+<td>Kelly</td>
+</tr>
+<tr>
+<td>Jackson</td>
+<td>Lanzing</td>
+</tr>
+<tr>
+<td>Kurt</td>
+<td>Russell</td>
+</tr>
+<tr>
+<td>Nathan</td>
+<td>Gooden</td>
+</tr>
+</tbody>
+</table>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">(SELECT first_name, last_name
+ FROM author,
+      book
+ WHERE author.id = book.author_id
+   AND book.title = 'Dark One')
+UNION
+(SELECT first_name, last_name
+ FROM author,
+      book,
+      co_authors
+ WHERE book.id = co_authors.book_id
+   AND author.id = co_authors.author_id
+   AND book.title = 'Dark One');
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>What is the title of the book which is read by most readers.</p>
+<details>
+<summary>Show answer</summary>
+<p>Title: Deception Point<br />
+Id: 976<br />
+Numbers of read: 253</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT title, book_id, COUNT(*) as count
+FROM book_read, book
+WHERE book_read.book_id=book.id
+  AND book_read.status='read'
+GROUP BY title, book_id
+ORDER BY count DESC
+    LIMIT 1;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>For the top-ten largest books (page count wise) show their title and binding type.</p>
+<details>
+<summary>Show answer</summary>
+<table>
+<thead>
+<tr>
+<th>title</th>
+<th>page count</th>
+<th>binding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&quot;Oathbringer (The Stormlight Archive, #3)&quot;</td>
+<td>1248</td>
+<td>Hardcover</td>
+</tr>
+<tr>
+<td>&quot;Rhythm of War (The Stormlight Archive, #4)&quot;</td>
+<td>1230</td>
+<td>Hardcover</td>
+</tr>
+<tr>
+<td>The Stand</td>
+<td>1152</td>
+<td>Hardcover</td>
+</tr>
+<tr>
+<td>&quot;A Dance with Dragons (A Song of Ice and Fire, #5)&quot;</td>
+<td>1125</td>
+<td>Kindle Edition</td>
+</tr>
+<tr>
+<td>&quot;Words of Radiance (The Stormlight Archive, #2)&quot;</td>
+<td>1087</td>
+<td>Hardcover</td>
+</tr>
+<tr>
+<td>&quot;The Way of Kings (The Stormlight Archive, #1)&quot;</td>
+<td>1007</td>
+<td>Hardcover</td>
+</tr>
+<tr>
+<td>&quot;The Wise Man's Fear (The Kingkiller Chronicle, #2)&quot;</td>
+<td>994</td>
+<td>Hardcover</td>
+</tr>
+<tr>
+<td>&quot;A Clash of Kings (A Song of Ice and Fire, #2)&quot;</td>
+<td>969</td>
+<td>Paperback</td>
+</tr>
+<tr>
+<td>&quot;The Damned Trilogy: A Call to Arms, The False Mirror, and The Spoils of War&quot;</td>
+<td>958</td>
+<td>Kindle Edition</td>
+</tr>
+<tr>
+<td>Swan Song</td>
+<td>956</td>
+<td>Mass Market Paperback</td>
+</tr>
+</tbody>
+</table>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT title, page_count, type
+FROM book,
+     binding_type
+WHERE book.binding_id = binding_type.id
+  AND page_count IS NOT NULL
+ORDER BY page_count DESC
+LIMIT 10;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show a count of how many books there are in each genre</p>
+<details>
+<summary>Show answer</summary>
+<p>fiction,448<br />
+fantasy,411<br />
+audiobook,298<br />
+science-fiction-fantasy,262<br />
+science-fiction,228<br />
+magic,227<br />
+adventure,216<br />
+adult,173<br />
+high-fantasy,147<br />
+epic-fantasy,139<br />
+urban-fantasy,124<br />
+young-adult,114<br />
+mystery,107<br />
+paranormal,102
+...</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT genre, COUNT(title) count
+FROM genre, book, book_genre
+WHERE genre.id = book_genre.genre_id AND book_genre.book_id=book.id
+GROUP BY genre
+ORDER BY count DESC;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show a list of publisher names and how many books they each have published</p>
+<details>
+<summary>Show answer</summary>
+<p>Orbit,29<br />
+Tor Books,29<br />
+Del Rey,22<br />
+Faolan's Pen Publishing Inc.,21<br />
+Roc,20<br />
+Gollancz,13<br />
+47North,13<br />
+Broad Reach Publishing,7<br />
+HarperCollinsChildren'sBooks,6<br />
+...</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT publisher.publisher_name, COUNT(*) as count
+FROM publisher, book
+WHERE publisher.id=book.publisher_id
+GROUP BY publisher.publisher_name
+ORDER BY count DESC;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Which book has the highest average rating?</p>
+<details>
+<summary>Show answer</summary>
+<p>Homo Deus: A History of Tomorrow,3.2524271844660194</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT b.title, AVG(br.rating) as rating
+FROM book_read br,
+     book b
+WHERE br.book_id = b.id
+GROUP BY b.title
+ORDER BY rating 
+DESC LIMIT 1;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>How many books have reader 'radiophobia' read in 2018?</p>
+<p>You can extract a year from a DATE with <code>EXTRACT(YEAR FROM book_read.date_finished)</code>.</p>
+<details>
+<summary>Show answer</summary>
+<p>radiophobia, 23</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT p.profile_name, COUNT(*)
+FROM book_read br,
+     profile p
+WHERE br.profile_id = p.id
+  AND EXTRACT(YEAR FROM br.date_finished) = 2018
+  AND br.status='read'
+  AND p.profile_name = 'radiophobia'
+GROUP BY p.profile_name;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show a list of how many books reader 'radiophobia' have read each year.</p>
+<details>
+<summary>Show answer</summary>
+<p>radiophobia, 2016, 13<br />
+radiophobia, 2017, 19<br />
+radiophobia, 2018, 23<br />
+radiophobia, 2019, 25<br />
+radiophobia, 2020, 21<br />
+radiophobia, 2021, 29<br />
+radiophobia, 2022, 1</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT p.profile_name, EXTRACT(YEAR FROM br.date_finished) as year, COUNT(*) as count
+FROM book_read br,
+    profile p
+WHERE br.profile_id = p.id
+  AND p.profile_name = 'radiophobia'
+  AND br.date_finished IS NOT NULL
+GROUP BY p.profile_name, year
+ORDER BY year;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show a top 10 of highest rated books.</p>
+<p>You can use <code>LIMIT x</code> to take only the x first rows of a result.</p>
+<details>
+<summary>Show answer</summary>
+<p>Homo Deus: A History of Tomorrow, 3.2524271844660194<br />
+&quot;Traitor's Blade (Greatcoats,  #1)&quot;, 3.2355769230769231<br />
+Perfect State, 3.2114285714285714<br />
+&quot;Scourged (The Iron Druid Chronicles,  #9)&quot;, 3.2053571428571429<br />
+&quot;Foundryside (The Founders Trilogy,  #1)&quot;, 3.2041884816753927<br />
+&quot;Shadow and Bone (The Shadow and Bone Trilogy,  #1)&quot;, 3.1941747572815534<br />
+In the Shadow of Lightning (Glass Immortals #1), 3.1933701657458564<br />
+Artemis, 3.1930693069306931<br />
+&quot;The Last War (The Last War,  #1)&quot;, 3.191588785046729<br />
+&quot;Summer Knight (The Dresden Files,  #4)&quot;, 3.1897435897435897</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT book.title, AVG(rating) as rating
+FROM book_read,
+     book
+WHERE book_read.book_id = book.id
+GROUP BY book_id, book.title
+ORDER BY rating DESC
+LIMIT 10;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>What's the poorest rated book?</p>
+<details>
+<summary>Show answer</summary>
+<p>&quot;Storm Front (The Dresden Files,  #1)&quot;,2.7272727272727273</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT b.title, AVG(br.rating) as rating
+FROM book b,
+     book_read br
+WHERE b.id = br.book_id
+GROUP BY b.title
+ORDER BY rating ASC
+    LIMIT 1;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Is there any book, which hasn't been read?</p>
+<details>
+<summary>Show answer</summary>
+<p>Apparently no.</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT book_id
+FROM book_read
+WHERE book_read.status = 'read'
+  AND book_read.book_id NOT IN
+      (SELECT id
+       FROM book);
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Which reader has read the most books</p>
+<details>
+<summary>Show answer</summary>
+<p>spuffyffet, 390</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT p.profile_name, COUNT(*) count
+FROM book_read br,
+    profile p
+WHERE br.profile_id = p.id
+GROUP BY p.profile_name
+ORDER BY count DESC
+    LIMIT 1;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>Show how many pages each reader has read. Limit to top 10.</p>
+<details>
+<summary>Show answer</summary>
+<table>
+<thead>
+<tr>
+<th>profile name</th>
+<th>page count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>spuffyffet</td>
+<td>157087</td>
+</tr>
+<tr>
+<td>zemmiphobia</td>
+<td>156852</td>
+</tr>
+<tr>
+<td>timberheadsweeping</td>
+<td>155924</td>
+</tr>
+<tr>
+<td>MakunaHatata</td>
+<td>155712</td>
+</tr>
+<tr>
+<td>ledoriginally</td>
+<td>155430</td>
+</tr>
+<tr>
+<td>Azlantaph</td>
+<td>155357</td>
+</tr>
+<tr>
+<td>Grabsware</td>
+<td>154824</td>
+</tr>
+<tr>
+<td>LlamadelRey</td>
+<td>154227</td>
+</tr>
+<tr>
+<td>musophobia</td>
+<td>153972</td>
+</tr>
+<tr>
+<td>Norware</td>
+<td>153552</td>
+</tr>
+</tbody>
+</table>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT p.profile_name, SUM(b.page_count) total
+FROM book_read br,
+     book b,
+     profile p
+WHERE br.book_id = b.id
+  AND br.profile_id = p.id
+GROUP BY p.profile_name
+ORDER BY total DESC
+    LIMIT 10;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<p>What's the lowest number of days to read 'Oathbringer (The Stormlight Archive,  #3)', and who did that?</p>
+<p>Subtracting one <code>DATE</code> from another will give the difference in days.</p>
+<details>
+<summary>Show answer</summary>
+<p>tachophobia,4
+angelic,4
+MinyKissez,4
+Pleauxin,4</p>
+</details>
+<br/>
+<details>
+<summary>Show SQL</summary>
+<pre><code class="line-numbers language-sql">SELECT p.profile_name, MIN(date_finished - date_started) as quickest
+FROM book_read br,
+     profile p
+WHERE br.profile_id = p.id
+  AND br.status = 'read'
+  AND br.book_id = (
+    SELECT id
+    FROM book
+    WHERE title = 'Oathbringer (The Stormlight Archive,  #3)'
+)
+GROUP BY p.profile_name
+ORDER BY quickest ASC;
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<h2 id="more-ideas">More ideas</h2>
+<ul>
+<li>Which genre has the most books?</li>
+<li>What is each readers most read genre? (I think this one's tough)</li>
+<li>What is the most popular type of binding?</li>
+<li>show how many books each author has written (exclude co-authors)</li>
+<li>Show how many pages each author has written (exclude co-authors)</li>
+<li>Are there two authors with the same first name?</li>
+</ul>
 
 </div>
 
