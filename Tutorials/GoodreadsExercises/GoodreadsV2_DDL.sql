@@ -14,7 +14,7 @@ CREATE TABLE publisher (
 );
 
 CREATE TABLE author (
-    author_id SMALLINT PRIMARY KEY,
+    id SMALLINT PRIMARY KEY,
     first_name VARCHAR(50),
     middle_name VARCHAR(250),
     last_name VARCHAR(50)
@@ -33,7 +33,15 @@ CREATE TABLE book (
     year_published SMALLINT,
     binding_id SMALLINT REFERENCES binding_type(id),
     publisher_id SMALLINT REFERENCES publisher(id),
-    author_id SMALLINT REFERENCES author(author_id)
+    author_id SMALLINT REFERENCES author(id)
+);
+
+CREATE TABLE co_authors(
+    book_id INTEGER,
+    author_id SMALLINT,
+    PRIMARY KEY (book_id, author_id),
+    FOREIGN KEY (book_id) REFERENCES book(id),
+    FOREIGN KEY (author_id) REFERENCES author(id)
 );
 
 CREATE TABLE book_genre (
@@ -46,9 +54,9 @@ CREATE TABLE book_genre (
 
 CREATE TABLE profile(
     id SMALLINT Primary Key ,
-    first_name VARCHAR(25),
-    last_name VARCHAR(25),
-    profile_name VARCHAR(25)
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    profile_name VARCHAR(50)
 );
 
 CREATE TABLE book_read(
