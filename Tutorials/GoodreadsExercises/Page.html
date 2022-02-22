@@ -79,10 +79,10 @@
 <p>You must import this by running the ddl code, like this:</p>
 <p><img src="img.png" alt="img.png" /></p>
 <p>Right click on your <em>schema</em> folder, and select the &quot;Run SQL Script...&quot;.</p>
-<p>This should import a new schema, the dvd rental.</p>
+<p>This should import a new schema, the &quot;goodreads_v2&quot;.</p>
 <p>Then, you must import data. Download the data her:</p>
 <p><a href="GoodreadsV2_Data.sql">Goodreads data</a></p>
-<p>And then run it, in the same way as before. You should now have a &quot;dvdrental&quot; schema with data. Verify this.</p>
+<p>And then run it, in the same way as before. You should now have a &quot;goodreads_v2&quot; schema with data. Verify this.</p>
 <p>The below is a Global Relations Diagram to get an overview of the database:</p>
 <p><img src="Goodreads_V2_Gr.svg" alt="GR" /></p>
 <p>You may want to right click the above, and open the image in a new tab, if it is too small.</p>
@@ -155,17 +155,27 @@ WHERE first_name='Jaxx';
 
 </div>
 <div class="tab">
-<p>How many profiles have the first name 'Jaxx'?</p>
+<p>Are there two authors with the same first name?</p>
 <details>
 <summary>Show answer</summary>
-<p>3</p>
+<p>John,8<br />
+Stephen,6<br />
+Michael,6<br />
+Douglas,5<br />
+Peter,5<br />
+Richard,5<br />
+Robert,5<br />
+James,4<br />
+David,4<br />
+Brian,4</p>
 </details>
 <br/>
 <details>
 <summary>Show SQL</summary>
-<pre><code class="line-numbers language-sql">SELECT COUNT(*)
-FROM profile
-WHERE first_name='Jaxx';
+<pre><code class="line-numbers language-sql">SELECT first_name, COUNT(first_name) count
+FROM author
+GROUP BY first_name
+ORDER BY count DESC;
 </code></pre>
 </details>
 
