@@ -3,18 +3,18 @@
 <details>
 <summary>Show answer</summary>
 
-| profile name       | page count |
-|--------------------|------------|
-| spuffyffet         | 157087     |
-| zemmiphobia        | 156852     |
-| timberheadsweeping | 155924     |
-| MakunaHatata       | 155712     |
-| ledoriginally      | 155430     |
-| Azlantaph          | 155357     |
-| Grabsware          | 154824     |
-| LlamadelRey        | 154227     |
-| musophobia         | 153972     |
-| Norware            | 153552     |
+| profile name     | page count |
+|------------------|------------|
+| ScoobyCute       | 86554      |
+| Grabsware        | 84153      |
+| Azlantaph        | 84052      |
+| LlamadelRey      | 82854      |
+| TrueTips         | 81849      |
+| MakunaHatata     | 81549      |
+| notmuchtoit      | 81332      |
+| DosentAnyoneCare | 81312      |
+| Deskinve         | 80705      |
+| Booklith         | 80493      |
 
 </details>
 
@@ -30,6 +30,7 @@ FROM book_read br,
      profile p
 WHERE br.book_id = b.id
   AND br.profile_id = p.id
+  AND br.status = 'read'
 GROUP BY p.profile_name
 ORDER BY total DESC
     LIMIT 10;

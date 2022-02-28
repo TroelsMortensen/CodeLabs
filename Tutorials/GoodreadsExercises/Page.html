@@ -873,17 +873,27 @@ ORDER BY rating ASC
 <p>Is there any book, which hasn't been read?</p>
 <details>
 <summary>Show answer</summary>
-<p>Apparently no.</p>
+<p>Books with the following IDs has not been read:<br />
+29384742<br />
+12111823<br />
+18243345<br />
+21032488<br />
+15998999<br />
+15999003<br />
+10626950<br />
+8074907<br />
+13485378</p>
+<p>So, yes.</p>
 </details>
 <br/>
 <details>
 <summary>Show SQL</summary>
-<pre><code class="line-numbers language-sql">SELECT book_id
-FROM book_read
-WHERE book_read.status = 'read'
-  AND book_read.book_id NOT IN
-      (SELECT id
-       FROM book);
+<pre><code class="line-numbers language-sql">SELECT id
+FROM book
+WHERE id NOT IN
+      (SELECT book_id
+       FROM book_read
+       WHERE status='read');
 </code></pre>
 </details>
 
@@ -892,7 +902,7 @@ WHERE book_read.status = 'read'
 <p>Which reader has read the most books</p>
 <details>
 <summary>Show answer</summary>
-<p>spuffyffet, 390</p>
+<p>SCoobyCute, 218</p>
 </details>
 <br/>
 <details>
@@ -901,6 +911,7 @@ WHERE book_read.status = 'read'
 FROM book_read br,
     profile p
 WHERE br.profile_id = p.id
+  AND br.status = 'read'
 GROUP BY p.profile_name
 ORDER BY count DESC
     LIMIT 1;
@@ -921,44 +932,44 @@ ORDER BY count DESC
 </thead>
 <tbody>
 <tr>
-<td>spuffyffet</td>
-<td>157087</td>
-</tr>
-<tr>
-<td>zemmiphobia</td>
-<td>156852</td>
-</tr>
-<tr>
-<td>timberheadsweeping</td>
-<td>155924</td>
-</tr>
-<tr>
-<td>MakunaHatata</td>
-<td>155712</td>
-</tr>
-<tr>
-<td>ledoriginally</td>
-<td>155430</td>
-</tr>
-<tr>
-<td>Azlantaph</td>
-<td>155357</td>
+<td>ScoobyCute</td>
+<td>86554</td>
 </tr>
 <tr>
 <td>Grabsware</td>
-<td>154824</td>
+<td>84153</td>
+</tr>
+<tr>
+<td>Azlantaph</td>
+<td>84052</td>
 </tr>
 <tr>
 <td>LlamadelRey</td>
-<td>154227</td>
+<td>82854</td>
 </tr>
 <tr>
-<td>musophobia</td>
-<td>153972</td>
+<td>TrueTips</td>
+<td>81849</td>
 </tr>
 <tr>
-<td>Norware</td>
-<td>153552</td>
+<td>MakunaHatata</td>
+<td>81549</td>
+</tr>
+<tr>
+<td>notmuchtoit</td>
+<td>81332</td>
+</tr>
+<tr>
+<td>DosentAnyoneCare</td>
+<td>81312</td>
+</tr>
+<tr>
+<td>Deskinve</td>
+<td>80705</td>
+</tr>
+<tr>
+<td>Booklith</td>
+<td>80493</td>
 </tr>
 </tbody>
 </table>
@@ -972,6 +983,7 @@ FROM book_read br,
      profile p
 WHERE br.book_id = b.id
   AND br.profile_id = p.id
+  AND br.status = 'read'
 GROUP BY p.profile_name
 ORDER BY total DESC
     LIMIT 10;
