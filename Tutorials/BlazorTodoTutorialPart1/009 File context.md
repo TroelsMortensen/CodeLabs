@@ -13,13 +13,29 @@ Below, the content of the FileContext will be explained.
 The final version of the class can be found [here](https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs)
 
 ### Fields
-You need to define the file, which should hold the data. And we need a collection of Todo objects:
+You need to define the file, which should hold the data. And we need a collection of Todo objects, along with a property to get the todos:
 
 ```csharp
 private string todoFilePath = "todos.json";
-public ICollection<Todo> Todos { get; private set; }
+
+private ICollection<Todo> todos;
+
+public ICollection<Todo> Todos
+{
+    get
+    {
+        if (todos == null)
+        {
+            LoadData();
+        }
+
+        return todos;
+    }
+}
 ```
 We use a collection, because this class should not have get-methods to access objects at an index. This is to simulate how you will work with a database in the future.
+
+We use lazy instantiation of the `todos` collection. This will be clear, whenever any changes are saved. This is also to simulate how you will work with the database in the future.
 
 ### Constructor
 Then we need a constructor. We wish to insert some dummy data into the file, if nothing exists, just so we have
@@ -32,7 +48,6 @@ public FileContext()
     {
         Seed();
     }
-    LoadData();
 }
 ```
 
@@ -65,12 +80,12 @@ private void Seed()
             Id = 5,
         },
     };
-    Todos = ts.ToList();
+    todos = ts.ToList();
     SaveChanges();
 }
 ```
 In the above method an array of Todos are created. Notice here, we manually set the Id of each todo. We only do this for this specific dummy data.
-In the end the array is stored in the `Todos` property. And then we call a currently-non-existing method, `SaveChanges`.
+In the end the array is stored in the `todos` field. And then we call a currently-non-existing method, `SaveChanges`.
 
 ### Save changes
 The purpose of this method is to take the content of the `Todos` field, and put into the file.
@@ -79,6 +94,7 @@ public void SaveChanges()
 {
     string serialize = JsonSerializer.Serialize(Todos);
     File.WriteAllText(todoFilePath,serialize);
+    todos = null;
 }
 ```
 
@@ -100,12 +116,14 @@ We read all the content of the file, it returns a string.
 Then that string is deserialized into a `List<Todo>`, and assigned to the field variable. `ICollection` is an interface of `List`, so we can make this assignment.
 
 ### Accessing data
-Finally, we need a way to actually get the data. But, we already have that inlined in our property. This is, again, to simulate the way you'll interact with the database in the future.
-```csharp
-public ICollection<Todo> Todos { get; private set; }
-```
-A property defined like this does actually have a hidden field variable as well. We can `get` the `ICollection` from the outside, but we cannot `set` it.
+Finally, we need a way to actually get the data. But, we already have that in our property. 
+This is, again, to simulate the way you'll interact with the database in the future.
 
 The next step will be to add a Data Access Object with the usual [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) operations.
 
 The final version of the FileContext can be found [here](https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs)
+
+
+#### Note
+Some changes to this file were made later in the process of writing this tutorial.
+That means, in other branches, this class looks slightly different, but what you see here is the newest version. Eventually, I will get that updated. 
