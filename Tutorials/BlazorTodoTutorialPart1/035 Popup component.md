@@ -7,7 +7,7 @@ There are smarter ways to do this, but this approach is also to reiterate how to
 
 It is a bit more complicated and uses some Bootstrap style classes.
 
-We can start by using it to show a confirmation message to the user, when a new Todo was added successfully.\
+We can start by using it to show a confirmation message to the user, when a new Todo was added successfully.
 
 The result will look like this:
 
@@ -106,3 +106,7 @@ We have the text on the accept button, a message to put into the errorLabel if n
 And then two CallBacks, on for pressing the <kbd>x</kbd> to close the modal, and another for what should happen if accept-button is pressed. Again, we could add a cancel button, if needed. Maybe in a later example.
 
 Let us try it out, se if we can make it work.
+
+#### Note
+The above component-html can be simplified. For example, [this](https://www.w3schools.com/howto/howto_css_modals.asp) link also shows a modal, the html of which could be used instead of the above.
+I do believe this example will also grey out the background, which is a nice detail. At some point, I may update the tutorial.
