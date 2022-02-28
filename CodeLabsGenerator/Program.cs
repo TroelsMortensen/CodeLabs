@@ -10,7 +10,8 @@ namespace CodeLabsGenerator
         static void Main(string[] args)
         {
             // GenerateOne("GoodreadsExercises");
-            GenerateOne("BlazorTodoTutorialPart1");
+            GenerateOne("DvdRentalExercises");
+            // GenerateOne("BlazorTodoTutorialPart1");
             // GenerateMany();
         }
 
