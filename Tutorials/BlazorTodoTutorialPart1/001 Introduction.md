@@ -18,7 +18,7 @@ In later sessions, we will expand upon the tutorial, changing it to a client ser
 The entire collection of Todo tutorials aim to perfectly prepare you for the exam.
 
 All source code will be on GitHub, so you always have a reference, if you're stuck.  
-**Find it here** [App On GitHub](https://github.com/TroelsMortensen/BlazorTodoApp/tree/Part1)
+**[Find it here on GitHub](https://github.com/TroelsMortensen/BlazorTodoApp/tree/Part1)**
 
 Different parts of the tutorial in the future, will be in different branches:
 
