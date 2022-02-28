@@ -17,7 +17,7 @@ This can really help with the organization. For this, we can use components.
 ### Class Diagram
 Currently, our app looks like what is shown below. Please note how pages, components, and properties are denoted:
 
-
+![](Resources/ClassDiagram.svg)
 
 ### Sequence Diagram
 In process..?
