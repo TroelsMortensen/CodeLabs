@@ -4,6 +4,7 @@ We will edit the AddTodo.razor, so that the modal is shown when a Todo is added.
 
 ### Code
 First, remember to add a using statement: `@using UIElements`.
+This goes at the top of AddTodo.razor.
 
 Then a few changes to the code block of AddTodo.razor:
 
@@ -26,7 +27,6 @@ Then a few changes to the code block of AddTodo.razor:
         catch (Exception e)
         {
             errorLabel = e.Message;
-            return;
         }
     }
 
@@ -39,8 +39,9 @@ Then a few changes to the code block of AddTodo.razor:
 ```
 
 Previously, around line 13, we would navigate to the Todos overview, but that is now removed.\
-In line 14 we reset the view so that the `OwnerId` and `Title` is cleared.\
-We have a new method in line 23, which will just disable the modal and navigate to the Todos overview.
+In line 14 we reset the view, by creating a `new Todo` so that the `OwnerId` and `Title` is cleared.\
+We have a new method in line 22, which will just disable the modal and navigate to the Todos overview.
+This method should be called, when a button in the modal is clicked.
 
 ### View
 
@@ -61,33 +62,27 @@ The view is just updated at the end, after the `<EditForm>`, so the below is a f
     }
     @if (showModal)
     {
-        <Modal 
-            Title="Todo Added" 
-            AcceptButtonText="Okay" 
-            OnAcceptButton="Proceed" 
-            OnCloseButton="() => showModal = false">
-            
+        <Modal>
             <p>You have successfully added a new Todo item. You should be very proud of yourself</p>
-        
+            <button @onclick="@Proceed">Wonderful</button>
         </Modal>
     }
 </div>
 ```
 
-The first if-statement was already present. The second, `@if(showModal)` is new. The modal tag is spread across multiple lines for readability.
+The first if-statement was already present. 
+The second, `@if(showModal)` is new. 
+Notice, there is an opening `<Modal>` tag, and a closing. In-between we can put html and razor-syntax. Whatever we put here, will be the content in the popup.
+This html-content is passed to the Modal component as the `ChildContent`.
 
-**Lines 8-11** are various arguments: The title of the modal, then the text on the accept button.
-
-**Line 10** defines which method, `Proceed()`, should be called, when the accept button is clicked.
-
-**Line 11** happens when the little top-right <kbd>x</kbd> is pressed, i.e. we just turn off the modal.
-
-**Line 13** is the `ChildContent`. I have just added a simple piece of html, a `<p>` tag with a message, but you can put anything here, and it will be put in the Modal.
+The Modal contains a paragraph with a message, and a button.
+When the button is clicked, the method `Proceed` is called. This method was defined further above.
 
 The result, when adding a Todo, is now:
 
-![img.png](Resources/TodoAddedModal.png)
+![img.png](Resources/ModalExample.png)
 
-If you click the <kbd>x</kbd>, the modal closes, the input fields are reset, and you remain on the page.
 
-If you click accept, you are taken to the todos overview.
+If you click <kbd>Wonderful</kbd>, you are taken to the todos overview.
+
+Try it out.

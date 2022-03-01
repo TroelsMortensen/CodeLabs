@@ -1788,50 +1788,28 @@ It also asked for a method for the Callback, and here we give it a lambda expres
 </div>
 <div class="tab">
 <hr/><h1 id="popup-component">Popup component</h1><hr/>
-<p>We will continue to play a bit with components, this time we will create a popup to show messages.</p>
+<p>We will continue to play a bit with components, this time we will create a popup to show messages (and other stuff).</p>
 <p>There are several libraries, mentioned in step 32, which can do this, but let's start with a manual approach.
-There are smarter ways to do this, but this approach is also to reiterate how to pass arguments to components.</p>
-<p>It is a bit more complicated and uses some Bootstrap style classes.</p>
+There are probably smarter ways to do this, but this approach is also to reiterate how to pass arguments to components.</p>
 <p>We can start by using it to show a confirmation message to the user, when a new Todo was added successfully.</p>
 <p>The result will look like this:</p>
 <p><img src="Resources/ModalExample.png" alt="img.png" /></p>
+<p>You may style the button, if you wish.</p>
 <h3 id="setup">Setup</h3>
-<p>In the UIElements directory, create a new blazor component called <code>Modal.razor</code>.
-These kinds of popups have some common names based on how they popup, and various side-effects.
-We will make a modal (or sometimes called toast). There is another called snackbar, and probably more.
+<p>In the UIElements directory, create a new blazor component called <code>Modal.razor</code>.</p>
+<p>These kinds of popups have some common names based on how they are shown.<br />
+We will make a modal (or sometimes called toast).
+There is another called snackbar, and probably more variations.
 It's good to know, if you need to google for examples.</p>
 <h3 id="code">Code</h3>
 <p>The entire component looks like this:</p>
 <pre><code class="line-numbers language-razor">@namespace UIElements
 
-&lt;div class=&quot;modal&quot; tabindex=&quot;-1&quot; style=&quot;display:block&quot; role=&quot;dialog&quot;&gt;
-    &lt;div class=&quot;modal-dialog&quot;&gt;
-        &lt;div class=&quot;modal-content&quot;&gt;
-            &lt;div class=&quot;modal-header&quot;&gt;
-
-                &lt;h3 class=&quot;modal-title&quot;&gt;@Title&lt;/h3&gt;
-                &lt;button type=&quot;button&quot; class=&quot;close&quot; @onclick=&quot;() =&gt; OnCloseButton.InvokeAsync()&quot;&gt;
-                    &lt;span aria-hidden=&quot;true&quot;&gt;X&lt;/span&gt;
-                &lt;/button&gt;
-
-            &lt;/div&gt;
-            &lt;div class=&quot;modal-body&quot;&gt;
-
-                @ChildContent
-
-            &lt;/div&gt;
-            &lt;div class=&quot;modal-footer&quot;&gt;
-
-                &lt;button class=&quot;btn btn-block btn-info&quot; @onclick=&quot;() =&gt; OnAcceptButton.InvokeAsync()&quot; data-dismiss=&quot;modal&quot;&gt;@AcceptButtonText&lt;/button&gt;
-
-                @if (!string.IsNullOrEmpty(errorLabel))
-                {
-                    &lt;label style=&quot;color:red&quot;&gt;
-                        @errorLabel
-                    &lt;/label&gt;
-                }
-            &lt;/div&gt;
-        &lt;/div&gt;
+&lt;div class=&quot;modal-background&quot; style=&quot;display:block; height: 100%&quot;&gt;
+    &lt;div class=&quot;modal-box&quot;&gt;
+    
+        @ChildContent
+    
     &lt;/div&gt;
 &lt;/div&gt;
 
@@ -1840,50 +1818,53 @@ It's good to know, if you need to google for examples.</p>
     [Parameter]
     public RenderFragment ChildContent { get; set; }
 
-    [Parameter]
-    public string Title { get; set; }
-
-    [Parameter]
-    public string AcceptButtonText { get; set; }
-
-    [Parameter]
-    public string errorLabel { get; set; }
-
-    [Parameter]
-    public EventCallback OnCloseButton { get; set; }
-
-    [Parameter]
-    public EventCallback OnAcceptButton { get; set; }
-
 }
 </code></pre>
 <p>First, at the very top, we define the namespace.</p>
-<p>Next, a bunch of <code>&lt;div&gt;</code> tags to organize everything. This was taken from an example, but I lost the source, so I'm not entirely sure what is going on.</p>
-<p>There are some important parts, though:</p>
-<p><strong>Lines 6-13</strong> defines a header of the popup.
-You may notice in the <code>&lt;h3&gt;</code> tag we have the <code>@Title</code>, i.e. the title of this Toast, which is provided as a <code>[Parameter]</code>.<br />
-In the header we also have a button, which invokes a CallBack.</p>
-<p><strong>Line 16</strong> is important, it defines <code>@ChildContent</code>, and this means you can pass html/razor-syntax to a component, by setting the <code>ChildContent</code>.
+<p>Next, two nested <code>&lt;div&gt;</code> tags to organize everything.
+This piece of html (and css) was taken from an <a href="https://www.w3schools.com/howto/howto_css_modals.asp">example found on w3shcools</a>.</p>
+<p>There isn't much here. The component is just a &quot;wrapper&quot;, which can take some html content, and show it in a popup.</p>
+<p><strong>Line 6</strong> is important, it defines <code>@ChildContent</code>, and this means you can pass html/razor-syntax to a component, by setting the <code>ChildContent</code>.
 It has to be named like this, and the property must be defined as shown in the code above. How to use it will be shown later.</p>
-<p><strong>Lines 19-29</strong> defines a footer.</p>
-<p><strong>Line 21</strong> defines another button, which will <em>accept</em> whatever. If you need a cancel button, that could be placed here as well.</p>
-<p><strong>Lines 23-28</strong> will show some error, if needed.</p>
-<p>In the code block, we have various parameters.</p>
-<p>The RenderFragment in line 37 is, as mentioned, some other html/razor-syntax.<br />
-The Title is obviously the title.<br />
-We have the text on the accept button, a message to put into the errorLabel if needed.<br />
-And then two CallBacks, on for pressing the <kbd>x</kbd> to close the modal, and another for what should happen if accept-button is pressed. Again, we could add a cancel button, if needed. Maybe in a later example.</p>
-<p>Let us try it out, se if we can make it work.</p>
-<h4 id="note">Note</h4>
-<p>The above component-html can be simplified. For example, <a href="https://www.w3schools.com/howto/howto_css_modals.asp">this</a> link also shows a modal, the html of which could be used instead of the above.
-I do believe this example will also grey out the background, which is a nice detail. At some point, I may update the tutorial.</p>
+<p>In the code block, we have one parameter, which will be the content to be shown in the popup.</p>
+<h3 id="styling">Styling</h3>
+<p>Next up, we need the styling. Add a style-behind.
+Paste in the following:</p>
+<pre><code class="line-numbers language-css">.modal-background {
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.47); /* Black w/ opacity */
+    display:block;
+}
+
+/* Modal Content/Box */
+.modal-box {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #000000;
+    /*display:inline-block;*/
+    width: 30%; /* Could be more or less, depending on screen size */
+    min-width: 300px;
+    border-radius: 25px;
+    box-shadow: 0 5px 30px 15px #3f3f3f;
+}
+</code></pre>
+<p>That's the basic component. Next up, we need to use it for something.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="show-popup-when-todo-is-added-successfully">Show popup when Todo is added successfully</h1><hr/>
 <p>We will edit the AddTodo.razor, so that the modal is shown when a Todo is added.</p>
 <h3 id="code">Code</h3>
-<p>First, remember to add a using statement: <code>@using UIElements</code>.</p>
+<p>First, remember to add a using statement: <code>@using UIElements</code>.
+This goes at the top of AddTodo.razor.</p>
 <p>Then a few changes to the code block of AddTodo.razor:</p>
 <pre><code class="line-numbers language-csharp">@code {
     private Todo newTodoItem = new Todo();
@@ -1903,7 +1884,6 @@ I do believe this example will also grey out the background, which is a nice det
         catch (Exception e)
         {
             errorLabel = e.Message;
-            return;
         }
     }
 
@@ -1914,9 +1894,10 @@ I do believe this example will also grey out the background, which is a nice det
     }
 }
 </code></pre>
-<p>Previously, in line 20-21, we would navigate to the Todos overview, but that is now removed.<br />
-In line 14 we reset the view so that the <code>OwnerId</code> and <code>Title</code> is cleared.<br />
-We have a new method in line 23, which will just disable the modal and navigate to the Todos overview.</p>
+<p>Previously, around line 13, we would navigate to the Todos overview, but that is now removed.<br />
+In line 14 we reset the view, by creating a <code>new Todo</code> so that the <code>OwnerId</code> and <code>Title</code> is cleared.<br />
+We have a new method in line 22, which will just disable the modal and navigate to the Todos overview.
+This method should be called, when a button in the modal is clicked.</p>
 <h3 id="view">View</h3>
 <p>Next, we need to add the modal to the view. It is a simple approach, where it is hardcoded in, and just shown if a boolean is true.<br />
 This is slightly inconvenient because you must include the modal in every view, where it can be used.<br />
@@ -1930,35 +1911,31 @@ If you use is as an error message, instead of our usual <code>errorLabel</code>,
     }
     @if (showModal)
     {
-        &lt;Modal 
-            Title=&quot;Todo Added&quot; 
-            AcceptButtonText=&quot;Okay&quot; 
-            OnAcceptButton=&quot;Proceed&quot; 
-            OnCloseButton=&quot;() =&gt; showModal = false&quot;&gt;
-            
+        &lt;Modal&gt;
             &lt;p&gt;You have successfully added a new Todo item. You should be very proud of yourself&lt;/p&gt;
-        
+            &lt;button @onclick=&quot;@Proceed&quot;&gt;Wonderful&lt;/button&gt;
         &lt;/Modal&gt;
     }
 &lt;/div&gt;
 </code></pre>
-<p>The first if-statement was already present. The second, <code>@if(showModal)</code> is new. The modal tag is spread across multiple lines for readability.</p>
-<p><strong>Lines 8-11</strong> are various arguments: The title of the modal, then the text on the accept button.</p>
-<p><strong>Line 10</strong> defines which method, <code>Proceed()</code>, should be called, when the accept button is clicked.</p>
-<p><strong>Line 11</strong> happens when the little top-right <kbd>x</kbd> is pressed, i.e. we just turn off the modal.</p>
-<p><strong>Line 13</strong> is the <code>ChildContent</code>. I have just added a simple piece of html, a <code>&lt;p&gt;</code> tag with a message, but you can put anything here, and it will be put in the Modal.</p>
+<p>The first if-statement was already present.
+The second, <code>@if(showModal)</code> is new.
+Notice, there is an opening <code>&lt;Modal&gt;</code> tag, and a closing. In-between we can put html and razor-syntax. Whatever we put here, will be the content in the popup.
+This html-content is passed to the Modal component as the <code>ChildContent</code>.</p>
+<p>The Modal contains a paragraph with a message, and a button.
+When the button is clicked, the method <code>Proceed</code> is called. This method was defined further above.</p>
 <p>The result, when adding a Todo, is now:</p>
-<p><img src="Resources/TodoAddedModal.png" alt="img.png" /></p>
-<p>If you click the <kbd>x</kbd>, the modal closes, the input fields are reset, and you remain on the page.</p>
-<p>If you click accept, you are taken to the todos overview.</p>
+<p><img src="Resources/ModalExample.png" alt="img.png" /></p>
+<p>If you click <kbd>Wonderful</kbd>, you are taken to the todos overview.</p>
+<p>Try it out.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="update-todo-in-modal">Update todo in modal</h1><hr/>
 <h2 id="still-working-on-this-part">Still working on this part...</h2>
-<p>Having to navigate to a new page just to update an existing todo may feel unnecessary.
+<p>Having to navigate to a new page just to update an existing todo may feel unnecessary.<br />
 Instead, we can use our new modal component to show a popup in which we can edit the todo data.</p>
-<p>The result is found in <a href="">this branch</a></p>
+<p>The result is found in <a href="">this branch</a> (eventually).</p>
 
 </div>
 

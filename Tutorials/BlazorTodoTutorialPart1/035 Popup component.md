@@ -46,22 +46,44 @@ The entire component looks like this:
 First, at the very top, we define the namespace.
 
 Next, two nested `<div>` tags to organize everything. 
-This was taken from an [example found on w3shcools](https://www.w3schools.com/howto/howto_css_modals.asp).
+This piece of html (and css) was taken from an [example found on w3shcools](https://www.w3schools.com/howto/howto_css_modals.asp).
 
 There isn't much here. The component is just a "wrapper", which can take some html content, and show it in a popup.
 
 **Line 6** is important, it defines `@ChildContent`, and this means you can pass html/razor-syntax to a component, by setting the `ChildContent`.
 It has to be named like this, and the property must be defined as shown in the code above. How to use it will be shown later.
 
-In the code block, we have various parameters.
+In the code block, we have one parameter, which will be the content to be shown in the popup.
 
-The RenderFragment in line 37 is, as mentioned, some other html/razor-syntax.\
-The Title is obviously the title.\
-We have the text on the accept button, a message to put into the errorLabel if needed.\
-And then two CallBacks, on for pressing the <kbd>x</kbd> to close the modal, and another for what should happen if accept-button is pressed. Again, we could add a cancel button, if needed. Maybe in a later example.
+### Styling
+Next up, we need the styling. Add a style-behind. 
+Paste in the following:
+```css
+.modal-background {
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.47); /* Black w/ opacity */
+    display:block;
+}
 
-Let us try it out, se if we can make it work.
+/* Modal Content/Box */
+.modal-box {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #000000;
+    /*display:inline-block;*/
+    width: 30%; /* Could be more or less, depending on screen size */
+    min-width: 300px;
+    border-radius: 25px;
+    box-shadow: 0 5px 30px 15px #3f3f3f;
+}
+```
 
-#### Note
-The above component-html can be simplified. For example, [this](https://www.w3schools.com/howto/howto_css_modals.asp) link also shows a modal, the html of which could be used instead of the above.
-I do believe this example will also grey out the background, which is a nice detail. At some point, I may update the tutorial.
+That's the basic component. Next up, we need to use it for something.
