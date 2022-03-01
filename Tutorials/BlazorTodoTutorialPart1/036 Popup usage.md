@@ -38,7 +38,7 @@ Then a few changes to the code block of AddTodo.razor:
 }
 ```
 
-Previously, in line 20-21, we would navigate to the Todos overview, but that is now removed.\
+Previously, around line 13, we would navigate to the Todos overview, but that is now removed.\
 In line 14 we reset the view so that the `OwnerId` and `Title` is cleared.\
 We have a new method in line 23, which will just disable the modal and navigate to the Todos overview.
 

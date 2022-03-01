@@ -455,7 +455,10 @@ WHERE book.author_id = author.id
 
 </div>
 <div class="tab">
-<p>What type of binding does 'Dead Iron (Age of Steam,  #1)' have?</p>
+<p>What type of binding does</p>
+<pre><code>Dead Iron (Age of Steam,  #1)
+</code></pre>
+<p>have?</p>
 <details>
 <summary>Show answer</summary>
 <p>Paperback</p>
@@ -464,9 +467,10 @@ WHERE book.author_id = author.id
 <details>
 <summary>Show SQL</summary>
 <pre><code class="line-numbers language-sql">SELECT type
-from binding_type, book
-WHERE book.binding_id=binding_type.id
-  AND book.title='Dead Iron (Age of Steam,  #1)';
+from binding_type,
+     book
+WHERE book.binding_id = binding_type.id
+  AND book.title = 'Dead Iron (Age of Steam,  #1)';
 </code></pre>
 </details>
 

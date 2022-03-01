@@ -9,8 +9,8 @@ namespace CodeLabsGenerator
 
         static void Main(string[] args)
         {
-            // GenerateOne("GoodreadsExercises");
-            GenerateOne("DvdRentalExercises");
+            GenerateOne("GoodreadsExercises");
+            // GenerateOne("DvdRentalExercises");
             // GenerateOne("BlazorTodoTutorialPart1");
             // GenerateMany();
         }
