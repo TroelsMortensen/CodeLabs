@@ -1936,6 +1936,118 @@ When the button is clicked, the method <code>Proceed</code> is called. This meth
 <p>Having to navigate to a new page just to update an existing todo may feel unnecessary.<br />
 Instead, we can use our new modal component to show a popup in which we can edit the todo data.</p>
 <p>The result is found in <a href="">this branch</a> (eventually).</p>
+<h3 id="code-block">Code block</h3>
+<p>First, we need a few modifications to the <code>Todos.razor</code>.
+We are going to use our new modal here to create a popup, where we can update a Todo's information.</p>
+<p>Include the following in the code block:</p>
+<pre><code class="line-numbers language-csharp">private bool showModal;
+private string editedTitle = String.Empty;
+private int editedOwner;
+private Todo todoToEdit = new();
+private string editErrorLabel = string.Empty;
+
+private void ShowEdit(Todo todo)
+{
+    todoToEdit = todo;
+    editedOwner = todo.OwnerId;
+    editedTitle = todo.Title;
+    showModal = true;
+}
+
+private async Task AcceptEdit()
+{
+    try
+    {
+        Todo updated = new()
+        {
+            Id = todoToEdit.Id,
+            Title = editedTitle,
+            IsCompleted = todoToEdit.IsCompleted,
+            OwnerId = editedOwner
+        };
+        await TodoHome.UpdateAsync(updated);
+        todoToEdit.Title = updated.Title;
+        todoToEdit.OwnerId = updated.OwnerId;
+        showModal = false;
+    }
+    catch (Exception e)
+    {
+        editErrorLabel = e.Message;
+    }
+}
+</code></pre>
+<p>We have first a couple of new field variables.</p>
+<ul>
+<li>A bool to manage whether to show the modal</li>
+<li>A string to hold the new title of the Todo</li>
+<li>An int to hold the new owner</li>
+<li>A reference to the Todo being edited</li>
+<li>And an error string to display error messages</li>
+</ul>
+<p>Next a method, <code>ShowEdit()</code>. This method is called when you click the edit button in the table (well, not yet, but soon).
+We assign various variables, and show the modal.</p>
+<p>The next method, <code>AcceptEdit()</code>, is called when the accept button is clicked in the modal.<br />
+We create a new Todo, with information from the existing Todo-being-edited, and the new information, i.e. <code>Title</code> and <code>OwnerId</code>.<br />
+Then, that new Todo is sent to the layer below to be persisted.<br />
+When the method call <code>TodoHome.UpdateAsync()</code> succeeds, the updated todo is persisted, and we need to update the view as well, to reflect the changes.<br />
+The <code>todoToEdit</code> is a reference to the Todo object, currently held in a list, here in this view. When we modify its data, that is reflected in the view.<br />
+So, we update <code>Title</code> and <code>OwnerId</code>.<br />
+Then, the <code>showModal</code> bool is set to false, to hide the Modal again.</p>
+<p>Now, we just need to update the view.</p>
+<h3 id="view">View</h3>
+<p>At the end of your current view, we will insert the new modal code.
+It doesn't really matter where, we put it. It just cannot be nested in other HTML.</p>
+<p>See below. The first if-statement already exists in your current view, I just include it to show where I have put the Modal.
+I.e. at the end of the view.</p>
+<pre><code class="line-numbers language-razor">@if (!string.IsNullOrEmpty(errorLabel))
+{
+    &lt;label style=&quot;color: red&quot;&gt;@errorLabel&lt;/label&gt;
+}
+
+@if (showModal)
+{
+    &lt;Modal&gt;
+        &lt;h3&gt;Edit Category&lt;/h3&gt;
+        &lt;hr/&gt;
+        &lt;div style=&quot;margin-bottom: 5px&quot;&gt;
+            &lt;label style=&quot;font-weight: bold&quot;&gt;Todo Title&lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div style=&quot;margin-bottom: 5px&quot;&gt;
+            &lt;textarea style=&quot;width: 20ch; border-radius: 10px; padding: 3px;&quot; @bind=&quot;@editedTitle&quot;/&gt;
+        &lt;/div&gt;
+        &lt;div style=&quot;margin-bottom: 5px&quot;&gt;
+            &lt;label style=&quot;font-weight: bold&quot;&gt;Owner&lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div style=&quot;margin-bottom: 5px&quot;&gt;
+            &lt;input type=&quot;number&quot; min=&quot;0&quot; style=&quot;width: 10ch; border-radius: 10px; padding: 3px; text-align: center&quot; @bind=&quot;@editedOwner&quot;/&gt;
+        &lt;/div&gt;
+        @if (!string.IsNullOrEmpty(editErrorLabel))
+        {
+            &lt;div&gt;
+                &lt;label style=&quot;color:red&quot;&gt;@editErrorLabel&lt;/label&gt;
+            &lt;/div&gt;
+        }
+        &lt;div style=&quot;margin-top: 15px&quot;&gt;
+            &lt;button style=&quot;margin-right: 10px&quot; @onclick=&quot;AcceptEdit&quot;&gt;Accept&lt;/button&gt;
+            &lt;button style=&quot;margin-left: 10px&quot; @onclick=&quot;@(() =&gt; showModal = false)&quot;&gt;Cancel&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/Modal&gt;
+}
+
+</code></pre>
+<p>Now, everything inside the if-statement <code>@if (showModal)</code>, this is where the new interesting stuff happens.<br />
+We are again using the <code>&lt;Modal&gt;</code> component, and inside you see some HTML, which will be the <code>ChildContent</code>, i.e. the HTML shown in the popup.</p>
+<p>Bunch of <code>&lt;div&gt;</code>s to organize things. There's a label and below, a <code>&lt;textarea&gt;</code> with its value bound to <code>editedTitle</code>.<br />
+Further down, another label and a number-input, with the value bound to <code>editedOwner</code>.</p>
+<p>Then the usual errorLabel, in case any errors needs to be shown.</p>
+<p>And the last <code>&lt;div&gt;</code> holds two buttons. The first will call <code>AcceptEdit</code>, the other will just flip the bool <code>showModal</code> to hide the Modal again, if needed. I.e. if the user cancels the edit.</p>
+<p>The last thing we need, is so that the edit button in the view now opens the Modal instead of another page.</p>
+<p>Here is the updated piece of code, notice the method call <code>ShowEdit</code>, instead of the previous <code>Edit</code>. Also, another argument is used.</p>
+<pre><code class="line-numbers language-razor">&lt;td&gt;
+    &lt;img src=&quot;img/edit.gif&quot; class=&quot;funnel&quot; @onclick=&quot;@(() =&gt; ShowEdit(item))&quot;/&gt;
+&lt;/td&gt;
+</code></pre>
+<p>Now you should be able to run your app, go to the Todos overview, and click any edit button. You should see the modal, you can change the Todo information, and click accept, and the changes should be reflected in the view right away.</p>
 
 </div>
 
