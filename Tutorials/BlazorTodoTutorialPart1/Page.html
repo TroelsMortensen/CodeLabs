@@ -53,6 +53,7 @@
 <li class="step" onclick="setTab(34)">35 Popup component</li>
 <li class="step" onclick="setTab(35)">36 Popup usage</li>
 <li class="step" onclick="setTab(36)">37 Update todo popup</li>
+<li class="step" onclick="setTab(37)">38 Conclusion</li>
 
         </ol>
     </div>
@@ -1603,10 +1604,34 @@ Use of components are not strictly necessary, you can get far without, but they 
 <p>For example, some times pages can become quite large, and it is beneficial to be able to split a page into smaller parts, in separate files.
 This can really help with the organization. For this, we can use components.</p>
 <h3 id="class-diagram">Class Diagram</h3>
-<p>Currently, our app looks like what is shown below. Please note how pages, components, and properties are denoted:</p>
+<p>Currently, our app looks like what is shown below.
+Please note how pages, components, and properties are denoted.</p>
+<p>Also note the dotted arrows between components (green boxes), to indicate component dependencies. We see here that:</p>
+<ul>
+<li>Blazor depends on Domain, and FileData</li>
+<li>FileData depends on Domain</li>
+<li>Domain depends on nothing</li>
+</ul>
 <p><img src="Resources/ClassDiagram.svg" alt="" /></p>
-<h3 id="sequence-diagram">Sequence Diagram</h3>
-<p>In process..?</p>
+<p>Components look like packages, however, the name is in a different place, and the little &quot;tab&quot; at the top left has an upside-down fork icon.</p>
+<p>Pages are marked with the stereotype <code>&lt;&lt;Page&gt;&gt;</code>, and components are similarly marked with the stereotype <code>&lt;&lt;Component&gt;&gt;</code>.</p>
+<p>Properties are public, and also get a stereotype <code>&lt;&lt;prop&gt;&gt;</code>. I did not spell out <code>&lt;&lt;property&gt;&gt;</code> for brevity.</p>
+<p>Personally, I like to color code things, in this case different colors for components, packages, pages/classes, components and interfaces.<br />
+If I need to have packages inside other packages, each new depth of package, will get a new color. I.e. all current packages are level 1, they are directly in a component.
+Were I to make a new package inside, e.g., Pages, that new package would be a level 2, and I would give level 2 packages a slightly different color of yellow. Maybe darker for each level.</p>
+<p>As there is little to no business logic in the app, there is no layer for this functionality. Should we need it, we could introduce a layer in the Domain component, e.g.</p>
+<pre><code>----------------------------
+| AddTodo, EditTodo, Todos |
+----------------------------
+|       &lt;&lt;ITodoHome&gt;&gt;      |
+|          Logic           |
+|        &lt;&lt;TodoDAO&gt;&gt;       |
+----------------------------
+|        TodoFileDAO       |
+----------------------------
+</code></pre>
+<h3 id="next-up">Next up</h3>
+<p>The next part will include more advanced ways of structuring your Blazor application, using components.</p>
 
 </div>
 <div class="tab">
@@ -2048,6 +2073,13 @@ Further down, another label and a number-input, with the value bound to <code>ed
 &lt;/td&gt;
 </code></pre>
 <p>Now you should be able to run your app, go to the Todos overview, and click any edit button. You should see the modal, you can change the Todo information, and click accept, and the changes should be reflected in the view right away.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="all-done-now">All done now</h1><hr/>
+<p>This concludes the tutorial, your introduction to Blazor.</p>
+<p>You are welcome to add more features to the Todo app.</p>
+<p>Thank you for participating.</p>
 
 </div>
 
