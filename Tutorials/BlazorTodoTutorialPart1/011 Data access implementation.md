@@ -68,14 +68,14 @@ public async Task<Todo> AddAsync(Todo todo)
 ```
 First, we use the `Max(...)` method to find the largest value of Id in the collection.  
 Then we create the new Id, by incrementing the current largest Id by 1.  
-We assign that Id to the provided todo.  
-We add the todo to the fileContext.  
+We assign that Id to the provided `todo`.  
+We add the `todo` to the `fileContext`.  
 We call `SaveChanges()` so that the Todos are written to the file.  
-Finally, we return the finalized todo object, now with a correct Id.
+Finally, we return the finalized todo object, now with a correct Id, in case it is needed.
 
 
 ### The other methods
-Give the other methods a try on your own, and look up the solution on GitHub (link at the top) if needed.
+Give the other methods a try on your own, and look up the [solution on GitHub](https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/TodoFileDAO.cs) if needed.
 
 DeleteAsync: Remove a todo from the collection of todos, based on the given id, in the `fileContext`, remember to call `SaveChangesAsync`
 

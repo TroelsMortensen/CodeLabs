@@ -122,8 +122,3 @@ This is, again, to simulate the way you'll interact with the database in the fut
 The next step will be to add a Data Access Object with the usual [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) operations.
 
 The final version of the FileContext can be found [here](https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs)
-
-
-#### Note
-Some changes to this file were made later in the process of writing this tutorial.
-That means, in other branches, this class looks slightly different, but what you see here is the newest version. Eventually, I will get that updated. 

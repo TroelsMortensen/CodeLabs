@@ -10,7 +10,7 @@ Inside the FileData component, right-click the Dependencies:
 
 ![img_7.png](Resources/img_7.png)
 
-Then select the Domain component.
+Then select the Domain component ((1)), and click Add ((2)).
 
 ![img_8.png](Resources/img_8.png)
 

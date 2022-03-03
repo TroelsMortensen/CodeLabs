@@ -25,6 +25,6 @@ public class Todo
 }
 ```
 
-We have created a constructor, which only takes two of the four properties as arguments. The intention is that the Id should be set automatically by whatever class persists the data, and you cannot create a Todo, which is initially already completed.
+We have created a constructor, which only takes two of the four properties as arguments. The intention is that the Id should be set automatically by whatever class persists the data, and you cannot create a Todo, which is initially already completed, so we just default `IsCompleted` to `false`, by not setting it.
 
 We might consider adding a feature of reassigning todos to other users. At a later point.

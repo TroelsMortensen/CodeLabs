@@ -15,10 +15,12 @@ I will steal the following explanation from Robert C. Martin's book "Clean Archi
 > Components are unit of deployment. They are the smallets entities  that can be deployed as part of a system. In Java, they are jar files. In .NET they are DDLs.
 > 
 
-In Java components are often organized in modules, in .NET components can be organized into various *projects*. 
+In Java, components are often organized in modules. In .NET, components can be organized into various *projects*. 
 Components can be considered a bit like lego-building blocks, with the intention that you used these blocks til construct the system. They provide modularity, so building-blocks can easily be swapped out.
 
-This means your .NET app could be structured using an approach like below, roughly sketched. Notice that some "packages" have a little upside-down two-pronged fork above the name. This indicates a "sub-system" in Astah, we use it to represent components/projects/modules. Inside each, you can have packages. Inside packages, you find interfaces, classes, and the like.
+This means your .NET app could be structured using an approach like below, roughly sketched. 
+Notice that some "packages" have a little upside-down two-pronged fork above the name. 
+This indicates a "sub-system" in Astah, and we use it to represent components/projects/modules. Inside each, you can have packages. Inside packages, you find interfaces, classes, and the like.
 
 ![](Resources/FinalAppStructure.png)
 
@@ -38,7 +40,8 @@ In your SEP3 you're going to need a component for logic. Sometimes this componen
 
 The point is that these projects (components) are separated, each handling their own responsibilities. It will feel like overkill in this tutorial, because each component will be pretty small, containing only a handful of classes. But this is just practice. 
 
-There are different approaches on how to structure these components. We will do by layer, because that is simpler. However, in your professional career, you will probably encounter a separation by feature. This is an often recommended approach, however much more complicated. 
+There are different approaches on how to structure these components. We will do "by layer", because that is simpler. However, in your professional career, you will probably encounter a separation "by feature". This is an often recommended approach, however much more complicated.
+Basically, if you want to try it out for SEP3: Each new user story, you implement, will go into a new component.
 
 This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe. No worries.
 

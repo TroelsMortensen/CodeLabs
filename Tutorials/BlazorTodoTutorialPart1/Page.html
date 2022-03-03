@@ -121,9 +121,11 @@ I will steal the following explanation from Robert C. Martin's book &quot;Clean 
 <blockquote>
 <p>Components are unit of deployment. They are the smallets entities  that can be deployed as part of a system. In Java, they are jar files. In .NET they are DDLs.</p>
 </blockquote>
-<p>In Java components are often organized in modules, in .NET components can be organized into various <em>projects</em>.
+<p>In Java, components are often organized in modules. In .NET, components can be organized into various <em>projects</em>.
 Components can be considered a bit like lego-building blocks, with the intention that you used these blocks til construct the system. They provide modularity, so building-blocks can easily be swapped out.</p>
-<p>This means your .NET app could be structured using an approach like below, roughly sketched. Notice that some &quot;packages&quot; have a little upside-down two-pronged fork above the name. This indicates a &quot;sub-system&quot; in Astah, we use it to represent components/projects/modules. Inside each, you can have packages. Inside packages, you find interfaces, classes, and the like.</p>
+<p>This means your .NET app could be structured using an approach like below, roughly sketched.
+Notice that some &quot;packages&quot; have a little upside-down two-pronged fork above the name.
+This indicates a &quot;sub-system&quot; in Astah, and we use it to represent components/projects/modules. Inside each, you can have packages. Inside packages, you find interfaces, classes, and the like.</p>
 <p><img src="Resources/FinalAppStructure.png" alt="" /></p>
 <p>This could be an example of your entire solution, at the end of the semester. You will probably have these 6 components:</p>
 <ol>
@@ -138,14 +140,16 @@ Components can be considered a bit like lego-building blocks, with the intention
 <p>In this first part we will start with Blazor, Domain and FileData. You may notice there is no component for business logic, simply because this app is rather simple. We are also going to put most interfaces into the Domain.Interfaces. This is also a simplified approach.</p>
 <p>In your SEP3 you're going to need a component for logic. Sometimes this component is called Application.</p>
 <p>The point is that these projects (components) are separated, each handling their own responsibilities. It will feel like overkill in this tutorial, because each component will be pretty small, containing only a handful of classes. But this is just practice.</p>
-<p>There are different approaches on how to structure these components. We will do by layer, because that is simpler. However, in your professional career, you will probably encounter a separation by feature. This is an often recommended approach, however much more complicated.</p>
+<p>There are different approaches on how to structure these components. We will do &quot;by layer&quot;, because that is simpler. However, in your professional career, you will probably encounter a separation &quot;by feature&quot;. This is an often recommended approach, however much more complicated.
+Basically, if you want to try it out for SEP3: Each new user story, you implement, will go into a new component.</p>
 <p>This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe. No worries.</p>
 <p><img src="Resources/HakunaMatata.png" alt="img.png" /></p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="the-domain-component">The Domain component</h1><hr/>
-<p>First, we need the model classes. In this first iteration of the tutorial, we will just need a Todo object. Later we will add Users.</p>
+<p>First, we need the model classes.
+In this first iteration of the tutorial, we will just need a Todo object. Later we might add Users, or multiple todo-list.</p>
 <h3 id="new-project-component">New project (component)</h3>
 <p>Create a new Library project, by right-clicking your solution:</p>
 <p><img src="Resources/CreateLibrary1.png" alt="img.png" /></p>
@@ -153,7 +157,7 @@ Components can be considered a bit like lego-building blocks, with the intention
 Give the project a name <span class="numberCircle"><span>2</span></span>, I have called mine <em>Domain</em>, in some examples it is called <em>Entities</em>.
 In your case, you can probably only select net6.0 <span class="numberCircle"><span>3</span></span>. Finally press Create <span class="numberCircle"><span>4</span></span>.</p>
 <p><img src="Resources/img.png" alt="img.png" /></p>
-<p>A Class Library is a type of project which cannot be run, it instead contains functionality.
+<p>A <strong>Class Library</strong> is a type of project which cannot be run, it instead contains functionality.
 All NuGet packages are generally libraries with functionality, you can import into your system.
 Similar to Jar files in Java.<br />
 Your Domain component will just contain the domain model classes, there is nothing to <em>run</em>.
@@ -182,7 +186,7 @@ If you make custom Exceptions, they could also go here. We will also add certain
     }
 }
 </code></pre>
-<p>We have created a constructor, which only takes two of the four properties as arguments. The intention is that the Id should be set automatically by whatever class persists the data, and you cannot create a Todo, which is initially already completed.</p>
+<p>We have created a constructor, which only takes two of the four properties as arguments. The intention is that the Id should be set automatically by whatever class persists the data, and you cannot create a Todo, which is initially already completed, so we just default <code>IsCompleted</code> to <code>false</code>, by not setting it.</p>
 <p>We might consider adding a feature of reassigning todos to other users. At a later point.</p>
 
 </div>
@@ -221,7 +225,7 @@ Because of this separation, we can at a later point easily swap out which implem
 <p>We then need to add dependencies to other components, so that the FileData component can use classes from other components.
 Inside the FileData component, right-click the Dependencies:</p>
 <p><img src="Resources/img_7.png" alt="img_7.png" /></p>
-<p>Then select the Domain component.</p>
+<p>Then select the Domain component <span class="numberCircle"><span>1</span></span>, and click Add <span class="numberCircle"><span>2</span></span>.</p>
 <p><img src="Resources/img_8.png" alt="img_8.png" /></p>
 <p>This means your FileData component can now access namespaces and classes in the Domain component.</p>
 
@@ -325,9 +329,6 @@ Then that string is deserialized into a <code>List&lt;Todo&gt;</code>, and assig
 This is, again, to simulate the way you'll interact with the database in the future.</p>
 <p>The next step will be to add a Data Access Object with the usual <a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a> operations.</p>
 <p>The final version of the FileContext can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/FileContext.cs">here</a></p>
-<h4 id="note">Note</h4>
-<p>Some changes to this file were made later in the process of writing this tutorial.
-That means, in other branches, this class looks slightly different, but what you see here is the newest version. Eventually, I will get that updated.</p>
 
 </div>
 <div class="tab">
@@ -423,12 +424,12 @@ This is future proofing, because when we change to retrieving data from a server
 </code></pre>
 <p>First, we use the <code>Max(...)</code> method to find the largest value of Id in the collection.<br />
 Then we create the new Id, by incrementing the current largest Id by 1.<br />
-We assign that Id to the provided todo.<br />
-We add the todo to the fileContext.<br />
+We assign that Id to the provided <code>todo</code>.<br />
+We add the <code>todo</code> to the <code>fileContext</code>.<br />
 We call <code>SaveChanges()</code> so that the Todos are written to the file.<br />
-Finally, we return the finalized todo object, now with a correct Id.</p>
+Finally, we return the finalized todo object, now with a correct Id, in case it is needed.</p>
 <h3 id="the-other-methods">The other methods</h3>
-<p>Give the other methods a try on your own, and look up the solution on GitHub (link at the top) if needed.</p>
+<p>Give the other methods a try on your own, and look up the <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/TodoFileDAO.cs">solution on GitHub</a> if needed.</p>
 <p>DeleteAsync: Remove a todo from the collection of todos, based on the given id, in the <code>fileContext</code>, remember to call <code>SaveChangesAsync</code></p>
 <p>UpdateAsync: First find the existing Todo, by using <code>todo.Id</code>. Take the <code>OwnerId</code> and <code>IsCompleted</code> from the argument, and overwrite the values of the Todo from the <code>fileContext</code>. Then call <code>SaveChanges()</code></p>
 
@@ -2078,7 +2079,11 @@ Further down, another label and a number-input, with the value bound to <code>ed
 <div class="tab">
 <hr/><h1 id="all-done-now">All done now</h1><hr/>
 <p>This concludes the tutorial, your introduction to Blazor.</p>
-<p>You are welcome to add more features to the Todo app.</p>
+<p>You are welcome to add more features to the Todo app, for example:</p>
+<ul>
+<li>Users</li>
+<li>Todo list, so that each user can have multiple list, like &quot;grocery shopping&quot;, &quot;house work&quot;, &quot;home work&quot;, etc.</li>
+</ul>
 <p>Thank you for participating.</p>
 
 </div>
