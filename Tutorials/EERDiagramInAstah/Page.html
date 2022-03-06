@@ -59,14 +59,16 @@
 <p>When you open Astah, you will most likely see a blank canvas, as no file or diagram is open.</p>
 <p>Create a new file:</p>
 <p><img src="img.png" alt="img.png" /></p>
-<p>Then, right-click the little &quot;P&quot; folder icon. We are going to create a new class diagram:</p>
+<p>Then, right-click the little &quot;P&quot; folder icon.
+We are going to create a <em><strong>new class diagram</strong></em>:</p>
 <p><img src="img_1.png" alt="img_1.png" /></p>
 <p>You will notice further down in the above context menu,
 there is actually an option to create an &quot;ER diagram&quot;.
-However, this will not be UML, but a different notation language.
-We don't use that.</p>
-<p>We want UML.</p>
-<p>So, a class diagram it is.</p>
+<strong>However, <em>this will not be UML</em>, but a different notation language.</strong></p>
+<p>###We don't use that.</p>
+<p>We want UML!</p>
+<p><img src="UML.jpg" alt="img_29.png" /></p>
+<p>##So, a class diagram it is.</p>
 
 </div>
 <div class="tab">
@@ -89,6 +91,7 @@ We don't use that.</p>
 <p><img src="img_3.png" alt="img_3.png" /></p>
 <p>You will get a class which looks more like an ER entity:</p>
 <p><img src="img_6.png" alt="img_6.png" /></p>
+<p>I.e. no +/- for attributes, no methods, no types.</p>
 
 </div>
 <div class="tab">
@@ -96,7 +99,7 @@ We don't use that.</p>
 <p>What if you forget the initial visibility settings, and now you have a diagram like this:</p>
 <p><img src="img_18.png" alt="img_18.png" /></p>
 <p>With types, and visibility, and operation compartment.</p>
-<p>Drag-select all. Right click. Set three visibility settings:</p>
+<p>Drag-select all (or <kbd>ctrl</kbd>+<kbd>A</kbd>). Right click. Set three visibility settings:</p>
 <p><span class="numberCircle"><span>1</span></span> Operation Compartment Visibility<br />
 <span class="numberCircle"><span>2</span></span> Visibility Kind<br />
 <span class="numberCircle"><span>3</span></span> Attribute Type</p>
@@ -105,7 +108,8 @@ We don't use that.</p>
 </div>
 <div class="tab">
 <hr/><h1 id="simple-relationships">Simple relationships</h1><hr/>
-<p>Relationships are drawn with an association line without end arrows like this. The drag direction (from -&gt; to) is relevant.</p>
+<p>Relationships are drawn with an association line without end arrows like this.
+The drag direction (from -&gt; to) is relevant. Below it's <em>from</em> student <em>to</em> course.</p>
 <p><img src="CreatingRelationship.gif" alt="" /></p>
 <p>When the relationship is selected, you can put on the multiplicity.</p>
 <p>The relationship needs a description and reading direction.
@@ -120,14 +124,15 @@ So, with the relationship selected, go to the left-hand-side menu again, under t
 <div class="tab">
 <hr/><h1 id="relationship-attributes">Relationship attributes</h1><hr/>
 <p>These kind of attributes belong to a relationship between two entities.</p>
-<p>For example, a Customer can buy multiple tickets to some Event.<br />
-The number of tickets bought cannot be on neither Customer, nor Event, but is something which exists for each pair of Customer and Event.
+<p>For example, a <code>Customer</code> can buy multiple tickets to some <code>Event</code>.<br />
+The number of tickets bought cannot be on neither <code>Customer</code>, nor <code>Event</code>, but is something which exists for each pair of <code>Customer</code> and <code>Event</code>.
 Therefore, we make it a relationship attribute.</p>
 <p>It looks like this:</p>
 <p><img src="img_17.png" alt="img_17.png" /></p>
 <p>The full drawn line is the relationship, the dotted line goes to the relationship attributes.
 Notice Astah needs a name for this box, which also becomes the name of the relationship.
-I have found no way around this.</p>
+I have found no way around this. Just..</p>
+<p><img src="DealWithIt.jpg" alt="img_30.png" /></p>
 <p>It is done as follows:</p>
 <p><img src="RelationshipAttributes1.gif" alt="" /></p>
 
@@ -144,9 +149,9 @@ I have found no way around this.</p>
 <p>Then the settings.</p>
 <p>Open the menu: Tools -&gt; Project Settings -&gt; Set Icon for Stereotype:</p>
 <p><img src="img_10.png" alt="img_10.png" /></p>
-<p>In this menu, go to Profile Stereotype <span class="numberCircle"><span>1</span></span> and create a new <span class="numberCircle"><span>2</span></span>:</p>
+<p>In this menu, go to Profile Stereotype <span class="numberCircle"><span>1</span></span> and create a new <span class="numberCircle"><span>2</span></span>.
+Then double click on the new stereotype <span class="numberCircle"><span>3</span></span>.</p>
 <p><img src="img_12.png" alt="img_12.png" /></p>
-<p>Then double click on the new stereotype <span class="numberCircle"><span>3</span></span>.</p>
 <p>In this menu, change the Stereotype name <span class="numberCircle"><span>1</span></span>, and click on the &quot;...&quot; <span class="numberCircle"><span>2</span></span> to select an icon.</p>
 <p><img src="img_11.png" alt="img_11.png" /></p>
 <p>Select the diamond image.</p>
@@ -175,13 +180,15 @@ This shows a popup, double click on the diamond image.</p>
 <p><img src="img_23.png" alt="img_23.png" /></p>
 <p>Final result:</p>
 <p><img src="img_24.png" alt="img_24.png" /></p>
+<p>That's probably the best we can do.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="complex-relationship-attributes">Complex relationship attributes</h1><hr/>
 <p>Sometimes, a complex relationship also needs relationship attributes.
 This cannot be done in the same way as previous, where only two entities were involved.</p>
-<p>The follow hack can be used.</p>
+<p>The following hack can be used.</p>
+<p><img src="Hack.png" alt="hack" /></p>
 <p>Create a new class to hold the relationship attributes, you should name it as the relationship:</p>
 <p><img src="img_25.png" alt="img_25.png" /></p>
 <p>Now, we use the &quot;Line&quot;</p>
@@ -199,16 +206,27 @@ Then move the note into the diamond and send it to the back <span class="numberC
 
 </div>
 <div class="tab">
-<hr/><h1 id="working-on-it">working on it..</h1><hr/>
+<hr/><h1 id="inheritance">Inheritance</h1><hr/>
+<p>With the Extended E/R Diagram, inheritance is added to the notation.</p>
+<p>It is the same arrow, as we use for class diagrams, i.e. a full drawn arrow, with a not-filled-in closed arrow-head, like this:</p>
+<p><img src="img_29.png" alt="img_29.png" /></p>
+<p>There are, however, a few more details for inheritance in E/R diagrams.</p>
+<p>Now, in Astah:</p>
+<p><img src="AddInheritance.gif" alt="inheritance" /></p>
+<p>Furthermore, in E/R Diagrams, we need to add the participation and disjoint constraints, e.g. {optional, or}, {mandatory, and}, etc.</p>
+<p>You do this, by clicking one of the inheritance arrows, and add a constraint:</p>
+<p><img src="disjointparticipation.gif" alt="disjointparticipation" /></p>
+<p>Alternatively, you can just give the arrow a name (under the base tab, before switching to constraints), or use a text box.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="how-to-export-the-diagram">How to export the diagram</h1><hr/>
-<p>Sometimes these diagrams must be included in a report.</p>
-<p>It is important to export <em>all</em> your diagrams from Astah as .svg files. This is &quot;scalable vector graphics&quot;, which will prevent the diagram from becoming pixelated in the report pdf document.</p>
+<p>Sometimes these diagrams must be included in a report, or assignment.</p>
+<p>It is important to export <em>all</em> your diagrams from Astah as .svg files. This is &quot;scalable vector graphics&quot;, which will prevent the diagram from becoming pixelated/blurry in the report pdf document.</p>
 <p>This is true for ER/GR diagrams, domain models, class diagrams, activity diagrams, etc.</p>
 <p>It is done through this menu option:</p>
 <p><img src="img_21.png" alt="img_21.png" /></p>
+<p>That should be all for now.</p>
 
 </div>
 

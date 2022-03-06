@@ -1,6 +1,7 @@
 # Simple relationships
 
-Relationships are drawn with an association line without end arrows like this. The drag direction (from -> to) is relevant.
+Relationships are drawn with an association line without end arrows like this. 
+The drag direction (from -> to) is relevant. Below it's _from_ student _to_ course.
 
 ![](CreatingRelationship.gif)
 

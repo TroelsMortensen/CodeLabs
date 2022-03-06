@@ -30,3 +30,4 @@ You will get a class which looks more like an ER entity:
 
 ![img_6.png](img_6.png)
 
+I.e. no +/- for attributes, no methods, no types.

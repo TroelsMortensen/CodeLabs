@@ -6,7 +6,7 @@ What if you forget the initial visibility settings, and now you have a diagram l
 
 With types, and visibility, and operation compartment.
 
-Drag-select all. Right click. Set three visibility settings:
+Drag-select all (or <kbd>ctrl</kbd>+<kbd>A</kbd>). Right click. Set three visibility settings:
 
 ((1)) Operation Compartment Visibility\
 ((2)) Visibility Kind\

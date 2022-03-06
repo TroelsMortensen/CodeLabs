@@ -20,11 +20,12 @@ Open the menu: Tools -> Project Settings -> Set Icon for Stereotype:
 
 ![img_10.png](img_10.png)
 
-In this menu, go to Profile Stereotype ((1)) and create a new ((2)):
+In this menu, go to Profile Stereotype ((1)) and create a new ((2)).
+Then double click on the new stereotype ((3)).
 
 ![img_12.png](img_12.png)
 
-Then double click on the new stereotype ((3)).
+
 
 In this menu, change the Stereotype name ((1)), and click on the "..." ((2)) to select an icon.
 
@@ -79,3 +80,5 @@ After that, use the Text tool to create a text label inside the diamond.
 Final result: 
 
 ![img_24.png](img_24.png)
+
+That's probably the best we can do.

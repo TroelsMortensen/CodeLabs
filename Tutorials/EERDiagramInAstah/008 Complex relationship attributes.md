@@ -3,7 +3,9 @@
 Sometimes, a complex relationship also needs relationship attributes. 
 This cannot be done in the same way as previous, where only two entities were involved.
 
-The follow hack can be used.
+The following hack can be used.
+
+![hack](Hack.png)
 
 Create a new class to hold the relationship attributes, you should name it as the relationship:
 
