@@ -3,7 +3,7 @@
 ### Documentation
 [C# sockets introduction](./Tutorials/CsharpSockets/Page.html)
 
-[C# multithreadin](./Tutorials/CsharpThreads/Page.html)
+[C# multithreading](./Tutorials/CsharpThreads/Page.html)
 
 [Blazor todo app tutorial](./Tutorials/BlazorTodoTutorialPart1/Page.html)
 

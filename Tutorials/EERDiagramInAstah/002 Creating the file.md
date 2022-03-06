@@ -15,7 +15,7 @@ You will notice further down in the above context menu,
 there is actually an option to create an "ER diagram".
 **However, _this will not be UML_, but a different notation language.**
 
-###We don't use that.
+### We don't use that.
 
 We want UML!
 
