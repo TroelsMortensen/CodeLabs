@@ -21,5 +21,5 @@ We want UML!
 
 ![img_29.png](UML.jpg)
 
-##So, a class diagram it is.
+## So, a class diagram it is.
 
