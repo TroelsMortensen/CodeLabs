@@ -6,7 +6,9 @@ First, we need some styling. For this, we will create a style-behind.
 
 ![](StyleBehind.gif)
 
-When we name our css file, the same as the razor file, and append `.css`, it will be a "style-behind", i.e. a css file only accessibly in this specific page.
+Notice that in the right-click context menu, instead of new File, there is also new Stylesheet. Either works just fine.
+
+When we name our css file the same as the razor file, and append `.css`, it will be a "style-behind", i.e. a css file only accessibly in this specific page/component.
 
 Add the following to our style behind.
 ```css
@@ -30,6 +32,11 @@ Add the following to our style behind.
     padding: 5px;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.loginbtn:hover{
+    transform: scale(1.1);
+    box-shadow: 0 2px 10px 2px #3f3f3f;
 }
 ```
 
@@ -73,7 +80,7 @@ Next up, the actual view:
 </AuthorizeView>
 ```
 
-Notice how the out tag is a `<AuthorizeView>` meaning inside this tag, we have access to check if a user is logged in or not.
+Notice how the outer tag is a `<AuthorizeView>` meaning inside this tag, we have access to check if a user is logged in or not.
 
 Inside this tag, we have two others: `<NotAuthorized>` and `<Authorized>`.  
 If no-one is logged in, the html inside `<NotAuthorized>` will be shown.  
@@ -96,7 +103,7 @@ The login view will look like this:
 
 ![img_10.png](img_10.png)
 
-Here, we can input user name and password. Then click the log in button.
+Here, we can input username and password. Then click the log in button.
 
 If any errors occur, e.g. no user found, or incorrect password, an error will be shown:
 

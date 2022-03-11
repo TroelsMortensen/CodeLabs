@@ -3,9 +3,7 @@ This is an abstract class which exists in the Blazor framework. It is used to pr
 
 We must extend this class, and override the method which is called by Blazor to get the login/auth information.
 
-Create a new directory, call it Authentication.
-
-In this folder, create a new class, SimpleAuthenticationStateProvider, or whatever you want to call it.
+Inside Authentication directory: create a new class, SimpleAuthenticationStateProvider, or whatever you want to call it.
 
 It looks like this, code is explained below.
 
@@ -46,6 +44,7 @@ So, a few things to understand.
 
 We get an instance of IAuthService through the constructor, i.e. constructor dependency injection.
 If we register an IAuthService as a service in Program.cs, the framework will create an instance for us automatically.
+We'll do this later.
 
 The method `GetAuthenticationStateAsync()` is called by the framework whenever we have a page or component, which requires any kind of authorization. 
 Maybe you are accessing a page that is secured by a requirement to be an *admin*. Blazor will ask the above class, if the current user should have access.  

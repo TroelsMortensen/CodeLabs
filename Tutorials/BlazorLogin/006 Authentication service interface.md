@@ -24,5 +24,6 @@ public interface IAuthService
 
 This interface (and its implementation) will be used in the Blazor app, whenever we wish to log in or out.
 
-The property at the bottom is an Action. The idea is that another class will listen to the IAuthService implementation for changes in authentication state, i.e. an event will be fired whenever someone logs in or out.
+The property at the bottom is an Action. The idea is that another class (`SimpleAuthenticationStateProvider`) will listen to the IAuthService implementation for changes in authentication state, i.e. an event will be fired whenever someone logs in or out.
+The Blazor framework can then react to this.
 

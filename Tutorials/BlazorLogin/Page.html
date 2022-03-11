@@ -64,28 +64,38 @@ We will use the built in <code>AuthenticationStateProvider</code> class, extend 
 <p><img src="img.png" alt="img.png" /></p>
 <p>And then:</p>
 <p><img src="img_1.png" alt="img_1.png" /></p>
-<ol>
-<li>Select ASP.NET</li>
-<li>Choose a name for the project</li>
-<li>Select <em>Blazor Server App</em></li>
-<li>choose <em>no authentication</em>. This is where you alternatively could choose the Identity framework.</li>
-<li>Create the project</li>
-</ol>
+<p><span class="numberCircle"><span>1</span></span> Select ASP.NET<br />
+<span class="numberCircle"><span>2</span></span> Choose a name for the project
+<span class="numberCircle"><span>3</span></span>6 Select <em>Blazor Server App</em><br />
+<span class="numberCircle"><span>4</span></span> Choose <em>No authentication</em>. (This is where you alternatively could choose the Identity framework)<br />
+<span class="numberCircle"><span>5</span></span> Create the project</p>
+<h2 id="overview">Overview</h2>
+<p>The below diagram will give an overview of the classes we need.</p>
+<p><img src="ClassDiagram.svg" alt="cd" /></p>
+<p>The &quot;Blazor app&quot; represents your app. The blue, abstract class is from the authorization framework, already in Blazor.
+It is used by the app to request information about who's logged in.</p>
+<p>We need the <code>SimpleAuthenticationStateProvider</code> to provide that logged in information, whenever the Blazor app requests it. It overrides the method <code>GetAuthenticationStateAsync</code> from the super class.</p>
+<p>The <code>IAuthService</code> interface is used to handle logging in and out. This is used by your log in component in your Blazor app.</p>
+<p>The implementation will manage retrieving the user from a service interface, and cache that user, so that it can be provided to <code>SipmleAuthenticationStateProvider</code> whenever needed.</p>
+<p>The IUserService is a data access interface, currently with just one method, which can retrieve a <code>User</code> object.</p>
+<p>The InMemoryUserService is a dummy database, which just has a list of 3 users.</p>
+<p>The following slides will go through how to set up everything.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="wrap-the-app-in-authentication">Wrap the app in authentication</h1><hr/>
-<p>We must make available the authentication state to the entire app. We this by wrapping the app in a CascadingAuthenticationState component.</p>
+<p>We must make available the authentication state to the entire app. We do this by wrapping the app in a CascadingAuthenticationState component.</p>
 <p>Open the file app.razor, and modify it to the yellow highlighted, like so:</p>
 <p><img src="img_2.png" alt="img_2.png" /></p>
-<p>You update those tree places.</p>
+<p>You update those three highlighted places.</p>
+<p>Each page/component of your app can now request information about who is logged in, if any.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="disable-server-side-pre-rendering">Disable server-side pre-rendering</h1><hr/>
 <p>Blazor-server has two render modes:</p>
 <ul>
-<li>Server Render a marker where the component should be rendered interactively by the Blazor Server app.</li>
+<li>Server-Render is where the component should be rendered interactively by the Blazor Server app.</li>
 <li>ServerPrerendered Statically prerender the component along with a marker to indicate the component should later be rendered interactively by the Blazor Server app.</li>
 </ul>
 <p>As explained <a href="https://devblogs.microsoft.com/aspnet/asp-net-core-and-blazor-updates-in-net-core-3-0-preview-9/">here</a>.</p>
@@ -134,7 +144,7 @@ This could often be seen as &quot;guest&quot;, &quot;registered user&quot;, &quo
 <p><img src="img_5.png" alt="img_5.png" /></p>
 <p>There is not necessarily a hierarchy here, where one can do more than the other. Instead each type is allowed access to different parts of the system.</p>
 <p>I have here tried to imply that the Product manager may access <em>some</em> customer data, maybe view certain things, but not modify. I.e. only <em>read access</em>.</p>
-<p>Maybe the Customer Service Assistant view some product orders by customers, but not modify anything.</p>
+<p>Maybe the Customer Service Assistant view some product orders by customers, but cannot modify anything.</p>
 
 </div>
 <div class="tab">
@@ -157,15 +167,15 @@ public interface IAuthService
 }
 </code></pre>
 <p>This interface (and its implementation) will be used in the Blazor app, whenever we wish to log in or out.</p>
-<p>The property at the bottom is an Action. The idea is that another class will listen to the IAuthService implementation for changes in authentication state, i.e. an event will be fired whenever someone logs in or out.</p>
+<p>The property at the bottom is an Action. The idea is that another class (<code>SimpleAuthenticationStateProvider</code>) will listen to the IAuthService implementation for changes in authentication state, i.e. an event will be fired whenever someone logs in or out.
+The Blazor framework can then react to this.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="authenticationstateprovider">AuthenticationStateProvider</h1><hr/>
 <p>This is an abstract class which exists in the Blazor framework. It is used to provide information about who is logged in, and what priviliges they have.</p>
 <p>We must extend this class, and override the method which is called by Blazor to get the login/auth information.</p>
-<p>Create a new directory, call it Authentication.</p>
-<p>In this folder, create a new class, SimpleAuthenticationStateProvider, or whatever you want to call it.</p>
+<p>Inside Authentication directory: create a new class, SimpleAuthenticationStateProvider, or whatever you want to call it.</p>
 <p>It looks like this, code is explained below.</p>
 <pre><code class="line-numbers language-csharp">using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -200,7 +210,8 @@ public class SimpleAuthenticationStateProvider : AuthenticationStateProvider
 </code></pre>
 <p>So, a few things to understand.</p>
 <p>We get an instance of IAuthService through the constructor, i.e. constructor dependency injection.
-If we register an IAuthService as a service in Program.cs, the framework will create an instance for us automatically.</p>
+If we register an IAuthService as a service in Program.cs, the framework will create an instance for us automatically.
+We'll do this later.</p>
 <p>The method <code>GetAuthenticationStateAsync()</code> is called by the framework whenever we have a page or component, which requires any kind of authorization.
 Maybe you are accessing a page that is secured by a requirement to be an <em>admin</em>. Blazor will ask the above class, if the current user should have access.<br />
 Or maybe you have some parts of a page, which should only be shown, if someone is logged in. Then Blazor will ask this class, if anyone is logged in.</p>
@@ -340,8 +351,9 @@ public class AuthServiceImpl : IAuthService
     }
 }
 </code></pre>
+<p>Notice the version on GitHub may look slightly different, but the functionality is the same.</p>
 <p>Yes, it's a bit of a long one. Luckily for you, you shouldn't need to change too much here to adapt the class to your own Blazor app later.</p>
-<p>Of course, if instead of <code>User</code> you want another type, like Profile or Account, then you would have to swap that out.</p>
+<p>Of course, if instead of <code>User</code>, you want another type, like Profile or Account, then you would have to swap that out.</p>
 <p>We will take chunks out of the above class, and explain small parts at a time.</p>
 <p>But first, two classes:</p>
 <h4 id="claimsidentity-and-claimsprincipal"><em>ClaimsIdentity and ClaimsPrincipal</em></h4>
@@ -353,7 +365,8 @@ This information is put into a <code>ClaimsIdentity</code>, which is essentially
 [&quot;SecurityLevel&quot;, &quot;3&quot;]</p>
 <p>The Blazor app can then retrieve the relevant information when needed,
 e.g. when checking if the user is allowed to view or interact with certain parts of the app.
-Or if a greeting, <strong>&quot;Welcome Anon&quot;</strong>, should be displayed when you are logged in</p>
+Or if a greeting, <strong>&quot;Welcome Anon&quot;</strong>, should be displayed when you are logged in.</p>
+<p>Short point: We need to convert your custom user object to a ClaimsPrincipal, so Blazor understands it.</p>
 <p>Okay, the code then:</p>
 <h3 id="fields-and-constructor">Fields and constructor</h3>
 <p>First, the fields:</p>
@@ -367,32 +380,39 @@ Or if a greeting, <strong>&quot;Welcome Anon&quot;</strong>, should be displayed
         this.jsRuntime = jsRuntime;
     }
 </code></pre>
-<p>We have the Action, so we can notify the <code>SimpleAuthenticationStateProvider</code> about logging in and out. In .NET6 they have introduced a feature, so that you should explicitly define which variables can be null. That is why it is instantiated to <code>null!</code>.<br />
-Then the IUserService, which is injected through the constructor. Dependency injection again here. I plan on just keeping users in a <code>List</code> for this tutorial, but later the implementation could be swapped out. So to ease the swapping, we depend on an interface, which is provided through the constructor. No dependencies to an implementation.<br />
-The <code>IJSRuntime</code> is a class which can call javascript methods. We need that to store some data in the browser.</p>
+<p>We have the Action, <code>OnAuthStateChanged</code>, so we can notify the <code>SimpleAuthenticationStateProvider</code> about logging in and out.<br />
+In .NET6 they have introduced a feature, so that you should explicitly define which variables can be null. That is why it is instantiated to <code>null!</code>.<br />
+Then the IUserService, which is injected through the constructor.
+Dependency injection again here.
+I plan on just keeping users in a <code>List</code> for this tutorial, but later the implementation could be swapped out for a database or file. So to ease the swapping, we depend on an interface, which is provided through the constructor. No dependencies to an implementation.<br />
+The <code>IJSRuntime</code> is a class which can call javascript methods. We need that to store some data temporarily in the browser.</p>
 <p>The constructor receives relevant arguments.</p>
 <h3 id="log-in">Log in</h3>
 <pre><code class="line-numbers language-csharp">public async Task LoginAsync(string username, string password)
 {
-    User user = await userService.GetUserAsync(username);
+    User? user = await userService.GetUserAsync(username);
 
     ValidateLoginCredentials(password, user);
 
     await CacheUserAsync(user);
 
-    ClaimsPrincipal principal = CreateClaimsPrincipal(user);
+    ClaimsPrincipal principal = CreateClaimsPrincipal(user!);
 
     OnAuthStateChanged?.Invoke(principal);
 }
 </code></pre>
 <p>This method is to be called from some page, when we wish to log in. The method is asynchronous, because it does things, which takes time, potentially, like network calls.</p>
-<p><code>Username</code> and <code>password</code> are provided as arguments.</p>
+<p><code>username</code> and <code>password</code> are provided as arguments.</p>
 <p>First, we ask the <code>userService</code> to retrieve a <code>User</code> object based on the username. Notice I don't pass the password here. This <code>GetUserAsync</code> will eventually contact a server somewhere, and we don't want to send the password around for hackers to sniff out.</p>
-<p>We get a <code>User?</code> back, here the '?' indicates the <code>user</code> may be null, this happens if no <code>User</code> matches the username.</p>
-<p>Then the returned User object is validated. The method is shown later, but it just checks if the user is not null and that the provided password matches the password of the user. If either fails, an exception is thrown.</p>
-<p>If all is good, we then cache the user. This means we take the user object, and store it in the browser. Why is this necessary? There are alternatives, but this approach seems to work well.
-The IAuthService will be added as scoped, i.e. a new instance is created whenever a new tab is opened, or the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthService instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.</p>
-<p>We create a new ClaimsPrincipal based on the user. Blazor authentication framework works with ClaimsPrincipals. It's just a class to hold information about the user.</p>
+<p>The <code>User?</code> indicates that this variable may be <code>null</code> in case no user exists with the provided <code>username</code>.</p>
+<p>Then the User object is validated. The method is shown later, but it just checks if the user is not null and that the provided password matches the password of the user. If either fails, an exception is thrown.</p>
+<p>If all is good, we then cache the user.
+This means we take the user object, and store it in the browser.
+Why is this necessary?
+There are alternatives, but this approach seems to work well.<br />
+The IAuthService will be added as <em>scoped</em>, i.e. a new instance is created whenever a new tab is opened, <strong>or</strong> the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthService instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.<br />
+Therefore, we cache the user in the browser, so it can be retrieved after a page refresh.</p>
+<p>We create a new <code>ClaimsPrincipal</code> based on the user. Blazor authentication framework works with ClaimsPrincipals. It's just a class to hold information about the user.</p>
 <p>Finally, we invoke the <code>OnAuthStateChanged</code> to let anyone listening know about the logging in. The <code>SimpleAuthenticationStateProvider</code> has subscribed to this action, so it is notified when the action is invoked.</p>
 <h3 id="log-out">Log out</h3>
 <p>This method is to be called when the user wishes to log out.</p>
@@ -403,33 +423,43 @@ The IAuthService will be added as scoped, i.e. a new instance is created wheneve
     OnAuthStateChanged?.Invoke(principal);
 }
 </code></pre>
-<p>First, we clear the cached user from the browser storage.<br />
+<p>First, we clear the cached user from the browser storage (method shown later).<br />
 We then create a <code>ClaimsPrincipal</code> from 'nothing', i.e. null. This will clear user information, and essentially say to the authentication framework, that no user is logged in.<br />
 Then we notify the <code>SimpleAuthenticationStateProvider</code> that the user has logged out.</p>
 <h3 id="get-authentication">Get authentication</h3>
 <p>This method is used by <code>SimpleAuthenticationStateProvider</code> whenever the user is accessing a page with any kind of authentication/authorization requirement. <code>SimpleAuthenticationStateProvider</code> will call this method to retrieve information about the logged in user.</p>
 <pre><code class="line-numbers language-csharp">public async Task&lt;ClaimsPrincipal&gt; GetAuthAsync()
 {
-    string userAsJson = await jsRuntime.InvokeAsync&lt;string&gt;(&quot;sessionStorage.getItem&quot;, &quot;currentUser&quot;);
-    User user = null;
-    if (!string.IsNullOrEmpty(userAsJson))
-    {
-        user = JsonSerializer.Deserialize&lt;User&gt;(userAsJson);
-    }
+    User? user =  await GetUserFromCacheAsync();
+
     ClaimsPrincipal principal = CreateClaimsPrincipal(user);
 
     return principal;
 }
 </code></pre>
-<p>The method retrieves the data from the browser storage, here we need the javascript. The session storage is sort of like a tiny temporary database, or map, in the browser, where we can put data. The data will be erased when the browser tab is closed, i.e. the session is over.</p>
-<p>The user in the session storage is stored as json, so the next line deserializes the json into a user object.
-Again, with '?' to indicate we may have no user stored, which result in  a <code>null-user</code>. If anything is retrieved from session storage, we attempt to deserialize it into a user.</p>
+<p>First the data from the browser storage is retrieved.<br />
+If no user is stored, we get null back, so <code>User?</code> indicates this variable can be null.</p>
 <p>We create a <code>ClaimsPrincipal</code>, i.e. take the user information and put it into a <code>ClaimsPrincipal</code>. Then the <code>ClaimsPrincipal</code> is returned.</p>
 <h6 id="optimization"><em>Optimization</em></h6>
+<blockquote>
 <p>This method could be optimized if the reader is interested. Currently, whenever the authentication state is needed (which is potentially quite often), we retrieve the cached user from the browser session storage, and converts it to a ClaimsPrincipal.</p>
 <p>This <code>principal</code> could be stored in a field variable, to we have a local cache as well. The <code>GetAuthAsync()</code> method would then first check if the field is null, if not just return that. This will save us the effort of retrieving the session storage user and converting it.</p>
 <p>We should then remember to also clear the local cached upon logging out, i.e. set it to an &quot;empty&quot; ClaimsPrincipal.</p>
 <p>Implementation is left to the reader.</p>
+</blockquote>
+<h3 id="get-cached-user">Get cached user</h3>
+<pre><code class="line-numbers language-csharp">private async Task&lt;User?&gt; GetUserFromCacheAsync()
+{
+    string userAsJson = await jsRuntime.InvokeAsync&lt;string&gt;(&quot;sessionStorage.getItem&quot;, &quot;currentUser&quot;);
+    if (string.IsNullOrEmpty(userAsJson)) return null;
+    User user = JsonSerializer.Deserialize&lt;User&gt;(userAsJson)!;
+    return user;
+}
+</code></pre>
+<p>The session storage is sort of like a tiny temporary database, or map, in the browser, where we can put data. The data will be erased when the browser tab is closed, i.e. the session is over.<br />
+The user-as-json is first retrieved, then checked for <code>null</code>.</p>
+<p>The user in the session storage is stored as json, so the next line deserializes the json into a user object.<br />
+Notice the <code>!</code> at the end, this is to suppress the warning, that <code>userAsJson</code> may be null, but we just checked that above, so we are not worried about this warning.</p>
 <h3 id="validation">Validation</h3>
 <pre><code class="line-numbers language-csharp">private void ValidateLoginCredentials(string password, User? user)
 {
@@ -445,25 +475,25 @@ Again, with '?' to indicate we may have no user stored, which result in  a <code
 }
 </code></pre>
 <p>This method just validates if a user was found, i.e. it is not <code>null</code>. And then check if the password stored in the database matches the password typed in by the user.</p>
-<p>If encryption of passwords were used, we would first incrypt the <code>password</code> argument before comparing to the encrypted password stored in the database, i.e. the data in <code>user.Password</code>.</p>
+<p>If encryption of passwords were used, we would first encrypt the <code>password</code> argument before comparing to the encrypted password stored in the database, i.e. the data in <code>user.Password</code>.<br />
+In this toy example, encryption is ignored, and left to the reader to implement, if needed.</p>
 <h3 id="claimsprincipal">ClaimsPrincipal</h3>
 <pre><code class="line-numbers language-csharp">private ClaimsPrincipal CreateClaimsPrincipal(User? user)
 {
-    ClaimsIdentity identity = new();
-    if (user != null)
-    {
-        identity = ConvertUserToClaimsIdentity(user);
-    }
+        if (user != null)
+        {
+            ClaimsIdentity identity = ConvertUserToClaimsIdentity(user);
+            return new ClaimsPrincipal(identity);
+        }
 
-    ClaimsPrincipal principal = new(identity);
-
-    return principal;
+        return new ClaimsPrincipal();
 }
 </code></pre>
 <p>This method takes the user, and if it is not <code>null</code>, puts the information into a <code>ClaimsIdentity</code> object, which is inserted into a <code>ClaimsPrincipal</code> and returned.</p>
-<p>The ClaimsIdentity is essentially just a map of keys and values.</p>
+<p>The ClaimsIdentity is essentially just a map of keys and values. The method will come later.</p>
+<p>If there is no user, an &quot;empty&quot; ClaimsPrincipal is returned instead.</p>
 <h3 id="caching-the-user">Caching the user</h3>
-<pre><code class="line-numbers language-csharp">private async Task CacheUserAsync(User? user)
+<pre><code class="line-numbers language-csharp">private async Task CacheUserAsync(User user)
 {
     string serialisedData = JsonSerializer.Serialize(user);
     await jsRuntime.InvokeVoidAsync(&quot;sessionStorage.setItem&quot;, &quot;currentUser&quot;, serialisedData);
@@ -492,7 +522,7 @@ Again, with '?' to indicate we may have no user stored, which result in  a <code
     return new ClaimsIdentity(claims, &quot;apiauth_type&quot;);
 }
 </code></pre>
-<p>We first create a list of claims: key-value pairs.</p>
+<p>We first create a list of claims: i.e. key-value pairs.</p>
 <p>There are some pre-defined <code>ClaimsTypes</code>, e.g. <code>Name</code>. If we set this, we have easy access to the username throughout the app.</p>
 <p>You may find others of relevans, like <code>Role</code>, <code>Surname</code>, etc.</p>
 <p>But mostly, you can just define your own keys, like I have done above: <code>&quot;Role&quot;</code> and <code>&quot;SecurityLevel&quot;</code>.</p>
@@ -591,7 +621,8 @@ the exception is caught, and the errorLabel is updated with a message, so that t
 <h3 id="css">css</h3>
 <p>First, we need some styling. For this, we will create a style-behind.</p>
 <p><img src="StyleBehind.gif" alt="" /></p>
-<p>When we name our css file, the same as the razor file, and append <code>.css</code>, it will be a &quot;style-behind&quot;, i.e. a css file only accessibly in this specific page.</p>
+<p>Notice that in the right-click context menu, instead of new File, there is also new Stylesheet. Either works just fine.</p>
+<p>When we name our css file the same as the razor file, and append <code>.css</code>, it will be a &quot;style-behind&quot;, i.e. a css file only accessibly in this specific page/component.</p>
 <p>Add the following to our style behind.</p>
 <pre><code class="line-numbers language-css">.card {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
@@ -613,6 +644,11 @@ the exception is caught, and the errorLabel is updated with a message, so that t
     padding: 5px;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.loginbtn:hover{
+    transform: scale(1.1);
+    box-shadow: 0 2px 10px 2px #3f3f3f;
 }
 </code></pre>
 <p>You may of course change the styling to your liking.</p>
@@ -650,7 +686,7 @@ the exception is caught, and the errorLabel is updated with a message, so that t
     &lt;/Authorized&gt;
 &lt;/AuthorizeView&gt;
 </code></pre>
-<p>Notice how the out tag is a <code>&lt;AuthorizeView&gt;</code> meaning inside this tag, we have access to check if a user is logged in or not.</p>
+<p>Notice how the outer tag is a <code>&lt;AuthorizeView&gt;</code> meaning inside this tag, we have access to check if a user is logged in or not.</p>
 <p>Inside this tag, we have two others: <code>&lt;NotAuthorized&gt;</code> and <code>&lt;Authorized&gt;</code>.<br />
 If no-one is logged in, the html inside <code>&lt;NotAuthorized&gt;</code> will be shown.<br />
 If someone is logged in, the html inside <code>&lt;Authorized&gt;</code> will be shown.</p>
@@ -664,7 +700,7 @@ it is the <code>ClaimsPrincipal.</code></p>
 <h3 id="ui">UI</h3>
 <p>The login view will look like this:</p>
 <p><img src="img_10.png" alt="img_10.png" /></p>
-<p>Here, we can input user name and password. Then click the log in button.</p>
+<p>Here, we can input username and password. Then click the log in button.</p>
 <p>If any errors occur, e.g. no user found, or incorrect password, an error will be shown:</p>
 <p><img src="img_9.png" alt="img_9.png" /></p>
 
@@ -694,7 +730,7 @@ it is the <code>ClaimsPrincipal.</code></p>
 <p>First, we need some icons.</p>
 <p>I have uploaded a login and a logout icon to github, you can find them <a href="https://github.com/TroelsMortensen/BlazorLogin/blob/master/BlazorLoginApp/wwwroot/img/Login.png">here</a>
 and <a href="https://github.com/TroelsMortensen/BlazorLogin/blob/master/BlazorLoginApp/wwwroot/img/Logout.png">here</a>.</p>
-<p>Just rightclick the image and click &quot;save image as&quot;, that should let you download the images.</p>
+<p>Just right-click the image and click &quot;save image as&quot;, that should let you download the images.</p>
 <p>These two images should be stored in a new &quot;img&quot; directory inside the &quot;wwwroot&quot; directory in your project:</p>
 <p><img src="img_13.png" alt="img_13.png" /></p>
 <p>Various resources can be put here.</p>
@@ -735,7 +771,9 @@ and <a href="https://github.com/TroelsMortensen/BlazorLogin/blob/master/BlazorLo
 <p>Notice there is no page directive for this component, i.e. we cannot navigate to it, only use it in other components/pages.</p>
 <p>First is declared a &quot;@namespace Login&quot;, this is needed because this component will be used from something outside of the Pages folder. In those cases we need to define namespaces.</p>
 <p>Then we inject the <code>NavigationManager</code> and <code>IAuthService</code>.</p>
-<p>In the code block, we just have two methods. <code>Login()</code> will navigate to the login page. <code>Logout()</code> will use the <code>authService</code> to clear the login status, and the navigate to the home page.</p>
+<p>In the code block, we just have two methods.<br />
+<code>Login()</code> will navigate to the login page.<br />
+<code>Logout()</code> will use the <code>authService</code> to clear the login status, and the navigate to the home page.</p>
 <h3 id="the-view">The view</h3>
 <p>The view part is equally simple:</p>
 <pre><code class="line-numbers language-razor">&lt;AuthorizeView&gt;

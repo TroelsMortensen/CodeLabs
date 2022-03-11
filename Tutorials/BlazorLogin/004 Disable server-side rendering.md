@@ -1,7 +1,7 @@
 # Disable server-side pre-rendering
 
 Blazor-server has two render modes:
-* Server Render a marker where the component should be rendered interactively by the Blazor Server app.
+* Server-Render is where the component should be rendered interactively by the Blazor Server app.
 * ServerPrerendered Statically prerender the component along with a marker to indicate the component should later be rendered interactively by the Blazor Server app.
 
 As explained [here](https://devblogs.microsoft.com/aspnet/asp-net-core-and-blazor-updates-in-net-core-3-0-preview-9/).

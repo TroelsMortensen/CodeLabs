@@ -9,7 +9,7 @@ First, we need some icons.
 I have uploaded a login and a logout icon to github, you can find them [here](https://github.com/TroelsMortensen/BlazorLogin/blob/master/BlazorLoginApp/wwwroot/img/Login.png)
 and [here](https://github.com/TroelsMortensen/BlazorLogin/blob/master/BlazorLoginApp/wwwroot/img/Logout.png).
 
-Just rightclick the image and click "save image as", that should let you download the images.
+Just right-click the image and click "save image as", that should let you download the images.
 
 These two images should be stored in a new "img" directory inside the "wwwroot" directory in your project:
 
@@ -65,7 +65,9 @@ First is declared a "@namespace Login", this is needed because this component wi
 
 Then we inject the `NavigationManager` and `IAuthService`.
 
-In the code block, we just have two methods. `Login()` will navigate to the login page. `Logout()` will use the `authService` to clear the login status, and the navigate to the home page.
+In the code block, we just have two methods.\
+`Login()` will navigate to the login page.\
+`Logout()` will use the `authService` to clear the login status, and the navigate to the home page.
 
 ### The view
 The view part is equally simple:

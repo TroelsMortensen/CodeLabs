@@ -46,4 +46,4 @@ There is not necessarily a hierarchy here, where one can do more than the other.
 
 I have here tried to imply that the Product manager may access *some* customer data, maybe view certain things, but not modify. I.e. only *read access*.
 
-Maybe the Customer Service Assistant view some product orders by customers, but not modify anything.
+Maybe the Customer Service Assistant view some product orders by customers, but cannot modify anything.

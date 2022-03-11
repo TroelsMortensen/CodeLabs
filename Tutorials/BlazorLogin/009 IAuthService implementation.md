@@ -109,9 +109,11 @@ public class AuthServiceImpl : IAuthService
 }
 ```
 
+Notice the version on GitHub may look slightly different, but the functionality is the same.
+
 Yes, it's a bit of a long one. Luckily for you, you shouldn't need to change too much here to adapt the class to your own Blazor app later.
 
-Of course, if instead of `User` you want another type, like Profile or Account, then you would have to swap that out.
+Of course, if instead of `User`, you want another type, like Profile or Account, then you would have to swap that out.
 
 We will take chunks out of the above class, and explain small parts at a time.
 
@@ -129,7 +131,9 @@ This information is put into a `ClaimsIdentity`, which is essentially just a map
 
 The Blazor app can then retrieve the relevant information when needed, 
 e.g. when checking if the user is allowed to view or interact with certain parts of the app.
-Or if a greeting, **"Welcome Anon"**, should be displayed when you are logged in
+Or if a greeting, **"Welcome Anon"**, should be displayed when you are logged in.
+
+Short point: We need to convert your custom user object to a ClaimsPrincipal, so Blazor understands it.
 
 Okay, the code then:
 
@@ -147,9 +151,12 @@ First, the fields:
         this.jsRuntime = jsRuntime;
     }
 ```
-We have the Action, so we can notify the `SimpleAuthenticationStateProvider` about logging in and out. In .NET6 they have introduced a feature, so that you should explicitly define which variables can be null. That is why it is instantiated to `null!`.  
-Then the IUserService, which is injected through the constructor. Dependency injection again here. I plan on just keeping users in a `List` for this tutorial, but later the implementation could be swapped out. So to ease the swapping, we depend on an interface, which is provided through the constructor. No dependencies to an implementation.  
-The `IJSRuntime` is a class which can call javascript methods. We need that to store some data in the browser.
+We have the Action, `OnAuthStateChanged`, so we can notify the `SimpleAuthenticationStateProvider` about logging in and out.\
+In .NET6 they have introduced a feature, so that you should explicitly define which variables can be null. That is why it is instantiated to `null!`.  
+Then the IUserService, which is injected through the constructor. 
+Dependency injection again here. 
+I plan on just keeping users in a `List` for this tutorial, but later the implementation could be swapped out for a database or file. So to ease the swapping, we depend on an interface, which is provided through the constructor. No dependencies to an implementation.  
+The `IJSRuntime` is a class which can call javascript methods. We need that to store some data temporarily in the browser.
 
 The constructor receives relevant arguments.
 
@@ -157,13 +164,13 @@ The constructor receives relevant arguments.
 ```csharp
 public async Task LoginAsync(string username, string password)
 {
-    User user = await userService.GetUserAsync(username);
+    User? user = await userService.GetUserAsync(username);
 
     ValidateLoginCredentials(password, user);
 
     await CacheUserAsync(user);
 
-    ClaimsPrincipal principal = CreateClaimsPrincipal(user);
+    ClaimsPrincipal principal = CreateClaimsPrincipal(user!);
 
     OnAuthStateChanged?.Invoke(principal);
 }
@@ -171,18 +178,22 @@ public async Task LoginAsync(string username, string password)
 
 This method is to be called from some page, when we wish to log in. The method is asynchronous, because it does things, which takes time, potentially, like network calls.
 
-`Username` and `password` are provided as arguments.
+`username` and `password` are provided as arguments.
 
 First, we ask the `userService` to retrieve a `User` object based on the username. Notice I don't pass the password here. This `GetUserAsync` will eventually contact a server somewhere, and we don't want to send the password around for hackers to sniff out.
 
-We get a `User?` back, here the '?' indicates the `user` may be null, this happens if no `User` matches the username.
+The `User?` indicates that this variable may be `null` in case no user exists with the provided `username`.
 
-Then the returned User object is validated. The method is shown later, but it just checks if the user is not null and that the provided password matches the password of the user. If either fails, an exception is thrown.
+Then the User object is validated. The method is shown later, but it just checks if the user is not null and that the provided password matches the password of the user. If either fails, an exception is thrown.
 
-If all is good, we then cache the user. This means we take the user object, and store it in the browser. Why is this necessary? There are alternatives, but this approach seems to work well. 
-The IAuthService will be added as scoped, i.e. a new instance is created whenever a new tab is opened, or the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthService instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.  
+If all is good, we then cache the user. 
+This means we take the user object, and store it in the browser. 
+Why is this necessary? 
+There are alternatives, but this approach seems to work well.\
+The IAuthService will be added as _scoped_, i.e. a new instance is created whenever a new tab is opened, **or** the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthService instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.\
+Therefore, we cache the user in the browser, so it can be retrieved after a page refresh.
 
-We create a new ClaimsPrincipal based on the user. Blazor authentication framework works with ClaimsPrincipals. It's just a class to hold information about the user.
+We create a new `ClaimsPrincipal` based on the user. Blazor authentication framework works with ClaimsPrincipals. It's just a class to hold information about the user.
 
 Finally, we invoke the `OnAuthStateChanged` to let anyone listening know about the logging in. The `SimpleAuthenticationStateProvider` has subscribed to this action, so it is notified when the action is invoked.
 
@@ -198,7 +209,7 @@ public async Task LogoutAsync()
 }
 ```
 
-First, we clear the cached user from the browser storage.  
+First, we clear the cached user from the browser storage (method shown later).  
 We then create a `ClaimsPrincipal` from 'nothing', i.e. null. This will clear user information, and essentially say to the authentication framework, that no user is logged in.  
 Then we notify the `SimpleAuthenticationStateProvider` that the user has logged out.
 
@@ -208,34 +219,47 @@ This method is used by `SimpleAuthenticationStateProvider` whenever the user is 
 ```csharp
 public async Task<ClaimsPrincipal> GetAuthAsync()
 {
-    string userAsJson = await jsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser");
-    User user = null;
-    if (!string.IsNullOrEmpty(userAsJson))
-    {
-        user = JsonSerializer.Deserialize<User>(userAsJson);
-    }
+    User? user =  await GetUserFromCacheAsync();
+
     ClaimsPrincipal principal = CreateClaimsPrincipal(user);
 
     return principal;
 }
 ```
 
-The method retrieves the data from the browser storage, here we need the javascript. The session storage is sort of like a tiny temporary database, or map, in the browser, where we can put data. The data will be erased when the browser tab is closed, i.e. the session is over.
-
-The user in the session storage is stored as json, so the next line deserializes the json into a user object. 
-Again, with '?' to indicate we may have no user stored, which result in  a `null-user`. If anything is retrieved from session storage, we attempt to deserialize it into a user.
+First the data from the browser storage is retrieved.\
+If no user is stored, we get null back, so `User?` indicates this variable can be null.
 
 We create a `ClaimsPrincipal`, i.e. take the user information and put it into a `ClaimsPrincipal`. Then the `ClaimsPrincipal` is returned.
 
 ###### *Optimization* 
 
-This method could be optimized if the reader is interested. Currently, whenever the authentication state is needed (which is potentially quite often), we retrieve the cached user from the browser session storage, and converts it to a ClaimsPrincipal.
+>This method could be optimized if the reader is interested. Currently, whenever the authentication state is needed (which is potentially quite often), we retrieve the cached user from the browser session storage, and converts it to a ClaimsPrincipal.
+>
+>This `principal` could be stored in a field variable, to we have a local cache as well. The `GetAuthAsync()` method would then first check if the field is null, if not just return that. This will save us the effort of retrieving the session storage user and converting it.
+>
+>We should then remember to also clear the local cached upon logging out, i.e. set it to an "empty" ClaimsPrincipal.
+>
+>Implementation is left to the reader.
 
-This `principal` could be stored in a field variable, to we have a local cache as well. The `GetAuthAsync()` method would then first check if the field is null, if not just return that. This will save us the effort of retrieving the session storage user and converting it.
+### Get cached user
 
-We should then remember to also clear the local cached upon logging out, i.e. set it to an "empty" ClaimsPrincipal.
+```csharp
+private async Task<User?> GetUserFromCacheAsync()
+{
+    string userAsJson = await jsRuntime.InvokeAsync<string>("sessionStorage.getItem", "currentUser");
+    if (string.IsNullOrEmpty(userAsJson)) return null;
+    User user = JsonSerializer.Deserialize<User>(userAsJson)!;
+    return user;
+}
+```
 
-Implementation is left to the reader.
+The session storage is sort of like a tiny temporary database, or map, in the browser, where we can put data. The data will be erased when the browser tab is closed, i.e. the session is over.\
+The user-as-json is first retrieved, then checked for `null`.
+
+The user in the session storage is stored as json, so the next line deserializes the json into a user object.\
+Notice the `!` at the end, this is to suppress the warning, that `userAsJson` may be null, but we just checked that above, so we are not worried about this warning.
+
 
 ### Validation
 ```csharp
@@ -255,32 +279,33 @@ private void ValidateLoginCredentials(string password, User? user)
 
 This method just validates if a user was found, i.e. it is not `null`. And then check if the password stored in the database matches the password typed in by the user.
 
-If encryption of passwords were used, we would first incrypt the `password` argument before comparing to the encrypted password stored in the database, i.e. the data in `user.Password`.
+If encryption of passwords were used, we would first encrypt the `password` argument before comparing to the encrypted password stored in the database, i.e. the data in `user.Password`.\
+In this toy example, encryption is ignored, and left to the reader to implement, if needed.
 
 ### ClaimsPrincipal
 ```csharp
 private ClaimsPrincipal CreateClaimsPrincipal(User? user)
 {
-    ClaimsIdentity identity = new();
-    if (user != null)
-    {
-        identity = ConvertUserToClaimsIdentity(user);
-    }
+        if (user != null)
+        {
+            ClaimsIdentity identity = ConvertUserToClaimsIdentity(user);
+            return new ClaimsPrincipal(identity);
+        }
 
-    ClaimsPrincipal principal = new(identity);
-
-    return principal;
+        return new ClaimsPrincipal();
 }
 ```
 
 This method takes the user, and if it is not `null`, puts the information into a `ClaimsIdentity` object, which is inserted into a `ClaimsPrincipal` and returned.
 
-The ClaimsIdentity is essentially just a map of keys and values. 
+The ClaimsIdentity is essentially just a map of keys and values. The method will come later.
+
+If there is no user, an "empty" ClaimsPrincipal is returned instead.
 
 ### Caching the user
 
 ```csharp
-private async Task CacheUserAsync(User? user)
+private async Task CacheUserAsync(User user)
 {
     string serialisedData = JsonSerializer.Serialize(user);
     await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", "currentUser", serialisedData);
@@ -316,7 +341,7 @@ private ClaimsIdentity ConvertUserToClaimsIdentity(User user)
     return new ClaimsIdentity(claims, "apiauth_type");
 }
 ```
-We first create a list of claims: key-value pairs.
+We first create a list of claims: i.e. key-value pairs.
 
 There are some pre-defined `ClaimsTypes`, e.g. `Name`. If we set this, we have easy access to the username throughout the app.
 
