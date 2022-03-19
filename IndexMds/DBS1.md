@@ -14,6 +14,8 @@
 
 [Goodreads exercises](Tutorials/GoodreadsExercises/Page.html)
 
+[EER to Logical](Tutorials/EerToLogical/Page.html)
+
 ### Videos
 
 **[Installing postgres and setting up DataGrip](https://youtu.be/EX81bDA-mkA)**
