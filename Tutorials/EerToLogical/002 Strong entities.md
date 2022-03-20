@@ -17,7 +17,7 @@ When mapping to a relation, keys, and simple attributes are included.
 Composite attributes are "flattened", i.e. we get a simple attribute per attribute in the composite.
 
 Multivalued attributes are handled in a later step, i.e. left out for now.
-This is because the relational database handles multivalued attributes in a special way. Remember that each cell in a table, must should a single value.
+This is because the relational database handles multivalued attributes in a special way. Remember that each cell in a table should contain a single value.
 
 Derived attributes are also included, and marked as derived.
 
