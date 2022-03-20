@@ -174,7 +174,7 @@ The mapping approach is the same.</p>
 EntityA will then <em>most</em> of the time have a non-<code>null</code> value in the cell for the foreign key.</p>
 <p>If it is the other way around, then the foreign key goes into EntityB.</p>
 <p>You will have to make the choice.</p>
-<p>If it's even how often the foreign key will be zero, you make a choice.</p>
+<p>If it's even how often the foreign key will be <code>null</code>, you make a choice.</p>
 <h3 id="example">Example</h3>
 <p><img src="StaffDepartmentEntityExample.svg" alt="" /></p>
 <p>This diagram indicates that a member of Staff may lead 1 Department, and a Department may sometimes be lead by a member of the Staff.
@@ -361,6 +361,13 @@ We need a new for the multivalued values.</p>
 <p>Following the steps for mapping, we arrive at the following relational schema:</p>
 <p><img src="CompanyRelationalSchema.png" alt="" /></p>
 <p>This relational schema can then be expressed as a Global Relations Diagram:</p>
+<p><img src="CompanyGRD.svg" alt="" /></p>
+<p>There are a few tricks for readability:</p>
+<ul>
+<li>All relationship reading directions points in the direction of the foreign key. E.g. Dependent references Employee, so the arrow points from Dependent to Employee.</li>
+<li>The relationship arrows are anchored at specific attributes, instead of the box for the Entity. This also helps to indicate which foreign key points to which primary key.</li>
+</ul>
+<p>Draw.IO can handle the attribute anchoring decently. Astah cannot, that's more tedious to work with.</p>
 
 </div>
 
