@@ -3,9 +3,9 @@
 These were mentioned on the second slide, about strong entities.
 Now we need to deal with them.
 
-Most relational database do have some kind of attribute type, which can hold multiple values, e.g. in an array. But this approach is not good for queries.
+Most relational databases do have some kind of attribute type, which can hold multiple values, e.g. in an array. But this approach is not good for queries, and harder to update.
 
-Instead a new relation is created to keep each value and a reference to the entity occurrence.
+Instead, a new relation is created to keep each value and a reference to the entity occurrence.
 
 Example:
 

@@ -31,7 +31,7 @@ The result is the same as above, we introduce a forign key to point to the prima
 ![](1to1-man-rec.png)
 
 #### Note
-When dealing with 0..1 : 1..1 you may also use the solution for 0..1 : 0..1, if you prefer.
+When dealing with 0..1 : 1..1 you may also use the solution for 0..1 : 0..1, if you prefer, see below.
 
 This depends on how many `null`-values you end up with, if you go for the above approach. Too many `null`s, and you should consider using the below described pairing-relation.
 
