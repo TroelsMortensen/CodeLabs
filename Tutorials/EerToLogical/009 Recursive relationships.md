@@ -48,7 +48,7 @@ Optional on both sides:
 ![](1to1-op-op-rec.svg)
 
 **Example**: A student _may_ tutor another student, maximum one tutee. 
-A student _may_ be tutored by another student, maximum tutor.
+A student _may_ be tutored by another student, maximum one tutor.
 
 **Solution**: Create a new relation to track pairs. Relationship attributes go into this new relation.
 
