@@ -79,3 +79,13 @@ Result:
 
 ![](OpOr-relation.png)
 
+## Complex
+Sometimes, your inheritance hierarchy may span multiple levels, e.g.:
+
+![](MultiTierHierarchy.svg)
+
+In this case, it may be easiest to resolve it from the bottom-up.
+
+Sometimes, a super-entity is involved in multiple inheritances, which may really complicate things. You'll just have to use your best judgement.
+
+![](MultiInheritance.svg)
