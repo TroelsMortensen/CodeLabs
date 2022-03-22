@@ -22,10 +22,22 @@ A weak entity results in a relation.
 
 ![WE](WeakEntity.svg)
 
-In the above entity, `attr1` is marked as PPK, to indicate this attribute is part of the Primary Key (partial primary key), but is not enough in itself. As it is a weak entity, we need to include one or more foreign keys in a composite primary key. This is done in a later step, when the relationship is mapped.
+In the above entity, `attr1` is marked as PPK, to indicate this attribute is part of the Primary Key (partial primary key), but is not enough in itself.\
+As it is a weak entity, we (usually) need to include one or more foreign keys in a composite primary key.\
+This is done in a later step, when the relationship is mapped.
 
 The resulting (currently unfinished) relation:
 
 ![](WeakRelation.png)
 
 The primary key is unfinished, so currently we have included a temporary placeholder: `?`.
+
+Often, weak entities are implied by them having a relationship to the "owner entity" with 1..1 on the owner side. This implies the weak entity _must_ reference the strong entity.
+
+#### Note
+In theory the primary key of a weak entity will be a composite key, which will include the FK(s) that points to the owner(s)'s PK.
+
+You may have a project with a name, run by a department, which has PK: dep_id.\
+The project name itself may not be unique, but combined with the dep_id it can be a key, as a department will not create to projects with the same name.
+
+Sometimes this results in large composite keys (i.e. containing many attributes), and it may be better to introduce a surrogate key.

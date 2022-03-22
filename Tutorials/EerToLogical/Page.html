@@ -100,10 +100,18 @@ This is done when mapping relationships.</p>
 </ul>
 <h3 id="example">Example</h3>
 <p><img src="WeakEntity.svg" alt="WE" /></p>
-<p>In the above entity, <code>attr1</code> is marked as PPK, to indicate this attribute is part of the Primary Key (partial primary key), but is not enough in itself. As it is a weak entity, we need to include one or more foreign keys in a composite primary key. This is done in a later step, when the relationship is mapped.</p>
+<p>In the above entity, <code>attr1</code> is marked as PPK, to indicate this attribute is part of the Primary Key (partial primary key), but is not enough in itself.<br />
+As it is a weak entity, we (usually) need to include one or more foreign keys in a composite primary key.<br />
+This is done in a later step, when the relationship is mapped.</p>
 <p>The resulting (currently unfinished) relation:</p>
 <p><img src="WeakRelation.png" alt="" /></p>
 <p>The primary key is unfinished, so currently we have included a temporary placeholder: <code>?</code>.</p>
+<p>Often, weak entities are implied by them having a relationship to the &quot;owner entity&quot; with 1..1 on the owner side. This implies the weak entity <em>must</em> reference the strong entity.</p>
+<h4 id="note">Note</h4>
+<p>In theory the primary key of a weak entity will be a composite key, which will include the FK(s) that points to the owner(s)'s PK.</p>
+<p>You may have a project with a name, run by a department, which has PK: dep_id.<br />
+The project name itself may not be unique, but combined with the dep_id it can be a key, as a department will not create to projects with the same name.</p>
+<p>Sometimes this results in large composite keys (i.e. containing many attributes), and it may be better to introduce a surrogate key.</p>
 
 </div>
 <div class="tab">
