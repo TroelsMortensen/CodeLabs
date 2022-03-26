@@ -25,6 +25,7 @@
 <li class="step" onclick="setTab(6)">7 Add todo</li>
 <li class="step" onclick="setTab(7)">8 Test add endpoint</li>
 <li class="step" onclick="setTab(8)">9 Other endpoints</li>
+<li class="step" onclick="setTab(9)">10 Bonus endpoint</li>
 
         </ol>
     </div>
@@ -230,6 +231,21 @@ The second argument is the created Todo object, <code>added</code>.</p>
 <p>Remember to test your endpoints. And look up on GitHub if you get stuck.</p>
 <h3 id="the-end">The End</h3>
 <p>This concludes this tutorial. The next part will add a Client to the Blazor app, so that Blazor can get data from the WebAPI. Eventually the File-storage will be swapped out for an SQLite database, using Entity Framework Core.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="queriable-endpoint-to-get-todos">Queriable Endpoint to get Todos</h1><hr/>
+<p>In the page which has an overview of the Todos, in table form, you are probably loading all Todos when the page is opened.</p>
+<p>In this small example, that can work, but it does not scale well, if many, many Todos are added to the system.</p>
+<h2 id="get-with-queries">GET with queries</h2>
+<p>Create a new GET endpoint for todos (or modify the existing). You should now accept parameters, which can be used to filter the Todos returned to the client.</p>
+<p>Filtering may be:</p>
+<ul>
+<li>By user id</li>
+<li>By completed status</li>
+</ul>
+<p>Other things, you invent. You could add a &quot;DateCreated&quot; to the Todo object, and make it queriable by data: Get everything older than/newer than some date.</p>
+<p>This endpoint must now accept <code>[FromQuery]</code> arguments in the method signature. You must either create a method for filtering in the DAO class, or do the filtering in the Controller.</p>
 
 </div>
 
