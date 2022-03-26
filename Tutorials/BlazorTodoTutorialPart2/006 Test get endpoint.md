@@ -19,7 +19,10 @@ You will be able to see the:
 * The status code: 200, which means "OK"
 * The data returned, as JSON
 
+#### Notice
+You may have had a bunch of Todo items from the previous tutorial. Now, you will just get the seeded Todos again.
 
+This is because the FileContext is run from WebAPI instead of Blazor project. Therefore, the todos.json file is located in WebAPI instead of Blazor.
 
 
 

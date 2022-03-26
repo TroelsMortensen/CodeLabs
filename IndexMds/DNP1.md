@@ -7,6 +7,8 @@
 
 [Blazor todo app tutorial](./Tutorials/BlazorTodoTutorialPart1/Page.html)
 
+[Todo Web API tutorial](./Tutorials/BlazorTodoTutorialPart2/Page.html)
+
 [Introduction to debugging in C#](./Tutorials/CsharpDebugging/Page.html)
 
 [Simple Blazor-server login](./Tutorials/BlazorLogin/Page.html)

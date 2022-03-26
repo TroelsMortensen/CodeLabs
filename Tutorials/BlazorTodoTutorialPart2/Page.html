@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 Architecture</li>
+<li class="step" onclick="setTab(2)">3 New component</li>
+<li class="step" onclick="setTab(3)">4 Controller class</li>
+<li class="step" onclick="setTab(4)">5 GET all Todos</li>
+<li class="step" onclick="setTab(5)">6 Test get endpoint</li>
+<li class="step" onclick="setTab(6)">7 Add todo</li>
+<li class="step" onclick="setTab(7)">8 Test add endpoint</li>
+<li class="step" onclick="setTab(8)">9 Other endpoints</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="introduction">Introduction</h1><hr/>
+<p>This is the second part of my Blazor tutorial.
+We are going to introduce a Web API, to be used by the blazor pages to read/write data.</p>
+<p>We will just focus on the Web API for now, and then in Part 3, a client is introduced, so we can make a connection between the Blazor app and the Web API.</p>
+<p>The code for the WebAPI can be found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/9WebAPI">in this branch</a>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="architecture">Architecture</h1><hr/>
+<p>Currently, the Todo app contains three components:</p>
+<ol>
+<li>Blazor, our UI</li>
+<li>Domain, which contains interfaces, and model classes</li>
+<li>FileData, which writes data to a file.</li>
+</ol>
+<p>It looks something like this:</p>
+<p><img src="Resources/CurrentArch.png" alt="" /></p>
+<p>What we want to do, is inject a layer of networking between Blazor and FileData.</p>
+<p>At the end of this tutorial, it will look like below (notice, there's still no client, which comes later)</p>
+<p><img src="Resources/NextArch.png" alt="" /></p>
+<p>Now, it gets a little confusing, how things fit together, so let's just rearrange the components in a layered structure:</p>
+<p><img src="Resources/Layers.png" alt="" /></p>
+<p>Now, notice, that the two interface layers, are the same interfaces: ITodoHome. It's now, still, used by the Blazor app (and will eventually have a web client implementaiton behind), and it's also used by the Web API, where the implementation behind is the TodoFileDAO class.</p>
+<p>There is a &quot;?&quot; to indicate we still don't have the client classes yet, which will contact the Web API for data.</p>
+<p>So, let's get to it.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="new-web-api-component">New Web API component</h1><hr/>
+<p>Create a new Web API project:</p>
+<p><img src="Resources/NewWebApi.gif" alt="" /></p>
+<p>Now, we need to add a dependency to Domain component.</p>
+<p><img src="Resources/DependencyToDomain.png" alt="" /></p>
+<p>Now you're at it, also add dependency to FileData.</p>
+<h2 id="services">Services</h2>
+<p>This component needs to access data, through the FileData component. This means we must add as a service an <code>&lt;ITodoHome, TodoFilDAO&gt;</code>.
+This service depends on the <code>FileContext</code>, which must also be added.</p>
+<p>Do that in the <code>Program.cs</code> of WebAPI:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;ITodoHome, TodoFileDAO&gt;();
+builder.Services.AddScoped&lt;FileContext&gt;();
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-controller">Add Controller</h1><hr/>
+<p>You may clean up the project first, be deleting the <code>WeatherforecastController</code> and <code>WeatherForecast</code> classes.</p>
+<p>Create a new class, <code>TodosController</code>, in the Controllers directory. (If you expanded your Todo app with users, you'll need a <code>UsersController</code> as well)</p>
+<p>Modify the class to look like this:</p>
+<pre><code class="line-numbers language-csharp">[ApiController]
+[Route(&quot;[controller]&quot;)]
+public class TodosController : ControllerBase
+{
+    
+}
+</code></pre>
+<p>The attribute <code>[ApiController]</code> marks it as a controller, so it will be picked up by the framework.
+Thereby, we can make calls to the endpoints in this class.</p>
+<p>The <code>[Route]</code> specifies how to access this specific controller with a REST request.</p>
+<p>We inherit from <code>ControllerBase</code> to get access to convenient methods.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="get-all-endpoint">GET All Endpoint</h1><hr/>
+<p>First, we will create the method, which can return all Todos. This is used for the view in the Blazor App, which shows a table of all Todos.</p>
+<p>Eventually, we will need an Endpoint for all methods in the <code>ITodoHome</code> interface.</p>
+<h2 id="constructor">Constructor</h2>
+<p>First, we need a constructor for <code>TodosController</code>, so that we can inject the data service:</p>
+<pre><code class="line-numbers language-csharp">private ITodoHome todoHome;
+
+public TodosController(ITodoHome todoHome)
+{
+    this.todoHome = todoHome;
+}
+</code></pre>
+<h2 id="get">GET</h2>
+<p>In TodosController create a new method:</p>
+<pre><code class="line-numbers language-csharp">[HttpGet]
+public async Task&lt;ActionResult&lt;ICollection&lt;Todo&gt;&gt;&gt; GetAll()
+{
+    try
+    {
+        ICollection&lt;Todo&gt; todos = await todoHome.GetAsync();
+        return Ok(todos);
+    }
+    catch (Exception e)
+    {
+        return StatusCode(500, e.Message);
+    }
+}
+</code></pre>
+<p>We mark the method with <code>[HtppGet]</code> to indicate that if a GET request is made to <code>/todos</code> it must hit this endpoint.</p>
+<p>The method is <code>async</code>.</p>
+<p>The return type is <code>ActionResult</code>, which returns an http response with an <code>ICollection&lt;Todo&gt;</code>.</p>
+<p>The method just uses the <code>todoHome</code> to fetch all todos, and return them. That is done with <code>Ok(..)</code>, which will be a status code of 200. This convenience method comes from <code>ControllerBase</code>. There are other similar methods, e.g. <code>BadRequest</code>, or <code>NotFound</code>.</p>
+<p>If something were to fail on the server side, we need to provide information of that to the client. Therefore, we have the try-catch.
+In case of an error, we currently just return an ActionResult with status code 500, to indicate server-error, and the message of the exception. We could add multiple catch clauses, if we wanted to be more specific about which errors returns which result. Different things can go wrong, and you may want to handle that with different approaches. For now, however, this will suffice.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="testing-your-endpoint">Testing Your Endpoint</h1><hr/>
+<p>You WebAPI should include Swagger, a tool to test your API.</p>
+<p>If you run the project (WebAPI), it should open the Swagger page. You should see this:</p>
+<p><img src="Resources/Swagger1.png" alt="" /></p>
+<p>First you get an overview of all the endpoints, you can call. This is automatically generated by Swagger, that's pretty neat.</p>
+<p>The Schemas box shows the data to send/receive to/from your endpoints. If you expand it, you can see what kind of data your Todo consists of.</p>
+<p>Test your GET endpoint like this:</p>
+<p><img src="Resources/GetAllEndpointTest.gif" alt="" /></p>
+<p>You will be able to see the:</p>
+<ul>
+<li>Request URL: https://localhost:7204/Todos</li>
+<li>The status code: 200, which means &quot;OK&quot;</li>
+<li>The data returned, as JSON</li>
+</ul>
+<h4 id="notice">Notice</h4>
+<p>You may have had a bunch of Todo items from the previous tutorial. Now, you will just get the seeded Todos again.</p>
+<p>This is because the FileContext is run from WebAPI instead of Blazor project. Therefore, the todos.json file is located in WebAPI instead of Blazor.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-todo-endpoint">Add Todo Endpoint</h1><hr/>
+<p>Next up, we will create an endpoint, which takes a Todo object, to be stored by the DAO.</p>
+<p>The method looks like this:</p>
+<pre><code class="line-numbers language-csharp">[HttpPost]
+public async Task&lt;ActionResult&lt;Todo&gt;&gt; AddTodo([FromBody] Todo todo)
+{
+    try
+    {
+        Todo added = await todoHome.AddAsync(todo);
+        return Created($&quot;/todos/{added.Id}&quot;, added);
+    }
+    catch (Exception e)
+    {
+        return StatusCode(500, e.Message);
+    }
+}
+</code></pre>
+<p>This time, the method is marked with <code>[HttpPost]</code> to indicate that if a POST request is made to &quot;/todos&quot;, it should hit this specific endpoint.</p>
+<p>The method is async.</p>
+<p>It returns an <code>ActionResult&lt;Todo&gt;</code>. Why return a Todo? Well, the Todo object received is unfinished, there is no ID created yet. This is done by the DAO class.
+Sometimes more work may be done by the server, setting other values on the object to be created. The client may be interested in seeing the finished object.</p>
+<p>That's why we return the created Todo object. We wrap it in the <code>Created()</code> method, which results in a status code &quot;201: Created&quot;. The first argument is the URI to the newly created Todo. We don't have an endpoint to support this yet, but that will come.<br />
+The second argument is the created Todo object, <code>added</code>.</p>
+<p>Again, we handle exceptions thrown by the TodoDAO, if any. Again, we could have caught specific exceptions, and handled them differently. Maybe return different status codes, or more elaborate error messages, based on the problem. But for now, this will have to suffice.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="test-add-endpoint">Test Add Endpoint</h1><hr/>
+<p>Again, we want to test this endpoint. This is done by running the WebAPI project, to open the Swagger page.</p>
+<p>This time, you have a new endpoint available:</p>
+<p><img src="Resources/NewEndpoint.png" alt="" /></p>
+<p>Expand the POST endpoint, click the <kbd>Try it out</kbd> button on the right side.</p>
+<p>This opens a text-area with a default json Todo object:</p>
+<p><img src="Resources/DefaultJsonTodo.png" alt="" /></p>
+<p>Here, replace text to be (or something else):</p>
+<pre><code class="line-numbers language-json">{
+  &quot;ownerId&quot;: 2,
+  &quot;title&quot;: &quot;Test endpoint&quot;,
+  &quot;isCompleted&quot;: false
+}
+</code></pre>
+<p>We don't set the Id of the Todo, as that is the responsibility of the server.</p>
+<p>Click the <kbd>Execute</kbd> button.</p>
+<p>You should get the following response:</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>We see the status code is 201. We get the resulting Todo Object, now with id=6, set by the server. We also get a Response Header, containing some meta data about the response data, e.g:</p>
+<ul>
+<li>Encoding is UTF-8</li>
+<li>The date</li>
+<li>The URI to retrieve the new Todo: &quot;/todos/6&quot;</li>
+</ul>
+<p>Another test is to now use the GET endpoint, to retrieve all Todos. Among the resulting list of Todos, you should see your new Todo. Give it a go.</p>
+<p>You should get a result like this:</p>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-other-endpoints">The Other Endpoints</h1><hr/>
+<p>It's now up to you to implement the rest of the endpoints. Below you'll find a list, with a few instructions:</p>
+<h3 id="get-by-id">Get By Id</h3>
+<p>This endpoint must return a specific Todo object, found by its id.</p>
+<p>The Id must be provided as a route-parameter. That means a GET request to e.g. <strong>&quot;/todos/3&quot;</strong> will return Todo item with id=3.</p>
+<h3 id="delete-by-id">Delete By Id</h3>
+<p>This endpoint will delete a specific Todo item, based on the provided id. It is a DELETE request.</p>
+<p>The id must be provided as a route-parameter.</p>
+<h3 id="update">Update</h3>
+<p>This endpoint must receive a Todo object as an argument. It is a PATCH request.</p>
+<h3 id="test">Test</h3>
+<p>Remember to test your endpoints. And look up on GitHub if you get stuck.</p>
+<h3 id="the-end">The End</h3>
+<p>This concludes this tutorial. The next part will add a Client to the Blazor app, so that Blazor can get data from the WebAPI. Eventually the File-storage will be swapped out for an SQLite database, using Entity Framework Core.</p>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>
