@@ -5,9 +5,11 @@
 
 [C# multithreading](./Tutorials/CsharpThreads/Page.html)
 
-[Blazor todo app tutorial](./Tutorials/BlazorTodoTutorialPart1/Page.html)
+[Todo app tutorial - Blazor](./Tutorials/TodoTutorialPart1_Blazor/Page.html)
 
-[Todo Web API tutorial](./Tutorials/BlazorTodoTutorialPart2/Page.html)
+[Todo app tutorial - Web API](./Tutorials/TodoTutorialPart2_WebAPI/Page.html)
+
+[Todo app tutorial - Client](./Tutorials/TodoTutorialPart3_Client/Page.html)
 
 [Introduction to debugging in C#](./Tutorials/CsharpDebugging/Page.html)
 
