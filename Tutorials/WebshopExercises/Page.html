@@ -37,9 +37,9 @@
     <div id="container" action="/action_page.php">
         <div style="overflow:auto;">
 
-            <div style="float:right;">
-                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
-                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            <div style="float:right; margin:10px">
+                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
             </div>
         </div>
 
@@ -361,11 +361,12 @@ ORDER BY product_name;
 
 
 
-        <div style="overflow:auto;">
-
+        
+        <div style="overflow:auto; padding-bottom: 10px">
+            <hr/>
             <div style="float:right;">
-                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
-                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next &gt;</button>
             </div>
         </div>
         

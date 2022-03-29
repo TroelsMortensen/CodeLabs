@@ -96,7 +96,7 @@ button:hover {
     opacity: 0;
     top: 12px;
     right: -20px;
-    transition: 0.5s;
+    transition: 0.25s;
 }
 
 .next-button:hover{
@@ -115,7 +115,7 @@ button:hover {
     opacity: 0;
     top: 12px;
     left: -20px;
-    transition: 0.5s;
+    transition: 0.25s;
 }
 
 .prev-button:hover{

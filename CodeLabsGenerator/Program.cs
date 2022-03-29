@@ -11,8 +11,8 @@ namespace CodeLabsGenerator
         {
             // GenerateOne("GoodreadsExercises");
             // GenerateOne("DvdRentalExercises");
-            GenerateOne("TodoTutorialPart3_Client");
-            // GenerateMany();
+            // GenerateOne("TodoTutorialPart3_Client");
+            GenerateMany();
         }
 
         private static void GenerateOne(string tutorial)
@@ -28,15 +28,20 @@ namespace CodeLabsGenerator
             List<string> tutes = new()
             {
                 "BlazorLogin",
-                "BlazorTodoTutorialPart1",
                 "CodelabsDoc",
                 "CsharpDebugging",
                 "CsharpSockets",
                 "CsharpThreads",
                 "DML",
+                "DvdRentalExercises",
                 "EERDiagramInAstah",
+                "EerToLogical",
                 "SepAppendix",
-                "SQLAdventure"
+                "SQLAdventure",
+                "TodoTutorialPart1_Blazor",
+                "TodoTutorialPart2_WebApi",
+                "TodoTutorialPart3_Client",
+                "WebShopExercises",
             };
             tutes.ForEach(t => GenerateOne(t));
         }
