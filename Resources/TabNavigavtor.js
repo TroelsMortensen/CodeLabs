@@ -38,8 +38,8 @@ function showTab(n) {
         document.getElementById("nextBtn").innerHTML = "Done";
         document.getElementById("nextBtn1").innerHTML = "Done";
     } else {
-        document.getElementById("nextBtn").innerHTML = "Next >";
-        document.getElementById("nextBtn1").innerHTML = "Next >";
+        document.getElementById("nextBtn").innerHTML = "Next";
+        document.getElementById("nextBtn1").innerHTML = "Next";
     }
     //... and run a function that will display the correct step indicator:
     fixStepIndicator(n)

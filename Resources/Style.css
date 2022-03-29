@@ -11,7 +11,8 @@ body {
 #container {
     background-color: #ffffff;
     margin: 20px auto;
-    padding: 40px;
+    padding-left: 40px;
+    padding-right: 40px;
     width: 70%;
     min-width: 300px;
     max-width: 1000px;
@@ -54,24 +55,80 @@ h6 {
     display: none;
 }
 
+.next-button{
+    margin-right:30px;
+}
+
+.prev-button {
+    
+}
+
 button {
-    background-color: #04AA6D;
-    color: #ffffff;
+    border-radius: 4px;
+    background-color: #5ca1e1;
     border: none;
-    padding: 10px 20px;
-    font-size: 17px;
+    color: #fff;
+    text-align: center;
+    padding: 12px;
+    width: 120px;
+    font-weight: bold;
+    transition: all 0.5s;
     cursor: pointer;
-    opacity: 0.8;
-    transition: 0.15s;
+    margin: 9px;
+    box-shadow: 0 5px 10px 0px rgba(0, 0, 0,.5);
+}
+
+button{
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
 }
 
 button:hover {
-    opacity: 1.0;
-    /*border-radius: 15px;*/
-    transition: 0.15s;
-    /*font-weight: bold;*/
-    
+    box-shadow: 0 8px 10px 2px rgba(0, 0, 0,.7);
+    transform: translateY(-3px);
 }
+
+.next-button:after {
+    content: '>>';
+    position: absolute;
+    opacity: 0;
+    top: 12px;
+    right: -20px;
+    transition: 0.5s;
+}
+
+.next-button:hover{
+    padding-right: 24px;
+    padding-left:8px;
+}
+
+.next-button:hover:after {
+    opacity: 1;
+    right: 10px;
+}
+
+.prev-button:after {
+    content: '<<';
+    position: absolute;
+    opacity: 0;
+    top: 12px;
+    left: -20px;
+    transition: 0.5s;
+}
+
+.prev-button:hover{
+    padding-right: 8px;
+    padding-left:24px;
+}
+
+.prev-button:hover:after {
+    opacity: 1;
+    left: 10px;
+}
+
+/* ---- */
 
 #prevBtn {
     background-color: #bbbbbb;
