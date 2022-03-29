@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div>
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 Setup</li>
+<li class="step" onclick="setTab(2)">3 Todo client</li>
+<li class="step" onclick="setTab(3)">4 Get all todos</li>
+<li class="step" onclick="setTab(4)">5 Test all todos</li>
+<li class="step" onclick="setTab(5)">6 Add todo</li>
+<li class="step" onclick="setTab(6)">7 Other methods</li>
+<li class="step" onclick="setTab(7)">8 Closing notes</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="introduction">Introduction</h1><hr/>
+<p>The first part of this series of tutorials had you do a Blazor app. We then, in part 2, made a Web API, which can CRUD Todo items.</p>
+<p>In this part, we will make a layer of HttpClients, which the Blazor app can use to retrieve data from the Web API.</p>
+<p>The code for this tutorial is found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/10HttpClient">in this branch</a></p>
+<h2 id="layers">Layers</h2>
+<p>After this tutorial, your application will have the following layers:</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>Notice that <code>&lt;&lt;IService&gt;&gt;</code> interfaces are the same in both interface layers. That means, you have an <code>ITodoHome</code> interface, which is implemented by both your <code>TodoFileDAO</code> class, and a new (not yet created) <code>TodoClient</code> class.</p>
+<p>We must add a new component to our project, it must be a <strong>Class Library</strong> project. In the below diagram, it is called <strong>HttpServices</strong>.</p>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+<p>The above diagram is not complete, it focuses on the components of the application.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="initial-setup">Initial Setup</h1><hr/>
+<h2 id="clean-up">Clean up</h2>
+<p>The class library comes with a dummy class, <code>Class1</code>. Delete it.</p>
+<p>If you have both users and todos, you may go ahead and create a directory for each, to contain the HttpClient classes: TodoClients and UserClients.</p>
+<h2 id="adding-dependencies">Adding Dependencies</h2>
+<ol>
+<li>Your HttpServices component must depend on Domain component, so that we can access the interfaces.</li>
+<li>The Blazor component must depend on HttpServices.</li>
+</ol>
+<h2 id="removing-dependencies">Removing Dependencies</h2>
+<p>This is a bit trickier.</p>
+<p>You must switch to File System:</p>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+<p>And open up a file in Blazor component: Blazor.csproj.</p>
+<p>This is a settings file, containing various information about the project. Among other things:</p>
+<ul>
+<li>Version of .NET</li>
+<li>Whether nullable checks are enabled</li>
+<li>Dependencies</li>
+</ul>
+<p>You should see the following block:</p>
+<pre data-line="3"><code class="line-numbers language-xml">    &lt;ItemGroup&gt;
+      &lt;ProjectReference Include=&quot;..\Domain\Domain.csproj&quot; /&gt;
+      &lt;ProjectReference Include=&quot;..\FileData\FileData.csproj&quot; /&gt;
+      &lt;ProjectReference Include=&quot;..\HttpServices\HttpServices.csproj&quot; /&gt;
+    &lt;/ItemGroup&gt;
+</code></pre>
+<p>We wish to remove dependencies to FileData, so remove the highlighted line. Save. Close file. Switch back to Solution view, see above screenshot.</p>
+<p>It is preferable to be strict about dependencies, so you don't by accident use classes you're not supposed to use.</p>
+<p>Your Blazor.Program.cs now complains, because it cannot see classes in FileData, which you are adding as services. That is okay, we'll change that shortly.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="todo-client">Todo Client</h1><hr/>
+<p>Create a new class, <code>TodoHttpClient</code>.</p>
+<p>Make it implement the ITodoHome interface from Domain. Auto-implement the methods.</p>
+<p>Your class should now look like:</p>
+<pre><code class="line-numbers language-csharp">public class TodoHttpClient : ITodoHome
+{
+    public Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;Todo&gt; GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;Todo&gt; AddAsync(Todo todo)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(Todo todo)
+    {
+        throw new NotImplementedException();
+    }
+}
+</code></pre>
+<p>Your interface may look different, if you have implemented a method, which can get a filtered list of Todos. E.g. filtering by completed status, or user-id.</p>
+<p>We will implement the methods in the order of their usage in the app, sort of. That means starting with the <code>GetAsync()</code> method.</p>
+<h2 id="register-as-service">Register as service</h2>
+<p>Currently, your Blazor app is using the <code>TodoFileDAO</code> class. That's no longer feasible, as we instead wish to get data from some &quot;remote&quot; Web API (which is just running locally. But it's a separate process).</p>
+<p>Open the Program.cs file of Blazor component.</p>
+<p>Modify the line where you register a scoped ITodoHome:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;FileContext&gt;();
+builder.Services.AddScoped&lt;ITodoHome, TodoFileDAO&gt;();
+</code></pre>
+<p>The above two lines must instead be just:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;ITodoHome, TodoHttpClient&gt;();
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="get-all-todos">Get All Todos</h1><hr/>
+<p>The implementation of the method <code>GetAsync()</code> looks like this:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
+{
+    using HttpClient client = new ();
+    HttpResponseMessage response = await client.GetAsync(&quot;https://localhost:7204/todos&quot;);
+    string content = await response.Content.ReadAsStringAsync();
+
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new Exception($&quot;Error: {response.StatusCode}, {content}&quot;);
+    }
+
+    ICollection&lt;Todo&gt; todos = JsonSerializer.Deserialize&lt;ICollection&lt;Todo&gt;&gt;(content)!;
+    return todos;
+}
+</code></pre>
+<p>First, an HttpClient is created.</p>
+<p>Then a request is made, asynchronously, to the Web API, using the URI: &quot;https://localhost:7204/todos&quot;. Your URI may look different.</p>
+<p>The content of the message is read, this will either be an error message, or the collection of Todos as json.</p>
+<p>The response contains a status code, which will indicate the success-status of the request. If something went wrong, an exception is thrown with the <code>content</code>, which should be an error message.<br />
+Again, it is important to display feedback to the user, in case of errors.</p>
+<p>Otherwise, the json is de-serialized into a collection of Todos and returned.</p>
+<p>This would be a good place to test things.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="testing">Testing</h1><hr/>
+<h2 id="setup">Setup</h2>
+<p>Now, the URI which your Web API and Blazor app is running on, is sometimes the same. Given the fact that you can only have on process bound to a specific port at a time, if you try to run both, you'll get an error.</p>
+<p>We'll need to change the port for one of the programs. Maybe it isn't a problem for you, so you could just try and run both and see if it works. If not, read below:</p>
+<p>We'll change Blazor, as we hardcoded the port into the <code>TodoHttpClient</code> class.</p>
+<p>Navigate to the file &quot;Blazor/Properties/launchSettings.json&quot;. This is a configuration file.</p>
+<p>There is a profiles section, which contains &quot;Blazor&quot; and &quot;IIS Express&quot;. We <strong>NEVER</strong> want to tough IIS Express in this course.</p>
+<p>In the Blazor section, there is a setting for the &quot;applicationUrl&quot;. Change the ports slightly, in my case they are currently 7140 and 5140, for https and http, respectively. I change them to 7141 and 5141.</p>
+<p>Result:</p>
+<p><img src="img_3.png" alt="img_3.png" /></p>
+<h4 id="note">Note</h4>
+<p>You may also notice a setting</p>
+<pre><code>&quot;launchBroewser&quot;: true,
+</code></pre>
+<p>If this is set to &quot;false&quot;, a new browser tab will not open each time you run the project. Instead, you might click on the URI in the console to open the app.</p>
+<p>I find this useful, because sometimes I'll end up with many duplicate tabs open.</p>
+<h2 id="test">Test</h2>
+<p>Now, go ahead and start the Web API, it opens swagger, but you can just close that again.</p>
+<p>Next up, start Blazor.</p>
+<p>Open the page for viewing all todos, and what do we see? I get this:</p>
+<p><img src="img_4.png" alt="img_4.png" /></p>
+<p>So, that looks iffy. I do get a number of rows equal to the number of Todos I have in my file. But no data.</p>
+<h2 id="the-fix">The Fix</h2>
+<p>This is because a .NET Web API returns json formatted with <code>camelCase</code>, like so:</p>
+<pre><code class="line-numbers language-json">[
+  {
+    &quot;id&quot;: 1,
+    &quot;ownerId&quot;: 1,
+    &quot;title&quot;: &quot;Dishes&quot;,
+    &quot;isCompleted&quot;: false
+  },
+  {
+    &quot;id&quot;: 1,
+    &quot;ownerId&quot;: 1,
+    &quot;title&quot;: &quot;Walk the dog&quot;,
+    &quot;isCompleted&quot;: false
+  }
+]
+</code></pre>
+<p>Notice the attribute names are starting with lower case.</p>
+<p>However, by default, the JsonSerializer utility class will look for properties with exact matching name, but in C# we use <code>PascalCase</code> for naming properties, and the JsonSerializer will not find matches.</p>
+<p>To fix this, we need to add an option to the <code>DeSerialize&lt;&gt;()</code> method, like so:</p>
+<pre data-line="12-15"><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
+{
+    using HttpClient client = new ();
+    HttpResponseMessage response = await client.GetAsync(&quot;https://localhost:7204/todos&quot;);
+    string content = await response.Content.ReadAsStringAsync();
+
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new Exception($&quot;Error: {response.StatusCode}, {content}&quot;);
+    }
+
+    ICollection&lt;Todo&gt; todos = JsonSerializer.Deserialize&lt;ICollection&lt;Todo&gt;&gt;(content, new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    })!;
+    return todos;
+}
+</code></pre>
+<p>Test again, it should work now. This is also relevant when sending JSON between C# and Java.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-todo">Add Todo</h1><hr/>
+<p>Next up, we want to be able to add a new Todo, so we must implement the relevant method in the <code>TodoHttpClient</code> class.</p>
+<p>The <code>AddAsync()</code> method looks like this:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; AddAsync(Todo todo)
+{
+    using HttpClient client = new();
+
+    string todoAsJson = JsonSerializer.Serialize(todo);
+
+    StringContent content = new(todoAsJson, Encoding.UTF8, &quot;application/json&quot;);
+
+    HttpResponseMessage response = await client.PostAsync(&quot;https://localhost:7204/todos&quot;, content);
+    string responseContent = await response.Content.ReadAsStringAsync();
+    
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new Exception($&quot;Error: {response.StatusCode}, {responseContent}&quot;);
+    }
+    
+    Todo returned = JsonSerializer.Deserialize&lt;Todo&gt;(responseContent, new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    })!;
+    
+    return returned;
+}
+</code></pre>
+<p>Again, an HttpClient is created.</p>
+<p>The argument-Todo is serialized to json. That is then wrapped into a <code>StringContent</code> class, along with the encoding, and the format.</p>
+<p>The client is used to make a POST request, to the URI, with the StringContent object. This gets a response back.</p>
+<p>We check the status code, and if an error occured, an exception is thrown, to be caught by the UI so a message can be shown to the user.</p>
+<p>If no errors happened, the content of the response is deserialized into the finalized Todo object. It now has an ID, in case we need that for anything.</p>
+<p>The result Todo is returned.</p>
+<h2 id="test">Test</h2>
+<p>Run things again, go and create a new Todo and verify it shows up in the overview.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="other-methods">Other Methods</h1><hr/>
+<p>We still need three (at least) methods implemented:</p>
+<ul>
+<li>Get Todo by id</li>
+<li>Delete Todo by id</li>
+<li>Update Todo by id</li>
+</ul>
+<p>Give them a go by yourself, test along the way.</p>
+<p>I suggest you start with Delete, then Get, then Update. That makes it easier to test.</p>
+<p>If you implemented the blazor-component modal to update a Todo, then the GetByID method may not be needed.</p>
+<p>Remember, you can see my solution <a href="https://github.com/TroelsMortensen/BlazorTodoApp/tree/10HttpClient">in this branch</a>.</p>
+<p>Test by making modifications, and either refreshing or opening another page and go back again to verify then changes stuck.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-end">The End</h1><hr/>
+<p>If you have implement support for users, you'll need another class to manage that, similar to the <code>TodoHttpClient</code>.</p>
+<p>This class should (among other things) be able to GET and POST users.<br />
+From the Login tutorial, you might have an IUserService interface. This is the interface, which implementation must be replaced by a new class. The AuthService still belongs to the Blazor project, however.</p>
+<p>The next step, in another tutorial, will be to add a database to the application, using Entity Framework Core.</p>
+
+</div>
+
+
+
+        <div style="overflow:auto;">
+
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
+                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>

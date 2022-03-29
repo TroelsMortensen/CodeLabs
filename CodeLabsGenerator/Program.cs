@@ -11,7 +11,7 @@ namespace CodeLabsGenerator
         {
             // GenerateOne("GoodreadsExercises");
             // GenerateOne("DvdRentalExercises");
-            GenerateOne("BlazorTodoTutorialPart2");
+            GenerateOne("TodoTutorialPart3_Client");
             // GenerateMany();
         }
 
