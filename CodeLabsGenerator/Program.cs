@@ -11,8 +11,8 @@ namespace CodeLabsGenerator
         {
             // GenerateOne("GoodreadsExercises");
             // GenerateOne("DvdRentalExercises");
-            GenerateOne("TodoTutorialPart3_Client");
-            // GenerateMany();
+            // GenerateOne("TodoTutorialPart3_Client");
+            GenerateMany();
         }
 
         private static void GenerateOne(string tutorial)
