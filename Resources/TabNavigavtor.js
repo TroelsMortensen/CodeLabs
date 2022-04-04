@@ -1,6 +1,16 @@
 ﻿var currentTab = 0; // Current tab is set to be the first tab (0)
 //showTab(currentTab); // Display the current tab
 
+window.addEventListener('resize', function(event) {
+    var width = document.documentElement.clientWidth;
+    console.log("Rezied : " + document.documentElement.clientWidth)
+    if(width < 1000) {
+        document.getElementById("steps-list").style.display = "none";
+    } else {
+        document.getElementById("steps-list").style.display = "";
+    }
+}, true);
+
 function showFirstOrSpecificTab() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
