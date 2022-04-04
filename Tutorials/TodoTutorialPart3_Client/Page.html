@@ -289,8 +289,15 @@ From the Login tutorial, you might have an IUserService interface. This is the i
 <hr/><h1 id="optimization">Optimization</h1><hr/>
 <p>Currently, when you open the Todos overview in the Blazor app, all Todos are initially loaded.</p>
 <p>This does not scale well. If you have thousands, or more, Todos in your data storage, the initial load will be very large.</p>
-<p>The next step will rework this. We introduce a search button, so nothing is initially loaded, but instead only per the request of the user.</p>
+<p>The next step will rework this. The idea is to introduce a search button, so nothing is initially loaded, but instead only per the request of the user, i.e. on button click.</p>
 <p>The user may choose to load everything, or apply various filters before loading data.</p>
+<p>Your task is then to implement this idea:</p>
+<ul>
+<li>Nothing is initially loaded</li>
+<li>Introduce a button</li>
+<li>Search parameters (if any) are sent to the Web API</li>
+<li>Web API is now responsible for returning the (filtered, if applicable) result</li>
+</ul>
 
 </div>
 
