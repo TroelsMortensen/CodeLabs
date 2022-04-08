@@ -1,6 +1,6 @@
 # Introduction
 
-In this tutorial we will add Entity Framework Core with SQLite as the data storage, instead of the json-file storage system currently in use.
+In this tutorial we will add Entity Framework Core (henceforth "EFC") with SQLite as the data storage, instead of the json-file storage system currently in use.
 
 Below is the layered diagram, you should be familiar with it by now.
 
