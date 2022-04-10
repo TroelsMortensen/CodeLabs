@@ -23,6 +23,14 @@
 <li class="step" onclick="setTab(4)">5 DbContext</li>
 <li class="step" onclick="setTab(5)">6 Generating a migration</li>
 <li class="step" onclick="setTab(6)">7 Applying a migration</li>
+<li class="step" onclick="setTab(7)">8 Inspecting the database</li>
+<li class="step" onclick="setTab(8)">9 Todo DAO</li>
+<li class="step" onclick="setTab(9)">10 Registering services</li>
+<li class="step" onclick="setTab(10)">11 Seeding the database</li>
+<li class="step" onclick="setTab(11)">12 Absolute path</li>
+<li class="step" onclick="setTab(12)">13 First test</li>
+<li class="step" onclick="setTab(13)">14 Get all</li>
+<li class="step" onclick="setTab(14)">15 Add Todo</li>
 
         </ol>
     </div>
@@ -81,8 +89,11 @@ Don't pick the preview versions.</p>
 <p>You should be able to verify the installed packages and versions:</p>
 <p><img src="img_5.png" alt="img_5.png" /></p>
 <h2 id="internal-dependency">Internal Dependency</h2>
-<p>We have added external packages. We also need an internal dependecy: EfcData -&gt; Domain. We need access to the model classes and interfaces in the Domain component.<br />
-Add this reference.</p>
+<p>We have added external packages. We also need new internal dependecies:</p>
+<ul>
+<li>EfcData -&gt; Domain. This is so EfcData can use the ITodoHome interface, and the Todo model class.</li>
+<li>WebAPI -&gt; EfcData. This is so WebAPI can register services from EfcData, and thereby use the database instead of file storage.</li>
+</ul>
 
 </div>
 <div class="tab">
@@ -213,7 +224,10 @@ The argument is the name of the database: <code>Todo.db</code>.</p>
 <p>In your EfcData project, you should now be able to see a new file, <code>Todo.db</code>, with a little database icon. If not, you may need to collapse and expand the EfcData project, i.e. click the little arrow next to the project. This will make it reload the content.</p>
 <p><img src="img_10.png" alt="img_10.png" /></p>
 <p>This <code>Todo.db</code> file is the Sqlite database. It's just a single file.</p>
-<h2 id="inspecting-the-database">Inspecting the Database</h2>
+
+</div>
+<div class="tab">
+<hr/><h1 id="inspecting-the-database">Inspecting the Database</h1><hr/>
 <p>Rider has a built-in mini-version of DataGrip. If you double click the Todo.db file, you should see a wizard for adding a database source.</p>
 <p><img src="img_11.png" alt="img_11.png" /></p>
 <p>You can test the connection, to make sure the information is correct <span class="numberCircle"><span>1</span></span>. If this is your first time, you may not have the Sqlite drivers installed, and you should instead see a link to do so.</p>
@@ -222,6 +236,176 @@ The argument is the name of the database: <code>Todo.db</code>.</p>
 <p>In the Database window, you get something similar to DataGrip, where you can inspect your database:</p>
 <p><img src="img_13.png" alt="img_13.png" /></p>
 <p>You can also double click on tables, to see their content, if you want to verify changes made to the data in the tables.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="todo-dao">Todo DAO</h1><hr/>
+<p>Now that we have the database access in place, i.e. the TodoContext and a generated database, we need to make it possible for your Todo app to use the database.</p>
+<p>We need a new Data Access Object class. Currently, we are using <code>TodoFileDAO.cs</code>, from the FileData component.<br />
+We want to create an equivalent class, which just uses the TodoContext.</p>
+<p>In the EfcData component, create a new class, 'TodoSqliteDAO'. It should implement the ITodoHome interface, from your Domain component.</p>
+<p>The initial class looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class TodoFileDAO : ITodoHome
+{
+
+    private readonly TodoContext context;
+
+    public TodoFileDAO(TodoContext context)
+    {
+        this.context = context;
+    }
+
+    public Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;Todo&gt; GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;Todo&gt; AddAsync(Todo todo)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(Todo todo)
+    {
+        throw new NotImplementedException();
+    }
+}
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="changing-the-added-services">Changing the Added Services</h1><hr/>
+<p>We wish to be able to test this right away, even before starting implementation of the methods.</p>
+<p>To do this, we need to change which implementation of ITodoHome is being used by the Web API. This is handled in WebAPI.Program.cs.</p>
+<p>Currently, we have these two lines of code:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;ITodoHome, TodoFileDAO&gt;();
+builder.Services.AddScoped&lt;FileContext&gt;();
+</code></pre>
+<p>But we need to change it to:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;ITodoHome, TodoSqliteDAO&gt;();
+builder.Services.AddDbContext&lt;TodoContext&gt;();
+</code></pre>
+<p>So, the Web API still depends on the ITodoHome interface, but the implementation behind is now the TodoSqliteDAO.<br />
+We also need the TodoContext, but notice it is added as a service using a different method: <code>AddDbContext</code>.</p>
+<p><a href="https://stackoverflow.com/questions/42716771/service-addscoped-vs-service-adddbcontext">Why this different method?</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="seeding">Seeding</h1><hr/>
+<p>Currently we don't have any data to work with. So, similarly to the FileContext, we wish to seed the database with some dummy test data, if there is no data.</p>
+<p>We add a seeding method to TodoContext, and call it from WebAPI.Program.cs.</p>
+<h2 id="seed-method">Seed Method</h2>
+<p>In the <code>TodoContext</code> add the following method:</p>
+<pre><code class="line-numbers language-csharp">public void Seed()
+{
+    if (Todos.Any()) return;
+
+    Todo[] ts =
+    {
+        new Todo(1, &quot;Dishes&quot;),
+        new Todo(1, &quot;Walk the dog&quot;),
+        new Todo(2, &quot;Do DNP homework&quot;),
+        new Todo(3, &quot;Eat breakfast&quot;),
+        new Todo(4, &quot;Mow lawn&quot;),
+    };
+    Todos.AddRange(ts);
+    SaveChanges();
+}
+</code></pre>
+<p>If the Todos DbSet contains anything, we just return, i.e. do nothing.<br />
+Otherwise we create a list of <code>Todo</code> items, add them to the <code>Todos</code> DbSet and save the changes. The method <code>AddRange(..)</code> just takes some kind of collection, and adds all elements.</p>
+<p>When calling <code>SaveChanges()</code>, whatever you've done to your DbSets, e.g. added, updated, removed, etc, those changes will be applied to the database, <em>in one transaction</em>.</p>
+<p>So, it is a bit similar to what we have previously done with the FileContext::SaveChanges method, which also persisted changes made.</p>
+<h2 id="seed-the-db">Seed the Db</h2>
+<p>In the Program class of WebAPI, we need to call the above method. It looks like this:</p>
+<p><img src="img_14.png" alt="img_14.png" /></p>
+<p>Here, we use a &quot;using block&quot;, meaning that the ctx variable is disposed at the last &quot; } &quot;.</p>
+<p>The first time we run the Web API, the database will be seeding. On subsequent runs, there is already data present, so nothing happens.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="absolute-path-to.db">Absolute Path to .db</h1><hr/>
+<p>Run the WebAPI.</p>
+<p>If you don't get errors, great. However:</p>
+<p>Sometimes, you'll get an error with the message &quot;no such table: Todos&quot;, or whatever table you're trying to interact with.<br />
+This is a poor way which SQLite tries to tell you the path to the .db file is not correct.</p>
+<p>In the TodoContext::OnConfiguring, we just put: &quot;Data Source = Todo.db&quot;.<br />
+That means the Todo.db is a relative path, and the file should be found relative to the project.<br />
+However, the project actually running is the WebAPI, not EfcData, and so it cannot find the Todo.db in the WebAPI project.</p>
+<p>You can do one of two things:</p>
+<ol>
+<li>Copy the Todo.db file into the WebAPI project</li>
+<li>Update the path in TodoContext::OnConfiguring to an absolute path</li>
+</ol>
+<p>I don't think the db file has anything to do with the Web API, so I'm not a fan of option (1).</p>
+<p>Instead, I suggest you update the TodoContext::OnConfiguring to specify the absolute path to the file. An absolute path is from the drive root, e.g. c:\Users...</p>
+<p>An easy way:</p>
+<p><img src="AbsolutePath.gif" alt="" /></p>
+<p>Notice in the end that I prefix the string for Data Source with @. This is to auto-escape backslashes. Alternatively, every backslash would need to be doubled: <code>\\</code>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="testing-the-seeding">Testing the Seeding</h1><hr/>
+<p>Now, we have something we can test. Nothing in the DAO class works, the methods are not yet implemented, but we can run the Web API and manually verify that the database received the seeding data.</p>
+<p>When you can run the Web API without errors:</p>
+<ol>
+<li>Run the Web API</li>
+<li>Once it has started up and is ready, just terminate it again (if you try to use swagger, you'll just get errors, as no DAO methods are implemented)</li>
+<li>Open the Database window</li>
+<li>Double click on the Todos table</li>
+<li>You should see your five Todo items in the table</li>
+</ol>
+
+</div>
+<div class="tab">
+<hr/><h1 id="get-all-todos">Get All Todos</h1><hr/>
+<p>Now, almost everything is running and set up. We just need to implement the methods to interact with the TodoContext.</p>
+<h2 id="get-all">Get All</h2>
+<p>We want to test this on the fly, meaning we take the methods in the same order they are needed by the Blazor app. Sort of. That means the <code>GetAsync()</code> method comes first.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
+{
+    ICollection&lt;Todo&gt; todos = await context.Todos.ToListAsync();
+    return todos;
+}
+</code></pre>
+<p>Notice <code>async</code> is added to the method signature.</p>
+<p>The <code>ToListAsync()</code> method will load all Todos an return them as a List. We define the variable as <code>ICollection</code> because that is what the method must return.</p>
+<p>We are essentially loading all Todos into memory. This may not scale well, but for this toy example, it is just fine.</p>
+<h2 id="testing">Testing</h2>
+<p>We should now be able to provide a Collection of all Todos, let's test this.</p>
+<p>Run the Web API. Run the Blazor app.</p>
+<p>Open the view-all-todos page.</p>
+<p>Notice how all Todos have an Id, even though we didn't provide one in the seeding method. That's because an int Primary Key is be default a SERIAL, i.e. if you leave the Id as 0 (the default value), the database will automatically select the next available number as Id.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-todo">Add Todo</h1><hr/>
+<p>Next up, we want to be able to add a new Todo, so we implement the TodoSqliteDAO::AddAsync method.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; AddAsync(Todo todo)
+{
+    EntityEntry&lt;Todo&gt; added = await context.AddAsync(todo);
+    await context.SaveChangesAsync();
+    return added.Entity;
+}
+</code></pre>
+<p>Notice <code>async</code> in method signature.</p>
+<p>We use the <code>AddAsync(..)</code> method, which returns information about the result, among others: The resulting Todo.<br />
+This is neat, if we wish to return the finished Todo, and in this case the Id is set by the database.</p>
+<p>So, after saving the changes, the newly added Todo is returned.</p>
+<h2 id="testing">Testing</h2>
+<p>Test whether this works.</p>
 
 </div>
 

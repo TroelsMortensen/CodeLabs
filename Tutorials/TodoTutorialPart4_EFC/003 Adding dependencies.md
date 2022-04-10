@@ -37,5 +37,6 @@ You should be able to verify the installed packages and versions:
 
 ## Internal Dependency
 
-We have added external packages. We also need an internal dependecy: EfcData -> Domain. We need access to the model classes and interfaces in the Domain component.\
-Add this reference.
+We have added external packages. We also need new internal dependecies: 
+* EfcData -> Domain. This is so EfcData can use the ITodoHome interface, and the Todo model class.
+* WebAPI -> EfcData. This is so WebAPI can register services from EfcData, and thereby use the database instead of file storage.
