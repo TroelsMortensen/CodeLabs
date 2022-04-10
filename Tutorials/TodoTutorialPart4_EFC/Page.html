@@ -31,6 +31,9 @@
 <li class="step" onclick="setTab(12)">13 First test</li>
 <li class="step" onclick="setTab(13)">14 Get all</li>
 <li class="step" onclick="setTab(14)">15 Add Todo</li>
+<li class="step" onclick="setTab(15)">16 Update</li>
+<li class="step" onclick="setTab(16)">17 Delete</li>
+<li class="step" onclick="setTab(17)">18 Get by criteria</li>
 
         </ol>
     </div>
@@ -364,7 +367,7 @@ However, the project actually running is the WebAPI, not EfcData, and so it cann
 <ol>
 <li>Run the Web API</li>
 <li>Once it has started up and is ready, just terminate it again (if you try to use swagger, you'll just get errors, as no DAO methods are implemented)</li>
-<li>Open the Database window</li>
+<li>Open the Database window in Rider</li>
 <li>Double click on the Todos table</li>
 <li>You should see your five Todo items in the table</li>
 </ol>
@@ -383,13 +386,13 @@ However, the project actually running is the WebAPI, not EfcData, and so it cann
 }
 </code></pre>
 <p>Notice <code>async</code> is added to the method signature.</p>
-<p>The <code>ToListAsync()</code> method will load all Todos an return them as a List. We define the variable as <code>ICollection</code> because that is what the method must return.</p>
+<p>The <code>ToListAsync()</code> method will load all Todos and return them as a List. We define the variable as <code>ICollection</code> because that is what the method must return.</p>
 <p>We are essentially loading all Todos into memory. This may not scale well, but for this toy example, it is just fine.</p>
 <h2 id="testing">Testing</h2>
 <p>We should now be able to provide a Collection of all Todos, let's test this.</p>
 <p>Run the Web API. Run the Blazor app.</p>
 <p>Open the view-all-todos page.</p>
-<p>Notice how all Todos have an Id, even though we didn't provide one in the seeding method. That's because an int Primary Key is be default a SERIAL, i.e. if you leave the Id as 0 (the default value), the database will automatically select the next available number as Id.</p>
+<p>Notice how all Todos have an Id, even though we didn't provide one in the seeding method. That's because an int Primary Key is by default a SERIAL, i.e. if you leave the Id as 0 (the default value), the database will automatically select the next available number as Id.</p>
 
 </div>
 <div class="tab">
@@ -409,6 +412,114 @@ This is neat, if we wish to return the finished Todo, and in this case the Id is
 <p>So, after saving the changes, the newly added Todo is returned.</p>
 <h2 id="testing">Testing</h2>
 <p>Test whether this works.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="update-todo">Update Todo</h1><hr/>
+<p>Implement the UpdateAsync method.</p>
+<p>If you need help, see the hint below. But give it a go first.</p>
+<details>
+<summary>Hint</summary>
+<pre><code class="line-numbers language-csharp">public Task UpdateAsync(Todo todo)
+{
+    context.Todos.Update(todo);
+    return context.SaveChangesAsync();
+}
+</code></pre>
+<p>The Update method will find an existing Todo based on the Id of the argument.</p>
+<p>Notice I haven't added <code>async</code> to the method signature. The method <code>SaveChangesAsync</code> returns a Task, so I just return that.<br />
+Alternatively, I could make the method <code>async</code> and await the call to <code>SaveChangesAsync</code>, and return nothing.</p>
+</details>
+<p>Test that it works. Either by editing the Todo item or changing the completed status through the Blazor app.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="deleting-a-todo">Deleting a Todo</h1><hr/>
+<p>To delete a Todo, you'll first need to find it by Id, then remove that object. Give it a go. Check the hint afterwards.</p>
+<details>
+<summary>Hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task DeleteAsync(int id)
+{
+    Todo? existing = await context.Todos.FindAsync(id);
+    if (existing is null)
+    {
+        throw new Exception($&quot;Could not find Todo with id {id}. Nothing was deleted&quot;);
+    }
+
+    context.Todos.Remove(existing);
+    await context.SaveChangesAsync();
+}
+</code></pre>
+<p>The <code>FindAsync(..)</code> either returns a Todo with the provided <code>id</code> or <code>null</code>. Hence the question mark: <code>Todo?</code>.<br />
+Alternative, methods <code>First(..)</code> or <code>FirstOrDefault(..)</code> are good to find a single item by some criteria. They both take a predicate (lambda expression) as argument.<br />
+If no item is matched, the first method will throw an exception. The latter will return <code>null</code>.</p>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="getting-all-todos-by-criteria">Getting All Todos by Criteria</h1><hr/>
+<p>In the previous tutorial it was at the end suggested that you implement an API endpoint, which could take arguments and find a subset of the Todos based on these arguments, i.e. filtering the result.</p>
+<p>Let's add that method, the filtering mechanism is interesting.</p>
+<p>First the interface, ITodoHome, add a method:</p>
+<pre><code class="line-numbers language-csharp">public Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(int? userId, bool? isCompleted);
+</code></pre>
+<p>Both arguments are nullable, so they can be left out.</p>
+<p>If you have many different arguments for filtering, I suggest you make an object with relevant properties, to avoid a method with 10+ arguments.</p>
+<p>It could look like this:</p>
+<pre><code class="line-numbers language-csharp">public class TodoFilter{
+    public int? UserId {get;set;}
+    public bool? IsCompleted {get;set;}
+</code></pre>
+<p>You will have to implement this method in <code>EfcData.TodoSqliteDAO</code>, <code>FileData.TodoFileDAO</code>, and <code>HttpServices.TodoHttpClient</code>. In the latter two class, you can leave the method with it's default implementation for now, and update later, if needed.</p>
+<p>But for <code>TodoSqliteDAO</code> we implement the functionality. Give it a go first, yourself. Then look at the hint below.<br />
+Remember, you must be able to apply all, some, or none of the filters.</p>
+<details>
+<summary>Hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(int? userId, bool? isCompleted)
+{
+    IQueryable&lt;Todo&gt; todos = context.Todos.AsQueryable();
+    if (userId != null)
+    {
+        todos = todos.Where(todo =&gt; todo.OwnerId == userId);
+    }
+
+    if (isCompleted != null)
+    {
+        todos = todos.Where(todo =&gt; todo.IsCompleted == isCompleted);
+    }
+
+    ICollection&lt;Todo&gt; result = await todos.ToListAsync();
+    return result;
+}
+</code></pre>
+<p>When using LINQ with EFC, methods like <code>Where()</code>, do not execute anything right away. Instead we are constructing a query. When the result is needed, the query is executed against the database.</p>
+<p>So, in this case, we start by getting an IQueryable. This represents the entire Todo table, but nothing has been loaded yet. It's sort of lazy loading.<br />
+The query is expanded upon in the first if-statement, if relevant. And then in the second if-statement, if relevant, we add further to the query.</p>
+<p>Finally, with the call <code>ToListAsync()</code>, we <em>materialize</em> the data into memory, as a List.</p>
+<p>If this was SQL, we build up the statement step by step:</p>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM Todos
+</code></pre>
+<p>Then:</p>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM Todos
+WHERE id = {id}
+</code></pre>
+<p>And then</p>
+<pre><code class="line-numbers language-sql">SELECT *
+FROM Todos
+WHERE   Id = {id}
+        AND
+        IsCompleted = {isCompleted}
+</code></pre>
+<h4 id="challenge">Challenge</h4>
+<p>The above method could be rewritten to just a single Where() call, if you're clever with your boolean algebra. It would just look like:</p>
+<pre><code class="line-numbers language-csharp">return await todos.Where(...).ToListAsync();
+</code></pre>
+<p>The details are left to the reader to figure out.</p>
+</details>
+<h2 id="testing">Testing</h2>
+<p>Now, if you want to test this (and don't have it), you'll need a Web API endpoint, which can accept query parameters.</p>
 
 </div>
 
