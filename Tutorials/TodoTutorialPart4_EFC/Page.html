@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div id="steps-list">
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 New component</li>
+<li class="step" onclick="setTab(2)">3 Adding dependencies</li>
+<li class="step" onclick="setTab(3)">4 Installing db tools</li>
+<li class="step" onclick="setTab(4)">5 DbContext</li>
+<li class="step" onclick="setTab(5)">6 Generating a migration</li>
+<li class="step" onclick="setTab(6)">7 Applying a migration</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right; margin:10px">
+                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="introduction">Introduction</h1><hr/>
+<p>In this tutorial we will add Entity Framework Core (henceforth &quot;EFC&quot;) with SQLite as the data storage, instead of the json-file storage system currently in use.</p>
+<p>Below is the layered diagram, you should be familiar with it by now.</p>
+<p>To the left, is your current project. The right side version is the result of this tutorial</p>
+<p><img src="img.png" alt="img.png" /></p>
+<p>We will be working within the green box at the bottom, i.e. we are swapping out the data access layer.</p>
+<p>Because of the IDAO interfaces (or whatever you've called them), we should not have to touch anything above.</p>
+<p>The current data access is isolated in a component, and the new data access will be in another component. To keep things nicely organized.</p>
+<p>The result of this tutorial is found <a href="">here on GitHub</a>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="efc-component">EFC Component</h1><hr/>
+<p>We are going to need a new component, it's a class library, you could call it EfcData.</p>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+<p>The class library comes with a file, Class1.cs, or similar, just delete it.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="adding-dependencies">Adding Dependencies</h1><hr/>
+<p>We are going to use Entity Framework Core and SQLite, so we are going to have to add some NuGet packages.</p>
+<h2 id="nuget-manager">NuGet Manager</h2>
+<p>Open the NuGet package manager:</p>
+<p><img src="img_3.png" alt="img_3.png" /></p>
+<p>This should show a window in the bottom half of Rider.</p>
+<p>Alternatively, there should be a NuGet button in the bottom row of Rider.</p>
+<h2 id="packages">Packages</h2>
+<p>Once the window is open, you need to add 3 packages (see how further below):</p>
+<ul>
+<li>Microsoft.EntityFrameworkCore</li>
+<li>Microsoft.EntityFrameworkCore.Design</li>
+<li>Microsoft.EntityFrameworkCore.Sqlite</li>
+</ul>
+<p><img src="AddPackage1.gif" alt="" /></p>
+<p>Notice the progress bar at the bottom after accepting installation.</p>
+<p>Pick the latest version which matches your .NET version. E.g. if you're on .NET6, pick version 6.x.x.<br />
+Don't pick the preview versions.</p>
+<p>For all packages, the version should be the same.</p>
+<h2 id="verify">Verify</h2>
+<p>You should be able to verify the installed packages and versions:</p>
+<p><img src="img_5.png" alt="img_5.png" /></p>
+<h2 id="internal-dependency">Internal Dependency</h2>
+<p>We have added external packages. We also need an internal dependecy: EfcData -&gt; Domain. We need access to the model classes and interfaces in the Domain component.<br />
+Add this reference.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="installing-tools">Installing Tools</h1><hr/>
+<p>You will need to install a command line interface tool, which is used when creating/updating the database.</p>
+<p>Open the terminal in Rider:</p>
+<p><img src="img_4.png" alt="img_4.png" /></p>
+<p>In the terminal type (it shouldn't matter which directory, you're in):</p>
+<pre><code>dotnet tool install -g dotnet-ef
+</code></pre>
+<p><img src="img_6.png" alt="img_6.png" /></p>
+<p>This will install the db tools. The <code>-g</code> means it is a global installation, so all future solutions should also have this tool installed.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="adding-dbcontext">Adding DbContext</h1><hr/>
+<p>In your new component, EfcData, add a new class. You could name it TodoContext.<br />
+This class will have a responsibility similar to your FileContext class, i.e. provide interaction with the data storage.</p>
+<p>It must inherit from DbContext.</p>
+<p>In this class you define DbSets for the object types, you want to be able to access in your database.</p>
+<p>In this tutorial, we just have the <code>Todo</code> object, but you might also have a <code>User</code> object. If the project scaled up, we might have different <code>TodoList</code>s, owned by different Users. Maybe you'll add this later.</p>
+<h2 id="specifying-the-database">Specifying the Database</h2>
+<p>We need to specify which database to use. That's done in the inherited method <code>OnConfiguring(...)</code>.</p>
+<p>The class currently looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class TodoContext : DbContext
+{
+    public DbSet&lt;Todo&gt; Todos { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite(&quot;Data Source = Todo.db&quot;);
+    }
+}
+</code></pre>
+<p>The <code>DbSet&lt;Todo&gt;</code> represents the Todo table in the database. The DbSet looks a bit like the ICollection, with regards to available methods, which is why we have used ICollection a lot so far.</p>
+<p>We interact with this DbSet to add, get, update, remove Todos from the database.</p>
+<p>The <code>OnConfiguring(...)</code> method is here used to specify the database to be used. This is done with the method <code>UseSqlite(...)</code>.<br />
+The argument is the name of the database: <code>Todo.db</code>.</p>
+<p>Sqlite is just a single file, so that makes it easier to work with, instead of having to use Postgres or MySql or similar.</p>
+<h4 id="other-database-providers">Other database providers</h4>
+<p>If you wanted to use a different DBMS, e.g. Postgres, you would add a NuGet package for a Postgres driver. That would then include a method <code>UsePostgres(...)</code>, in which you would provide connection arguments.</p>
+<h2 id="configuring-todo-table">Configuring Todo table</h2>
+<p>Now, we wish to configure the Todo class a bit.</p>
+<p>It currently has a couple of attributes on the properties, like <code>[Range..]</code> or <code>[Required]</code>. These are converted to constraints in the database, so that's a good start.</p>
+<p>We need to define a Primary Key for the Todo table. This can be done in multiple ways:</p>
+<ol>
+<li>Have an <code>int</code> property named <code>Id</code>, or <code>[Class-name]Id</code> e.g. <code>TodoId</code>. Such an attribute will automatically be made Primary Key</li>
+<li>Add the <code>[Key]</code> attribute to the existing <code>Id</code> property of <code>Todo</code>. This is necessary if the property is named differently. It may also be necessary if the property is not an int.</li>
+<li>We can configure a lot of things in the TodoContext class, i.e. outside of the Todo model class.</li>
+</ol>
+<p>So which approach to use? It may not matter much, but you may also have preferences.</p>
+<p>Personally, I don't like the automatic detection, i.e. just have a property called Id. It seems fragile.</p>
+<p>So, at least add the <code>[Key]</code> attribute:</p>
+<pre><code class="line-numbers language-csharp">public class Todo
+{
+    [Key]
+    public int Id { get; set; }
+    
+    ...
+</code></pre>
+<p>But, now we have added something to our Model class, which is only there, because we use EFC. We have added a dependency from the Domain layer to the Data layer. This may not be a good approach.</p>
+<ol>
+<li>It requires modifications of classes outside of the data access layer</li>
+<li>If you later wish to not use EFC, we must again modify classes outside the data access layer, i.e. the <code>[Key]</code> attribute is no longer needed, and should be removed.</li>
+</ol>
+<p>Adding <code>[Key]</code> is simple, and can be just fine.</p>
+<p>Alternatively, we can set up the keys in the DbContext class:</p>
+<h2 id="on-model-creating">On Model Creating</h2>
+<p>Inside your TodoContext, you can inherit a method, <code>OnModelCreating</code>. This method can be used to specify all kinds of things, e.g.</p>
+<ul>
+<li>primary keys</li>
+<li>foreign keys</li>
+<li>composite keys</li>
+<li>constraints</li>
+</ul>
+<p>Add the following method:</p>
+<pre><code class="line-numbers language-csharp">protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity&lt;Todo&gt;().HasKey(todo =&gt; todo.Id);
+}
+</code></pre>
+<p>This says that the Entity <code>Todo</code> has a Key, defined as the property <code>Todo.Id</code>.\</p>
+<h5 id="extra-note">Extra note</h5>
+<p>Should we wish a composite key, i.e. a primary key consiting of more properties, we will have to use this approach.</p>
+<p>As a simple example, we could do:</p>
+<pre><code class="line-numbers language-csharp">modelBuilder.Entity&lt;Todo&gt;().HasKey(todo =&gt; new {todo.Id, todo.Title});
+</code></pre>
+<p>Which will make a composite key of <code>Id</code> and <code>Title</code> from the todo.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="migrations">Migrations</h1><hr/>
+<p>Migrations are updates to the database. The first migration will create the database, and sub-sequence migrations will modify it, either add to or remove from the struture.</p>
+<p>A migration is generated based on the DbContext subclass, i.e. your TodoContext. When you create a migration, the database tool (installed in step 4) will look at the DbSets defined, as well as the <code>OnModelCreating()</code> method, and generate code, which will alter the database.</p>
+<p>Along with the migration, a snapshot is maintained, which keeps track of which migrations have been applied to the database. When updating the database, un-applied migrations will be applied.</p>
+<h2 id="creating-a-migration">Creating a migration</h2>
+<p>A migration is created through the terminal (or command line interface).</p>
+<p>Open the terminal.</p>
+<p>Navigate to the EfcData project. Most likely when you open the terminal, it is located in the solution directory. You want to enter the EfcData directory:</p>
+<pre><code>cd EfcData
+</code></pre>
+<p>Once there, type in the following:</p>
+<pre><code>dotnet ef migrations add InitialCreate
+</code></pre>
+<p>The last part, <code>InitialCreate</code>, is the name for the migration we are about to create. You should generally call it something, which indicates what this migration does, e.g. UserEntityAdded or TodoEntityUpdated or something similar. Migrations are sort of a form of version control, similar to how you use Git.</p>
+<p>Execute the above command.</p>
+<p><img src="img_7.png" alt="img_7.png" /></p>
+<h4 id="other-commands">Other commands</h4>
+<p>Notice how you are informed that you can remove the latest migration (if it hasn't been applied), with the command <code>ef migrations remove</code>.</p>
+<p>If you have applied a migration, it can be rolled back. You'll have to google this, if/when you need it.</p>
+<h2 id="migration-created">Migration Created</h2>
+<p>The first time a migration is created, a new directory will appear, &quot;Migrations&quot;.</p>
+<p><img src="img_8.png" alt="img_8.png" /></p>
+<p>Each new migration will result in a new file, the name of which is a time-stamp and the name you provided.</p>
+<p>You may open the file to inspect the result, but generally you don't need to touch these migration classes. For example, you can find a constraint, which indicates the primary key of the Todo table. You can also see constraints on the columns, provided by the attributes in the Todo class.</p>
+<p>Notice also the <code>TodoContextModelSnapshot.cs</code>, which keeps track of which migrations have been added to the database. Currently that is none.</p>
+<h4 id="deleting-the-migrations">Deleting the Migrations</h4>
+<p>Sometimes, you may want a &quot;hard reset&quot;, if you somehow mess up. You can delete the Migrations folder, along with the database file generated on the next slide, and start over.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="apply-a-migration">Apply a Migration</h1><hr/>
+<p>The next step is to apply the migration to your database. Currently we have no database, so it will be created.</p>
+<p>Again, in the terminal, and in the EfcData directory, we use the following command:</p>
+<pre><code>dotnet ef database update
+</code></pre>
+<p><img src="img_9.png" alt="img_9.png" /></p>
+<p>In your EfcData project, you should now be able to see a new file, <code>Todo.db</code>, with a little database icon. If not, you may need to collapse and expand the EfcData project, i.e. click the little arrow next to the project. This will make it reload the content.</p>
+<p><img src="img_10.png" alt="img_10.png" /></p>
+<p>This <code>Todo.db</code> file is the Sqlite database. It's just a single file.</p>
+<h2 id="inspecting-the-database">Inspecting the Database</h2>
+<p>Rider has a built-in mini-version of DataGrip. If you double click the Todo.db file, you should see a wizard for adding a database source.</p>
+<p><img src="img_11.png" alt="img_11.png" /></p>
+<p>You can test the connection, to make sure the information is correct <span class="numberCircle"><span>1</span></span>. If this is your first time, you may not have the Sqlite drivers installed, and you should instead see a link to do so.</p>
+<p>When clicking <kbd>OK</kbd>, it should open the Database window in Rider. This can also be found on the right side menu bar, or here:</p>
+<p><img src="img_12.png" alt="img_12.png" /></p>
+<p>In the Database window, you get something similar to DataGrip, where you can inspect your database:</p>
+<p><img src="img_13.png" alt="img_13.png" /></p>
+<p>You can also double click on tables, to see their content, if you want to verify changes made to the data in the tables.</p>
+
+</div>
+
+
+
+        
+        <div style="overflow:auto; padding-bottom: 10px">
+            <hr/>
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>
