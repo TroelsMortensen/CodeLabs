@@ -14,4 +14,10 @@ Because of the IDAO interfaces (or whatever you've called them), we should not h
 
 The current data access is isolated in a component, and the new data access will be in another component. To keep things nicely organized.
 
+Here's another rough overview:
+
+![img_15.png](img_15.png)
+
+The line-with-lightning between TodosController and TodoHttpService is to indicate networked communication between the two.
+
 The result of this tutorial is found [here on GitHub]().
