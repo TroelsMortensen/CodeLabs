@@ -13,9 +13,8 @@ body {
     margin: 20px auto;
     padding-left: 40px;
     padding-right: 40px;
-    width: 70%;
     min-width: 300px;
-    max-width: 1000px;
+    max-width: 130ch;
     border-radius: 25px;
     box-shadow: 0px 1px 2px 0px rgb(60 64 67), 0px 2px 16px 12px rgba(60, 64, 67, 0.5);
 }
