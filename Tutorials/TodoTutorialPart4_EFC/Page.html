@@ -139,7 +139,9 @@ This class will have a responsibility similar to your FileContext class, i.e. pr
 <p>The <code>OnConfiguring(...)</code> method is here used to specify the database to be used. This is done with the method <code>UseSqlite(...)</code>.<br />
 The argument is the name of the database: <code>Todo.db</code>.</p>
 <p>Sqlite is just a single file, so that makes it easier to work with, instead of having to use Postgres or MySql or similar.</p>
-<h4 id="other-database-providers">Other database providers</h4>
+<h4 id="note">Note</h4>
+<p>The above method is a simple approach, however we have now hardcoded the database info, and it may not be easy to modify. Usually the connection info will go into a settings file, and the program will read from that. It is left to the reader to google how to do that, if they're interested.</p>
+<h3 id="other-database-providers">Other database providers</h3>
 <p>If you wanted to use a different DBMS, e.g. Postgres, you would add a NuGet package for a Postgres driver. That would then include a method <code>UsePostgres(...)</code>, in which you would provide connection arguments.</p>
 <h2 id="configuring-todo-table">Configuring Todo table</h2>
 <p>Now, we wish to configure the Todo class a bit.</p>

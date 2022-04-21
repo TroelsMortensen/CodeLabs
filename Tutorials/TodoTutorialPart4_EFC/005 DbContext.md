@@ -39,7 +39,10 @@ The argument is the name of the database: `Todo.db`.
 
 Sqlite is just a single file, so that makes it easier to work with, instead of having to use Postgres or MySql or similar.
 
-#### Other database providers
+#### Note
+The above method is a simple approach, however we have now hardcoded the database info, and it may not be easy to modify. Usually the connection info will go into a settings file, and the program will read from that. It is left to the reader to google how to do that, if they're interested.
+
+### Other database providers
 If you wanted to use a different DBMS, e.g. Postgres, you would add a NuGet package for a Postgres driver. That would then include a method `UsePostgres(...)`, in which you would provide connection arguments.
 
 ## Configuring Todo table
