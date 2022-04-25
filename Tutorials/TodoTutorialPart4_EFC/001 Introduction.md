@@ -20,4 +20,4 @@ Here's another rough overview:
 
 The line-with-lightning between TodosController and TodoHttpService is to indicate networked communication between the two.
 
-The result of this tutorial is found [here on GitHub]().
+The result of this tutorial is found [here on GitHub](https://github.com/TroelsMortensen/BlazorTodoApp/tree/11EFC).
