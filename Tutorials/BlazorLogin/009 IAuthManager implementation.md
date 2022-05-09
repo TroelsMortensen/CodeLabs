@@ -1,5 +1,5 @@
-# IAuthService implementation
-Now that we have the IUserService, we can create a class that uses it.
+# IAuthManager implementation
+Now that we have the IUserManager, we can create a class that uses it.
 
 In the directory Authentication, create the following class. Explanation below.
 
@@ -12,13 +12,13 @@ using Microsoft.JSInterop;
 
 namespace BlazorLoginApp.Authentication;
 
-public class AuthServiceImpl : IAuthService
+public class AuthManagerImpl : IAuthManager
 {
     public Action<ClaimsPrincipal> OnAuthStateChanged { get; set; } = null!; // assigning to null! to suppress null warning.
     private readonly IUserService userService;
     private readonly IJSRuntime jsRuntime;
 
-    public AuthServiceImpl(IUserService userService, IJSRuntime jsRuntime)
+    public AuthManagerImpl(IUserService userService, IJSRuntime jsRuntime)
     {
         this.userService = userService;
         this.jsRuntime = jsRuntime;
@@ -114,7 +114,7 @@ public class AuthServiceImpl : IAuthService
 }
 ```
 
-Notice the version on GitHub may look slightly different, but the functionality is the same.
+_Notice the version on GitHub may look slightly different, but the functionality is the same._
 
 Yes, it's a bit of a long one. Luckily for you, you shouldn't need to change too much here to adapt the class to your own Blazor app later.
 
@@ -131,7 +131,7 @@ Your `User` contains information about the user. The `ClaimsPrincipal` also cont
 This information is put into a `ClaimsIdentity`, which is essentially just a map of key-value pairs. E.g.:
 
 ["Username", "Troels"]  
-["Role", "Teacher]  
+["Role", "Teacher"]  
 ["SecurityLevel", "3"]  
 
 The Blazor app can then retrieve the relevant information when needed, 
@@ -150,7 +150,7 @@ First, the fields:
     private readonly IUserService userService;
     private readonly IJSRuntime jsRuntime;
 
-    public AuthServiceImpl(IUserService userService, IJSRuntime jsRuntime)
+    public AuthManagerImpl(IUserService userService, IJSRuntime jsRuntime)
     {
         this.userService = userService;
         this.jsRuntime = jsRuntime;
@@ -158,9 +158,12 @@ First, the fields:
 ```
 We have the Action, `OnAuthStateChanged`, so we can notify the `SimpleAuthenticationStateProvider` about logging in and out.\
 In .NET6 they have introduced a feature, so that you should explicitly define which variables can be null. That is why it is instantiated to `null!`.  
+
 Then the IUserService, which is injected through the constructor. 
 Dependency injection again here. 
-I plan on just keeping users in a `List` for this tutorial, but later the implementation could be swapped out for a database or file. So to ease the swapping, we depend on an interface, which is provided through the constructor. No dependencies to an implementation.  
+I plan on just keeping users in a `List` for this tutorial, 
+but later the implementation could be swapped out for a database or file. 
+So, to ease the swapping, we depend on an interface, which is provided through the constructor. No dependencies to an implementation.  
 The `IJSRuntime` is a class which can call javascript methods. We need that to store some data temporarily in the browser.
 
 The constructor receives relevant arguments.
@@ -185,7 +188,7 @@ This method is to be called from some page, when we wish to log in. The method i
 
 `username` and `password` are provided as arguments.
 
-First, we ask the `userService` to retrieve a `User` object based on the username. Notice I don't pass the password here. This `GetUserAsync` will eventually contact a server somewhere, and we don't want to send the password around for hackers to sniff out.
+First, we ask the `userService` to retrieve a `User` object based on the username. Notice I don't pass the password here. This `GetUserAsync` will eventually contact a server somewhere, and we don't want to send the password around for hackers to sniff out. There may be better approaches.
 
 The `User?` indicates that this variable may be `null` in case no user exists with the provided `username`.
 
@@ -194,8 +197,9 @@ Then the User object is validated. The method is shown later, but it just checks
 If all is good, we then cache the user. 
 This means we take the user object, and store it in the browser. 
 Why is this necessary? 
-There are alternatives, but this approach seems to work well.\
-The IAuthService will be added as _scoped_, i.e. a new instance is created whenever a new tab is opened, **or** the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthService instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.\
+There are alternatives, but this approach seems to work well.
+
+The IAuthManager will be added as _scoped_, i.e. a new instance is created whenever a new tab is opened, **or** the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthManager instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.\
 Therefore, we cache the user in the browser, so it can be retrieved after a page refresh.
 
 We create a new `ClaimsPrincipal` based on the user. Blazor authentication framework works with ClaimsPrincipals. It's just a class to hold information about the user.
@@ -233,7 +237,7 @@ public async Task<ClaimsPrincipal> GetAuthAsync()
 ```
 
 First the data from the browser storage is retrieved.\
-If no user is stored, we get null back, so `User?` indicates this variable can be null.
+If no user is stored, we may get null back, so `User?` indicates this variable can be null.
 
 We create a `ClaimsPrincipal`, i.e. take the user information and put it into a `ClaimsPrincipal`. Then the `ClaimsPrincipal` is returned.
 
@@ -355,4 +359,6 @@ You may find others of relevans, like `Role`, `Surname`, etc.
 But mostly, you can just define your own keys, like I have done above: `"Role"` and `"SecurityLevel"`.
 
 In the end, the ClaimsIdentity is returned.
+
+**This is probably the only method you need to modify**. 
 

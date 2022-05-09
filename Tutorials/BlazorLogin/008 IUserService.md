@@ -20,4 +20,5 @@ public interface IUserService
 
 Later, we could add other methods for adding, removing, getting all users, updating a user, etc. That is, however, not relevant in this tutorial.
 
-
+#### Note
+This is a "service" class, which later in the course will be moved to the server. The AuthManager will remain on the client side, as that is tightly coupled with the auth framework.

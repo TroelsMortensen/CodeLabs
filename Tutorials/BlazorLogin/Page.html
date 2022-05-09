@@ -21,10 +21,10 @@
 <li class="step" onclick="setTab(2)">3 Wrap in auth</li>
 <li class="step" onclick="setTab(3)">4 Disable server-side rendering</li>
 <li class="step" onclick="setTab(4)">5 User class</li>
-<li class="step" onclick="setTab(5)">6 Authentication service interface</li>
+<li class="step" onclick="setTab(5)">6 Authentication manager interface</li>
 <li class="step" onclick="setTab(6)">7 AuthenticationStateProvider</li>
 <li class="step" onclick="setTab(7)">8 IUserService</li>
-<li class="step" onclick="setTab(8)">9 IAuthService implementation</li>
+<li class="step" onclick="setTab(8)">9 IAuthManager implementation</li>
 <li class="step" onclick="setTab(9)">10 IUserService implementation</li>
 <li class="step" onclick="setTab(10)">11 Registering services</li>
 <li class="step" onclick="setTab(11)">12 Login page code</li>
@@ -48,25 +48,25 @@
 
         <div class="tab">
 <hr/><h1 id="welcome-to-blazor-server-login">Welcome to Blazor-server login</h1><hr/>
-<p>This tutorial will take you through how to set up a simple login system for Blazor-server. It can possibly be converted to Blazor-wasm, but I haven't attempted that.</p>
+<p>This tutorial will take you through how to set up a simple login system for Blazor-server. It can most likely <em>not</em> be converted to Blazor-wasm.</p>
 <p>This approach will use your own User/Profile/Account type, or whatever you call it. You will manage storage of the users.
 We will use the built in <code>AuthenticationStateProvider</code> class, extend it to provide the necessary authorization information.</p>
 <p>We will not be using the Identity framework. That's a different approach.</p>
 <p>This is mostly a toy example to be used for your semester projects.</p>
-<p>We will go through how to set it up from a default Blazor project. Later, you can then reuse the steps to add login/authorization functionality to other Blazor-server apps.</p>
+<p>We will go through how to set it up from a new default Blazor-server project. Later, you can then reuse the steps to add login/authorization functionality to other Blazor-server apps.</p>
 <h3 id="as-always-you-can-find-the-entire-example-on-github-here">As always you can find the entire example on GitHub <a href="https://github.com/TroelsMortensen/BlazorLogin">here</a></h3>
 
 </div>
 <div class="tab">
 <hr/><h1 id="new-solution-new-project">New solution, new project</h1><hr/>
 <p>First, you need a solution. That could be an existing, or a new one.</p>
-<p>Inside this solution, create a new Blazor-server project.</p>
+<p>Inside this solution, create a new Blazor-server project (or use an existing, in which case skip the below steps about creating a new project).</p>
 <p><img src="img.png" alt="img.png" /></p>
 <p>And then:</p>
 <p><img src="img_1.png" alt="img_1.png" /></p>
 <p><span class="numberCircle"><span>1</span></span> Select ASP.NET<br />
 <span class="numberCircle"><span>2</span></span> Choose a name for the project
-<span class="numberCircle"><span>3</span></span>6 Select <em>Blazor Server App</em><br />
+<span class="numberCircle"><span>3</span></span> Select <em>Blazor Server App</em><br />
 <span class="numberCircle"><span>4</span></span> Choose <em>No authentication</em>. (This is where you alternatively could choose the Identity framework)<br />
 <span class="numberCircle"><span>5</span></span> Create the project</p>
 <h2 id="overview">Overview</h2>
@@ -75,16 +75,19 @@ We will use the built in <code>AuthenticationStateProvider</code> class, extend 
 <p>The &quot;Blazor app&quot; represents your app. The blue, abstract class is from the authorization framework, already in Blazor.
 It is used by the app to request information about who's logged in.</p>
 <p>We need the <code>SimpleAuthenticationStateProvider</code> to provide that logged in information, whenever the Blazor app requests it. It overrides the method <code>GetAuthenticationStateAsync</code> from the super class.</p>
-<p>The <code>IAuthService</code> interface is used to handle logging in and out. This is used by your log in component in your Blazor app.</p>
-<p>The implementation will manage retrieving the user from a service interface, and cache that user, so that it can be provided to <code>SipmleAuthenticationStateProvider</code> whenever needed.</p>
-<p>The IUserService is a data access interface, currently with just one method, which can retrieve a <code>User</code> object.</p>
-<p>The InMemoryUserService is a dummy database, which just has a list of 3 users.</p>
+<p>The <code>IAuthManager</code> interface is used to handle logging in and out from your app,
+e.g. it is used by your log in component in your Blazor app.</p>
+<p>The implementation, <code>AuthManagerImpl</code>  will manage retrieving the user from a service interface,
+and cache that user in your browser, so that it can be provided to <code>SipmleAuthenticationStateProvider</code> whenever needed.</p>
+<p>The <code>IUserService</code> is a data access interface, currently with just one method, which can retrieve a <code>User</code> object.</p>
+<p>The InMemoryUserService is a dummy database, which just has a list of 3 hardcoded users.</p>
 <p>The following slides will go through how to set up everything.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="wrap-the-app-in-authentication">Wrap the app in authentication</h1><hr/>
-<p>We must make available the authentication state to the entire app. We do this by wrapping the app in a CascadingAuthenticationState component.</p>
+<p>We must make available the authentication state to the entire app.
+We do this by wrapping the app in a <code>CascadingAuthenticationState</code> component.</p>
 <p>Open the file app.razor, and modify it to the yellow highlighted, like so:</p>
 <p><img src="img_2.png" alt="img_2.png" /></p>
 <p>You update those three highlighted places.</p>
@@ -110,8 +113,9 @@ This is because javascript is only available, when we do not prerender, and we n
 <div class="tab">
 <hr/><h1 id="the-user-class">The user class</h1><hr/>
 <p>This class holds information about the user.</p>
-<p>Create a new directory, call it Models.</p>
-<p>Inside this directory, create a new class, User, or whatever you wish. It looks like this:</p>
+<p>Create a new directory, call it Models (or whatever you please).</p>
+<p>Inside this directory, create a new class, User, or whatever you wish.
+In this example it looks like below. Yours could be different.</p>
 <pre><code class="line-numbers language-csharp">namespace BlazorLoginApp.Models;
 
 public class User
@@ -137,9 +141,11 @@ public class User
 </code></pre>
 <p>You may define your User with other fields, but these are the ones we will use in this example.
 With this, we can demonstrate privilege by level and privilege by role. Two different approaches.</p>
+<h4 id="privilege-by-level">Privilege by level</h4>
 <p><img src="img_4.png" alt="img_4.png" /></p>
 <p>With privilege by level, each security level is allowed more access than the one before it.
 This could often be seen as &quot;guest&quot;, &quot;registered user&quot;, &quot;admin&quot;.</p>
+<h4 id="privilege-by-role">Privilege by role</h4>
 <p>With the roles, we can provide access to different places of the system, to different types of users.</p>
 <p><img src="img_5.png" alt="img_5.png" /></p>
 <p>There is not necessarily a hierarchy here, where one can do more than the other. Instead each type is allowed access to different parts of the system.</p>
@@ -148,7 +154,7 @@ This could often be seen as &quot;guest&quot;, &quot;registered user&quot;, &quo
 
 </div>
 <div class="tab">
-<hr/><h1 id="authentication-service-interface">Authentication service interface</h1><hr/>
+<hr/><h1 id="authentication-manager-interface">Authentication manager interface</h1><hr/>
 <p>We need a class, which can handle logging in and logging out.</p>
 <p>Initially we will just create the interface. We will provide the implementation later.</p>
 <p>Create a new directory, call it Authentication.</p>
@@ -157,7 +163,7 @@ This could often be seen as &quot;guest&quot;, &quot;registered user&quot;, &quo
 
 namespace BlazorLoginApp.Authentication;
 
-public interface IAuthService
+public interface IAuthManager
 {
     public Task LoginAsync(string username, string password);
     public Task LogoutAsync();
@@ -167,7 +173,8 @@ public interface IAuthService
 }
 </code></pre>
 <p>This interface (and its implementation) will be used in the Blazor app, whenever we wish to log in or out.</p>
-<p>The property at the bottom is an Action. The idea is that another class (<code>SimpleAuthenticationStateProvider</code>) will listen to the IAuthService implementation for changes in authentication state, i.e. an event will be fired whenever someone logs in or out.
+<p>The property at the bottom is an Action.
+The idea is that another class (<code>SimpleAuthenticationStateProvider</code>) will listen to the IAuthManager implementation for changes in authentication state, i.e. an event will be fired whenever someone logs in or out.
 The Blazor framework can then react to this.</p>
 
 </div>
@@ -175,7 +182,7 @@ The Blazor framework can then react to this.</p>
 <hr/><h1 id="authenticationstateprovider">AuthenticationStateProvider</h1><hr/>
 <p>This is an abstract class which exists in the Blazor framework. It is used to provide information about who is logged in, and what priviliges they have.</p>
 <p>We must extend this class, and override the method which is called by Blazor to get the login/auth information.</p>
-<p>Inside Authentication directory: create a new class, SimpleAuthenticationStateProvider, or whatever you want to call it.</p>
+<p>Inside Authentication directory: create a new class, <code>SimpleAuthenticationStateProvider</code>, or whatever you want to call it.</p>
 <p>It looks like this, code is explained below.</p>
 <pre><code class="line-numbers language-csharp">using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -184,17 +191,17 @@ namespace BlazorLoginApp.Authentication;
 
 public class SimpleAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly IAuthService authService;
+    private readonly IAuthManager authManager;
 
-    public SimpleAuthenticationStateProvider(IAuthService authService)
+    public SimpleAuthenticationStateProvider(IAuthManager authManager)
     {
-        this.authService = authService;
-        authService.OnAuthStateChanged += AuthStateChanged;
+        this.authManager = authManager;
+        authManager.OnAuthStateChanged += AuthStateChanged;
     }
 
     public override async Task&lt;AuthenticationState&gt; GetAuthenticationStateAsync()
     {
-        ClaimsPrincipal principal = await authService.GetAuthAsync();
+        ClaimsPrincipal principal = await authManager.GetAuthAsync();
         return await Task.FromResult(new AuthenticationState(principal));
     }
 
@@ -209,14 +216,14 @@ public class SimpleAuthenticationStateProvider : AuthenticationStateProvider
 }
 </code></pre>
 <p>So, a few things to understand.</p>
-<p>We get an instance of IAuthService through the constructor, i.e. constructor dependency injection.
-If we register an IAuthService as a service in Program.cs, the framework will create an instance for us automatically.
+<p>We get an instance of IAuthManager through the constructor, i.e. constructor dependency injection.
+If we register an IAuthManager as a service in Program.cs, the framework will create an instance for us automatically.
 We'll do this later.</p>
 <p>The method <code>GetAuthenticationStateAsync()</code> is called by the framework whenever we have a page or component, which requires any kind of authorization.
 Maybe you are accessing a page that is secured by a requirement to be an <em>admin</em>. Blazor will ask the above class, if the current user should have access.<br />
 Or maybe you have some parts of a page, which should only be shown, if someone is logged in. Then Blazor will ask this class, if anyone is logged in.</p>
 <p>So, it's used a lot.</p>
-<p>In the constructor, the second line, we subscribe to events from the IAuthService, i.e. when you log in, an event will be fired.
+<p>In the constructor, the second line, we subscribe to events from the IAuthManager, i.e. when you log in, an event will be fired.
 In that case, we want the SimpleAuthenticationStateProvider to notify the blazor app about a change to the current authentication state: The method <code>AuthStateChanged</code> is called upon such an event, and this method itself notifies the app about a change.</p>
 <h3 id="register-the-service">Register the service</h3>
 <p>We need to register this class as a service, so the app can create it when needed.</p>
@@ -241,11 +248,13 @@ public interface IUserService
 }
 </code></pre>
 <p>Later, we could add other methods for adding, removing, getting all users, updating a user, etc. That is, however, not relevant in this tutorial.</p>
+<h4 id="note">Note</h4>
+<p>This is a &quot;service&quot; class, which later in the course will be moved to the server. The AuthManager will remain on the client side, as that is tightly coupled with the auth framework.</p>
 
 </div>
 <div class="tab">
-<hr/><h1 id="iauthservice-implementation">IAuthService implementation</h1><hr/>
-<p>Now that we have the IUserService, we can create a class that uses it.</p>
+<hr/><h1 id="iauthmanager-implementation">IAuthManager implementation</h1><hr/>
+<p>Now that we have the IUserManager, we can create a class that uses it.</p>
 <p>In the directory Authentication, create the following class. Explanation below.</p>
 <pre><code class="line-numbers language-csharp">using System.Security.Claims;
 using System.Text.Json;
@@ -255,13 +264,13 @@ using Microsoft.JSInterop;
 
 namespace BlazorLoginApp.Authentication;
 
-public class AuthServiceImpl : IAuthService
+public class AuthManagerImpl : IAuthManager
 {
     public Action&lt;ClaimsPrincipal&gt; OnAuthStateChanged { get; set; } = null!; // assigning to null! to suppress null warning.
     private readonly IUserService userService;
     private readonly IJSRuntime jsRuntime;
 
-    public AuthServiceImpl(IUserService userService, IJSRuntime jsRuntime)
+    public AuthManagerImpl(IUserService userService, IJSRuntime jsRuntime)
     {
         this.userService = userService;
         this.jsRuntime = jsRuntime;
@@ -356,7 +365,7 @@ public class AuthServiceImpl : IAuthService
     }
 }
 </code></pre>
-<p>Notice the version on GitHub may look slightly different, but the functionality is the same.</p>
+<p><em>Notice the version on GitHub may look slightly different, but the functionality is the same.</em></p>
 <p>Yes, it's a bit of a long one. Luckily for you, you shouldn't need to change too much here to adapt the class to your own Blazor app later.</p>
 <p>Of course, if instead of <code>User</code>, you want another type, like Profile or Account, then you would have to swap that out.</p>
 <p>We will take chunks out of the above class, and explain small parts at a time.</p>
@@ -366,7 +375,7 @@ public class AuthServiceImpl : IAuthService
 <p>Your <code>User</code> contains information about the user. The <code>ClaimsPrincipal</code> also contains information.
 This information is put into a <code>ClaimsIdentity</code>, which is essentially just a map of key-value pairs. E.g.:</p>
 <p>[&quot;Username&quot;, &quot;Troels&quot;]<br />
-[&quot;Role&quot;, &quot;Teacher]<br />
+[&quot;Role&quot;, &quot;Teacher&quot;]<br />
 [&quot;SecurityLevel&quot;, &quot;3&quot;]</p>
 <p>The Blazor app can then retrieve the relevant information when needed,
 e.g. when checking if the user is allowed to view or interact with certain parts of the app.
@@ -379,17 +388,19 @@ Or if a greeting, <strong>&quot;Welcome Anon&quot;</strong>, should be displayed
     private readonly IUserService userService;
     private readonly IJSRuntime jsRuntime;
 
-    public AuthServiceImpl(IUserService userService, IJSRuntime jsRuntime)
+    public AuthManagerImpl(IUserService userService, IJSRuntime jsRuntime)
     {
         this.userService = userService;
         this.jsRuntime = jsRuntime;
     }
 </code></pre>
 <p>We have the Action, <code>OnAuthStateChanged</code>, so we can notify the <code>SimpleAuthenticationStateProvider</code> about logging in and out.<br />
-In .NET6 they have introduced a feature, so that you should explicitly define which variables can be null. That is why it is instantiated to <code>null!</code>.<br />
-Then the IUserService, which is injected through the constructor.
+In .NET6 they have introduced a feature, so that you should explicitly define which variables can be null. That is why it is instantiated to <code>null!</code>.</p>
+<p>Then the IUserService, which is injected through the constructor.
 Dependency injection again here.
-I plan on just keeping users in a <code>List</code> for this tutorial, but later the implementation could be swapped out for a database or file. So to ease the swapping, we depend on an interface, which is provided through the constructor. No dependencies to an implementation.<br />
+I plan on just keeping users in a <code>List</code> for this tutorial,
+but later the implementation could be swapped out for a database or file.
+So, to ease the swapping, we depend on an interface, which is provided through the constructor. No dependencies to an implementation.<br />
 The <code>IJSRuntime</code> is a class which can call javascript methods. We need that to store some data temporarily in the browser.</p>
 <p>The constructor receives relevant arguments.</p>
 <h3 id="log-in">Log in</h3>
@@ -408,14 +419,14 @@ The <code>IJSRuntime</code> is a class which can call javascript methods. We nee
 </code></pre>
 <p>This method is to be called from some page, when we wish to log in. The method is asynchronous, because it does things, which takes time, potentially, like network calls.</p>
 <p><code>username</code> and <code>password</code> are provided as arguments.</p>
-<p>First, we ask the <code>userService</code> to retrieve a <code>User</code> object based on the username. Notice I don't pass the password here. This <code>GetUserAsync</code> will eventually contact a server somewhere, and we don't want to send the password around for hackers to sniff out.</p>
+<p>First, we ask the <code>userService</code> to retrieve a <code>User</code> object based on the username. Notice I don't pass the password here. This <code>GetUserAsync</code> will eventually contact a server somewhere, and we don't want to send the password around for hackers to sniff out. There may be better approaches.</p>
 <p>The <code>User?</code> indicates that this variable may be <code>null</code> in case no user exists with the provided <code>username</code>.</p>
 <p>Then the User object is validated. The method is shown later, but it just checks if the user is not null and that the provided password matches the password of the user. If either fails, an exception is thrown.</p>
 <p>If all is good, we then cache the user.
 This means we take the user object, and store it in the browser.
 Why is this necessary?
-There are alternatives, but this approach seems to work well.<br />
-The IAuthService will be added as <em>scoped</em>, i.e. a new instance is created whenever a new tab is opened, <strong>or</strong> the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthService instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.<br />
+There are alternatives, but this approach seems to work well.</p>
+<p>The IAuthManager will be added as <em>scoped</em>, i.e. a new instance is created whenever a new tab is opened, <strong>or</strong> the current is refreshed. Experience has shown that refreshes happens occasionally, which results in a new IAuthManager instance, meaning you loose data about the currently logged in user: You will have to log in to the app often, which is annoying.<br />
 Therefore, we cache the user in the browser, so it can be retrieved after a page refresh.</p>
 <p>We create a new <code>ClaimsPrincipal</code> based on the user. Blazor authentication framework works with ClaimsPrincipals. It's just a class to hold information about the user.</p>
 <p>Finally, we invoke the <code>OnAuthStateChanged</code> to let anyone listening know about the logging in. The <code>SimpleAuthenticationStateProvider</code> has subscribed to this action, so it is notified when the action is invoked.</p>
@@ -443,7 +454,7 @@ Then we notify the <code>SimpleAuthenticationStateProvider</code> that the user 
 }
 </code></pre>
 <p>First the data from the browser storage is retrieved.<br />
-If no user is stored, we get null back, so <code>User?</code> indicates this variable can be null.</p>
+If no user is stored, we may get null back, so <code>User?</code> indicates this variable can be null.</p>
 <p>We create a <code>ClaimsPrincipal</code>, i.e. take the user information and put it into a <code>ClaimsPrincipal</code>. Then the <code>ClaimsPrincipal</code> is returned.</p>
 <h6 id="optimization"><em>Optimization</em></h6>
 <blockquote>
@@ -532,6 +543,7 @@ In this toy example, encryption is ignored, and left to the reader to implement,
 <p>You may find others of relevans, like <code>Role</code>, <code>Surname</code>, etc.</p>
 <p>But mostly, you can just define your own keys, like I have done above: <code>&quot;Role&quot;</code> and <code>&quot;SecurityLevel&quot;</code>.</p>
 <p>In the end, the ClaimsIdentity is returned.</p>
+<p><strong>This is probably the only method you need to modify</strong>.</p>
 
 </div>
 <div class="tab">
@@ -587,7 +599,7 @@ But that is out of scope for this tutorial.</p>
 <p>At the top of the page, we need some directives:</p>
 <pre><code class="line-numbers language-razor">@page &quot;/Login&quot;
 @using BlazorLoginApp.Authentication
-@inject IAuthService authService
+@inject IAuthManager authManager
 @inject NavigationManager navMgr
 </code></pre>
 <p>We give the page a uri sub-path: &quot;/Login&quot;, so we can navigate to this page.<br />
@@ -603,7 +615,7 @@ We inject an IAuthService, and a NavigationManager.</p>
         errorLabel = &quot;&quot;;
         try
         {
-            await authService.LoginAsync(userName, password);
+            await authManager.LoginAsync(userName, password);
             navMgr.NavigateTo(&quot;/&quot;);
         }
         catch (Exception e)
@@ -754,7 +766,7 @@ and <a href="https://github.com/TroelsMortensen/BlazorLogin/blob/master/BlazorLo
 <pre><code class="line-numbers language-csharp">@namespace Login
 @using BlazorLoginApp.Authentication
 @inject NavigationManager navMgr
-@inject IAuthService authService
+@inject IAuthManager authManager
 
 // view stuff here later..
 
@@ -767,7 +779,7 @@ and <a href="https://github.com/TroelsMortensen/BlazorLogin/blob/master/BlazorLo
 
     private async Task Logout()
     {
-        await authService.LogoutAsync();
+        await authManager.LogoutAsync();
         navMgr.NavigateTo(&quot;/&quot;);
     }
 
@@ -775,10 +787,10 @@ and <a href="https://github.com/TroelsMortensen/BlazorLogin/blob/master/BlazorLo
 </code></pre>
 <p>Notice there is no page directive for this component, i.e. we cannot navigate to it, only use it in other components/pages.</p>
 <p>First is declared a &quot;@namespace Login&quot;, this is needed because this component will be used from something outside of the Pages folder. In those cases we need to define namespaces.</p>
-<p>Then we inject the <code>NavigationManager</code> and <code>IAuthService</code>.</p>
+<p>Then we inject the <code>NavigationManager</code> and <code>IAuthManager</code>.</p>
 <p>In the code block, we just have two methods.<br />
 <code>Login()</code> will navigate to the login page.<br />
-<code>Logout()</code> will use the <code>authService</code> to clear the login status, and the navigate to the home page.</p>
+<code>Logout()</code> will use the <code>authManager</code> to clear the login status, and the navigate to the home page.</p>
 <h3 id="the-view">The view</h3>
 <p>The view part is equally simple:</p>
 <pre><code class="line-numbers language-razor">&lt;AuthorizeView&gt;

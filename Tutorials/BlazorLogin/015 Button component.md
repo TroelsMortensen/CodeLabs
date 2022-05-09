@@ -39,7 +39,7 @@ In your new component, we need a bit of code:
 @namespace Login
 @using BlazorLoginApp.Authentication
 @inject NavigationManager navMgr
-@inject IAuthService authService
+@inject IAuthManager authManager
 
 // view stuff here later..
 
@@ -52,7 +52,7 @@ In your new component, we need a bit of code:
 
     private async Task Logout()
     {
-        await authService.LogoutAsync();
+        await authManager.LogoutAsync();
         navMgr.NavigateTo("/");
     }
 
@@ -63,11 +63,11 @@ Notice there is no page directive for this component, i.e. we cannot navigate to
 
 First is declared a "@namespace Login", this is needed because this component will be used from something outside of the Pages folder. In those cases we need to define namespaces.
 
-Then we inject the `NavigationManager` and `IAuthService`.
+Then we inject the `NavigationManager` and `IAuthManager`.
 
 In the code block, we just have two methods.\
 `Login()` will navigate to the login page.\
-`Logout()` will use the `authService` to clear the login status, and the navigate to the home page.
+`Logout()` will use the `authManager` to clear the login status, and the navigate to the home page.
 
 ### The view
 The view part is equally simple:

@@ -1,9 +1,10 @@
 # The user class
 This class holds information about the user.
 
-Create a new directory, call it Models.
+Create a new directory, call it Models (or whatever you please).
 
-Inside this directory, create a new class, User, or whatever you wish. It looks like this:
+Inside this directory, create a new class, User, or whatever you wish. 
+In this example it looks like below. Yours could be different.
 
 ```csharp
 namespace BlazorLoginApp.Models;
@@ -33,10 +34,14 @@ public class User
 You may define your User with other fields, but these are the ones we will use in this example. 
 With this, we can demonstrate privilege by level and privilege by role. Two different approaches. 
 
+#### Privilege by level
+
 ![img_4.png](img_4.png)
 
 With privilege by level, each security level is allowed more access than the one before it. 
 This could often be seen as "guest", "registered user", "admin".
+
+#### Privilege by role
 
 With the roles, we can provide access to different places of the system, to different types of users.
 

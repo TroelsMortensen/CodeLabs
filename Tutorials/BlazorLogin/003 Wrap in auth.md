@@ -1,5 +1,6 @@
 # Wrap the app in authentication
-We must make available the authentication state to the entire app. We do this by wrapping the app in a CascadingAuthenticationState component.
+We must make available the authentication state to the entire app. 
+We do this by wrapping the app in a `CascadingAuthenticationState` component.
 
 Open the file app.razor, and modify it to the yellow highlighted, like so:
 

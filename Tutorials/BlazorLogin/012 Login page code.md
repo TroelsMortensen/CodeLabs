@@ -13,7 +13,7 @@ At the top of the page, we need some directives:
 ```razor
 @page "/Login"
 @using BlazorLoginApp.Authentication
-@inject IAuthService authService
+@inject IAuthManager authManager
 @inject NavigationManager navMgr
 ```
 
@@ -33,7 +33,7 @@ And then in the code block, the following:
         errorLabel = "";
         try
         {
-            await authService.LoginAsync(userName, password);
+            await authManager.LoginAsync(userName, password);
             navMgr.NavigateTo("/");
         }
         catch (Exception e)

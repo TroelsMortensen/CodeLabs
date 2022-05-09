@@ -3,7 +3,7 @@ This is an abstract class which exists in the Blazor framework. It is used to pr
 
 We must extend this class, and override the method which is called by Blazor to get the login/auth information.
 
-Inside Authentication directory: create a new class, SimpleAuthenticationStateProvider, or whatever you want to call it.
+Inside Authentication directory: create a new class, `SimpleAuthenticationStateProvider`, or whatever you want to call it.
 
 It looks like this, code is explained below.
 
@@ -15,17 +15,17 @@ namespace BlazorLoginApp.Authentication;
 
 public class SimpleAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly IAuthService authService;
+    private readonly IAuthManager authManager;
 
-    public SimpleAuthenticationStateProvider(IAuthService authService)
+    public SimpleAuthenticationStateProvider(IAuthManager authManager)
     {
-        this.authService = authService;
-        authService.OnAuthStateChanged += AuthStateChanged;
+        this.authManager = authManager;
+        authManager.OnAuthStateChanged += AuthStateChanged;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        ClaimsPrincipal principal = await authService.GetAuthAsync();
+        ClaimsPrincipal principal = await authManager.GetAuthAsync();
         return await Task.FromResult(new AuthenticationState(principal));
     }
 
@@ -42,8 +42,8 @@ public class SimpleAuthenticationStateProvider : AuthenticationStateProvider
 
 So, a few things to understand.
 
-We get an instance of IAuthService through the constructor, i.e. constructor dependency injection.
-If we register an IAuthService as a service in Program.cs, the framework will create an instance for us automatically.
+We get an instance of IAuthManager through the constructor, i.e. constructor dependency injection.
+If we register an IAuthManager as a service in Program.cs, the framework will create an instance for us automatically.
 We'll do this later.
 
 The method `GetAuthenticationStateAsync()` is called by the framework whenever we have a page or component, which requires any kind of authorization. 
@@ -52,7 +52,7 @@ Or maybe you have some parts of a page, which should only be shown, if someone i
 
 So, it's used a lot.
 
-In the constructor, the second line, we subscribe to events from the IAuthService, i.e. when you log in, an event will be fired. 
+In the constructor, the second line, we subscribe to events from the IAuthManager, i.e. when you log in, an event will be fired. 
 In that case, we want the SimpleAuthenticationStateProvider to notify the blazor app about a change to the current authentication state: The method `AuthStateChanged` is called upon such an event, and this method itself notifies the app about a change.
 
 ### Register the service
