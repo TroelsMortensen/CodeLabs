@@ -35,7 +35,7 @@ The implementation, `AuthManagerImpl`  will manage retrieving the user from a se
 and cache that user in your browser, so that it can be provided to `SipmleAuthenticationStateProvider` whenever needed.
 
 The `IUserService` is a data access interface, currently with just one method, which can retrieve a `User` object.
-
-The InMemoryUserService is a dummy database, which just has a list of 3 hardcoded users.
+The InMemoryUserService is a dummy database, which just has a list of 3 hardcoded users. 
+The interface and class in the blue box, i.e. `IUserService` and its implementation may later be moved to the client side.
 
 The following slides will go through how to set up everything.
