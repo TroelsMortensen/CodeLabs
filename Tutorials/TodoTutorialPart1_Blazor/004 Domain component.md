@@ -3,7 +3,7 @@ First, we need the model classes.
 In this first iteration of the tutorial, we will just need a Todo object. Later we might add Users, or multiple todo-list.
 
 ### New project (component)
-Create a new Library project, by right-clicking your solution:
+Create a new Class Library project, by right-clicking your solution:
 
 ![img.png](Resources/CreateLibrary1.png)
 
@@ -15,7 +15,8 @@ In your case, you can probably only select net6.0 ((3)). Finally press Create ((
 
 A **Class Library** is a type of project which cannot be run, it instead contains functionality. 
 All NuGet packages are generally libraries with functionality, you can import into your system. 
-Similar to Jar files in Java.  
+Similar to some Jar files in Java, however, other Jar files can actually be executed. In .NET we distinguish between .exe files: executables, and .dll files: dynamic link libraries.
+
 Your Domain component will just contain the domain model classes, there is nothing to *run*. 
 If you make custom Exceptions, they could also go here. We will also add certain interfaces, shortly.
 

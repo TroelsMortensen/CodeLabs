@@ -24,7 +24,7 @@ Then, in `Program.cs` we need to add services. It goes like this:
 Now, whenever a page request a class, which has been added as a service, the framework will create that for us. 
 If we request a class, which hasn't been added, the framework will give an error, saying it was unable to create the requested service.
 
-Notice we use `AddScoped`, this is a good default approach. Adding a singleton can sometimes cause problems, if you are not careful.
+Notice we use `AddScoped<...>`, this is a good default approach. Adding a singleton can sometimes cause problems, if you are not careful.
 
 With the line 
 
@@ -34,8 +34,10 @@ builder.Services.AddScoped<ITodoHome, TodoFileDAO>();
 
 we are saying, that whenever the blazor app requests an instance of `ITodoHome`, it will get a `TodoFileDAO`. In the future, when we wish to provide a different implementation, we just need to change this single line of code, and our entire app will get data from a server somewhere, instead of a file. 
 
-### Multithreading problem?
+### Multi-threading problem?
 In our case here, we could potentially have two clients, who wishes to create Todo items at the same time, 
-cause two different instances of FileContext to attempt to write to the same file. That will cause an error.  
+cause two different instances of FileContext to attempt to read from and write to the same file. That will cause an error.  
 We could use a singleton and synchronize the FileContext class to make it thread safe, 
 but that's out of scope of this exercise, given that the FileContext is just temporary.
+
+This fix is left to the reader to implement.

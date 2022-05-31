@@ -151,7 +151,7 @@ Basically, if you want to try it out for SEP3: Each new user story, you implemen
 <p>First, we need the model classes.
 In this first iteration of the tutorial, we will just need a Todo object. Later we might add Users, or multiple todo-list.</p>
 <h3 id="new-project-component">New project (component)</h3>
-<p>Create a new Library project, by right-clicking your solution:</p>
+<p>Create a new Class Library project, by right-clicking your solution:</p>
 <p><img src="Resources/CreateLibrary1.png" alt="img.png" /></p>
 <p>This will open a familiar dialog, where you can create a Class Library <span class="numberCircle"><span>1</span></span>.
 Give the project a name <span class="numberCircle"><span>2</span></span>, I have called mine <em>Domain</em>, in some examples it is called <em>Entities</em>.
@@ -159,8 +159,8 @@ In your case, you can probably only select net6.0 <span class="numberCircle"><sp
 <p><img src="Resources/img.png" alt="img.png" /></p>
 <p>A <strong>Class Library</strong> is a type of project which cannot be run, it instead contains functionality.
 All NuGet packages are generally libraries with functionality, you can import into your system.
-Similar to Jar files in Java.<br />
-Your Domain component will just contain the domain model classes, there is nothing to <em>run</em>.
+Similar to some Jar files in Java, however, other Jar files can actually be executed. In .NET we distinguish between .exe files: executables, and .dll files: dynamic link libraries.</p>
+<p>Your Domain component will just contain the domain model classes, there is nothing to <em>run</em>.
 If you make custom Exceptions, they could also go here. We will also add certain interfaces, shortly.</p>
 <p>This component will contain things that are needed across the application.</p>
 
@@ -370,14 +370,14 @@ public interface ITodoHome
 </div>
 <div class="tab">
 <hr/><h1 id="data-access-object">Data Access Object</h1><hr/>
-<p>We currently only have one type of domain object, so we just need a single DAO to provide CRUD operations on Todos.</p>
+<p>We currently only have one type of domain object, so we just need a single DAO class to provide CRUD operations on Todos.</p>
 <p>The finished class is found <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/TodoFileDAO.cs">here</a>.</p>
 <p>This DAO should be located in the FileData component, either put it in the DataAccess directory or create a new.</p>
 <p><img src="Resources/img_11.png" alt="img_11.png" /></p>
-<p>This class should implement the <code>ITodoHome</code> interface from the Domain component, and provide implementations for the
+<p>This class, <code>TodoFileDAO</code>, should implement the <code>ITodoHome</code> interface from the Domain component, and provide implementations for the
 methods.</p>
-<p>First, we need a FileContext. We will just get and assign this in the constructor:</p>
-<pre><code class="line-numbers language-csharp">public class TodoFileDAO : ITodoService
+<p>First, we need access to a <code>FileContext</code> instance. We will just receive and assign this in the constructor:</p>
+<pre><code class="line-numbers language-csharp">public class TodoFileDAO : ITodoHome
 {
     private FileContext fileContext;
 
@@ -388,38 +388,45 @@ methods.</p>
     
     // ...
 </code></pre>
-<p>We use constructor dependency injection for the FileContext, so we don't have to manually create a new instance. This is
-generally a good approach. Remember SDJ2 and MVVM:
+<p>We use constructor dependency injection for the <code>FileContext</code>, so we don't have to manually create a new instance. This is
+generally a good approach.<br />
+Remember SDJ2 and MVVM:
 Controllers, VMs, and Models got what they needed through constructors. We will get the framework to handle this dependency
 injection for us.</p>
+<h3 id="note-about-async-and-task-return-types">Note about <code>async</code> and <code>Task</code> return types</h3>
+<p>The interface, <code>ITodoHome</code>, has defined a couple of methods, all of which has return type <code>Task</code> or <code>Task&lt;T&gt;</code>. This is because in a later tutorial, we will add a database instead of file storage.
+And when working with the database, we can do many of the interactions asynchronously.</p>
+<p>For this File storage, i.e. FileContext of FileDAO, however, there isn't much we can do, or is worth doing, asynchronously. We must still return <code>Task</code>, but it is not necessary to make the methods <code>async</code>, given that they do not perform anything asynchronous.
+Instead, we must wrap the returned value in a Task. That is what is happening in the return statements of the methods described below.</p>
 <h3 id="getting-all-todos">Getting all todos</h3>
 <p>We'll start with the <code>GetAsync()</code> method:</p>
-<pre><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
+<pre><code class="line-numbers language-csharp">public Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync()
 {
     ICollection&lt;Todo&gt; todos = fileContext.Todos;
-    return todos;
+    return Task.FromResult(todos);
 }
 </code></pre>
 <p>Here we just retrieve the <code>Todos</code> from the <code>fileContext</code>, and return the collection. The method is marked <code>async</code>, even though we don't have any asynchronous code here.
 This is future proofing, because when we change to retrieving data from a server, that will be asynchronous.</p>
 <h3 id="get-todo-by-id">Get todo by id</h3>
 <p>This method should return a Todo by its id:</p>
-<pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; GetById(int id)
+<pre><code class="line-numbers language-csharp">public Task&lt;Todo&gt; GetById(int id)
 {
-    return fileContext.Todos.First(t =&gt; t.Id == id);
+    Todo byId = fileContext.Todos.First(t =&gt; t.Id == id);
+    return Task.FromResult(byId);
 }
 </code></pre>
 <p>The <code>First()</code> method takes a predicate and returns the first Todo, which matches the criteria. We know the Id is unique, so there should be no problems here.</p>
 <h3 id="add-todo">Add Todo</h3>
 <p>In this method we need to implement the functionality of auto-setting the Id of the provided Todo item. The method looks like this:</p>
-<pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; AddAsync(Todo todo)
+<pre><code class="line-numbers language-csharp">public Task&lt;Todo&gt; AddAsync(Todo todo)
 {
     int largestId = fileContext.Todos.Max(t =&gt; t.Id);
     int nextId = largestId + 1;
     todo.Id = nextId;
     fileContext.Todos.Add(todo);
     fileContext.SaveChanges();
-    return todo;
+    return Task.FromResult(todo);
 }
 </code></pre>
 <p>First, we use the <code>Max(...)</code> method to find the largest value of Id in the collection.<br />
@@ -430,8 +437,9 @@ We call <code>SaveChanges()</code> so that the Todos are written to the file.<br
 Finally, we return the finalized todo object, now with a correct Id, in case it is needed.</p>
 <h3 id="the-other-methods">The other methods</h3>
 <p>Give the other methods a try on your own, and look up the <a href="https://github.com/TroelsMortensen/BlazorTodoApp/blob/Part1/FileData/DataAccess/TodoFileDAO.cs">solution on GitHub</a> if needed.</p>
-<p>DeleteAsync: Remove a todo from the collection of todos, based on the given id, in the <code>fileContext</code>, remember to call <code>SaveChangesAsync</code></p>
-<p>UpdateAsync: First find the existing Todo, by using <code>todo.Id</code>. Take the <code>OwnerId</code> and <code>IsCompleted</code> from the argument, and overwrite the values of the Todo from the <code>fileContext</code>. Then call <code>SaveChanges()</code></p>
+<p><strong>DeleteAsync</strong>: Remove a todo from the collection of todos, based on the given id, in the <code>fileContext</code>, remember to call <code>SaveChanges()</code>.<br />
+Hint: this method does not return any value, but it still must return a <code>Task</code>. You can do this with <code>return Task.CompletedTask</code>.</p>
+<p><strong>UpdateAsync</strong>: First find the existing Todo, by using <code>todo.Id</code>. Take the <code>OwnerId</code> and <code>IsCompleted</code> from the argument, and overwrite the values of the Todo from the <code>fileContext</code>. Then call <code>SaveChanges()</code></p>
 
 </div>
 <div class="tab">
@@ -450,16 +458,17 @@ We would have liked to avoid this knowledge, but it is only the <code>Program.cs
 <p><img src="Resources/AddingServices.gif" alt="" /></p>
 <p>Now, whenever a page request a class, which has been added as a service, the framework will create that for us.
 If we request a class, which hasn't been added, the framework will give an error, saying it was unable to create the requested service.</p>
-<p>Notice we use <code>AddScoped</code>, this is a good default approach. Adding a singleton can sometimes cause problems, if you are not careful.</p>
+<p>Notice we use <code>AddScoped&lt;...&gt;</code>, this is a good default approach. Adding a singleton can sometimes cause problems, if you are not careful.</p>
 <p>With the line</p>
 <pre><code>builder.Services.AddScoped&lt;ITodoHome, TodoFileDAO&gt;();
 </code></pre>
 <p>we are saying, that whenever the blazor app requests an instance of <code>ITodoHome</code>, it will get a <code>TodoFileDAO</code>. In the future, when we wish to provide a different implementation, we just need to change this single line of code, and our entire app will get data from a server somewhere, instead of a file.</p>
-<h3 id="multithreading-problem">Multithreading problem?</h3>
+<h3 id="multi-threading-problem">Multi-threading problem?</h3>
 <p>In our case here, we could potentially have two clients, who wishes to create Todo items at the same time,
-cause two different instances of FileContext to attempt to write to the same file. That will cause an error.<br />
+cause two different instances of FileContext to attempt to read from and write to the same file. That will cause an error.<br />
 We could use a singleton and synchronize the FileContext class to make it thread safe,
 but that's out of scope of this exercise, given that the FileContext is just temporary.</p>
+<p>This fix is left to the reader to implement.</p>
 
 </div>
 <div class="tab">
