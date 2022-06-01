@@ -47,7 +47,7 @@ In this file, put the following css:
 ### View modifications
 Then we need to add the styles to the view part of the page.
 
-![](Resources\AddTodoCss.png)
+![](Resources/AddTodoCss.png)
 
 Surround everything with a `<div>` with the class "box".\
 The divs inside need the "field" class.\
@@ -58,6 +58,6 @@ The `errorLabel` is only shown, if it is not empty. Otherwise, it may take up so
 
 Your page should now look like this:
 
-![](Resources\AddTodoResult.png)
+![](Resources/AddTodoResult.png)
 
 With the box centered in the view.
