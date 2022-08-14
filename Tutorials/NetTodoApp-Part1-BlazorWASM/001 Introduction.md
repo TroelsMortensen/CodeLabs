@@ -15,7 +15,21 @@ Få en HTtpClient gennem constructor. De skal åbenbart ikke disposes.
 
 Seed fra Program.cs file. Lav mange todos, e.g. 25, og så brug noget paging og indexing.
 
-Model class properties, kig på det der "init". Det er ikke meningen, man skal redigere et Todo object. Men skal lave nye.
+
+
+Beskriv domain, ansvar, H or for acces interfaces, hvorfor dao interfaces. Hvorfor ligeglad med omkringliggende layers, de er ligegyldige detaljer. 
+
+why is it called contracts component? What is a contract?
+
+component diagram over inter-component dependencies.
+
+A common case is that the data is structured on way on the server, but it is displayed in a different way in the client. For that we can use DTOs.
+
+
+----
+There are only two hard things in Computer Science: cache invalidation, naming things, and off-by-one errors.
+
+-- Phil Karlton
 
 # Introduction
 This is the first part of a 3 part tutorial series. 
@@ -41,4 +55,4 @@ On the server side, the Web API, we will use a classic 3-layered architecture:
 We will let us inspire by existing architecture approaches: Clean, Onion, Hexagon. 
 These are basically similar, and all advocate the 3-layered approach.
 
-All code will be available on GitHub. Different parts of the tutorial may be available on different branches.
+All code will be [available on GitHub](https://github.com/TroelsMortensen/WasmTodo). Different parts of the tutorial may be available on different branches.

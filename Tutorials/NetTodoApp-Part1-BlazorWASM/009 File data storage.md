@@ -25,13 +25,13 @@ The point is, we will read data from the file and load into these two collection
 
 We could use IList, List or other types of collections, but the Collection will behave similar to how we can interact with the database later on, using Entity Framework Core. So we use ICollection to prepare.
 
-## File Context
+## File context
 
 This class is responsible for reading and writing.
 
 First, we create the FileContext in the FileData project. 
 
-The final version of the class can be found !here! (insert link).
+The final version of the class can be found [here](https://github.com/TroelsMortensen/WasmTodo/blob/master/FileData/FileContext.cs).
 
 ### Fields
 
@@ -75,11 +75,39 @@ Line 3 is the DataContainer, which after being loaded, will keep all our data. I
 Then two properties. They both check if the DataContainer is `null`, meaning that is has not been loaded from the file. If it is `null` we call a currently-not-existing method: `LoadData`, which will read from the file.\
 Then the relevant collection is returned.
 
-### Load Data
+### Load data
 
-### Save Changes
+We need a method to read from the file, so we can retrieve data.
+
+```csharp
+private void LoadData()
+{
+    string content = File.ReadAllText(filePath);
+    dataContainer = JsonSerializer.Deserialize<DataContainer>(content);
+}
+```
+
+What's going on here?
+
+The method is private, because this class should be responsible for determining when to load data.
+We read all the content of the file, it returns a string.
+Then that string is deserialized into a `DataContainer`, and assigned to the field variable.
+
+### Save changes
+
+The purpose of this method is to take the content of the DataContainer field, and put into the file.
+```csharp
+public void SaveChanges()
+{
+    string serialized = JsonSerializer.Serialize(dataContainer);
+    File.WriteAllText(filePath, serialized);
+    dataContainer = null;
+}
+```
+Later, when we work with databases through Entity Framework Core, you will also need to call SaveChanges after interacting with the database. 
+So, we practice the workflow here.
 
 ### Seed Data
 
 
-
+### Accessing data

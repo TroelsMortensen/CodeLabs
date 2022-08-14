@@ -17,5 +17,8 @@
 
 [Simple Blazor-server login](./Tutorials/BlazorLogin/Page.html)
 
+
+[JWT Login](./Tutorials/BlazorWasmJwtAuth/Page.html)
+
 ### Videos
 ...

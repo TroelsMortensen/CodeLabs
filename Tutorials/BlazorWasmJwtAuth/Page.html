@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div id="steps-list">
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 Overview</li>
+<li class="step" onclick="setTab(2)">3 Shared project</li>
+<li class="step" onclick="setTab(3)">4 Web API</li>
+<li class="step" onclick="setTab(4)">5 UserService</li>
+<li class="step" onclick="setTab(5)">6 AuthController</li>
+<li class="step" onclick="setTab(6)">7 Test login</li>
+<li class="step" onclick="setTab(7)">8 Policy guarding</li>
+<li class="step" onclick="setTab(8)">9 More guarding</li>
+<li class="step" onclick="setTab(9)">10 The WeatherForecast</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right; margin:10px">
+                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="welcome">Welcome</h1><hr/>
+<p>This tutorial will take you through how to set up a simple login system for Blazor-WASM in combination with a Web API.</p>
+<p>This approach will use your own User/Profile/Account type, or whatever you call it. You will manage storage of the users.
+We will use the built in <code>AuthenticationStateProvider</code> class, extend it to provide the necessary authorization information.</p>
+<p>We will not be using the Identity framework. That's a different approach.</p>
+<p>We will go through how to set it up from a new default Blazor-WASM project.
+Later, you can then reuse the steps to add login/authorization functionality to other Blazor-WASM apps.</p>
+<h2 id="overview">Overview</h2>
+<p>We are going to use an approach called JWT authentication.</p>
+<p>This means that when logging in through the front end, the request is sent to the Web API, and (if the credentials are valid) a JSON Web Token (JWT) is sent back again, containing various information, including information about the User profile.</p>
+<p>So, we are going to use a Web API for the back-end and Blazor-WASM for the front end.<br />
+We will use various built-in tools in Blazor to manage authentication and authorization of various sites of the app.<br />
+We will secure our Web API endpoints with authentication and authorization too, so that other programmers don't just create their own app and abuse our endpoints.</p>
+<h3 id="disclaimer">Disclaimer</h3>
+<p>The purpose of this tutorial is to get a login-system up and running, but not necessarily understand every detail. There will be black box magic moments, where the interested reader can do further research.</p>
+<h3 id="result">Result</h3>
+<p>The final project can be found on GitHub <a href="https://github.com/TroelsMortensen/JwtAuth">here</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="overview">Overview</h1><hr/>
+<p>First, an overview of the resulting system is presented.</p>
+<p>We are going to need 3 libraries,</p>
+<ol>
+<li>The Web API</li>
+<li>Blazor WASM</li>
+<li>A shared library for classes/functionality needed by both projects.</li>
+</ol>
+<p>The various endpoints on the Web API will be secured by policies and whether the endpoint, when called, is given a valid JWT.
+So, un-authorized/un-authenticated requests to the Web API will automatically be refused.</p>
+<p>For the Blazor app, the authentication/authorization will be used to show/hide various parts of the UI, i.e. you can only see certain pages, tabs, buttons, etc, if your logged in user has the correct privileges.</p>
+<h3 id="component-diagram">Component diagram</h3>
+<p>The below diagram shows the dependencies between our three projects.</p>
+<p><img src="Resources/ComponentDiagram.png" alt="img.png" /></p>
+<p>You could put an arrow from BlazorWASM to WebAPI, as HTTP requests are made from Blazor to the endpoints in the Web API.
+But as that dependency is not explicit in the solution, it is left out.</p>
+<h3 id="class-diagram">Class diagram</h3>
+<p>The below class diagram shows the end result. It may not be an exact match, as the last part of this tutorial will contain some optimizations, resulting in changes to the system.</p>
+<p>First the overview is provided. Below, various parts of the diagram will be explained in detail.</p>
+<p><img src="Resources/ClassDiagram.svg" alt="dia" /></p>
+<p>The grey boxes are projects (components). Below, each project is discussed.</p>
+<h5 id="blazor-app">Blazor app</h5>
+<p>This is the Blazor app.</p>
+<p><img src="Resources/BlazorAppClassDiagram.png" alt="dia" /></p>
+<p>Notice how Blazor pages are marked as the stereotype <code>&lt;&lt;page&gt;&gt;</code>. Similarly, components are marked <code>&lt;&lt;comp&gt;&gt;</code>.</p>
+<p>Most of the pages don't do much in themselves, they are just there to demonstrate how to show/hide parts of the UI based on the authorization state. These &quot;dumb&quot; pages include: BlockPageWithPolicy, MustBeLoggedInToView, PolicyExampleManual, PolicyExampleWithComponent, ShowCredentialsAuthState, ShowCredentialsContext.</p>
+<p>The <code>Login</code> page is used by the user to log in. The credentials are forwarded to the <code>IAuthService</code>, and the implementation, <code>JwtAuthService</code> will make a request to the Web API. Once the response is received, a notification is sent to the CustomAuthProvider, which will cause a reaction in the UI according to the new authorization state. I.e., the dotted arrow from JwtAuthService to CustomAuthProvider does not in this case mean a &quot;dependency&quot;, I have abused notation a little. It just means a notification is sent. Think observer design pattern.</p>
+<p>The <code>FetchData</code> page is included in the Blazor template, i.e. it is there upon creation. We keep it to show how to get data from the Web API, by using the <code>IWeatherService</code>, and its implementation, <code>HttpWeatherService</code>.</p>
+<p>The <code>LoginButtons</code> is a component used by the MainLayout to give a little login-icon on the top-right of the app. This will be elaborated upon later.</p>
+<p>Finally, the <code>CustomAuthProvider</code> is the class responsible for providing the Blazor app auth functionality with the authorization state. You may notice the method <code>GetAuthenticationStateAsync()</code>.
+This method is called by the Blazor framework, whenever there is something in the UI which needs to know about the authorization state. If you wish to show/hide a button, the Blazor framework will ask this class, through this method, about the currently logged in user, and based on that user's credentials, the button will be either shown or hidden.<br />
+CustomAuthProvider does not know about the user itself, but asks the IAuthService about the credentials every time.</p>
+<h5 id="shared">Shared</h5>
+<p>This component contains classes and features which both the Blazor app and the Web API needs to know about.</p>
+<p><img src="Resources/SharedClassDiagram.png" alt="dia" /></p>
+<p>All model classes are put here, so that we do not need to have copies of <code>User</code> in both Web API and Blazor projects.</p>
+<p>We have the Data Transfer Objects here. Whenever you need to log in, you just need to provide a username and a password. We could have used the User class to send this information from Blazor to Web API, and just leave most properties empty.
+But it is common practice to create specialized Data Transfer Objects, which contains just the properties needed. It is up to you, which approach you will use.</p>
+<p>The <code>AuthorizationPolicies</code> is a class, where we define policies. The policies are the same on both Blazor and Web API, so they are defined here.</p>
+<p>Policies are set of rules to be used to either provide or block access, based on a users credentials. For example:</p>
+<ul>
+<li>You can only view this image, if you are older than 18</li>
+<li>You can only click this button, if your email is from VIA</li>
+<li>You can only access this page, if your security level is above 3</li>
+</ul>
+<p>The same applies for the Web API:</p>
+<ul>
+<li>You can only call this endpoint, if you are older than 18</li>
+<li>You can only call this endpoint, if your email is from VIA</li>
+</ul>
+<p>So, we can use policies to control our UI, and we can use policies to control who can call our Web API endpoints, so they are not just open to the entire world. That is potentially very dangerous, as anyone can create and delete our data.</p>
+<h5 id="web-api">Web API</h5>
+<p>This is the Web API:</p>
+<p><img src="Resources/WebAPIClassDiagram.png" alt="dia" /></p>
+<p>The <code>AuthController</code> is used to login, and receive a JWT. You can also register a new <code>User</code> here, however, that is not really included in this tutorial, and instead left to the reader, to implement. If they wish.<br />
+This class will use the <code>IUserService</code> to validate the login credentials, and if valid, will generate a JWT and return it to the caller, i.e. the Blazor app.</p>
+<p>The <code>TestController</code> has a few dummy endpoints to demonstrate how to use policies and other approaches, to block access if the caller is un-authorized.</p>
+<p>The <code>WeatherForecastController</code> just returns a set of random <code>WeatherForecast</code> objects to be displayed on the page <code>FetchData</code>.</p>
+<h3 id="now-lets-get-started-on-implementation">Now, let's get started on implementation.</h3>
+
+</div>
+<div class="tab">
+<hr/><h1 id="shared-project">Shared project</h1><hr/>
+<p>We will start here, as this project does not depend on the others.</p>
+<p>First, create a new class library, call it <code>Shared</code>:</p>
+<p><img src="Resources/CreateLibrary.gif" alt="createlib" /></p>
+<p>Delete the <code>Class1.cs</code> file.</p>
+<h3 id="nuget-packages">NuGet packages</h3>
+<p>Next, we must add a package to this project, to get access to various functionality regarding authorization and policies.</p>
+<p>Add the package &quot;Microsoft.AspNetCore.Authorization&quot;. <strong>Pick the latest non-preview version!</strong>.</p>
+<p><img src="Resources/AddAuthPackage.gif" alt="createlib" /></p>
+<h3 id="directories">Directories</h3>
+<p>Create three directories inside the Shared project:</p>
+<ul>
+<li>Auth</li>
+<li>Dtos</li>
+<li>Models</li>
+</ul>
+<p><img src="Resources/SharedDirs.png" alt="img.png" /></p>
+<h3 id="model-classes">Model classes</h3>
+<p>Inside the Models directory create a User class:</p>
+<pre><code class="line-numbers language-csharp">public class User
+{
+    public string Username { get; set; }
+    public string Password { get; set; }
+    public string Email { get; set; }
+    public string Domain { get; set; }
+    public string Name { get; set; }
+    public string Role { get; set; }
+    public int Age { get; set; }
+    public int SecurityLevel { get; set; }
+}
+</code></pre>
+<p>These properties are just to demonstrate various ways to use auth policies. You may not need them for you own project, but in this tutorial they are useful.</p>
+<p>Inside the Models directory create a WeatherForecast class:</p>
+<pre><code class="line-numbers language-csharp">public class WeatherForecast
+{
+    public DateTime Date { get; set; }
+
+    public int TemperatureC { get; set; }
+
+    public int TemperatureF =&gt; 32 + (int)(TemperatureC / 0.5556);
+
+    public string? Summary { get; set; }
+}
+</code></pre>
+<p>This class will later also be defined by default in Blazor and Web API projects, which must then be deleted. You will be told when.</p>
+<h3 id="dto">Dto</h3>
+<p>Inside the Dtos directory create a UserLoginDto class:</p>
+<pre><code class="line-numbers language-csharp">public class UserLoginDto
+{
+    public string Username { get; init; }
+    public string Password { get; init; }
+}
+</code></pre>
+<p>Notice the <code>init;</code>. This is a specific kind of <code>set;</code>, meaning you can only set this values, when the object is created, but not later modify it. It is not strictly necessary, but in general it is good practice to only allow what is supposed to be available. We don't intend to change the values after creation, so we don't allow that.
+It is just a minor detail.</p>
+<h3 id="auth">Auth</h3>
+<p>Finally, the class which will define the policies.</p>
+<p>Inside the Auth directory create a class called <code>AuthorizationPolicies</code>:</p>
+<pre><code class="line-numbers language-csharp">public static class AuthorizationPolicies
+{
+    public static void AddPolicies(IServiceCollection services)
+    {
+        services.AddAuthorizationCore(options =&gt;
+        {
+            options.AddPolicy(&quot;MustBeVia&quot;, a =&gt;
+                a.RequireAuthenticatedUser().RequireClaim(&quot;Domain&quot;, &quot;via&quot;));
+    
+            options.AddPolicy(&quot;SecurityLevel4&quot;, a =&gt;
+                a.RequireAuthenticatedUser().RequireClaim(&quot;SecurityLevel&quot;, &quot;4&quot;, &quot;5&quot;));
+    
+            options.AddPolicy(&quot;MustBeTeacher&quot;, a =&gt;
+                a.RequireAuthenticatedUser().RequireClaim(&quot;Role&quot;, &quot;Teacher&quot;));
+    
+            options.AddPolicy(&quot;SecurityLevel2OrAbove&quot;, a =&gt;
+                a.RequireAuthenticatedUser().RequireAssertion(context =&gt;
+                {
+                    Claim? levelClaim = context.User.FindFirst(claim =&gt; claim.Type.Equals(&quot;SecurityLevel&quot;));
+                    if (levelClaim == null) return false;
+                    return int.Parse(levelClaim.Value) &gt;= 2;
+                }));
+        });
+    }
+}
+</code></pre>
+<p>You must import:</p>
+<ul>
+<li>using Microsoft.Extensions.DependencyInjection;</li>
+<li>using System.Security.Claims;</li>
+</ul>
+<p>to fix compiler errors.</p>
+<p>Now, what's going on here? This static method will be called from the <code>Program.cs</code> classes in both Web API and Blazor, and it will add authorization policies to the framework.</p>
+<p>Each line starting with <code>options.AddPolicy...</code> adds a new policy, which can then be used to guard UI elements or Web API endpoints.</p>
+<p><strong>The first policy</strong> is called &quot;MustBeVia&quot;, that's the name of it, and this name is used for reference. Then the lambda expression says:</p>
+<ul>
+<li><code>RequireAuthenticatedUser()</code>, meaning to fulfill this policy the user is logged in, and authenticated.</li>
+<li><code>RequireClaim(&quot;Domain&quot;, &quot;via&quot;)</code>, meaning the user must have a claim, where the type is &quot;Domain&quot;, and the value is &quot;via&quot;. So, the Domain property of that specific user object must have the value &quot;via&quot;.</li>
+</ul>
+<p><strong>The next policy</strong>, called &quot;SecurityLevel4&quot; also requires an authenticated user, and that the &quot;SecurityLevel&quot; is <em>either</em> &quot;4&quot; or &quot;5&quot;. This illustrates you can add any number of valid values. The RequireClaim method takes first the Claim name, and then any number of arguments.</p>
+<p><strong>The third policy</strong>, &quot;MustBeTeacher&quot; says that the &quot;Role&quot; of the user must be &quot;Teacher&quot;.</p>
+<p><strong>The fourth policy</strong> is an example of slightly more complicated logic. We use the method <code>RequireAssertion()</code>, and if the logic inside returns &quot;true&quot;, the user fulfills this policy.<br />
+The <code>context</code> contains a User property, of the type <code>ClaimsPrincipal</code>. This is a type of object, which the Authentication framework understands, it contains information about the user.<br />
+We use <code>FindFirst()</code> to find the first Claim with the Type of &quot;SecurityLevel&quot;. If no such claim exists, the user has no security level, and we return &quot;false&quot;. If the claim is found, we check if the security level is above a certain value, in this case level 2.</p>
+<h3 id="what-is-a-claimsprincipal">What is a ClaimsPrincipal?</h3>
+<p>In your project, either this tutorial, or other projects like SEP3, you will probably define some kind of User object, maybe you call it User, Account, or something else. But it is a class you define to hold information about a user.<br />
+This is a custom object, and the Authentication functionality of Blazor and Web API obviously does not know about your specific user type.</p>
+<p>Therefore we must convert our custom User into a class which the framework understands. That class is the ClaimsPrincipal. How it's done will be covered later.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-web-api">The Web API</h1><hr/>
+<p>Next up is the Web API. We will do the Blazor app last.</p>
+<p>Create a new Web API project, give it a name, e.g. &quot;WebAPI&quot;:</p>
+<p><img src="Resources/CreateWebAPI.gif" alt="" /></p>
+<p>The Web API comes with a few default classes, and so we must clean that up first.</p>
+<p>Find the class &quot;WeatherForecast&quot;, and delete it. This will cause the project to not be able to compile, because this class was used by &quot;WeatherForecastController&quot;</p>
+<h3 id="add-inter-project-dependency">Add inter-project dependency</h3>
+<p>We must add a dependency from <strong>Web API</strong> project to <strong>Shared</strong> Project, so that the Web API can use classes and functionality defined in the Shared project.</p>
+<p>Right click the &quot;Dependencies&quot; inside WebApi project:</p>
+<p><img src="Resources/AddRef.png" alt="img.png" /></p>
+<p>Then in the opened window select the Shared project and click <kbd>Add</kbd>.</p>
+<p><img src="Resources/SelectShared.png" alt="img_1.png" /></p>
+<h3 id="clean-up">Clean up</h3>
+<p>The Web API template project comes with a <code>WeatherForecast.cs</code> class. Delete it.</p>
+<p>Open Controllers/WeatherForecastController.cs, and quick fix (<kbd>alt</kbd> + <kbd>enter</kbd>) the compile error, i.e. import the WeatherForecast class from the Shared/Models.</p>
+<h3 id="add-nuget-packages">Add NuGet packages</h3>
+<p>This project also needs a few package to handle JWT creation and authorization.</p>
+<p>Similarly to how you added a package to the Shared project, add the following packages to the Web API project:</p>
+<ul>
+<li>Microsoft.AspNetCore.Authentication.JwtBearer</li>
+</ul>
+<p>At the time of writing, the version of the package is 6.0.8. Pick the latest non-preview package.</p>
+<p><img src="Resources/AddJwtPackage.png" alt="" /></p>
+<h2 id="modify-program.cs">Modify Program.cs</h2>
+<p>Open the Program.cs class.</p>
+<h3 id="tell-the-app-to-use-authentication">Tell the app to use authentication</h3>
+<p>Add the following line anywhere above <code>app.Run()</code>, and below <code>var app = builder.Build();</code>:</p>
+<pre><code class="line-numbers language-csharp">app.UseAuthentication();
+</code></pre>
+<p>This adds authentication middleware, i.e. somewhere between the Web API server recieves the request, and our controller endpoint is called, a class will now handle authentication checks, and if the caller is not authenticated or authorized as required, a &quot;401 - Unauthorized&quot; error will be returned to the caller.</p>
+<h3 id="tell-the-app-to-accept-requests-from-the-browser">Tell the app to accept requests from the browser</h3>
+<p>Next, add the following code anywhere above <code>app.Run()</code> and below <code>var app = builder.Build();</code>:</p>
+<pre><code class="line-numbers language-csharp">app.UseCors(x =&gt; x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin =&gt; true) // allow any origin
+    .AllowCredentials());
+</code></pre>
+<p>This is needed later when our Blazor app, running in the browser, needs to contact localhost. For security reasons (I believe) this is not allowed by default.</p>
+<h3 id="add-authentication-with-info-about-jwt">Add authentication with info about JWT</h3>
+<p>Finally, add the following piece of code anywhere above <code>var app = builder.Build();</code>:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =&gt;
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration[&quot;Jwt:Audience&quot;],
+        ValidIssuer = builder.Configuration[&quot;Jwt:Issuer&quot;],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration[&quot;Jwt:Key&quot;]))
+    };
+});
+</code></pre>
+<p>Import the necessary stuff, quick fix it.
+A bunch of stuff is happening here. I stole this from an example, so I don't know all the details.</p>
+<h3 id="add-policies">Add policies</h3>
+<p>Add the following line of code anywhere above <code>var app = builder.Build();</code>:</p>
+<pre><code class="line-numbers language-csharp">AuthorizationPolicies.AddPolicies(builder.Services);
+</code></pre>
+<p>Quick fix import compile errors.</p>
+<p>This is our class from the Shared project, so here we tell the Web API to add authorization policies.</p>
+<h2 id="appsettings.json">appsettings.json</h2>
+<p>Open the WebApi/appsettings.json file. This contains various settings for our program.</p>
+<p>We need to add information about the JWT to generate.</p>
+<p>Add a &quot;Jwt&quot; section, so your file content looks like this:</p>
+<pre><code class="line-numbers language-json">{
+  &quot;Logging&quot;: {
+    &quot;LogLevel&quot;: {
+      &quot;Default&quot;: &quot;Information&quot;,
+      &quot;Microsoft.AspNetCore&quot;: &quot;Warning&quot;
+    }
+  },
+  &quot;AllowedHosts&quot;: &quot;*&quot;,
+  &quot;Jwt&quot;: {
+    &quot;Key&quot;: &quot;This Is My Random Secret Key Which Is At Least Sixteen Characters&quot;,
+    &quot;Issuer&quot;: &quot;JWTAuthenticationServer&quot;,
+    &quot;Audience&quot;: &quot;JWTServiceBlazorWasmClient&quot;,
+    &quot;Subject&quot;: &quot;JWTServiceAccessToken&quot;
+  }
+}
+</code></pre>
+<p>Here we have specified various settings to be used when generating the JWT.</p>
+<ul>
+<li>The &quot;Key&quot; is a secret key used when encrypting. It must be at least 16 characters, and can just be anything random.</li>
+<li>The Issuer is who generated the JWT</li>
+<li>The Audience is who the JWT is intended for</li>
+<li>The Subject... I'm not sure</li>
+</ul>
+
+</div>
+<div class="tab">
+<hr/><h1 id="userservice-implementation">UserService implementation</h1><hr/>
+<p>We need a class to handle various User related logic.</p>
+<p>In a normal Web API you might have at least three layers:</p>
+<ol>
+<li>Controllers, to receive incoming requests</li>
+<li>Services, to contain logic, validation, etc</li>
+<li>Repositories/Data Access Objects to manage persisting data</li>
+</ol>
+<p>We will skip the third layer, as we are just creating a &quot;dummy database&quot;. In this case a List with two Users hardcoded.</p>
+<h3 id="the-service">The Service</h3>
+<p>Create a new directory: Services.</p>
+<h5 id="interface">Interface</h5>
+<p>In here, create a new interface: <code>IAuthService</code>.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">public interface IAuthService
+{
+    Task&lt;User&gt; GetUser(string username, string password);
+    Task RegisterUser(User user);
+}
+</code></pre>
+<p>Import the User.</p>
+<p>We are not really going to use the <code>RegisterUser()</code> method, it's just here as an example.</p>
+<p>We use return types of Task, even though in this instance nothing will be asynchronous. But, should we wish to improve
+on the example, e.g. by adding a database, this would require asynchronous code, so it's better to be ready.</p>
+<h5 id="implementation">Implementation</h5>
+<p>Next, the implementation, <code>AuthService</code>. Just put this class in the same directory, Services.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp'">public class AuthService : IAuthService
+{
+
+    private readonly IList&lt;User&gt; users = new List&lt;User&gt;
+    {
+        new User
+        {
+            Age = 36,
+            Email = &quot;trmo@via.dk&quot;,
+            Domain = &quot;via&quot;,
+            Name = &quot;Troels Mortensen&quot;,
+            Password = &quot;onetwo3FOUR&quot;,
+            Role = &quot;Teacher&quot;,
+            Username = &quot;trmo&quot;,
+            SecurityLevel = 4
+        },
+        new User
+        {
+            Age = 34,
+            Email = &quot;jakob@gmail.com&quot;,
+            Domain = &quot;gmail&quot;,
+            Name = &quot;Jakob Rasmussen&quot;,
+            Password = &quot;password&quot;,
+            Role = &quot;Student&quot;,
+            Username = &quot;jknr&quot;,
+            SecurityLevel = 2
+        }
+    };
+
+    public Task&lt;User&gt; ValidateUser(string username, string password)
+    {
+        User? existingUser = users.FirstOrDefault(u =&gt; u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+        if (existingUser == null)
+        {
+            throw new Exception(&quot;User not found&quot;);
+        }
+
+        if (!existingUser.Password.Equals(password))
+        {
+            throw new Exception(&quot;Password mismatch&quot;);
+        }
+
+        return Task.FromResult(existingUser);
+    }
+
+    public Task RegisterUser(User user)
+    {
+
+        if (string.IsNullOrEmpty(user.Username))
+        {
+            throw new ValidationException(&quot;Username cannot be null&quot;);
+        }
+
+        if (string.IsNullOrEmpty(user.Password))
+        {
+            throw new ValidationException(&quot;Password cannot be null&quot;);
+        }
+        // Do more user info validation here
+        
+        // save to persistence instead of list
+        
+        users.Add(user);
+        
+        return Task.CompletedTask;
+    }
+}
+</code></pre>
+<p>At the top, we have an <code>IList&lt;User&gt;</code> field. It is instantiated to contain two user objects.</p>
+<p>The first method, <code>ValidateUser</code>, will take the two relevant arguments.<br />
+The first line of the method will look through the <code>users</code> list, and find the first User object, which matches the
+criteria specified by the lambda expression, i.e. a User object with the same username as provided with the method
+parameter.<br />
+If no object is found, an exception is thrown. This can then be handled somewhere else.</p>
+<p>Then the passwords are checked. Again, if the wrong password is provided, an exception is thrown.</p>
+<p>Finally, if a user is found, and the password is correct, we return that user object.</p>
+<p>We do it with</p>
+<pre><code class="line-numbers language-csharp">return Task.FromResult(existingUser)
+</code></pre>
+<p>because the return type is <code>Task&lt;User&gt;</code>, but the method is not marked <code>async</code>. In that case, we need to take the return
+variable and put into a Task manually.</p>
+<p>The RegisterUser method takes a User object, checks if the username is not null or empty. More checks could be made,
+e.g. regarding length or whatever.<br />
+Then the password is checked, again, maybe you want to have at least 16 characters, and upper and lower case characters,
+and symbols and numbers. You can put that logic here.<br />
+You probably also need to check if the username is unique. But all that is not really the purpose of this tutorial, so
+it's left out.</p>
+<p>The User object is added to the list. Then <code>Task.CompletedTask</code> is return, the equivalent of void, when working with
+Task return types.</p>
+<p>Notice that if you restart the Web API, your newly registered User is lost, because there is no persistence.</p>
+<h3 id="add-service">Add service</h3>
+<p>Finally, we need to add the interface and its implementation as services for the dependency inject framework.</p>
+<p>In Program.cs add the following line anywhere above <code>var app = builder.Build();</code>:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;IAuthService, AuthService&gt;();
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-authcontroller">The AuthController</h1><hr/>
+<p>Create a new class in the Controllers directory, call it <code>AuthController</code>.</p>
+<h3 id="add-controller-stuff">Add Controller stuff</h3>
+<p>First, modify it to look like this:</p>
+<pre><code class="line-numbers language-csharp">[ApiController]
+[Route(&quot;[controller]&quot;)]
+public class AuthController : ControllerBase
+</code></pre>
+<p>Import what is necessary. This now marks this class as an ApiController, so that it's picked up by the Web API.<br />
+We specify the route to hit this controller, so that it becomes <code>https://localhost:7130/auth</code>.</p>
+<h3 id="constructor-and-fields">Constructor and fields</h3>
+<p>Next, add the following fields and a constructor:</p>
+<pre><code class="line-numbers language-csharp">private readonly IConfiguration config;
+private readonly IAuthService authService;
+
+public AuthController(IConfiguration config, IAuthService authService)
+{
+    this.config = config;
+    this.authService = authService;
+}
+</code></pre>
+<p>Import what is necessary.</p>
+<p>Now, when this Controller is created (which happens whenever a request is made), the controller receives an instance of <code>IConfiguration</code>, which is used to read the &quot;appsettings.json&quot;, we modified earlier.</p>
+<p>We also get an IAuthService injected, i.e. here we just depend on the interface, applying the Dependency Inversion Principle.</p>
+<h3 id="claims-generation">Claims generation</h3>
+<p>We need a method which can take a User (our own custom object) and turn it in to a Collection of Claims, which the programs understand.</p>
+<pre><code class="line-numbers language-csharp">private List&lt;Claim&gt; GenerateClaims(User user)
+{
+    var claims = new[]
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, config[&quot;Jwt:Subject&quot;]),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+        new Claim(ClaimTypes.Name, user.Username),
+        new Claim(ClaimTypes.Role, user.Role),
+        new Claim(&quot;DisplayName&quot;, user.Name),
+        new Claim(&quot;Email&quot;, user.Email),
+        new Claim(&quot;Age&quot;, user.Age.ToString()),
+        new Claim(&quot;Domain&quot;, user.Domain),
+        new Claim(&quot;SecurityLevel&quot;, user.SecurityLevel.ToString())
+    };
+    return claims.ToList();
+}
+</code></pre>
+<p>Notice the <code>JwtRegisteredClaimNames</code> class is from</p>
+<p><code>using System.IdentityModel.Tokens.Jwt;</code></p>
+<p>Then import the other necessary things with quick fix.</p>
+<p>The method takes a User, and creates an Array of Claims.<br />
+The first three are JWT stuff, recommended to be included. They may not be strictly necessary.<br />
+Then follows a Claim for each of the properties of our User object.</p>
+<p>In your own projects your User object may look different, have different properties, and so you need to modify the above method accordingly, so that all relevant properties are turned into claims.</p>
+<h3 id="jwt-generation">JWT generation</h3>
+<p>This method will generate a JWT to be returned to the caller trying to log in.</p>
+<pre><code class="line-numbers language-csharp">private string GenerateJwt(User user)
+{
+    List&lt;Claim&gt; claims = GenerateClaims(user);
+    
+    SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config[&quot;Jwt:Key&quot;]));
+    SigningCredentials signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+    
+    JwtHeader header = new JwtHeader(signIn);
+    
+    JwtPayload payload = new JwtPayload(
+        config[&quot;Jwt:Issuer&quot;],
+        config[&quot;Jwt:Audience&quot;],
+        claims, 
+        null,
+        DateTime.UtcNow.AddMinutes(60));
+    
+    JwtSecurityToken token = new JwtSecurityToken(header, payload);
+    
+    string serializedToken = new JwtSecurityTokenHandler().WriteToken(token);
+    return serializedToken;
+}
+</code></pre>
+<p>This method is somewhat black magic, but it will generate the JWT, given a User object.</p>
+<p>The first line calls the previous method to get a List of Claims, i.e. our User converted to a list of key-value pairs containing the same information.</p>
+<p>A JWT is signed by the server, so it cannot be tampered with. We do that in the next two lines.</p>
+<p>We create a JwtPayload containing the relevant information:</p>
+<ul>
+<li>The Issuer, i.e. the server</li>
+<li>The Audience, i.e. the Blazor app</li>
+<li>The claims</li>
+<li>null, whatever that is</li>
+<li>An expiration date/time, meaning this JWT is only valid for a certain time, in this case 60 minutes. You can put whatever you wish here</li>
+</ul>
+<p>In the end the JWT is serialized into a string of seemingly random characters.</p>
+<h3 id="login-endpoint">Login endpoint</h3>
+<p>We need a last method, the endpoint to be accessed when making a login request.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">[HttpPost, Route(&quot;login&quot;)]
+public async Task&lt;ActionResult&gt; Login([FromBody] UserLoginDto userLoginDto)
+{
+    try
+    {
+        User user = await authService.ValidateUser(userLoginDto.Username, userLoginDto.Password);
+        string token = GenerateJwt(user);
+    
+        return Ok(token);
+    }
+    catch (Exception e)
+    {
+        return BadRequest(e.Message);
+    }
+}
+</code></pre>
+<p>Do the imports.</p>
+<p>We mark the endpoint as a Post request, and put the Route(&quot;login&quot;) resulting in the URI to hit this endpoint:</p>
+<p><code>https://localhost:7130/auth/login</code></p>
+<p>The method takes a <code>UserLoginDto</code> object, i.e. the class we created containing Username and Password.</p>
+<p>The user info is validated, and upon success the JWT is generated and then returned.</p>
+<p>If an exception happens, we return BadRequest. This is not particularly fine-grained, as we might wish to return different types of status codes, based on what went wrong. This is generally a better approach, but outside the scope of this tutorial.<br />
+We could create various types of exceptions, and catch these specific exceptions across multiple catch-clauses, and return more specific status codes.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="testing-the-login">Testing the login</h1><hr/>
+<p>It's time to test whether we can log in.</p>
+<p>Normally, when you run your Web API, it opens a Swagger page. You can test the Login endpoint from here, and if you provide valid credentials, you should get a JWT back.</p>
+<p>However, future calls which requires the JWT attached are more complicated to create with Swagger. We would have to add stuff in the Program.cs, and complicate things.</p>
+<p>So, we'll do something else. We could use Postman, that would be easy enough, and if you prefer that, go for it.</p>
+<h3 id="the.http-test-file">The .http test file</h3>
+<p>Rider has a built in Http Client. It's pretty simple.</p>
+<p>In the WebApi project folder, create a new file. Call it &quot;WebApiTests.http&quot;, or whatever, but the file type is &quot;.http&quot;:</p>
+<p><img src="Resources/AddHttpFile.png" alt="img.png" /></p>
+<p>And here's the file:</p>
+<p><img src="Resources/AfterAddingHttp.png" alt="img.png" /></p>
+<p>Open the file. In here we can define calls to our Web API.</p>
+<p>Input the following:</p>
+<pre><code class="line-numbers language-http">// log in as Troels
+POST https://localhost:7130/auth/login
+Content-Type: application/json
+
+{ &quot;Username&quot; : &quot;trmo&quot;, &quot;Password&quot; : &quot;onetwo3FOUR&quot; }
+</code></pre>
+<p>The // marks a comment.</p>
+<p>Then we define a &quot;POST&quot; request to &quot;https://localhost:7130/auth/login&quot;.</p>
+<p>We define the Content-Type to be &quot;application/json&quot;, i.e. saying the request contains content in the format of JSON.</p>
+<p>Finally a JSON object matching the format of our <code>UserLoginDto</code>.</p>
+<p>Run the Web API, and then run your test. You should receive a JWT.</p>
+<p><img src="Resources/LoginRequest.gif" alt="" /></p>
+<p>In my test I received the following JWT:</p>
+<p>&quot;eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKV1RTZXJ2aWNlQWNjZXNzVG9rZW4iLCJqdGkiOiI3MzFkNTk2MS0zYjU1LTQxMzUtYjFkOS03MTlhMjI5NDYyY2MiLCJpYXQiOiIxNC8wOC8yMDIyIDExOjUyOjIwIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InRybW8iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJUZWFjaGVyIiwiRGlzcGxheU5hbWUiOiJUcm9lbHMgTW9ydGVuc2VuIiwiRW1haWwiOiJ0cm1vQHZpYS5kayIsIkFnZSI6IjM2IiwiRG9tYWluIjoidmlhIiwiU2VjdXJpdHlMZXZlbCI6IjQiLCJleHAiOjE2NjA0ODE1NDAsImlzcyI6IkpXVEF1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiSldUU2VydmljZUJsYXpvcldhc21DbGllbnQifQ.A3ncVJsEcfYD5AArXR3F1tKYr7QaL7HQ_ln-kwWZbwXpx2aQz08DgVX2l8CnfZr7FxE8BzsrO7-A1Mru4Gklbg&quot;</p>
+<p>If you are interested, you can go to <a href="https://jwt.io/">jwt.io</a> to unpack the token:</p>
+<p><img src="Resources/UnpackedToken.png" alt="img.png" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="guarding">Guarding</h1><hr/>
+<p>If your program is running, stop it.</p>
+<p>Now we need to test how we can apply policies to guard our endpoints in the controllers.</p>
+<p>In the Controllers directory, create a new Controller, call it &quot;TestController&quot;.</p>
+<p>Modify it to look like this:</p>
+<pre><code class="line-numbers language-csharp">[ApiController]
+[Route(&quot;[controller]&quot;)]
+[Authorize]
+public class TestController : ControllerBase
+{
+    
+}
+</code></pre>
+<p>It's similar to the AuthController, but now notice the extra attribute <code>[Authorize]</code>.</p>
+<p>This means this Controller can only be interacted with, if the caller provides a valid JWT.<br />
+It means by default all endpoints can only be called with a valid token.<br />
+If we leave out the attribute, all endpoints can by default be called by anonymous callers, i.e. no valid token is needed. It's up to you to decide whether to use it or not. For this test, we include the attribute.</p>
+<p>We will create a couple of dummy methods, which just returns &quot;OK&quot;, but the point is we will guard these endpoints with policies and authentication.</p>
+<h2 id="authorized-guard">Authorized guard</h2>
+<p>The below method has nothing extra attached to it. Add it to the TestController:</p>
+<pre><code class="line-numbers language-csharp">[HttpGet(&quot;authorized&quot;)]
+public ActionResult GetAsAuthorized()
+{
+    return Ok(&quot;This was accepted as authorized&quot;);
+}
+</code></pre>
+<p>This looks like a normal, very simple endpoint. We just return status code 200 - OK. With a message.</p>
+<p>The HttpGet(&quot;authorized&quot;) just indicates the sub-route to this specific endpoint, e.g.:</p>
+<p><code>https://localhost:7271/test/authorized</code></p>
+<p>Let's test this.</p>
+<h5 id="blocked-access">Blocked access</h5>
+<p>Run your Web API.</p>
+<p>Open the WebApiTests.http file.</p>
+<p>We can separate multiple requests with ###, so, expand the content of your file to be:</p>
+<pre><code class="line-numbers language-http">// log in as Troels
+POST https://localhost:7271/auth/login
+Content-Type: application/json
+
+{ &quot;Username&quot; : &quot;trmo&quot;, &quot;Password&quot; : &quot;onetwo3FOUR&quot; }
+
+###
+
+GET https://localhost:7271/test/authorized
+</code></pre>
+<p>Notice the new GET request at the bottom, and the &quot;###&quot; separating it from the one above.</p>
+<p>With your Web API running, run the GET request.<br />
+The result should be something like:</p>
+<pre><code>https://localhost:7271/test/authorized
+
+HTTP/1.1 401 Unauthorized
+Content-Length: 0
+Date: Sun, 14 Aug 2022 12:07:45 GMT
+Server: Kestrel
+WWW-Authenticate: Bearer
+
+&lt;Response body is empty&gt;
+
+
+Response code: 401 (Unauthorized); Time: 76ms; Content length: 0 bytes
+</code></pre>
+<p>The bottom line says, we were not authorized to call this endpoint. That's because we did not provide a valid JWT.</p>
+<h5 id="now-with-token">Now with token</h5>
+<p>In your .http test file add a new request, remember to separate it with &quot;###&quot;:</p>
+<p>Now, first, execute the first login request, resulting in a JWT.</p>
+<p>Copy that JWT, and modify your latest GET request to something like this:</p>
+<pre><code class="line-numbers language-http">GET https://localhost:7271/test/authorized
+Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKV1RTZXJ2aWNlQWNjZXNzVG9rZW4iLCJqdGkiOiJmODhhMDJiMS0wMTdjLTQzOTktYTc3Zi1kMTVlNTk5MDA1ZGYiLCJpYXQiOiIxNC8wOC8yMDIyIDEyOjExOjE2IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InRybW8iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJUZWFjaGVyIiwiRGlzcGxheU5hbWUiOiJUcm9lbHMgTW9ydGVuc2VuIiwiRW1haWwiOiJ0cm1vQHZpYS5kayIsIkFnZSI6IjM2IiwiRG9tYWluIjoidmlhIiwiU2VjdXJpdHlMZXZlbCI6IjQiLCJleHAiOjE2NjA0ODI2NzYsImlzcyI6IkpXVEF1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiSldUU2VydmljZUJsYXpvcldhc21DbGllbnQifQ.w3qJXGPEYi6MMKH-t03KzryBmT7b7OqGJ6iEePDJuE06SI5hH27PS36Bo6QDrq1b_ykX5S0qxAfyJheSw-EDUA
+</code></pre>
+<p>This is how we provide a JWT along with our request. Notice the token above will not work with you. You will have to log in, and use that token.</p>
+<p>Run the last GET request again, with the token. You should get back:</p>
+<pre><code>https://localhost:7271/test/authorized
+
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+Date: Sun, 14 Aug 2022 12:12:23 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+This was accepted as authorized
+
+Response code: 200 (OK); Time: 72ms; Content length: 31 bytes
+</code></pre>
+<p>So, providing a valid JWT gives us access.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="more-policy-guarding-examples">More policy guarding examples</h1><hr/>
+<p>Currently, we have blocked our controller so that you need a valid JWT to call the endpoints.</p>
+<h5 id="allow-anonymous">Allow anonymous</h5>
+<p>Maybe we wish to open some of the endpoints to everyone, we can do that with the &quot;AllowAnonymous&quot; attribute:</p>
+<pre><code class="line-numbers language-csharp">[HttpGet(&quot;allowanon&quot;), AllowAnonymous]
+public ActionResult GetAsAnon()
+{
+    return Ok(&quot;This was accepted as anonymous&quot;);
+}
+</code></pre>
+<p>Create another test request in your .http file to the endpoint <code>https://localhost:7271/test/allowanon</code> .<br />
+Notice your port may be different.</p>
+<h5 id="guard-with-policy">Guard with policy</h5>
+<p>Now we can have open endpoints and endpoints requiring a valid token, i.e. you are logged in. But what about applying a specific policy, i.e. you must be <em>x</em> or have <em>y</em> or whatever.</p>
+<p>Try the following endpoint in your TestController:</p>
+<pre><code class="line-numbers language-csharp">[HttpGet(&quot;mustbevia&quot;), Authorize(&quot;MustBeVia&quot;)]
+public ActionResult GetAsVia()
+{
+    return Ok(&quot;This was accepted as via domain&quot;);
+}
+</code></pre>
+<p>Here we use the <code>Authorized(&quot;MustBeVia&quot;)</code> attribute. Remember, in the Shared/Auth/AuthorizationPolicies.cs class we defined a policy named &quot;MustBeVia&quot;.</p>
+<p>You have two users hardcoded: trmo, and jknr. Only trmo is has the domain &quot;via&quot;.<br />
+So, first log in with trmo, receive the token, and use that token with a GET request to <code>https://localhost:7271/test/mustbevia</code> .</p>
+<p>It should be okay.</p>
+<p>Then try to modify the login credentials to &quot;jknr&quot; and &quot;password&quot;, to log in as Jakob. Copy the received token into your request above, and try again. You should get an Unauthorized response back.</p>
+<h5 id="manual-checking">Manual checking</h5>
+<p>Finally, maybe you don't like to rely on policies. You can leave them out entirely if you wish to do so, and just do the authorization validation manually, i.e. writing that code yourself.</p>
+<p>Here's an example endpoint:</p>
+<pre><code class="line-numbers language-csharp">[HttpGet(&quot;manualcheck&quot;)]
+public ActionResult GetWithManualCheck()
+{
+    Claim? claim = User.Claims.FirstOrDefault(claim =&gt; claim.Type.Equals(ClaimTypes.Role));
+    if (claim == null)
+    {
+        return StatusCode(403, &quot;You have no role&quot;);
+    }
+
+    if (!claim.Value.Equals(&quot;Teacher&quot;))
+    {
+        return StatusCode(403, &quot;You are not a teacher&quot;);
+    }
+
+    return Ok(&quot;You are a teacher, you may proceed&quot;);
+}
+</code></pre>
+<p>Notice there is no Authorize attribute above the method signature.</p>
+<p>In the method body, the first line:<br />
+We access the <code>User</code> property. This has little to do with your specific User object. This property comes from the superclass, ControllerBase, and is the same type of ClaimsPrincipal we used in the AuthorizationPolicies.cs class. I.e. it contains information about the user stored in the provided JWT from the request.</p>
+<p>You can extract various information from this <code>User</code>, e.g. the claims.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="weatherforecastcontroller">WeatherForecastController</h1><hr/>
+<p>This class came with the Web API project template. We haven't touched it much, but let's use this as a slightly closer real life example.</p>
+<p>Open the class.</p>
+<p>Put the [Authorized] attribute above the class definition, i.e. line 9 or so. Now, we can only access the GET endpoint with a valid token.</p>
+<p>This concludes the Web API part of the tutorial.</p>
+<p>Next up, we take a look at the Blazor side of things.</p>
+
+</div>
+
+
+
+        
+        <div style="overflow:auto; padding-bottom: 10px">
+            <hr/>
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>
