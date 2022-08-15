@@ -5,10 +5,6 @@ Create a new Web API project, give it a name, e.g. "WebAPI":
 
 ![](Resources/CreateWebAPI.gif)
 
-The Web API comes with a few default classes, and so we must clean that up first.
-
-Find the class "WeatherForecast", and delete it. This will cause the project to not be able to compile, because this class was used by "WeatherForecastController"
-
 ### Add inter-project dependency
 We must add a dependency from **Web API** project to **Shared** Project, so that the Web API can use classes and functionality defined in the Shared project.
 
@@ -26,9 +22,9 @@ The Web API template project comes with a `WeatherForecast.cs` class. Delete it.
 Open Controllers/WeatherForecastController.cs, and quick fix (<kbd>alt</kbd> + <kbd>enter</kbd>) the compile error, i.e. import the WeatherForecast class from the Shared/Models.
 
 ### Add NuGet packages
-This project also needs a few package to handle JWT creation and authorization.
+This project also needs a package to handle JWT creation and authorization.
 
-Similarly to how you added a package to the Shared project, add the following packages to the Web API project:
+Similarly to how you added a package to the Shared project, add the following package to the Web API project:
 
 * Microsoft.AspNetCore.Authentication.JwtBearer
 
@@ -84,8 +80,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 Import the necessary stuff, quick fix it.
 A bunch of stuff is happening here. I stole this from an example, so I don't know all the details.
 
+You may notice how we retrieve information from the appsettings.json, e.g. in line 9, 10, 11 above with the:
+
+`builder.Configuration["Jwt:Audience"]`
+
+This goes to the Jwt section, then the Audience line, getting the value. Similar with the other two lines. Further details below.
+
 ### Add policies
-Add the following line of code anywhere above `var app = builder.Build();`:
+Add the following line of code anywhere **above** `var app = builder.Build();`:
 
 ```csharp
 AuthorizationPolicies.AddPolicies(builder.Services);

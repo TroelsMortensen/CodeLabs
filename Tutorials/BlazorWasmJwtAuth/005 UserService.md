@@ -14,7 +14,7 @@ We will skip the third layer, as we are just creating a "dummy database". In thi
 
 Create a new directory: Services.
 
-##### Interface
+#### Interface
 
 In here, create a new interface: `IAuthService`.
 
@@ -35,7 +35,7 @@ We are not really going to use the `RegisterUser()` method, it's just here as an
 We use return types of Task, even though in this instance nothing will be asynchronous. But, should we wish to improve
 on the example, e.g. by adding a database, this would require asynchronous code, so it's better to be ready.
 
-##### Implementation
+#### Implementation
 
 Next, the implementation, `AuthService`. Just put this class in the same directory, Services.
 
@@ -73,7 +73,9 @@ public class AuthService : IAuthService
 
     public Task<User> ValidateUser(string username, string password)
     {
-        User? existingUser = users.FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+        User? existingUser = users.FirstOrDefault(u => 
+            u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+        
         if (existingUser == null)
         {
             throw new Exception("User not found");
@@ -115,8 +117,9 @@ At the top, we have an `IList<User>` field. It is instantiated to contain two us
 The first method, `ValidateUser`, will take the two relevant arguments.\
 The first line of the method will look through the `users` list, and find the first User object, which matches the
 criteria specified by the lambda expression, i.e. a User object with the same username as provided with the method
-parameter.\
-If no object is found, an exception is thrown. This can then be handled somewhere else.
+parameter.
+
+If no object is found, an exception is thrown. This can then be handled somewhere else (in our case the Controllers).
 
 Then the passwords are checked. Again, if the wrong password is provided, an exception is thrown.
 

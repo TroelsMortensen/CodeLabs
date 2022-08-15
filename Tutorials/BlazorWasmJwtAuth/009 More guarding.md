@@ -1,7 +1,7 @@
 # More policy guarding examples
 Currently, we have blocked our controller so that you need a valid JWT to call the endpoints.
 
-##### Allow anonymous
+#### Allow anonymous
 Maybe we wish to open some of the endpoints to everyone, we can do that with the "AllowAnonymous" attribute:
 
 ```csharp
@@ -15,7 +15,7 @@ public ActionResult GetAsAnon()
 Create another test request in your .http file to the endpoint `https://localhost:7271/test/allowanon` .\
 Notice your port may be different.
 
-##### Guard with policy
+#### Guard with policy
 Now we can have open endpoints and endpoints requiring a valid token, i.e. you are logged in. But what about applying a specific policy, i.e. you must be _x_ or have _y_ or whatever.
 
 Try the following endpoint in your TestController:
@@ -37,7 +37,7 @@ It should be okay.
 
 Then try to modify the login credentials to "jknr" and "password", to log in as Jakob. Copy the received token into your request above, and try again. You should get an Unauthorized response back.
 
-##### Manual checking
+#### Manual checking
 
 Finally, maybe you don't like to rely on policies. You can leave them out entirely if you wish to do so, and just do the authorization validation manually, i.e. writing that code yourself.
 

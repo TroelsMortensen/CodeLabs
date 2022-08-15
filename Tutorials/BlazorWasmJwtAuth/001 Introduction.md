@@ -1,4 +1,7 @@
 # Welcome
+
+This is a first draft. If you have comments, input, feedback, whatever, send me an email: trmo@via.dk.
+
 This tutorial will take you through how to set up a simple login system for Blazor-WASM in combination with a Web API.
 
 This approach will use your own User/Profile/Account type, or whatever you call it. You will manage storage of the users.

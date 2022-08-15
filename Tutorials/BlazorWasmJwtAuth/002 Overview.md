@@ -32,7 +32,7 @@ First the overview is provided. Below, various parts of the diagram will be expl
 
 The grey boxes are projects (components). Below, each project is discussed.
 
-##### Blazor app
+#### Blazor app
 This is the Blazor app.
 
 ![dia](Resources/BlazorAppClassDiagram.png)
@@ -51,7 +51,7 @@ Finally, the `CustomAuthProvider` is the class responsible for providing the Bla
 This method is called by the Blazor framework, whenever there is something in the UI which needs to know about the authorization state. If you wish to show/hide a button, the Blazor framework will ask this class, through this method, about the currently logged in user, and based on that user's credentials, the button will be either shown or hidden.\
 CustomAuthProvider does not know about the user itself, but asks the IAuthService about the credentials every time.
 
-##### Shared
+#### Shared
 This component contains classes and features which both the Blazor app and the Web API needs to know about.
 
 ![dia](Resources/SharedClassDiagram.png)
@@ -76,7 +76,7 @@ The same applies for the Web API:
 
 So, we can use policies to control our UI, and we can use policies to control who can call our Web API endpoints, so they are not just open to the entire world. That is potentially very dangerous, as anyone can create and delete our data.
 
-##### Web API
+#### Web API
 This is the Web API:
 
 ![dia](Resources/WebAPIClassDiagram.png)
