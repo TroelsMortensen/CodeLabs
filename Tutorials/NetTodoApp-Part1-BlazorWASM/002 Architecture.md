@@ -2,19 +2,36 @@
 Mere om clean. Vis løget, og så den billed fil, der ligger i mappen her, hvor løget er foldet ud. Fundet her
 https://youtu.be/fhM0V2N1GpY?t=206
 
+# Architecture
+First we will take a look at the planned architecture of the Web API.
 
-# Architecture overview
+On the server side, i.e. the Web API, we will use a classic 3-layered architecture:
 
-This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. As such, we wish to have a better code-structure for our application. You have been taught the SOLID design principles. They usually apply to single methods, or classes. In this project we will attempt to apply Clean Architecture, which is basically applying the SOLID principles on a larger scale.
+1) Network layer to receive requests from clients, using REST controllers
+2) Domain layer, responsible for all business logic
+3) Data access layer, responsible for storing/retrieve data from storage (initially a file)
 
-The final system will consist of 2 tiers (client and server), and a total of 5 layers. You have previously encountered a layered architecture, where each layer has a specific responsibility.
+We will let us inspire by existing architecture approaches: Clean architecture, Onion architecture, Hexagon architecture. The interested reader is encouraged to research more about these. I will cover the bare minimum here.
+
+They are very similar ideas, and all advocate the layered approach, each layer separated by interfaces. This should sound familiar, we are applying the Dependency Inversion Principle.
+
+
+## Architecture overview
+
+This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. 
+As such, we wish to have a better code-structure for our application. 
+You have previously been taught the SOLID design principles. They usually apply to single methods, or classes. 
+In this project we will attempt to apply Clean Architecture, which is sort of like applying the SOLID principles on a larger scale.
+
+The final system will consist of 2 tiers (client and server), and a total of 5 layers.
+Each layer has a specific responsibility.
 
 
 Below is a layer diagram for an overview:
 
 ![img.png](Resources/img.png)
 
-The client will be a Blazor WASM UI, using standard HttpClients to make requests to the Server.
+The client will be a Blazor WASM application, using standard `HttpClient`s to make requests to the server.
 
 The server will use a REST Web API to receive the above mentioned requests. Initially we will store data in a file, using json format. Later, we will swap it out with a database, using Entity Framework Core.
 
@@ -24,33 +41,45 @@ This means, we must design the system, so that this swapping out is easy, and af
 
 ### Component diagram
 
-!!diagram with dependencies!!
+The following diagram shows the components (grey boxes) of our project. The green box contains everything client side, and the blue box is the server side.
+
+![img](Resources/ComponentDiagram.svg)
 
 The grey boxes are "components". I will steal the following explanation from Robert C. Martin's book "Clean Architecture":
 
-> Components are unit of deployment. They are the smallets entities that can be deployed as part of a system. In Java, they are jar files. In .NET they are DDLs.
+> Components are units of deployment. They are the smallets entities that can be deployed as part of a system. In Java, they are jar files. In .NET they are DDLs.
 
 In Java, components are often organized in _modules_. In .NET, components can be organized into various _projects_. 
-Components can be considered a bit like lego-building blocks, with the intention that you use these blocks to construct the system. They provide modularity, so building-blocks can easily be swapped out.
+Components can be considered a bit like lego-building blocks, 
+with the intention that you use these blocks to construct the system. 
+They provide modularity, so building-blocks can easily be swapped out (in theory, at least).
 
-There are two Data Access components, because we can use either one. We will start with FileDataAccess and later swap it out with EFCDataAccess.
+There will be two Data Access components, and we can use either one. 
+We will start with FileDataAccess and later swap it out with EfcDataAccess.
 
-This layered approach makes the system more modular: 
+So, this layered approach makes the system more modular:
 we can strip out a layer e.g. if we want to use a different type of data access, 
 or a different type of network technology. 
 We will go with REST for this tutorial series, but later we might want to swap to gRPC or SignalR or something else. 
 We can fairly easy remove a "block"/component, and put in something different.
 
 The one thing, which stays fairly static, are the business rules. 
-They are less likely to change, and they exist in the Domain component. 
-This is also why, we put both Domain- and Dao-interfaces here. 
-The Domain classes will always provide access to themselves through the Domain interfaces, 
+They are less likely to change, and they exist in the Application component. They do not depend on any specific technology, e.g. REST or PostgreSQL, and shouldn't care about that. 
+This is also why, we put both Application- and Dao-interfaces here, in this component. 
+The Domain classes will always provide access to themselves through the Application interfaces, 
 and they will always need to retrieve and store data through the Dao interfaces. 
 But the details of the layer above and below, i.e. network and data access, are irrelevant.
 
-You may notice that arrows point into the Domain, and no arrow points out. This means, the Domain does not depend on anything else.
+This is domain driven design, which you have probably heard about before. 
 
-!!entity and dto components!!
+You may notice that arrows point into the Domain, and no arrow points out. This means, the Domain does not depend on anything else (except the Model classes)
+
+The Shared component contains Model classes, in this tutorial that will be a User class, and a Todo class. These classes are know by all components.\
+We will in this component also put other relevant things, which most of the program might need to know about. That could be Data Transfer Objects.
+
+### Data Transfer Objects (DTOs)
+What are these? Well, you have your domain objects, e.g. User and Todo. These are in this case somewhat small in the number of properties, but in a real system they may grow large, and they maybe have associations to other model classes.\
+Sometimes the front end does not need all the data of a model class. You can then create a new class, a DTO, which will contain only the data you are going to need. We will use these classes, so you will see a few examples.
 
 ## Class diagram
 
@@ -61,14 +90,19 @@ Below, you will find a rough, low-detailed class diagram of the resulting system
 The blue box encapsulates the client, and the green box is the server.
 
 ### Server design
-The server consist of the 3 layers mentioned on the previous slide:
+The server consist of the 3 layers mentioned above:
 1) WebAPI is the entry point to the server, the Controller classes receive REST requests.
-2) The Domain directory contains classes which deal with domain logic and rules. E.g. we might validate a Todo item, the user wishes to create.
-3) Data access to provide access to data storage, either as json in a file or data stored in a database.
+2) The Application component contains classes which deal with domain logic and rules. E.g. we might validate a Todo item, the user wishes to create.
+3) Data access to provide access to data storage, either as JSON in a file or data stored in a database.
 
 The architecture may change a bit, as the tutorial moves forward.
 
-There are different approaches on how to structure these components. We will do "by layer", because that is simpler. However, in your professional career, you will probably encounter a separation "by feature". This is an often recommended approach, however much more complicated. Basically, if you want to try it out for SEP3: Each new user story, you implement, will go into a new component.
+There are different approaches on how to structure these components. 
+We will do "by layer", because that is simpler. 
+However, in your professional career, you will probably encounter a separation "by feature". 
+This is an often recommended approach, however much more complicated. 
+Basically, if you want to try it out for SEP3: Each new user story, you implement, will go into a new component, or at least a separate directory. 
+The idea is that everything related to a feature is located together. This is not always easy to follow.
 
 
 ### Client design

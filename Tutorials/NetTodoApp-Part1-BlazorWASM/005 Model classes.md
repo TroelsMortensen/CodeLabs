@@ -1,11 +1,11 @@
-# Entity classes
+# Model classes
 
 We are going to need to classes: User and Todo.
 
 
 ### Todo
 
-Inside your Entities project, create a new class, call it Todo.
+Inside your Shared project, create a new directory: Models. In here create a new class, call it `Todo`.
 
 The `Todo` class needs properties for the data, a `Todo` should hold:
 
@@ -32,7 +32,7 @@ so we just default `IsCompleted` to false, by not setting it.
 
 ### User
 
-We also need a User object. Create a new class, "User", it should look like this:
+We also need a User object. Create a new class, "User", inside the "Models" directory. It should look like this:
 
 ```csharp
 public class User
@@ -42,10 +42,12 @@ public class User
 }
 ```
 
-In many applications the user name is unique, which would make the `Id` property redundant. We could, in fact, leave out `Id`, 
-but I choose to keep it, because that makes it easier to include feature, where a user can change their user name. It also adds a tiny bit of extra complexity to the system, which might be good as an example. 
+In many applications the user name is unique, which might make the `Id` property redundant. 
+We could, in fact, leave out `Id`, 
+but I choose to keep it, because that makes it easier to include a feature, where a user can change their user name. 
+It also adds a tiny bit of extra complexity to the system, which might be good as an example. 
 
-### How to connect entities
+### How to connect models
 
 Now, we have a clear connection between Todos and Users. The Todo has an `OwnerId`, which should reference the `Id` of a user. There is, however, no association between the two classes. The `Todo` does not have a property of type `User`. 
 
@@ -61,7 +63,8 @@ property in the Todo class. Alternatively, the User class could have a property 
     public List<Todo> Todos { get; set; }
 ```
 
-Having the associations makes the json-storage more complex, especially when the number of entity objects grows. 
-So, for now we model the entities without associations between them. It will, however, potentially make retrieve data a bit more complex. So, either approach has drawbacks.
+Having the associations makes the JSON-storage more complex, especially when the number of model objects grows. 
+So, for now we model the entities without associations between them. 
+It will, however, potentially make retrieving data a bit more complex. So, either approach has drawbacks.
 
-We will have to modify the entity classes a bit, when we get to part 3 about using Entity Framework Core, and throw away the file storage.
+We may have to modify the model classes a bit, when we get to part 3 about using Entity Framework Core, and throw away the file storage.
