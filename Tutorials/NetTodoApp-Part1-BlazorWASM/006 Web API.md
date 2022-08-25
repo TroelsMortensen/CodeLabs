@@ -1,6 +1,6 @@
 # Creating the Web API
 
-Next up, let's create the Web API component, i.e. the gateway into our server.
+Next up, let's create the Web API component, i.e. the gate-way into our server.
 
 Create a new project, by right-clicking your solution again, and opening the "New Project" wizard.
 
@@ -10,7 +10,7 @@ This time, we need a Web API:
 
 ((1)) Web API templates are found under the "ASP.NET Core Web Applications".\
 ((2)) Give it a name.\
-((3)) Select "Web API" here. There are many options. Make sure it is _**API**_, not APP. Two different things.
+((3)) Select "Web API" here. There are many options. Make sure it is _**API**_, not APP. Two different things. We need an API.
 
 Verify language is C#, net6.0 or later, no Authentication, and no Docker Support.
 
@@ -32,4 +32,4 @@ When running the Web API, your browser should open a Swagger page, which is a bu
 
 Currently there is just a GET endpoint, which returns some random weather data.
 
-We will obviously change that later, but we still need a few more components, before we really can get started.
+We will obviously change that later, but we still need a few more components, before we really can get started on the good stuff.

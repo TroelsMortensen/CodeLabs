@@ -27,9 +27,7 @@ A common case is that the data is structured on way on the server, but it is dis
 
 
 ----
-There are only two hard things in Computer Science: cache invalidation, naming things, and off-by-one errors.
 
--- Phil Karlton
 
 # Introduction
 This is the first part of a 3 part tutorial series (at least according to the current plan). 
@@ -48,5 +46,19 @@ This tutorial will cover the first point: a Web API.
 It will result in a client/server system with a database. 
 
 
+### GitHub
 
 All code will be [available on GitHub](https://github.com/TroelsMortensen/WasmTodo). Different parts of the tutorial may be available on different branches.
+
+Here's an overview of the branches:
+
+[001_BasicSetup](https://github.com/TroelsMortensen/WasmTodo/tree/001_BasicSetup): will contain the setup of the components, model classes, and the FileContext which stores data.\
+[002_AddUser](https://github.com/TroelsMortensen/WasmTodo/tree/002_AddUser): This will contain the code for the feature of adding a new User.
+
+
+#### A final comment
+I have been renaming things over and over in this tutorial. I hope I have made the necessary updates to the text here, whenever things were updated in the code. 
+
+> There are only two hard things in Computer Science: cache invalidation, naming things, and off-by-one errors.
+
+-- Phil Karlton

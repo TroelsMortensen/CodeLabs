@@ -2,24 +2,41 @@
 Mere om clean. Vis løget, og så den billed fil, der ligger i mappen her, hvor løget er foldet ud. Fundet her
 https://youtu.be/fhM0V2N1GpY?t=206
 
-# Architecture
+# Architecture intro
 First we will take a look at the planned architecture of the Web API.
 
 On the server side, i.e. the Web API, we will use a classic 3-layered architecture:
 
 1) Network layer to receive requests from clients, using REST controllers
-2) Domain layer, responsible for all business logic
+2) Application layer, responsible for all business logic
 3) Data access layer, responsible for storing/retrieve data from storage (initially a file)
 
 We will let us inspire by existing architecture approaches: Clean architecture, Onion architecture, Hexagon architecture. The interested reader is encouraged to research more about these. I will cover the bare minimum here.
 
 They are very similar ideas, and all advocate the layered approach, each layer separated by interfaces. This should sound familiar, we are applying the Dependency Inversion Principle.
 
+This is the classic diagram for clean architecture:
+
+![img.png](Resources/CleanOnion.png)
+
+It is circular, or shaped as an onion. The idea is the closer to the center, the less likely to change. 
+Your domain model classes are in the yellow Entities. They don't change.\
+The red circle, Use Cases, is your logic. That is also fairly fixed. 
+The green layer is in our case REST controllers, i.e. our Web API, and the Data Access implementations, 
+i.e. storing data in JSON file or use EFC to database. These are frameworks and libraries, which might be changed.
+
+If we unfold the diagram a little bit, it looks more like your familiar layered system, just shuffled around, 
+so the higher layers are the "unstable" ones.
+
+![](Resources/clean unfolded.png)
+
+The point to notice in both cases are the dependencies. Outer layers in the onion knows about inner layers, not vice versa. And in the unfolded version, upper layers know about those below, and not vice versa.
+We will come back to these dependencies, and why this is the way.
 
 ## Architecture overview
 
 This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. 
-As such, we wish to have a better code-structure for our application. 
+As such, we wish to have a better code-structure for our program. 
 You have previously been taught the SOLID design principles. They usually apply to single methods, or classes. 
 In this project we will attempt to apply Clean Architecture, which is sort of like applying the SOLID principles on a larger scale.
 
@@ -29,7 +46,7 @@ Each layer has a specific responsibility.
 
 Below is a layer diagram for an overview:
 
-![img.png](Resources/img.png)
+![img.png](Resources/LayeredDiagram.png)
 
 The client will be a Blazor WASM application, using standard `HttpClient`s to make requests to the server.
 
@@ -65,14 +82,14 @@ We can fairly easy remove a "block"/component, and put in something different.
 
 The one thing, which stays fairly static, are the business rules. 
 They are less likely to change, and they exist in the Application component. They do not depend on any specific technology, e.g. REST or PostgreSQL, and shouldn't care about that. 
-This is also why, we put both Application- and Dao-interfaces here, in this component. 
-The Domain classes will always provide access to themselves through the Application interfaces, 
+This is also why, we put both Logic- and Dao-interfaces here, in this component. 
+The Logic classes will always provide access to themselves through the Logic interfaces, 
 and they will always need to retrieve and store data through the Dao interfaces. 
 But the details of the layer above and below, i.e. network and data access, are irrelevant.
 
-This is domain driven design, which you have probably heard about before. 
+This is _Domain Driven Design_, which you have probably heard about before. 
 
-You may notice that arrows point into the Domain, and no arrow points out. This means, the Domain does not depend on anything else (except the Model classes)
+You may notice that arrows point into the Application component, and no arrow points out. This means, the Application does not depend on anything else (except the Domain classes)
 
 The Shared component contains Model classes, in this tutorial that will be a User class, and a Todo class. These classes are know by all components.\
 We will in this component also put other relevant things, which most of the program might need to know about. That could be Data Transfer Objects.

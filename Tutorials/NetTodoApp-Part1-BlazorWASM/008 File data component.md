@@ -6,12 +6,12 @@ Your solution should now look like this
 
 ![img.png](Resources/SolutionSetupDone.png)
 
-We have components for the three layers: network, domain, data access. And a component for our model classes, or entities.
+We have components for the three layers: network, domain, data access. And a component for our model classes, and other domain stuff.
 
 ### Dependencies
 
-Some components need to know about others, in order to use their functionality or classes. E.g. the FileData component needs to know about the classes in Entities component, and so we need to add a dependency from FileData to Entities.
-The DAO classes in FileData also needs to implement interfaces located in Domain, so we need a dependency there as well.
+Some components need to know about others, in order to use their functionality or classes.\
+The Data Access Object classes in `FileData` need to implement interfaces located in `Application`, so we need a dependency from `FileData` to `Application`.
 
 It is done like this:
 
@@ -20,13 +20,15 @@ It is done like this:
 
 Now, also add the following dependencies:
 
-1) WebAPI -> Entities
-2) WebAPI -> Domain
+1) Application -> Domain
+2) WebAPI -> Application
 3) WebAPI -> FileData
-4) Domain -> Entities
+
+Now, because Application -> Domain, and FileData -> Application, we get a "transitive" dependency: FileData -> Application -> Domain. 
+The point is, FileData gets access to the model classes in Domain.'
 
 ### Next up
 
-Now we are ready to start implementing functionality.
+Now we are almost ready to start implementing functionality.
 
 We will start by getting the storage functionality in place.
