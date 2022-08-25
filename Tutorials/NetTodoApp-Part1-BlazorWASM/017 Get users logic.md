@@ -53,9 +53,11 @@ namespace Domain.LogicInterfaces;
 public interface IUserLogic
 {
     public Task<User> Create(UserCreationDto dto);
-    public Task<ICollection<User>> Get(SearchUserParametersDto searchParameters);
+    public Task<IEnumerable<User>> Get(SearchUserParametersDto searchParameters);
 }
 ```
+
+We return an IEnumerable<User>. IEnumerable is just a kind of simple, non-modifiable collection. We could use ICollection, IList or something else, but there is a tendency to return IEnumerable for these kinds of things.
 
 ### The dao interface method
 
@@ -64,13 +66,15 @@ We do this before we start on the method implementation in UserLogic, because th
 
 In IUserDao add the same method as above:
 
-`public Task<ICollection<User>> Get(SearchUserParametersDto searchParameters);`
+```csharp
+public Task<IEnumerable<User>> Get(SearchUserParametersDto searchParameters);
+```
 
 ### The logic implementation
 Finally, we define the method in the UserLogic class. It doesn't do anything other than delegate to the layer below:
 
 ```csharp
-public Task<ICollection<User>> Get(SearchUserParametersDto searchParameters)
+public Task<IEnumerable<User>> Get(SearchUserParametersDto searchParameters)
 {
     return userDao.Get(searchParameters);
 }
