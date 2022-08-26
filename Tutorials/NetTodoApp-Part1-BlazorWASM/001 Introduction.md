@@ -53,7 +53,11 @@ All code will be [available on GitHub](https://github.com/TroelsMortensen/WasmTo
 Here's an overview of the branches:
 
 [001_BasicSetup](https://github.com/TroelsMortensen/WasmTodo/tree/001_BasicSetup): will contain the setup of the components, model classes, and the FileContext which stores data.\
-[002_AddUser](https://github.com/TroelsMortensen/WasmTodo/tree/002_AddUser): This will contain the code for the feature of adding a new User.
+[002_AddUser](https://github.com/TroelsMortensen/WasmTodo/tree/002_AddUser): This will contain the code for the feature of adding a new User.\
+[003_GetUsers](https://github.com/TroelsMortensen/WasmTodo/tree/003_GetUsers): This contains code for the feature of retrieving Users.\
+[004_AddTodo](https://github.com/TroelsMortensen/WasmTodo/tree/004_AddTodo): This branch is for adding a new Todo.\
+[005_GetTodos](https://github.com/TroelsMortensen/WasmTodo/tree/005_GetTodos): Here we retrieve Todos.\
+
 
 
 #### A final comment
