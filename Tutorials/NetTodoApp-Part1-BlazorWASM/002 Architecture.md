@@ -134,3 +134,6 @@ The interfaces are in a separate component, so that we can easily change the UI 
 This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe. No worries.
 
 ![](Resources/HakunaMatata.png)
+
+### More reading
+The interested reader can look through [this post, containing a good overview of various architectures](https://docs.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures)

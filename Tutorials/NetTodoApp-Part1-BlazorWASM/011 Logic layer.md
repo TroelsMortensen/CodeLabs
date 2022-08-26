@@ -56,7 +56,7 @@ namespace Domain.LogicInterfaces;
 
 public interface IUserLogic
 {
-    public Task<User> Create(UserCreationDto userToCreate);
+    Task<User> Create(UserCreationDto userToCreate);
 }
 ```
 
@@ -64,11 +64,14 @@ The return type is `Task<User>` because we may want to do some work asynchronous
 The data needed is wrapped in the `UserCreationDta`, i.e. the argument.\
 And the data returned is the finalized User object.
 In our case, an Id is generated for the new User. In other casees more data could be computed and set. Maybe we want to display the final result to the user of the system, as a kind of verification.
-This is common practice.
+This is common practice.\
+All methods in an interface is implicitly public, we don't need to add that keyword.
 
+###### Naming?
 Why do I not name the method `CreateUser`? That might be more telling about the purpose of the method. However, since I split my Logic interfaces for each domain object, it is implicit that this interface handles Users, and `create()` must then create a user. This is a principle, avoid that kind of duplicate information.
 
-The other method is needed for some validation, you'll see below. It will retrieve an existing user based on the user name.\
+#### Getting a user
+Another method is needed for some validation, you'll see below. It will retrieve an existing user based on the user name.\
 We use the question mark `User?` to indicate we might return null, in case no user is found.
 
 ### The data storage

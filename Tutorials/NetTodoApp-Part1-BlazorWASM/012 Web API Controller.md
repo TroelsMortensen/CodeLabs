@@ -76,3 +76,9 @@ It is just more information to the client, in case it is needed. It is good prac
 We take a `UserCreationDto` as the argument. This is given to the logic layer through `userLogic` in line 6.\
 The resulting User is then returned, with the method `Created()`, which will create an ActionResult with status code 201, the new path to this specific User (the endpoint of which we haven't made yet, but probably will),
 and finally the user object is also included. In our case the server only sets the ID. But in other cases, all kinds of data can be set or modified when creating an object, so generally it is polite to return the result, so the client/user can verify the result.
+
+If anything goes wrong in the layers below, we return a status code 500. That is not very fine grained, but we do include the method.\
+A better approach is to create different custom exceptions, and catch them to then return different status codes. Maybe a ValidationException is thrown when validating the user data in the logic layer. We can then return a status code 400 indicating it was the clients fault, instead of the server.\
+See a [list of status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes).
+
+Custom exceptions should be placed in the Domain component. They are, however, outside the scope of this tutorial. For now. Perhaps later steps will improve things in the future.
