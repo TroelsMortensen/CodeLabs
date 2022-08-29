@@ -62,10 +62,12 @@
 <hr/><h1 id="creating-a-schema">Creating a schema</h1><hr/>
 <p>In the console, we will start by creating a schema.</p>
 <p>Schemas are used similar to packages in Java, it's a way to organize your database.<br />
-Create a database schema by entering <code>CREATE SCHEMA StarCompany;</code> in a console window and pressing the 'Execute' button (green arrow), or by Ctrl+Enter.</p>
+Create a database schema by entering <code>CREATE SCHEMA starcompany;</code> in a console window and pressing the 'Execute' button (green arrow), or by <kbd>ctrl</kbd> + <kbd>enter</kbd>. You can see a thin green rectangle around the statement you are about to execute.</p>
 <p><img src="img.png" alt="img.png" /></p>
 <p>Open Schemas in the browser to the left to see the change. A StarCompany schema should appear under the Schemas section.</p>
 <p><img src="img1.png" alt="" /></p>
+<h6 id="note">Note</h6>
+<p>The hierarchy structure may look a bit different for you. Maybe you don't have a &quot;schemas&quot; folder, and then your starcompany is just under &quot;postgres&quot;. That's not a problem.</p>
 <h3 id="setting-the-schema">Setting the schema</h3>
 <p>In the above screenshot, in the top-right-ish corner, you can see &quot;postgres.public&quot;. This means everything executed in the console is done against the <code>public</code> schema. If we create a new table, it happens in the public schema.<br />
 We want to work in the <code>starcompany</code> schema:</p>
