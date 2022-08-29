@@ -12,10 +12,10 @@ First, we need to define the access point to the domain logic, i.e. the interfac
 Inside the Application component, create a new folder called "LogicInterfaces".
 
 Inside this folder, we will put the interface which provides access to the User logic.
-Create a new interface, call it "IUserLogic".
+Create a new interface, call it "IUserLogic". We will put a method here further down.
 
 
-### The data needed
+### The data needed, the DTO
 The data we need to provide to create a User can be considered part of the contract.\
 In our case it is just a user name. Later, we might need other things like password, email, real name, etc.
 
@@ -42,10 +42,30 @@ public class UserCreationDto
 Do we really need a class just to send that one string around? Strictly speaking, no.\
 But, if you have several methods all the way from your front end to here, which just takes a string, and later you figure out, you also need a password, how many method signatures do you have to modify?\
 At least a handful.\
-If we wrap all relevant data (just the user name for now) in an object, we can easily add another property to the class, and we will have do modify a lot fewer method signatures.
+If we wrap all relevant data (just the user name for now) in an object, 
+we can easily add another property to the class, 
+and we will have to modify a lot fewer method signatures.
 
 I include the constructor here, because this object should have a "UserName" after its creation.
 
+#### Comment on DTOs
+These type of classes, the DTOs, are used in various ways. 
+Our approach is a bit loose, because all layers will know about the DTOs, 
+and all layers will know about the domain objects. 
+This causes some dependencies, which we will accept in this case. I.e. if we modify a DTO all layers are affected.\
+Sometimes a more strict separation is applied. Again, multiple approaches are available.
+
+One approach could be:
+
+![img.png](Resources/DtosAndDomains.png)
+
+In the above image one of the responsibilities of the application layer, i.e. Domain Logic, will then be to translate between DTOs and Domain Objects.\
+This will, however, result in many DTOs, which can be in-comprehensive. 
+On the other hand, the separation is better. We must weigh the pros and cons.\
+We will apply the loose approach for convenience in this smaller example.
+
+
+## Logic Interface Content
 Now we can define the method in IUserLogic interface:
 
 ```csharp

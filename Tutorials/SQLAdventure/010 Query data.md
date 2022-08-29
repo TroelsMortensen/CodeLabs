@@ -48,7 +48,7 @@ See if you can figure out, how to write a statement, which will calculate the av
 <summary>hint</summary>
 
 ```sql
-SELECT AVG(*)
+SELECT AVG(salary)
 FROM employee
 ```
 

@@ -1,4 +1,4 @@
-# First Feature
+# First Feature, Create User
 We are ready to start our first feature:
 
 > As a User I can add a new User, so that Todos can be assigned to Users.
