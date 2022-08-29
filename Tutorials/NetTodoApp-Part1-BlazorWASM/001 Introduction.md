@@ -26,6 +26,10 @@ component diagram over inter-component dependencies.
 A common case is that the data is structured on way on the server, but it is displayed in a different way in the client. For that we can use DTOs.
 
 
+Async all method names
+
+Change POST to PUT?
+
 ----
 
 
@@ -58,6 +62,11 @@ Here's an overview of the branches:
 [004_AddTodo](https://github.com/TroelsMortensen/WasmTodo/tree/004_AddTodo): This branch is for adding a new Todo.\
 [005_GetTodos](https://github.com/TroelsMortensen/WasmTodo/tree/005_GetTodos): Here we retrieve Todos.\
 
+
+## Code mismatch
+There is a convention that asynchronous methods (which returns Task) have method names suffixed with "Async", e.g. `CreateAsync()`, or `GetUserByIdAsyn()`.
+
+I did not remember to do this until half way through. So, I'm going over the previous parts and renaming everything. I may have forgotten some places, so the code examples in this tutorial, may have method names not matching entirely the names on GitHub. You're welcome to let me know, if you find a mismatch.
 
 
 #### A final comment

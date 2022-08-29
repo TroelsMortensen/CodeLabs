@@ -21,7 +21,7 @@ Did you remember to mark the parameters with `[FromQuery]`?
 ```csharp
 [HttpGet]
 public async Task<ActionResult<IEnumerable<Todo>>> Get([FromQuery] string? userName, [FromQuery] int? userId,
-    [FromQuery] bool? completedStatus, [FromQuery] string titleContains)
+    [FromQuery] bool? completedStatus, [FromQuery] string? titleContains)
 {
     try
     {
@@ -37,9 +37,10 @@ public async Task<ActionResult<IEnumerable<Todo>>> Get([FromQuery] string? userN
 }
 ```
 
-Now, if we have many search parameters, the number of method-arguments is going to be fairly big, and that's somewhat inconvenient.\
+Now, if we have many search parameters, the number of method-arguments of the endpoint method is going to be fairly big, and that's somewhat inconvenient.\
 The problem is that with GET requests, we cannot include an object, like when we do POST requests. Otherwise we could just have the client create a `SearchTodoParametersDto` object and send that along.\
-We could abuse the HTTP request types and make this a POST, but there is a good reason to stick to the convention, it's easier for clients/users to understand how to use our Web API. We should try to stick to the convention.\
+
+We could make this a POST request and have the client send a SearchTodoParametersDto, serialized as JSON. It goes a bit against intuition, but POST can be used to ["send some data for processing, which may not result in a new object being created"](https://stackoverflow.com/questions/14202257/design-restful-query-api-with-a-long-list-of-query-parameters/31984477#31984477).
 
 We could make a kind of hack, where the query parameter of the URI could contain a json object, and on the server side, we would deserialize that. But I'm not convinced I like that approach.
 
@@ -49,4 +50,4 @@ So, for now we have to accept the large number of arguments. Maybe I will stumbl
 
 ## Test
 
-You should be able to test this endpoint now. Try with different filters.
+You should be able to test this endpoint now. Try with different filters. Maybe create a few more Todos so you have more different things to search for.
