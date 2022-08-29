@@ -1,8 +1,12 @@
-# Creating a schema
+more s# Creating a schema
 In the console, we will start by creating a schema.
 
 Schemas are used similar to packages in Java, it's a way to organize your database.\
-Create a database schema by entering `CREATE SCHEMA starcompany;` in a console window and pressing the 'Execute' button (green arrow), or by <kbd>ctrl</kbd> + <kbd>enter</kbd>. You can see a thin green rectangle around the statement you are about to execute.
+Create a database schema by entering `CREATE SCHEMA starcompany;` in a console window. If you don't have a console tab open, you can rightclick the "postgres" in the hierarchy on the left, and select "new", then "query console":
+
+![img_1.png](img_1.png)
+
+Select the statement, press the 'Execute' button (green arrow), or by <kbd>ctrl</kbd> + <kbd>enter</kbd>. You can see a thin green rectangle around the statement you are about to execute.
 
 ![img.png](img.png)
 
