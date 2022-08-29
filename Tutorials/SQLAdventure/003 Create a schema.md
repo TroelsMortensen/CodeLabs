@@ -10,6 +10,10 @@ Open Schemas in the browser to the left to see the change. A StarCompany schema 
 
 ![](img1.png)
 
+### Setting the schema
+In the above screenshot, in the top-right-ish corner, you can see "postgres.public". This means everything executed in the console is done against the `public` schema. If we create a new table, it happens in the public schema.\
+We want to work in the `starcompany` schema:
+
 Execute the command `SET SCHEMA 'starcompany';` by writing the command in the console, selecting it and pressing the execute button. This sets StarCompany as the current schema.
 
 The effect of this is that everything we subsequently execute will be executed against this schema.

@@ -66,6 +66,9 @@ Create a database schema by entering <code>CREATE SCHEMA StarCompany;</code> in 
 <p><img src="img.png" alt="img.png" /></p>
 <p>Open Schemas in the browser to the left to see the change. A StarCompany schema should appear under the Schemas section.</p>
 <p><img src="img1.png" alt="" /></p>
+<h3 id="setting-the-schema">Setting the schema</h3>
+<p>In the above screenshot, in the top-right-ish corner, you can see &quot;postgres.public&quot;. This means everything executed in the console is done against the <code>public</code> schema. If we create a new table, it happens in the public schema.<br />
+We want to work in the <code>starcompany</code> schema:</p>
 <p>Execute the command <code>SET SCHEMA 'starcompany';</code> by writing the command in the console, selecting it and pressing the execute button. This sets StarCompany as the current schema.</p>
 <p>The effect of this is that everything we subsequently execute will be executed against this schema.</p>
 <h3 id="a-note-about-lower-casing">A note about lower casing</h3>
@@ -211,7 +214,7 @@ WHERE salary &gt; 19000;
 <p>See if you can figure out, how to write a statement, which will calculate the average pay of all employees.</p>
 <details>
 <summary>hint</summary>
-<pre><code class="line-numbers language-sql">SELECT AVG(*)
+<pre><code class="line-numbers language-sql">SELECT AVG(salary)
 FROM employee
 </code></pre>
 </details>
