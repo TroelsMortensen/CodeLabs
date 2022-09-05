@@ -14,7 +14,7 @@ You must import this by running the ddl code, like this:
 
 Right click on your _schema_ folder, and select the "Run SQL Script...".
 
-This should import a new schema, the dvd rental.
+This should import a new schema, the webshop.
 
 Then, download the data from here:
 
