@@ -40,7 +40,9 @@ What needs to be done?
 
 1) We need to verify that there is an existing Todo with the same ID as the one provided. When creating a new User, we looked for an existing User. This functionality could also have been placed in the DAO implementation. But I consider this check as part of the logic of creating/updating, and so I believe it belongs in the Logic layer. The drawback is that we do two interactions with the database, where we might only strictly need one, if we moved the check. In this case the drawback is accepted. 
 2) We need to verify the owner ID corresponds to an existing user.
-3) We need to validate the new Todo data. Luckily we have that logic already, from when we created a Todo. However, we will have to update the method to take a `Todo` instead of `TodoCreationDto`.  
+3) We need to validate the new Todo data. Luckily we have that logic already, from when we created a Todo. However, we will have to update the method to take a `Todo` instead of `TodoCreationDto`.
+4) We could have more rules, e.g. a User may have a maximum of 5 Todos assigned to them.
+5) If the Users had Roles, and the Todos had categories, we could have rules about what kind of category Todos can be assigned to which Roles.
 
 
 
@@ -48,6 +50,9 @@ This leads us to the method implementation. Give it a go yourself:
 * Check that there is an existing Todo to update
 * Validate the data, but modifying the existing `ValidateTodo` to take another type of argument.
 * Hand over the Todo to the Data Access layer, through the ITodoDao interface.
+
+This tutorial will ignore most of the business rules. That kind of logic is not in focus here. 
+But the reader is encouraged to implement various rules themself.
 
 <details>
 <summary>hint</summary>
