@@ -13,7 +13,7 @@ Given an Id we want to return the associated User, or null if none is found. Giv
 <summary>hint</summary>
 
 ```csharp
-public Task<User?> GetById(int id)
+public Task<User?> GetByIdAsync(int id)
 {
     User? existing = context.Users.FirstOrDefault(u =>
         u.Id == id
@@ -28,7 +28,7 @@ public Task<User?> GetById(int id)
 ### Store Todo
 First, we need a new `TodoFileDao` class, put it in FileData/DAOs.
 
-Then we need the method implemented. It should receive the Todo, set an Id, persist the Todo, and then return it.
+Then we need the method implemented. It should receive the Todo, set an Id, persist the Todo, and then return it. Very similar to what we did with the Users.
 
 Give this a go yourself, and then look at the hint below:
 
@@ -45,7 +45,7 @@ public class TodoFileDao : ITodoDao
         this.context = context;
     }
 
-    public Task<Todo> Create(Todo todo)
+    public Task<Todo> CreateAsync(Todo todo)
     {
         int id = 1;
         if (context.Todos.Any())

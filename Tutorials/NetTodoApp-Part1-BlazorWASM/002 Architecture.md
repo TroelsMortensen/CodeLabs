@@ -1,7 +1,3 @@
-# TODO
-Mere om clean. Vis løget, og så den billed fil, der ligger i mappen her, hvor løget er foldet ud. Fundet her
-https://youtu.be/fhM0V2N1GpY?t=206
-
 # Architecture intro
 First we will take a look at the planned architecture of the Web API.
 
@@ -11,17 +7,17 @@ On the server side, i.e. the Web API, we will use a classic 3-layered architectu
 2) Application layer, responsible for all business logic
 3) Data access layer, responsible for storing/retrieve data from storage (initially a file)
 
-We will let us inspire by existing architecture approaches: Clean architecture, Onion architecture, Hexagon architecture. The interested reader is encouraged to research more about these. I will cover the bare minimum here.
+We will let us inspire by well-known architecture approaches: Clean architecture, Onion architecture, Hexagon architecture. The interested reader is encouraged to research more about these. I will cover the bare minimum here.
 
 They are very similar ideas, and all advocate the layered approach, each layer separated by interfaces. This should sound familiar, we are applying the Dependency Inversion Principle.
 
-This is the classic diagram for clean architecture:
+Below is the classic diagram for clean architecture (it is an onion of layers, therefore sometimes called Onion architecture):
 
 ![img.png](Resources/CleanOnion.png)
 
 It is circular, or shaped as an onion. The idea is the closer to the center, the less likely to change. 
 Your domain model classes are in the yellow Entities. They don't change.\
-The red circle, Use Cases, is your logic. That is also fairly fixed. 
+The red circle, Use Cases, is your logic. That is also fairly fixed, once in place. 
 The green layer is in our case REST controllers, i.e. our Web API, and the Data Access implementations, 
 i.e. storing data in JSON file or use EFC to database. These are frameworks and libraries, which might be changed.
 
@@ -35,7 +31,7 @@ We will come back to these dependencies, and why this is the way.
 
 ## Architecture overview
 
-This tutorial will be a slightly larger exercise, perhaps sort of a mini-SEP. 
+This tutorial will be a larger exercise, perhaps sort of a tiny mini-SEP. 
 As such, we wish to have a better code-structure for our program. 
 You have previously been taught the SOLID design principles. They usually apply to single methods, or classes. 
 In this project we will attempt to apply Clean Architecture, which is sort of like applying the SOLID principles on a larger scale.
@@ -50,9 +46,13 @@ Below is a layer diagram for an overview:
 
 The client will be a Blazor WASM application, using standard `HttpClient`s to make requests to the server.
 
-The server will use a REST Web API to receive the above mentioned requests. Initially we will store data in a file, using json format. Later, we will swap it out with a database, using Entity Framework Core.
+The server will use a REST Web API to receive the above mentioned requests. 
+Initially we will store data in a file, using json format. 
+Later, we will swap it out with a database, using Entity Framework Core and SQLite.
 
-This means, we must design the system, so that this swapping out is easy, and affects as little of the rest of the system as possible. We will apply the Dependency Inversion Principle, and hide the Data Access layer behind interfaces.
+This means, we must design the system, so that this swapping out is easy (relatively speaking), 
+and affects as little of the rest of the system as possible. 
+We will apply the Dependency Inversion Principle, and hide the Data Access layer behind interfaces.
 
 
 
@@ -85,13 +85,14 @@ They are less likely to change, and they exist in the Application component. The
 This is also why, we put both Logic- and Dao-interfaces here, in this component. 
 The Logic classes will always provide access to themselves through the Logic interfaces, 
 and they will always need to retrieve and store data through the Dao interfaces. 
-But the details of the layer above and below, i.e. network and data access, are irrelevant.
+But the details of the layers above and below, i.e. network and data access, are irrelevant.
 
-This is _Domain Driven Design_, which you have probably heard about before. 
+This is _Domain Driven Design_, which you have probably heard about before. We focus on the domain first.
 
 You may notice that arrows point into the Application component, and no arrow points out. This means, the Application does not depend on anything else (except the Domain classes)
 
-The Shared component contains Model classes, in this tutorial that will be a User class, and a Todo class. These classes are know by all components.\
+The `Domain` component contains Model classes, in this tutorial that will be a User class, and a Todo class. 
+These classes are known by all components.\
 We will in this component also put other relevant things, which most of the program might need to know about. That could be Data Transfer Objects.
 
 ### Data Transfer Objects (DTOs)
@@ -121,6 +122,15 @@ This is an often recommended approach, however much more complicated.
 Basically, if you want to try it out for SEP3: Each new user story, you implement, will go into a new component, or at least a separate directory. 
 The idea is that everything related to a feature is located together. This is not always easy to follow.
 
+##### Repositories
+In the .NET world you may encounter Repositories. These act a little bit like Data Access Objects, and it can be difficult to find the difference.\
+People are not entirely in agreement either about the differences.\
+The point is that we may sometime call them data access objects, or sometimes repositories.
+
+The best definition, I could find is that Data Access Objects interact with the database, and there is one DAO per model class.\
+The Repositories interact with DAOs, sometimes multiple.
+
+But in smaller applications this will not always be the case, and DAOs and repositories are used interchangeably.
 
 ### Client design
 

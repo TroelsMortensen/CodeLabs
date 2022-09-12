@@ -8,7 +8,8 @@ We have the logic and data layer in place. We just need to provide access to the
 ## The Controller Class
 Create a new "TodosController" in WebAPI/Controllers.
 
-Set it up similarly to the UsersController, with the attributes and the inheritance. We need an ITodoLogic field variable as well.
+Set it up similarly to the UsersController, with the attributes and the inheritance. 
+We need an ITodoLogic field variable as well. Give it a go, then look at the hint for verification.
 
 <details>
 <summary>hint</summary>
@@ -44,11 +45,11 @@ We now need the endpoint. You'll give this a go yourself as well first, it is ve
 
 ```csharp
 [HttpPost]
-public async Task<ActionResult<Todo>> Create(TodoCreationDto dto)
+public async Task<ActionResult<Todo>> CreateAsync(TodoCreationDto dto)
 {
     try
     {
-        Todo created = await todoLogic.Create(dto);
+        Todo created = await todoLogic.CreateAsync(dto);
         return Created($"/todos/{created.Id}", created);
     }
     catch (Exception e)

@@ -1,6 +1,6 @@
 # Exercise 4
 
-Find customers who have ordered mored than 4 items.
+Find customers who have made more than 4 orders.
 
 Show first name, last name, and the number of ordered items.
 

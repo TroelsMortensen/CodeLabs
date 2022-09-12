@@ -13,13 +13,14 @@ The `Todo` class needs properties for the data, a `Todo` should hold:
 public class Todo
 {
     public int Id { get; set; }
-    public int OwnerId { get; set; }
-    public string Title { get; set; }
-    public bool IsCompleted { get; set; }
+    public User Owner { get; }
+    public string Title { get; }
+    public bool IsCompleted { get; }
+    
 
-    public Todo(int ownerId, string title)
+    public Todo(User owner, string title)
     {
-        OwnerId = ownerId;
+        Owner = owner;
         Title = title;
     }
 }
@@ -49,22 +50,17 @@ It also adds a tiny bit of extra complexity to the system, which might be good a
 
 ### How to connect models
 
-Now, we have a clear connection between Todos and Users. The Todo has an `OwnerId`, which should reference the `Id` of a user. There is, however, no association between the two classes. The `Todo` does not have a property of type `User`. 
+Now, we have a clear connection between Todos and Users. 
+The Todo has an `Owner`, which should reference the User to which this Todo is assigned. 
 
-This approach is more similar to how we structure tables in a database. We could take (and will in part 3) a more Object Oriented approach, and include a 
-
-```csharp
-    public User User { get; set; }
-```
-
-property in the Todo class. Alternatively, the User class could have a property with the type of a List of Todos, e.g.:
+Alternatively, the User class could have a property with the type of a List of Todos, e.g.:
 
 ```csharp
     public List<Todo> Todos { get; set; }
 ```
 
-Having the associations makes the JSON-storage more complex, especially when the number of model objects grows. 
-So, for now we model the entities without associations between them. 
-It will, however, potentially make retrieving data a bit more complex. So, either approach has drawbacks.
+We could have properties in both directions, but bidirectional associations in the domain model classes can be difficult to maintain. 
+Having just one-direction association will, however, potentially make retrieving data a bit more complex. 
+So, either approach has drawbacks.
 
-We may have to modify the model classes a bit, when we get to part 3 about using Entity Framework Core, and throw away the file storage.
+Given that it is a Todo app, the Todo is a key model, and we let the Todo keep track of its assignee, instead of the other way around. 

@@ -4,7 +4,7 @@ We wish to retrieve a list of Todos, and we want to be able to apply filtering. 
 * We need a DTO to contain the search criteria
 * We need a method in the Logic interface to take the search criteria and return a collection of Todos
 * We need a method in the DAO interface with a similar method
-* The logic implementation does nothing other than forward the method call
+* The logic implementation does nothing other than forward the method call (boooring)
 
 ## Search Criteria DTO
 We need to be able to search by the following:
@@ -55,3 +55,15 @@ We need the same method signature in the ITodoDao interface.
 
 ## Logic Implementation
 Implement the method from the interface, all it does is call the same method on the `todoDao` field variable. Same as what we did when getting the collection of users.
+
+#### Comment on logic implementation
+Sometimes you need to return data, which is combined from different domain objects. There are two approaches:
+
+1) Just ask the DAO layer, and have this layer construct everything and return DTOs
+2) Ask the DAO layer for relevant domain objects, and let logic layer put things together into DTOs
+
+Both approaches are doable. The first will result in many specific methods in your DAO interfaces, which some people are against. They believe in only basic CRUD operations.
+
+The second will keep the DAO interfaces "pure", having only the simple CRUD operations, and not various read operations returning various DTOs. The benefit here is that you can have your DAO layer in place early, and not modify it. The drawback is that you will potentially need very many calls from the logic layer to the DAO layer, each resulting in database queries. This may not scale well, and slow the system down. 
+
+With a specific get method in the DAO interface, you might only need one database request.

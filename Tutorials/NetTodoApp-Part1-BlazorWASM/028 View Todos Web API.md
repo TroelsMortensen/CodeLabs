@@ -20,13 +20,13 @@ Did you remember to mark the parameters with `[FromQuery]`?
 
 ```csharp
 [HttpGet]
-public async Task<ActionResult<IEnumerable<Todo>>> Get([FromQuery] string? userName, [FromQuery] int? userId,
+public async Task<ActionResult<IEnumerable<Todo>>> GetAsync([FromQuery] string? userName, [FromQuery] int? userId,
     [FromQuery] bool? completedStatus, [FromQuery] string? titleContains)
 {
     try
     {
-        SearchTodoParametersDto sp = new(userName, userId, completedStatus, titleContains);
-        var todos = await todoLogic.Get(sp);
+        SearchTodoParametersDto parameters = new(userName, userId, completedStatus, titleContains);
+        var todos = await todoLogic.GetAsync(parameters);
         return Ok(todos);
     }
     catch (Exception e)

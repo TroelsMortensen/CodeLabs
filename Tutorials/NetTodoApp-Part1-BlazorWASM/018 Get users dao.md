@@ -5,7 +5,7 @@ Now we need to fix the UserFileDao.cs. The compiler should be complaining, becau
 Implement the method in UserFileDao. It looks like this:
 
 ```csharp
-public Task<IEnumerable<User>> Get(SearchUserParametersDto searchParameters)
+public Task<IEnumerable<User>> GetAsync(SearchUserParametersDto searchParameters)
 {
     IEnumerable<User> users = context.Users.AsEnumerable();
     if (searchParameters.UsernameContains != null)

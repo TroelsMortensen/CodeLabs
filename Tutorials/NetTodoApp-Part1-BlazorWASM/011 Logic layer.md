@@ -19,7 +19,8 @@ Create a new interface, call it "IUserLogic". We will put a method here further 
 The data we need to provide to create a User can be considered part of the contract.\
 In our case it is just a user name. Later, we might need other things like password, email, real name, etc.
 
-We could here use the User class, we previously defined in the Domain component. However, that class contains more properties than what is needed in our case.\
+We could here use the User class, we previously defined in the Domain component. 
+However, that class contains more properties than what is needed in our case of creating a new User.\
 We could just leave some properties empty, but that may not always be convenient. In our case, we will instead create a new DTO with just the properties needed to create a new User.
 
 Inside Domain component, create a new directory, call it DTOs.\
@@ -76,19 +77,23 @@ namespace Domain.LogicInterfaces;
 
 public interface IUserLogic
 {
-    Task<User> Create(UserCreationDto userToCreate);
+    Task<User> CreateAsync(UserCreationDto userToCreate);
 }
 ```
 
 The return type is `Task<User>` because we may want to do some work asynchronously. There is nothing yet, but when the database is attached and we use EFC, things will have to be asynchronous.\
-The data needed is wrapped in the `UserCreationDta`, i.e. the argument.\
+The data needed is wrapped in the `UserCreationDto`, i.e. the argument.\
 And the data returned is the finalized User object.
 In our case, an Id is generated for the new User. In other casees more data could be computed and set. Maybe we want to display the final result to the user of the system, as a kind of verification.
 This is common practice.\
 All methods in an interface is implicitly public, we don't need to add that keyword.
 
 ###### Naming?
-Why do I not name the method `CreateUser`? That might be more telling about the purpose of the method. However, since I split my Logic interfaces for each domain object, it is implicit that this interface handles Users, and `create()` must then create a user. This is a principle, avoid that kind of duplicate information.
+Why do I not name the method `CreateUser`? 
+That might be more telling about the purpose of the method. 
+However, since I split my Logic interfaces for each domain object, it is implicit that this interface handles Users, 
+and `create()` must then create a user. This is a principle, avoid that kind of duplicate information.\
+We also suffix the method with "Async", which is a convention for asynchronous methods.
 
 #### Getting a user
 Another method is needed for some validation, you'll see below. It will retrieve an existing user based on the user name.\
@@ -108,11 +113,13 @@ namespace Domain.DaoInterfaces;
 
 public interface IUserDao
 {
-    Task<User> Create(User user);
-    Task<User?> GetByUsername(string userName);
+    Task<User> CreateAsync(User user);
+    Task<User?> GetByUsernameAsync(string userName);
 }
 ```
-Here, we take a User object and return a User object. That means the responsibility of converting from UserCreationDto to User lies in the application layer. It is a design choice I have made, that responsibility could be put elsewhere. There are many different approaches. Pick one and be consistent.
+Here, we take a User object and return a User object. 
+That means the responsibility of converting from UserCreationDto to User lies in the application layer. 
+It is a design choice I have made, that responsibility could be put in the Data Access layer. There are many different approaches. Pick one and be consistent.
 
 Your DAO classes will support CRUD operations (create, read, update, delete). I have defined the following four rules of thumb:
 
@@ -151,7 +158,7 @@ public class UserLogic : IUserLogic
         this.userDao = userDao;
     }
 
-    public Task<User> Create(UserCreationDto userToCreate)
+    public Task<User> CreateAsync(UserCreationDto userToCreate)
     {
         throw new NotImplementedException();
     }
@@ -219,11 +226,16 @@ The length is checked, and if problems are found, an exception is thrown.
 The method is `static` because it is a utility method. It just takes an argument, does something with that and either returns void or some object. We don't use any field variables.\
 Making the method `static` is a occasional, minor optimization, which your IDE may suggest to you. It is not necessary. 
 
+##### Logic placement
+Validating the data of a User. Where to put that? I have it as a method, the one above, in the logic layer.\
+However, you may also see that this kind of logic is in the constructor of the Todo. This is also common practice. It will ensure that a Todo object is never created in an invalid state.\
+We would however still need to check the user name in the logic class, so I have decided to keep all validation logic together, it is just what I am used to. This way, the Todo object is kept clean and simple.
+
 ### Exceptions
-Notice how it is always just an `Exception`. This means, the layer above, i.e. the Controllers of the Web API, may not be able to detect what kind of problem we have, and always just returns the same HTTP error code.\
+Notice how it is always just an `Exception` being thrown. This means, the layer above, i.e. the Controllers of the Web API, may not be able to detect what kind of problem we have, and always just returns the same HTTP error code.\
 This is not very fine grained, but is acceptable for now.
 
-If you want to improve, you would create new custom Exceptions, e.g. UsernameTakenException, or InvalidUsernameLengthException, etc. Your custom exceptions are just a normal class, which extends `Exception`.\
+If you want to improve, you would create new custom Exceptions, e.g. `UnavailableUsernameException`, or `InvalidUsernameLengthException`, etc. Your custom exceptions are just a normal class, which extends `Exception`.\
 The Controller above can then catch different types of exceptions, and return a more telling error code. In the case of invalid username, it is a user-error. If something else happens, e.g. there is no connection to the database, it is a server error, resulting in two different HTTP error codes.
 
 These custom exceptions are outside the scope of this project. It is left to the interested reader to implement themselves. Often these exceptions are placed in the Domain component.

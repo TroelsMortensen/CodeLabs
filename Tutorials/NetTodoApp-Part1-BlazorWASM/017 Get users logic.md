@@ -32,7 +32,7 @@ public class SearchUserParametersDto
 {
     public string? UsernameContains { get;  }
 
-    public SearchUserFiltersDto(string usernameContains)
+    public SearchUserFiltersDto(string? usernameContains)
     {
         UsernameContains = usernameContains;
     }
@@ -53,7 +53,7 @@ namespace Domain.LogicInterfaces;
 public interface IUserLogic
 {
     public Task<User> Create(UserCreationDto dto);
-    public Task<IEnumerable<User>> Get(SearchUserParametersDto searchParameters);
+    public Task<IEnumerable<User>> GetAsync(SearchUserParametersDto searchParameters);
 }
 ```
 
@@ -67,20 +67,20 @@ We do this before we start on the method implementation in UserLogic, because th
 In IUserDao add the same method as above:
 
 ```csharp
-public Task<IEnumerable<User>> Get(SearchUserParametersDto searchParameters);
+public Task<IEnumerable<User>> GetAsync(SearchUserParametersDto searchParameters);
 ```
 
 ### The logic implementation
 Finally, we define the method in the UserLogic class. It doesn't do anything other than delegate to the layer below:
 
 ```csharp
-public Task<IEnumerable<User>> Get(SearchUserParametersDto searchParameters)
+public Task<IEnumerable<User>> GetAsync(SearchUserParametersDto searchParameters)
 {
-    return userDao.Get(searchParameters);
+    return userDao.GetAsync(searchParameters);
 }
 ```
 
-Notice that `userDao.Get(searchParameters)` returns a Task, but we don't need to await it, because we do not need the result here.
+Notice that `userDao.GetAsync(searchParameters)` returns a Task, but we don't need to await it, because we do not need the result here.
 Instead, we actually just returns that task, to be awaited somewhere else.
 
 Next step would be to implement the search funtionality in the UserFileDao class. It should currently be complaining about not defining an implementation for the method we just defined in IUserDao.

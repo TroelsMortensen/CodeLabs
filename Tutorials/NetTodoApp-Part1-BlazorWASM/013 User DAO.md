@@ -22,12 +22,12 @@ public class UserFileDAO : IUserDao
         this.context = context;
     }
 
-    public Task<User> Create(User user)
+    public Task<User> CreateAsync(User user)
     {
         throw new NotImplementedException();
     }
 
-    public Task<User?> GetByUsername(string userName)
+    public Task<User?> GetByUsernameAsync(string userName)
     {
         throw new NotImplementedException();
     }
@@ -46,7 +46,7 @@ This method should take the User object, assign a unique ID, add it to the colle
 It looks like this:
 
 ```csharp
-public Task<User> Create(User user)
+public Task<User> CreateAsync(User user)
 {
     int userId = 1;
     if (context.Users.Any())
@@ -82,7 +82,7 @@ You could try and implement that method yourself first, and then afterwards look
 <summary>hint</summary>
 
 ```csharp
-public Task<User?> GetByUsername(string userName)
+public Task<User?> GetByUsernameAsync(string userName)
 {
     User? existing = context.Users.FirstOrDefault(u =>
         u.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)

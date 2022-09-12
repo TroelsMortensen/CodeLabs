@@ -6,29 +6,26 @@ After your own attempt, or if you're stuck, check out my approach in the hint be
 
 The part about searching by user name is slightly complicated, but see if you can figure that out yourself.
 
+Remember, all search parameters can be used by themself, applied together with any other, or left out.
+
 <details>
 <summary>hint</summary>
 
 ```csharp
-public Task<IEnumerable<Todo>> Get(SearchTodoParametersDto searchParams)
+public Task<IEnumerable<Todo>> GetAsync(SearchTodoParametersDto searchParams)
 {
     IEnumerable<Todo> result = context.Todos.AsEnumerable();
 
     if (!string.IsNullOrEmpty(searchParams.Username))
     {
-        User? user = context.Users.FirstOrDefault(u =>
-            u.UserName.Equals(searchParams.Username, StringComparison.OrdinalIgnoreCase));
-        
-        if (user != null)
-        {
-            int ownerId = user.Id;
-            result = result.Where(t => t.OwnerId == ownerId);
-        }
+        // we know username is unique, so just fetch the first
+        result = context.Todos.Where(todo =>
+            todo.Owner.UserName.Equals(searchParams.Username, StringComparison.OrdinalIgnoreCase));
     }
 
     if (searchParams.UserId != null)
     {
-        result = result.Where(t => t.OwnerId == searchParams.UserId);
+        result = result.Where(t => t.Owner.Id == searchParams.UserId);
     }
 
     if (searchParams.CompletedStatus != null)
@@ -48,7 +45,7 @@ public Task<IEnumerable<Todo>> Get(SearchTodoParametersDto searchParams)
 
 Again, we just have one if-statement after the other, one for each search parameter. 
 
-The first one is a bit extra, because a Todo does not know about the user name. So, first we look for a User with that user name. If found, we take the ID and filter the Todos using this ID.
+The first case looks for all todos, where their Owner's username is equal to the search parameter, ignoring case.
 
 The others should be fairly straight forward.
 

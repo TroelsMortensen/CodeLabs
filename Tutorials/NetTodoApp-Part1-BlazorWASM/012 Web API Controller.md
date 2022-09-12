@@ -52,11 +52,11 @@ It looks like this:
 
 ```csharp
 [HttpPost]
-public async Task<ActionResult<User>> Create(UserCreationDto dto)
+public async Task<ActionResult<User>> CreateAsync(UserCreationDto dto)
 {
     try
     {
-        User user = await userLogic.Create(dto);
+        User user = await userLogic.CreateAsync(dto);
         return Created($"/users/{user.Id}", user);
     }
     catch (Exception e)
@@ -69,7 +69,7 @@ public async Task<ActionResult<User>> Create(UserCreationDto dto)
 
 First, in line 1, we mark the method as `[HttpPost]` to say that POST requests to `/users` should hit this endpoint.
 
-The method is async, to support asynchronous work. The return type is as a consequence a Task. 
+The method is `async`, to support asynchronous work. The return type is as a consequence a Task. 
 This Task contains an ActionResult with a User inside. The ActionResult is an HTTP response type, which contains various extra data, other than what we provide.\
 It is just more information to the client, in case it is needed. It is good practice.
 
@@ -77,7 +77,7 @@ We take a `UserCreationDto` as the argument. This is given to the logic layer th
 The resulting User is then returned, with the method `Created()`, which will create an ActionResult with status code 201, the new path to this specific User (the endpoint of which we haven't made yet, but probably will),
 and finally the user object is also included. In our case the server only sets the ID. But in other cases, all kinds of data can be set or modified when creating an object, so generally it is polite to return the result, so the client/user can verify the result.
 
-If anything goes wrong in the layers below, we return a status code 500. That is not very fine grained, but we do include the method.\
+If anything goes wrong in the layers below, we return a status code 500. That is not very fine grained, but we do include the method of returning that error code.\
 A better approach is to create different custom exceptions, and catch them to then return different status codes. Maybe a ValidationException is thrown when validating the user data in the logic layer. We can then return a status code 400 indicating it was the clients fault, instead of the server.\
 See a [list of status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes).
 

@@ -7,7 +7,7 @@ Users skal kunne vælges i en drop down.
 
 Ved input skal jeg ikke bruge det indbyggede EditForm. Brug basic html.
 
-catch clauses skal stadig printe til console, nævn at print til file er pænere
+catch clauses skal stadig printe til console
 
 skriv mange gange, det er vigtigt at give feedback til brugeren.
 
@@ -23,12 +23,11 @@ why is it called contracts component? What is a contract?
 
 component diagram over inter-component dependencies.
 
-A common case is that the data is structured on way on the server, but it is displayed in a different way in the client. For that we can use DTOs.
+
 
 
 Async all method names
 
-Change POST to PUT?
 
 ----
 

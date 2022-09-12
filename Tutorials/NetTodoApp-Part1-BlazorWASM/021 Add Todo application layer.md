@@ -62,11 +62,12 @@ namespace Domain.LogicInterfaces;
 
 public interface ITodoLogic
 {
-    Task<Todo> Create(TodoCreationDto dto);
+    Task<Todo> CreateAsync(TodoCreationDto dto);
 }
 ```
 
-Remember that all methods in an interface is implicitly "public", we don't need to put that in front of the method.
+Remember that all methods in an interface are implicitly "public", we don't need to put that in front of the method.
+
 ## The DAO interface
 First, we need to create it. It goes inside Application/DaoInterfaces, call it "ITodoDao".
 
@@ -75,7 +76,7 @@ The method takes a Todo and returns a Todo (because the Id is set).
 Like this:
 
 ```csharp
-Task<Todo> Create(TodoCreationDto dto);
+Task<Todo> CreateAsync(TodoCreationDto dto);
 ```
 
 ### The logic
@@ -107,14 +108,14 @@ public class TodoLogic : ITodoLogic
         this.userDao = userDao;
     }
 
-    public Task<Todo> Create(TodoCreationDto dto)
+    public Task<Todo> CreateAsync(TodoCreationDto dto)
     {
         throw new NotImplementedException();
     }
 }
 ```
 
-The class implements the interface, the method is defined, though no body yet. The constructor receives the `ITodoDao`, and also the `IUserDao`.
+The class implements the interface, the method is defined, though currently without body. The constructor receives the `ITodoDao`, and also the `IUserDao`.
 
 #### The methods
 
@@ -122,16 +123,16 @@ Then the functionality.
 We end up with the following two methods:
 
 ```csharp
-public async Task<Todo> Create(TodoCreationDto dto)
+public async Task<Todo> CreateAsync(TodoCreationDto dto)
 {
-    User? user = await userDao.GetById(dto.OwnerId);
+    User? user = await userDao.GetByIdAsync(dto.OwnerId);
     if (user == null)
     {
         throw new Exception($"User with id {dto.OwnerId} was not found.");
     }
 
     ValidateTodo(dto);
-    Todo todo = new Todo(dto.OwnerId, dto.Title);
+    Todo todo = new Todo(user, dto.Title);
     Todo created = await todoDao.Create(todo);
     return created;
 }
@@ -148,7 +149,7 @@ We will fix this method shortly.
 
 If no user is found, an exception is thrown.
 
-Then the data is validated in the second method. I could put more rules in here, but that is less relevant for this tutorial.
+Then the data is validated in the second method. I could put more rules in here, but that is less relevant for this tutorial. Again, this data could mostly be put into the Todo constructor, to ensure no invalid Todo is created. But the same discussion applies, as the last time.
 
 A new Todo is instantiated and handed over to the Data Access layer, which does its thing, and returns the finalized object. That object is returned out of the Logic layer.
 
@@ -158,7 +159,7 @@ Let's just fix this compile error. You should be able to use <kbd>alt</kbd> + <k
 It looks like this:
 
 ```csharp
-Task<User?> GetById(int id);
+Task<User?> GetByIdAsync(int id);
 ```
 
 This now causes a compile error in the implementing class, UserFileDao. So, let's get to that one.

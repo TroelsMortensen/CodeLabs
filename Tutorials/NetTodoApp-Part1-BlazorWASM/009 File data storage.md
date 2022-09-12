@@ -1,6 +1,8 @@
 # File Data
 
-We are going to store the data as a string in JSON format. We could use binary, but sometimes it is just nice to be able to inspect the data in storage, or even quickly modify it. So, JSON is the way to go.
+We are going to store the data as a string in JSON format. 
+We could use binary, but sometimes it is just nice to be able to inspect the data in storage, or even quickly modify it. 
+So, JSON is an easy way to go.
 
 We are going to need three classes for this: Two DAO classes, and a "Context" class. 
 This latter class will be the one responsible for reading and writing to/from the file. The two DAO classes will come later, once we need them. We work by one feature at a time.\
@@ -127,6 +129,12 @@ public void SaveChanges()
 Later, when we work with databases through Entity Framework Core, you will also need to call SaveChanges after interacting with the database. 
 So, we practice the workflow here.\
 The `DataContainer` is serialized to JSON, then written to the file. Then the field is cleared.
+
+### Efficiency?
+We are going to save the Domain objects as they are. This means multiple Todos may reference the same User, and so in the JSON file we will find the same User data multiple times.
+
+Obviously this is not particular efficient, having this duplicate data. It is, however, a flaw we will accept for the JSON storage functionality, as this is just a placeholder until we get the actual database in place.\
+This database will be normalized, and we will be rid of duplicate data.
 
 ### GitHub
 Here ends the first branch on GitHub, the [basic setup](https://github.com/TroelsMortensen/WasmTodo/tree/001_BasicSetup). The next part will be on a new branch.

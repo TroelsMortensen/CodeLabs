@@ -3,7 +3,7 @@ We are ready to start our first feature:
 
 > As a User I can add a new User, so that Todos can be assigned to Users.
  
-Okay, a user can create a user, sounds a bit funky. We have the user interacting with the system, and we have information about users in the system. 
+Okay, a user can create a User, sounds a bit funky. We have the user interacting with the system, and we have information about users in the system. 
 
 Now, this is a Todo app, so we might consider whether adding a Todo item should be the most essential, and therefore be developed first. However, when creating a Todo it should be assigned to a User, so we do the User stuff first. Otherwise we would have to go back and revise a finished feature. That's doable, but I don't want to.
 
@@ -13,7 +13,10 @@ The idea is just that a Todo item is assigned to someone.
 We will approach this as Domain Driven Design, i.e. start with the logic of how adding a Todo should work, and not care about where the data comes from (the Web API) or how the data is stored (the file).
 
 ## Logic
-So, we will start with the application layer, where the domain logic resides. As previously mentioned, the network and data storage are just details. They come later. But the domain logic can be unit tested and verified.
+So, we will start with the application layer, where the domain logic resides. 
+As previously mentioned, the network and data storage are just details. They come later. 
+The domain logic, however, can be unit tested and verified, before we start on the other layers 
+(We will not do unit testing in this tutorial, though).
 
 What is involved in creating a new user? Well, we don't have that much data about a user, and few rules, it is going to be fairly simple.
 

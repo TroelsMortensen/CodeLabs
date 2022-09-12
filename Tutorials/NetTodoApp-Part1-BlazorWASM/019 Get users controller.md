@@ -6,12 +6,12 @@ It looks like this:
 
 ```csharp
 [HttpGet]
-public async Task<ActionResult<IEnumerable<User>>> Get([FromQuery] string username)
+public async Task<ActionResult<IEnumerable<User>>> GetAsync([FromQuery] string? username)
 {
     try
     {
-        SearchUserParametersDto p = new(username);
-        IEnumerable<User> users = await userLogic.Get(p);
+        SearchUserParametersDto parameters = new(username);
+        IEnumerable<User> users = await userLogic.GetAsync(parameters);
         return Ok(users);
     }
     catch (Exception e)
@@ -26,7 +26,9 @@ We mark the method with `[HttpGet]` so that GET requests to this controller ends
 
 The return value is the `IEnumerable<User>` wrapper in an HTTP response message.
 
-The argument is marked as `[FromQuery]` to indicate that this argument should be extracted from the query parameters of the URI.\
+The argument is marked as `[FromQuery]` to indicate that this argument should be extracted from the query parameters of the URI.
+The argument is of type `string?` indicating that it can be left out, i.e. be `null`.
+
 A URI could look like:
 
 `https://localhost:7093/Users?username=roe`

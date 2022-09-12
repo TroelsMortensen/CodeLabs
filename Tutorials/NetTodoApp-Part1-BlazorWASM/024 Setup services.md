@@ -17,7 +17,7 @@ Run your app, make a request to create a new Todo through Swagger, Postman, or R
 
 After a success response, go and have a look in WebAPI/data.json. Mine looks like this:
 
-```json{12-19}
+```json{12-21}
 {
   "Users": [
     {
@@ -32,7 +32,10 @@ After a success response, go and have a look in WebAPI/data.json. Mine looks lik
   "Todos": [
     {
       "Id": 1,
-      "OwnerId": 1,
+      "Owner": {
+        "Id": 1,
+        "UserName": "Troels"
+      },
       "Title": "Test todo",
       "IsCompleted": false
     }
@@ -41,5 +44,9 @@ After a success response, go and have a look in WebAPI/data.json. Mine looks lik
 ```
 The highlighted lines shows the collection of persisted Todos.
 
-Try to create a Todo with empty Title, or set the OwnerId to 0, to test the rainy scenario.
+Notice how the Todo contains the same User data as a User found in the Users collection. If the User objects had more properties, this JSON storage approach would really not scale well.
 
+Try to create a Todo with empty Title, or set the OwnerId to 0, to test the rainy scenario. 
+It is always important to test that your system is robust and can handle abuse by the user. Users will always mistreat your system.
+
+![](Resources/UserAbuse.gif)
