@@ -83,32 +83,16 @@ We need a few things, so I will take you through it.
 
 ##### Todo
 Currently, the Todo class should have no mutator on the Owner property. We will need that.
-Just add a "set;" to the Owner. We will do something similar to the `IsCompleted`, however let's make it so Todos cannot be un-completed once completed:
+Just add a "set;" to the Owner. This is also needed for IsCompleted, and Title.
 
---------- rework!!!
 ```csharp
 public class Todo
 {
-    private bool isCompleted;
-    
     public int Id { get; set; }
     public User Owner { get; set; }
     public string Title { get; }
 
-    public bool IsCompleted
-    {
-        get => isCompleted;
-        set
-        {
-            // cannot un-complete a completed Todo
-            if (value == false && isCompleted == true)
-            {
-                throw new Exception("Cannot un-complete a Todo");
-            }
-
-            isCompleted = value;
-        }
-    }
+    public bool IsCompleted { get; set; }
 
     public Todo(User owner, string title)
     {
@@ -118,36 +102,60 @@ public class Todo
 }
 ```
 
-Notice the explicit private field.
+Again, we could put logic like checking that a completed Todo is not un-completed into the Todo class. 
+But, _consistency is key_, and as we previously made the decision to put validation logic into the application layer, we will stick with that decision. 
 
 ##### Logic update method 
 
+We are now ready for the logic implementation. Not all suggested logic from above will be included in this tutorial.
 
 ```csharp
-public async Task UpdateAsync(Todo todo)
-{
-    Todo? existing = await todoDao.GetById(todo.Id);
-
-    if (existing == null)
+    public async Task UpdateAsync(TodoUpdateDto dto)
     {
-        throw new Exception($"Todo with ID {todo.Id} not found!");
+        Todo? existing = await todoDao.GetByIdAsync(dto.Id);
+
+        if (existing == null)
+        {
+            throw new Exception($"Todo with ID {dto.Id} not found!");
+        }
+
+        User? user = await userDao.GetByIdAsync(dto.OwnerId);
+        if (user == null)
+        {
+            throw new Exception($"User with id {dto.OwnerId} was not found.");
+        }
+        
+        if (existing.IsCompleted && !dto.IsCompleted)
+        {
+            throw new Exception("Cannot un-complete a completed Todo");
+        }
+
+        Todo updated = new Todo(user, dto.Title)
+        {
+            Id = existing.Id,
+            IsCompleted = dto.IsCompleted
+        };
+        
+        ValidateTodo(updated);
+
+        await todoDao.UpdateAsync(updated);
     }
 
-    User? user = await userDao.GetById(todo.OwnerId);
-    if (user == null)
+    private void ValidateTodo(Todo dto)
     {
-        throw new Exception($"User with id {todo.OwnerId} was not found.");
+        if (string.IsNullOrEmpty(dto.Title)) throw new Exception("Title cannot be empty.");
+        // other validation stuff
     }
-
-    ValidateTodo(todo);
-
-    await todoDao.Update(todo);
-}
-
-private void ValidateTodo(Todo todo)
-{
-    if (string.IsNullOrEmpty(todo.Title)) throw new Exception("Title cannot be empty.");
-    // other validation stuff
-}
 ```
 
+First, this is a somewhat long method, and it would benefit from being refactored into smaller methods, but that will add some complexity to explaining things.
+
+The method first finds an existing Todo.\
+Then the new assignee User is found.\
+Then we check that the Todo is not completed and is changed to un-completed.
+
+Then a new Todo is created with the updated data. Alternatively, the existing Todo could be modified, but because it is being referenced from the FileContext class, i.e. still kept in the list, we may encounter unwanted behaviour: If the validation in line 27 does not go through, we would need to undo the modifications.
+
+Finally the new Todo with updated values is passed to the DAO layer.
+
+Let's go and fix that layer next.

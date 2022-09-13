@@ -74,3 +74,12 @@ I have been renaming things over and over in this tutorial. I hope I have made t
 > There are only two hard things in Computer Science: cache invalidation, naming things, and off-by-one errors.
 
 -- Phil Karlton
+
+## Functional requirements
+As mentioned, we are doing a Todo app. Below are the user stories, which we will implement
+
+1) As a user of the system I can add a new User, so that Todos can be assigned to Users.
+2) As a User I can get a list of all existing Users, so that I can assign Todos to them
+3) As a User I can add a new Todo, so that I can remember important things
+4) As a User I can view all or filtered Todos, so that I can remember what to do
+5) As a User I can complete a Todo, so that I can mark things as done
