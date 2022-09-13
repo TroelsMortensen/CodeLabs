@@ -53,6 +53,7 @@ public Task UpdateAsync(Todo toUpdate)
 ```
 
 First the existing todo is found by its ID. If none exist, an exception is thrown. I know, we also checked for the existing Todo in the logic layer, but this method may potentially be reused somewhere else.
+This is just an extra safety measure.
 
 We remove the existing Todo from the collection. Then add the new Todo. Essentially we overwrite the existing.
 

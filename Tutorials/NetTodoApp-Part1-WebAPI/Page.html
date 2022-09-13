@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div id="steps-list">
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 Architecture</li>
+<li class="step" onclick="setTab(2)">3 New solution</li>
+<li class="step" onclick="setTab(3)">4 Domain component</li>
+<li class="step" onclick="setTab(4)">5 Model classes</li>
+<li class="step" onclick="setTab(5)">6 Web API</li>
+<li class="step" onclick="setTab(6)">7 Application component</li>
+<li class="step" onclick="setTab(7)">8 File data component</li>
+<li class="step" onclick="setTab(8)">9 File data storage</li>
+<li class="step" onclick="setTab(9)">10 First feature</li>
+<li class="step" onclick="setTab(10)">11 Logic layer</li>
+<li class="step" onclick="setTab(11)">12 Web API Controller</li>
+<li class="step" onclick="setTab(12)">13 User DAO</li>
+<li class="step" onclick="setTab(13)">14 Finalize create user</li>
+<li class="step" onclick="setTab(14)">15 Test create user</li>
+<li class="step" onclick="setTab(15)">16 Get users feature</li>
+<li class="step" onclick="setTab(16)">17 Get users logic</li>
+<li class="step" onclick="setTab(17)">18 Get users dao</li>
+<li class="step" onclick="setTab(18)">19 Get users controller</li>
+<li class="step" onclick="setTab(19)">20 Add Todo feature</li>
+<li class="step" onclick="setTab(20)">21 Add Todo application layer</li>
+<li class="step" onclick="setTab(21)">22 Add Todo data layer</li>
+<li class="step" onclick="setTab(22)">23 Add Todo Web API</li>
+<li class="step" onclick="setTab(23)">24 Setup services</li>
+<li class="step" onclick="setTab(24)">25 View Todos</li>
+<li class="step" onclick="setTab(25)">26 View Todos logic</li>
+<li class="step" onclick="setTab(26)">27 View Todos Data</li>
+<li class="step" onclick="setTab(27)">28 View Todos Web API</li>
+<li class="step" onclick="setTab(28)">29 Complete Todo feature</li>
+<li class="step" onclick="setTab(29)">30 Complete Todo logic</li>
+<li class="step" onclick="setTab(30)">31 Complete Todo DAO</li>
+<li class="step" onclick="setTab(31)">32 Complete Todo endpoint</li>
+<li class="step" onclick="setTab(32)">33 Delete Todo feature</li>
+<li class="step" onclick="setTab(33)">34 Delete Todo Logic</li>
+<li class="step" onclick="setTab(34)">35 Delete Todo DAO</li>
+<li class="step" onclick="setTab(35)">36 Delete Todo endpoint</li>
+<li class="step" onclick="setTab(36)">37 Conclusion</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right; margin:10px">
+                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<p>Der skal væres users, og en page, hvor man kan tilføje en ny user.</p>
+<p>Der skal være clean architecture på server side.
+Huske fejl beskeder, også i OnINitialized.</p>
+<p>Users skal kunne vælges i en drop down.</p>
+<p>Ved input skal jeg ikke bruge det indbyggede EditForm. Brug basic html.</p>
+<p>catch clauses skal stadig printe til console</p>
+<p>skriv mange gange, det er vigtigt at give feedback til brugeren.</p>
+<p>Få en HTtpClient gennem constructor. De skal åbenbart ikke disposes.</p>
+<p>Seed fra Program.cs file. Lav mange todos, e.g. 25, og så brug noget paging og indexing.</p>
+<p>Beskriv domain, ansvar, H or for acces interfaces, hvorfor dao interfaces. Hvorfor ligeglad med omkringliggende layers, de er ligegyldige detaljer.</p>
+<p>why is it called contracts component? What is a contract?</p>
+<p>component diagram over inter-component dependencies.</p>
+<p>Async all method names</p>
+<hr />
+<hr/><h1 id="introduction">Introduction</h1><hr/>
+<p>This is the first part of a 3 part tutorial series (at least according to the current plan).</p>
+<p>The system will be a basic Todo-app. You will be able to create Todo items, update and delete them.
+Get an overview of all Items, and a few other basic features.
+This kind of app is essentially a &quot;Hello World&quot;.</p>
+<p>Together, all three tutorials will go over how to:</p>
+<ol>
+<li>create a Web API, initially using a file to store data in JSON format</li>
+<li>create a Blazor WASM front end, which will interact with the Web API</li>
+<li>swap out the file storage with data base storage, using Entity Framework Core</li>
+</ol>
+<p>This tutorial will cover the first point: a Web API.
+It will result in a client/server system with a database.</p>
+<h3 id="github">GitHub</h3>
+<p>All code will be <a href="https://github.com/TroelsMortensen/WasmTodo">available on GitHub</a>. Different parts of the tutorial may be available on different branches.</p>
+<p>Here's an overview of the branches:</p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/001_BasicSetup">001_BasicSetup</a>: will contain the setup of the components, model classes, and the FileContext which stores data.<br />
+<a href="https://github.com/TroelsMortensen/WasmTodo/tree/002_AddUser">002_AddUser</a>: This will contain the code for the feature of adding a new User.<br />
+<a href="https://github.com/TroelsMortensen/WasmTodo/tree/003_GetUsers">003_GetUsers</a>: This contains code for the feature of retrieving Users.<br />
+<a href="https://github.com/TroelsMortensen/WasmTodo/tree/004_AddTodo">004_AddTodo</a>: This branch is for adding a new Todo.<br />
+<a href="https://github.com/TroelsMortensen/WasmTodo/tree/005_GetTodos">005_GetTodos</a>: Here we retrieve Todos.<br />
+<a href="https://github.com/TroelsMortensen/WasmTodo/tree/006_CompleteTodo">006_CompleteTodo</a>: This covers updating a Todo.<br />
+<a href="https://github.com/TroelsMortensen/WasmTodo/tree/007_DeleteTodo">007_DeleteTodo</a>: This feature allows us to delete a Todo.</p>
+<h2 id="code-mismatch">Code mismatch</h2>
+<p>There is a convention that asynchronous methods (which returns Task) have method names suffixed with &quot;Async&quot;, e.g. <code>CreateAsync()</code>, or <code>GetUserByIdAsyn()</code>.</p>
+<p>I did not remember to do this until half way through. So, I'm going over the previous parts and renaming everything. I may have forgotten some places, so the code examples in this tutorial, may have method names not matching entirely the names on GitHub. You're welcome to let me know, if you find a mismatch.</p>
+<h4 id="a-final-comment">A final comment</h4>
+<p>I have been renaming things over and over in this tutorial. I hope I have made the necessary updates to the text here, whenever things were updated in the code.</p>
+<blockquote>
+<p>There are only two hard things in Computer Science: cache invalidation, naming things, and off-by-one errors.</p>
+</blockquote>
+<p>-- Phil Karlton</p>
+<h2 id="functional-requirements">Functional requirements</h2>
+<p>As mentioned, we are doing a Todo app. Below are the user stories, which we will implement</p>
+<ol>
+<li>As a user of the system I can add a new User, so that Todos can be assigned to Users.</li>
+<li>As a User I can get a list of all existing Users, so that I can assign Todos to them</li>
+<li>As a User I can add a new Todo, so that I can remember important things</li>
+<li>As a User I can view all or filtered Todos, so that I can remember what to do</li>
+<li>As a User I can complete a Todo, so that I can mark things as done</li>
+<li>As a User I can delete a Todo, so that I can clean up</li>
+</ol>
+
+</div>
+<div class="tab">
+<hr/><h1 id="architecture-intro">Architecture intro</h1><hr/>
+<p>First we will take a look at the planned architecture of the Web API.</p>
+<p>On the server side, i.e. the Web API, we will use a classic 3-layered architecture:</p>
+<ol>
+<li>Network layer to receive requests from clients, using REST controllers</li>
+<li>Application layer, responsible for all business logic</li>
+<li>Data access layer, responsible for storing/retrieve data from storage (initially a file)</li>
+</ol>
+<p>We will let us inspire by well-known architecture approaches: Clean architecture, Onion architecture, Hexagon architecture. The interested reader is encouraged to research more about these. I will cover the bare minimum here.</p>
+<p>They are very similar ideas, and all advocate the layered approach, each layer separated by interfaces. This should sound familiar, we are applying the Dependency Inversion Principle.</p>
+<p>Below is the classic diagram for clean architecture (it is an onion of layers, therefore sometimes called Onion architecture):</p>
+<p><img src="Resources/CleanOnion.png" alt="img.png" /></p>
+<p>It is circular, or shaped as an onion. The idea is the closer to the center, the less likely to change.
+Your domain model classes are in the yellow Entities. They don't change.<br />
+The red circle, Use Cases, is your logic. That is also fairly fixed, once in place.
+The green layer is in our case REST controllers, i.e. our Web API, and the Data Access implementations,
+i.e. storing data in JSON file or use EFC to database. These are frameworks and libraries, which might be changed.</p>
+<p>If we unfold the diagram a little bit, it looks more like your familiar layered system, just shuffled around,
+so the higher layers are the &quot;unstable&quot; ones.</p>
+<p>![](Resources/clean unfolded.png)</p>
+<p>The point to notice in both cases are the dependencies. Outer layers in the onion knows about inner layers, not vice versa. And in the unfolded version, upper layers know about those below, and not vice versa.
+We will come back to these dependencies, and why this is the way.</p>
+<h2 id="architecture-overview">Architecture overview</h2>
+<p>This tutorial will be a larger exercise, perhaps sort of a tiny mini-SEP.
+As such, we wish to have a better code-structure for our program.
+You have previously been taught the SOLID design principles. They usually apply to single methods, or classes.
+In this project we will attempt to apply Clean Architecture, which is sort of like applying the SOLID principles on a larger scale.</p>
+<p>The final system will consist of 2 tiers (client and server), and a total of 5 layers.
+Each layer has a specific responsibility.</p>
+<p>Below is a layer diagram for an overview:</p>
+<p><img src="Resources/LayeredDiagram.png" alt="img.png" /></p>
+<p>The client will be a Blazor WASM application, using standard <code>HttpClient</code>s to make requests to the server.</p>
+<p>The server will use a REST Web API to receive the above mentioned requests.
+Initially we will store data in a file, using json format.
+Later, we will swap it out with a database, using Entity Framework Core and SQLite.</p>
+<p>This means, we must design the system, so that this swapping out is easy (relatively speaking),
+and affects as little of the rest of the system as possible.
+We will apply the Dependency Inversion Principle, and hide the Data Access layer behind interfaces.</p>
+<h3 id="component-diagram">Component diagram</h3>
+<p>The following diagram shows the components (grey boxes) of our project. The green box contains everything client side, and the blue box is the server side.</p>
+<p><img src="Resources/ComponentDiagram.svg" alt="img" /></p>
+<p>The grey boxes are &quot;components&quot;. I will steal the following explanation from Robert C. Martin's book &quot;Clean Architecture&quot;:</p>
+<blockquote>
+<p>Components are units of deployment. They are the smallets entities that can be deployed as part of a system. In Java, they are jar files. In .NET they are DDLs.</p>
+</blockquote>
+<p>In Java, components are often organized in <em>modules</em>. In .NET, components can be organized into various <em>projects</em>.
+Components can be considered a bit like lego-building blocks,
+with the intention that you use these blocks to construct the system.
+They provide modularity, so building-blocks can easily be swapped out (in theory, at least).</p>
+<p>There will be two Data Access components, and we can use either one.
+We will start with FileDataAccess and later swap it out with EfcDataAccess.</p>
+<p>So, this layered approach makes the system more modular:
+we can strip out a layer e.g. if we want to use a different type of data access,
+or a different type of network technology.
+We will go with REST for this tutorial series, but later we might want to swap to gRPC or SignalR or something else.
+We can fairly easy remove a &quot;block&quot;/component, and put in something different.</p>
+<p>The one thing, which stays fairly static, are the business rules.
+They are less likely to change, and they exist in the Application component. They do not depend on any specific technology, e.g. REST or PostgreSQL, and shouldn't care about that.
+This is also why, we put both Logic- and Dao-interfaces here, in this component.
+The Logic classes will always provide access to themselves through the Logic interfaces,
+and they will always need to retrieve and store data through the Dao interfaces.
+But the details of the layers above and below, i.e. network and data access, are irrelevant.</p>
+<p>This is <em>Domain Driven Design</em>, which you have probably heard about before. We focus on the domain first.</p>
+<p>You may notice that arrows point into the Application component, and no arrow points out. This means, the Application does not depend on anything else (except the Domain classes)</p>
+<p>The <code>Domain</code> component contains Model classes, in this tutorial that will be a User class, and a Todo class.
+These classes are known by all components.<br />
+We will in this component also put other relevant things, which most of the program might need to know about. That could be Data Transfer Objects.</p>
+<h3 id="data-transfer-objects-dtos">Data Transfer Objects (DTOs)</h3>
+<p>What are these? Well, you have your domain objects, e.g. User and Todo. These are in this case somewhat small in the number of properties, but in a real system they may grow large, and they maybe have associations to other model classes.<br />
+Sometimes the front end does not need all the data of a model class. You can then create a new class, a DTO, which will contain only the data you are going to need. We will use these classes, so you will see a few examples.</p>
+<h2 id="class-diagram">Class diagram</h2>
+<p>Below, you will find a rough, low-detailed class diagram of the resulting system, after the 3rd tutorial.</p>
+<p><img src="Resources/LowDetailedClassDiagram.svg" alt="diagram" /></p>
+<p>The blue box encapsulates the client, and the green box is the server.</p>
+<h3 id="server-design">Server design</h3>
+<p>The server consist of the 3 layers mentioned above:</p>
+<ol>
+<li>WebAPI is the entry point to the server, the Controller classes receive REST requests.</li>
+<li>The Application component contains classes which deal with domain logic and rules. E.g. we might validate a Todo item, the user wishes to create.</li>
+<li>Data access to provide access to data storage, either as JSON in a file or data stored in a database.</li>
+</ol>
+<p>The architecture may change a bit, as the tutorial moves forward.</p>
+<p>There are different approaches on how to structure these components.
+We will do &quot;by layer&quot;, because that is simpler.
+However, in your professional career, you will probably encounter a separation &quot;by feature&quot;.
+This is an often recommended approach, however much more complicated.
+Basically, if you want to try it out for SEP3: Each new user story, you implement, will go into a new component, or at least a separate directory.
+The idea is that everything related to a feature is located together. This is not always easy to follow.</p>
+<h5 id="repositories">Repositories</h5>
+<p>In the .NET world you may encounter Repositories. These act a little bit like Data Access Objects, and it can be difficult to find the difference.<br />
+People are not entirely in agreement either about the differences.<br />
+The point is that we may sometime call them data access objects, or sometimes repositories.</p>
+<p>The best definition, I could find is that Data Access Objects interact with the database, and there is one DAO per model class.<br />
+The Repositories interact with DAOs, sometimes multiple.</p>
+<p>But in smaller applications this will not always be the case, and DAOs and repositories are used interchangeably.</p>
+<h3 id="client-design">Client design</h3>
+<p>The client will (currently planned) have 4 views, or &quot;pages&quot;, with which the user can interact.<br />
+Each page will know about a Service interface, which provides functionality to create, get, update, delete either Users or Todos. We have attempted to apply Interface Segregation Principle here.<br />
+These interfaces are implemented by client classes, which can make requests to the server.<br />
+The interfaces are in a separate component, so that we can easily change the UI framework, or we can swap out the client classes, to match whatever network technology the server uses. We could put the interfaces in either BlazorWASM or Clients component, but given that either UI or network can be swapped out, the interfaces would be removed too, and cause problems.</p>
+<p>This may seem a bit overwhelming, but we will take it step by step, holding hands along the way. You will be safe. No worries.</p>
+<p><img src="Resources/HakunaMatata.png" alt="" /></p>
+<h3 id="more-reading">More reading</h3>
+<p>The interested reader can look through <a href="https://docs.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/common-web-application-architectures">this post, containing a good overview of various architectures</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="creating-a-new-solution">Creating a new solution</h1><hr/>
+<p>We are going to start out with a new <strong>empty solution</strong>. You might name it &quot;TodoAppWasm&quot;, or something else.</p>
+<p>Follow the steps below to create a new solution:</p>
+<p><img src="Resources/File-New.png" alt="new-solution" /></p>
+<p>Clicking New... will open the dialog for creating a new solution, see below.</p>
+<p><span class="numberCircle"><span>1</span></span> Select Empty Solution<br />
+<span class="numberCircle"><span>2</span></span> Give your solution a name. I have multiple Todo apps by now, so I have called this one &quot;BlazorTodoApp&quot;<br />
+<span class="numberCircle"><span>3</span></span> You can choose to add a git repository, if you wish.</p>
+<p><img src="Resources/empty-solution.png" alt="img.png" /></p>
+<p>Your new empty solution should now look like this:</p>
+<p><img src="Resources/newsolution.png" alt="img.png" /></p>
+<p>I.e. it's pretty empty. Next up, we will talk about the solution structure, which was displayed on the previous slide.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="domain-component">Domain component</h1><hr/>
+<p>A thing which was abstracted away from the architecture diagram, is where to put out data model classes, i.e. User and Todo.</p>
+<p>These will go into their own component, <em>Shared</em>. Having these classes in a separate component, means that both the client and the server can reference that component.
+It ensures that if a change is made to one of the classes, both client and server will still use the same version.</p>
+<h3 id="new-project-component">New project (component)</h3>
+<p>Create a new <strong>Class Library</strong> project, by right-clicking your solution:</p>
+<p><img src="Resources/CreateLibrary1.png" alt="" /></p>
+<p>This will open a familiar dialog, where you can create a Class Library <span class="numberCircle"><span>1</span></span>.<br />
+Give the project a name <span class="numberCircle"><span>2</span></span>, I have called mine &quot;Domain&quot;, in some examples it is called Models (notice wrong name in the screenshot).<br />
+In your case, you can probably only select net6.0 <span class="numberCircle"><span>3</span></span>, or later.<br />
+Finally, press <kbd>Create</kbd> <span class="numberCircle"><span>4</span></span>.</p>
+<p><img src="Resources/CreateSharedLibrary.png" alt="" /></p>
+<p>A Class Library is a type of project which cannot be run, it instead contains functionality.
+All NuGet packages are generally libraries with functionality, you can import into your system.
+Similar to some Jar files in Java, however, other Jar files can actually be executed.
+In .NET we distinguish between .exe files: executables, and .dll files: dynamic link libraries.</p>
+<p>Your Domain component will just contain the Model classes (and a few other things), there is nothing to run.</p>
+<p>The new project, Domain, will contain a single class, ´Class1.cs', you can just delete this.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="model-classes">Model classes</h1><hr/>
+<p>We are going to need to classes: User and Todo.</p>
+<h3 id="todo">Todo</h3>
+<p>Inside your Shared project, create a new directory: Models. In here create a new class, call it <code>Todo</code>.</p>
+<p>The <code>Todo</code> class needs properties for the data, a <code>Todo</code> should hold:</p>
+<pre><code class="line-numbers language-csharp">public class Todo
+{
+    public int Id { get; set; }
+    public User Owner { get; }
+    public string Title { get; }
+    public bool IsCompleted { get; }
+    
+
+    public Todo(User owner, string title)
+    {
+        Owner = owner;
+        Title = title;
+    }
+}
+</code></pre>
+<p>We have created a constructor, which only takes two of the four properties as arguments.
+The intention is that the <code>Id</code> should be set automatically by whatever class persists the data,
+and you cannot create a <code>Todo</code>, which is initially already completed,
+so we just default <code>IsCompleted</code> to false, by not setting it.</p>
+<h3 id="user">User</h3>
+<p>We also need a User object. Create a new class, &quot;User&quot;, inside the &quot;Models&quot; directory. It should look like this:</p>
+<pre><code class="line-numbers language-csharp">public class User
+{
+    public int Id { get; set; }
+    public string UserName { get; set; }
+}
+</code></pre>
+<p>In many applications the user name is unique, which might make the <code>Id</code> property redundant.
+We could, in fact, leave out <code>Id</code>,
+but I choose to keep it, because that makes it easier to include a feature, where a user can change their user name.
+It also adds a tiny bit of extra complexity to the system, which might be good as an example.</p>
+<h3 id="how-to-connect-models">How to connect models</h3>
+<p>Now, we have a clear connection between Todos and Users.
+The Todo has an <code>Owner</code>, which should reference the User to which this Todo is assigned.</p>
+<p>Alternatively, the User class could have a property with the type of a List of Todos, e.g.:</p>
+<pre><code class="line-numbers language-csharp">    public List&lt;Todo&gt; Todos { get; set; }
+</code></pre>
+<p>We could have properties in both directions, but bidirectional associations in the domain model classes can be difficult to maintain.
+Having just one-direction association will, however, potentially make retrieving data a bit more complex.
+So, either approach has drawbacks.</p>
+<p>Given that it is a Todo app, the Todo is a key model, and we let the Todo keep track of its assignee, instead of the other way around.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="creating-the-web-api">Creating the Web API</h1><hr/>
+<p>Next up, let's create the Web API component, i.e. the gate-way into our server.</p>
+<p>Create a new project, by right-clicking your solution again, and opening the &quot;New Project&quot; wizard.</p>
+<p>This time, we need a Web API:</p>
+<p><img src="Resources/NewWebAPI.png" alt="" /></p>
+<p><span class="numberCircle"><span>1</span></span> Web API templates are found under the &quot;ASP.NET Core Web Applications&quot;.<br />
+<span class="numberCircle"><span>2</span></span> Give it a name.<br />
+<span class="numberCircle"><span>3</span></span> Select &quot;Web API&quot; here. There are many options. Make sure it is <em><strong>API</strong></em>, not APP. Two different things. We need an API.</p>
+<p>Verify language is C#, net6.0 or later, no Authentication, and no Docker Support.</p>
+<p><span class="numberCircle"><span>4</span></span> Create the project.</p>
+<h3 id="test">Test</h3>
+<p>You should now be able to run the Web API, either by right-clicking on the project folder and select &quot;run&quot;</p>
+<p><img src="Resources/RunWebAPI.png" alt="img.png" /></p>
+<p>Or by clicking the green arrow on the top right, with the WebAPI selected in the drop down menu:</p>
+<p><img src="Resources/RunWebAPI2.png" alt="img.png" /></p>
+<h3 id="swagger">Swagger</h3>
+<p>When running the Web API, your browser should open a Swagger page, which is a built in client you can use to test your Web API. It's pretty neat.</p>
+<p>Currently there is just a GET endpoint, which returns some random weather data.</p>
+<p>We will obviously change that later, but we still need a few more components, before we really can get started on the good stuff.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="application-component">Application component</h1><hr/>
+<p>Create another Class Library project, call it Application. You may delete the default class, <code>Class1.cs</code>.</p>
+<p>This component will house our domain logic. This is where we will validate data from the client application.</p>
+<p>We leave it for now. We will focus on implementing a feature at a time, so we will come back to this component, when we start on the first feature.</p>
+<p>We still need a bit more setup first, though.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="file-data-component">File Data Component</h1><hr/>
+<p>Now, we just need a final Class Library, call it &quot;FileData&quot;, and delete the default class included.</p>
+<p>Your solution should now look like this</p>
+<p><img src="Resources/SolutionSetupDone.png" alt="img.png" /></p>
+<p>We have components for the three layers: network, domain, data access. And a component for our model classes, and other domain stuff.</p>
+<h3 id="dependencies">Dependencies</h3>
+<p>Some components need to know about others, in order to use their functionality or classes.<br />
+The Data Access Object classes in <code>FileData</code> need to implement interfaces located in <code>Application</code>, so we need a dependency from <code>FileData</code> to <code>Application</code>.</p>
+<p>It is done like this:</p>
+<p><img src="Resources/AddDependency.gif" alt="" /></p>
+<p>Now, also add the following dependencies:</p>
+<ol>
+<li>Application -&gt; Domain</li>
+<li>WebAPI -&gt; Application</li>
+<li>WebAPI -&gt; FileData</li>
+</ol>
+<p>Now, because Application -&gt; Domain, and FileData -&gt; Application, we get a &quot;transitive&quot; dependency: FileData -&gt; Application -&gt; Domain.
+The point is, FileData gets access to the model classes in Domain.'</p>
+<h3 id="next-up">Next up</h3>
+<p>Now we are almost ready to start implementing functionality.</p>
+<p>We will start by getting the storage functionality in place.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="file-data">File Data</h1><hr/>
+<p>We are going to store the data as a string in JSON format.
+We could use binary, but sometimes it is just nice to be able to inspect the data in storage, or even quickly modify it.
+So, JSON is an easy way to go.</p>
+<p>We are going to need three classes for this: Two DAO classes, and a &quot;Context&quot; class.
+This latter class will be the one responsible for reading and writing to/from the file. The two DAO classes will come later, once we need them. We work by one feature at a time.<br />
+We do it like this, because it will be very similar to how we are later going to use Entity Framework Core.</p>
+<h2 id="data-container">Data container</h2>
+<p>First, we will create a class to hold the data. Having all data in one class makes it easier to write it to a file, it is a bit of a hack, and this doesn't scale. We will essentially load all data into memory. But, the JSON storage is just for our initial minimum viable product, or proof of concept.</p>
+<p>Inside FileData component create a class: <code>DataContainer</code>.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">using Domain.Models;
+
+namespace FileData;
+
+public class DataContainer
+{
+    public ICollection&lt;User&gt; Users { get; set; }
+    public ICollection&lt;Todo&gt; Todos { get; set; }
+}
+</code></pre>
+<p>The point is, we will read data from the file and load into these two collections.
+The collections are essentially our database tables.
+If we were to need more model classes in the future, e.g. Category, Project, or something else, we would add more collections.</p>
+<p>We could use <code>IList</code>, <code>List</code> or other types of collections,
+but the Collection will behave similar to how we can interact with the database later on, using Entity Framework Core.
+So we use ICollection to practice.</p>
+<h2 id="file-context">File context</h2>
+<p>This class is responsible for reading and writing the data from/to the file.</p>
+<p>First, we create the <code>FileContext</code> class in the FileData project.</p>
+<p>The final version of the class can be found <a href="https://github.com/TroelsMortensen/WasmTodo/blob/master/FileData/FileContext.cs">here</a>.</p>
+<h3 id="fields">Fields</h3>
+<p>You need to define the path to the file, which should hold the data. And we need two collections, one for Users and one for Todos.</p>
+<pre><code class="line-numbers language-csharp">private const string filePath = &quot;data.json&quot;;
+private DataContainer? dataContainer;
+
+public ICollection&lt;Todo&gt; Todos
+{
+    get
+    {
+        LoadData();
+        return dataContainer!.Todos;
+    }
+}
+
+public ICollection&lt;User&gt; Users
+{
+    get
+    {
+        LoadData();
+        return dataContainer!.Users;
+    }
+}
+</code></pre>
+<p>Line 1 is just the file path.<br />
+Line 2 is the DataContainer, which after being loaded, will keep all our data.
+It is obviously not very efficient or scalable, because we are essentially keeping the entire database in memory.
+If the database contains a lot of data, we will not have enough memory.
+However, for this toy example, it is just fine.
+Notice the variable is <em>nullable</em>, marked with the &quot;?&quot;, indicating we allow this field to be null. We will regularly reset the data, clear it out and reload it.</p>
+<p>Then two properties. They both attempt to lazy load the data. Then the relevant collection is returned.</p>
+<p>The <code>LoadData</code> method will check if the data is loaded. If not, i.e. <code>dataContainer</code> is <code>null</code>, then the data is loaded. See below.</p>
+<h3 id="load-data">Load data</h3>
+<p>We need a method to read from the file, so we can retrieve data.</p>
+<pre><code class="line-numbers language-csharp">private void LoadData()
+{
+    if (dataContainer != null) return;
+    
+    if (!File.Exists(filePath))
+    {
+        dataContainer = new ()
+        {
+            Todos = new List&lt;Todo&gt;(),
+            Users = new List&lt;User&gt;()
+        };
+        return;
+    }
+    string content = File.ReadAllText(filePath);
+    dataContainer = JsonSerializer.Deserialize&lt;DataContainer&gt;(content);
+}
+</code></pre>
+<p>What's going on here?</p>
+<p>The method is private, because this class should be responsible for determining when to load data.
+No outside class should tell this class to load data.<br />
+First we check if the data is already loaded, and if so, we return.<br />
+Then we check if there is a file, and if not, we just create a new &quot;empty&quot; DataContainer.<br />
+If there is a file:
+We read all the content of the file, it returns a string.
+Then that string is deserialized into a <code>DataContainer</code>, and assigned to the field variable.</p>
+<h3 id="save-changes">Save changes</h3>
+<p>The purpose of this method is to take the content of the DataContainer field, and put into the file.</p>
+<pre><code class="line-numbers language-csharp">public void SaveChanges()
+{
+    string serialized = JsonSerializer.Serialize(dataContainer);
+    File.WriteAllText(filePath, serialized);
+    dataContainer = null;
+}
+</code></pre>
+<p>Later, when we work with databases through Entity Framework Core, you will also need to call SaveChanges after interacting with the database.
+So, we practice the workflow here.<br />
+The <code>DataContainer</code> is serialized to JSON, then written to the file. Then the field is cleared.</p>
+<h3 id="efficiency">Efficiency?</h3>
+<p>We are going to save the Domain objects as they are. This means multiple Todos may reference the same User, and so in the JSON file we will find the same User data multiple times.</p>
+<p>Obviously this is not particular efficient, having this duplicate data. It is, however, a flaw we will accept for the JSON storage functionality, as this is just a placeholder until we get the actual database in place.<br />
+This database will be normalized, and we will be rid of duplicate data.</p>
+<h3 id="github">GitHub</h3>
+<p>Here ends the first branch on GitHub, the <a href="https://github.com/TroelsMortensen/WasmTodo/tree/001_BasicSetup">basic setup</a>. The next part will be on a new branch.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="first-feature-create-user">First Feature, Create User</h1><hr/>
+<p>We are ready to start our first feature:</p>
+<blockquote>
+<p>As a User I can add a new User, so that Todos can be assigned to Users.</p>
+</blockquote>
+<p>Okay, a user can create a User, sounds a bit funky. We have the user interacting with the system, and we have information about users in the system.</p>
+<p>Now, this is a Todo app, so we might consider whether adding a Todo item should be the most essential, and therefore be developed first. However, when creating a Todo it should be assigned to a User, so we do the User stuff first. Otherwise we would have to go back and revise a finished feature. That's doable, but I don't want to.</p>
+<p>We have no login-system, so everyone can create new users in the system.<br />
+The idea is just that a Todo item is assigned to someone.</p>
+<p>We will approach this as Domain Driven Design, i.e. start with the logic of how adding a Todo should work, and not care about where the data comes from (the Web API) or how the data is stored (the file).</p>
+<h2 id="logic">Logic</h2>
+<p>So, we will start with the application layer, where the domain logic resides.
+As previously mentioned, the network and data storage are just details. They come later.
+The domain logic, however, can be unit tested and verified, before we start on the other layers
+(We will not do unit testing in this tutorial, though).</p>
+<p>What is involved in creating a new user? Well, we don't have that much data about a user, and few rules, it is going to be fairly simple.</p>
+<h3 id="github">GitHub</h3>
+<p>This feature is located in the branch <a href="https://github.com/TroelsMortensen/WasmTodo/tree/002_AddUser">002_AddUser</a>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="logic-layer">Logic Layer</h1><hr/>
+<p>This is the Application component, we need the &quot;entry&quot;-interfaces, the logic class, and the Data Access Object interfaces. Nothing else outside of that for now.</p>
+<p>This is the goal for the current slide:</p>
+<p><img src="Resources/ApplicationComponentLayers.png" alt="img.png" /></p>
+<h3 id="the-logic-interface">The logic interface</h3>
+<p>First, we need to define the access point to the domain logic, i.e. the interface.</p>
+<p>Inside the Application component, create a new folder called &quot;LogicInterfaces&quot;.</p>
+<p>Inside this folder, we will put the interface which provides access to the User logic.
+Create a new interface, call it &quot;IUserLogic&quot;. We will put a method here further down.</p>
+<h3 id="the-data-needed-the-dto">The data needed, the DTO</h3>
+<p>The data we need to provide to create a User can be considered part of the contract.<br />
+In our case it is just a user name. Later, we might need other things like password, email, real name, etc.</p>
+<p>We could here use the User class, we previously defined in the Domain component.
+However, that class contains more properties than what is needed in our case of creating a new User.<br />
+We could just leave some properties empty, but that may not always be convenient. In our case, we will instead create a new DTO with just the properties needed to create a new User.</p>
+<p>Inside Domain component, create a new directory, call it DTOs.<br />
+Inside this directory, create the following class:</p>
+<pre><code class="line-numbers language-csharp">namespace Domain.DTOs;
+
+public class UserCreationDto
+{
+    public string UserName { get;}
+
+    public UserCreationDto(string userName)
+    {
+        UserName = userName;
+    }
+}
+</code></pre>
+<p>Do we really need a class just to send that one string around? Strictly speaking, no.<br />
+But, if you have several methods all the way from your front end to here, which just takes a string, and later you figure out, you also need a password, how many method signatures do you have to modify?<br />
+At least a handful.<br />
+If we wrap all relevant data (just the user name for now) in an object,
+we can easily add another property to the class,
+and we will have to modify a lot fewer method signatures.</p>
+<p>I include the constructor here, because this object should have a &quot;UserName&quot; after its creation.</p>
+<h4 id="comment-on-dtos">Comment on DTOs</h4>
+<p>These type of classes, the DTOs, are used in various ways.
+Our approach is a bit loose, because all layers will know about the DTOs,
+and all layers will know about the domain objects.
+This causes some dependencies, which we will accept in this case. I.e. if we modify a DTO all layers are affected.<br />
+Sometimes a more strict separation is applied. Again, multiple approaches are available.</p>
+<p>One approach could be:</p>
+<p><img src="Resources/DtosAndDomains.png" alt="img.png" /></p>
+<p>In the above image one of the responsibilities of the application layer, i.e. Domain Logic, will then be to translate between DTOs and Domain Objects.<br />
+This will, however, result in many DTOs, which can be in-comprehensive.
+On the other hand, the separation is better. We must weigh the pros and cons.<br />
+We will apply the loose approach for convenience in this smaller example.</p>
+<h2 id="logic-interface-content">Logic Interface Content</h2>
+<p>Now we can define the method in IUserLogic interface:</p>
+<pre><code class="line-numbers language-csharp">using Domain.DTOs;
+using Domain.Models;
+
+namespace Domain.LogicInterfaces;
+
+public interface IUserLogic
+{
+    Task&lt;User&gt; CreateAsync(UserCreationDto userToCreate);
+}
+</code></pre>
+<p>The return type is <code>Task&lt;User&gt;</code> because we may want to do some work asynchronously. There is nothing yet, but when the database is attached and we use EFC, things will have to be asynchronous.<br />
+The data needed is wrapped in the <code>UserCreationDto</code>, i.e. the argument.<br />
+And the data returned is the finalized User object.
+In our case, an Id is generated for the new User. In other casees more data could be computed and set. Maybe we want to display the final result to the user of the system, as a kind of verification.
+This is common practice.<br />
+All methods in an interface is implicitly public, we don't need to add that keyword.</p>
+<h6 id="naming">Naming?</h6>
+<p>Why do I not name the method <code>CreateUser</code>?
+That might be more telling about the purpose of the method.
+However, since I split my Logic interfaces for each domain object, it is implicit that this interface handles Users,
+and <code>create()</code> must then create a user. This is a principle, avoid that kind of duplicate information.<br />
+We also suffix the method with &quot;Async&quot;, which is a convention for asynchronous methods.</p>
+<h4 id="getting-a-user">Getting a user</h4>
+<p>Another method is needed for some validation, you'll see below. It will retrieve an existing user based on the user name.<br />
+We use the question mark <code>User?</code> to indicate we might return null, in case no user is found.</p>
+<h3 id="the-data-storage">The data storage</h3>
+<p>We know that we need to store the new User, which we have just created. Let's define the DAO interface for this.</p>
+<p>Inside Application component, create the directory &quot;DaoInterfaces&quot;.</p>
+<p>Inside this new directory, create the following interface:</p>
+<pre><code class="line-numbers language-csharp">using Domain.Models;
+
+namespace Domain.DaoInterfaces;
+
+public interface IUserDao
+{
+    Task&lt;User&gt; CreateAsync(User user);
+    Task&lt;User?&gt; GetByUsernameAsync(string userName);
+}
+</code></pre>
+<p>Here, we take a User object and return a User object.
+That means the responsibility of converting from UserCreationDto to User lies in the application layer.
+It is a design choice I have made, that responsibility could be put in the Data Access layer. There are many different approaches. Pick one and be consistent.</p>
+<p>Your DAO classes will support CRUD operations (create, read, update, delete). I have defined the following four rules of thumb:</p>
+<ol>
+<li>Create: receives Domain object, returns Domain object</li>
+<li>Read: receives search parameters, returns DTO, or sometimes Domain objects</li>
+<li>Update: receives Domain object, returns void</li>
+<li>Delete: receives id, returns void</li>
+</ol>
+<p>They are not set in stone.</p>
+<h3 id="the-logic">The logic</h3>
+<p>Now we have both &quot;borders&quot;, we can put the meat in the sandwich, so to say.
+We create the class responsible for handling the process of creating a new User.
+The resulting class is <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/Application/Logic/UserLogic.cs">found here</a>.</p>
+<p>In Application component, create a new directory: &quot;Logic&quot;.<br />
+In here, create a new class: &quot;UserLogic&quot;.</p>
+<p>It must implement the IUserLogic interface, and it will depend on some way of storing data, i.e. the IUserDao interface, so we start here:</p>
+<pre><code class="line-numbers language-csharp">using Domain.DaoInterfaces;
+using Domain.DTOs;
+using Domain.LogicInterfaces;
+using Domain.Models;
+
+namespace Domain.Logic;
+
+public class UserLogic : IUserLogic
+{
+    private readonly IUserDao userDao;
+
+    public UserLogic(IUserDao userDao)
+    {
+        this.userDao = userDao;
+    }
+
+    public Task&lt;User&gt; CreateAsync(UserCreationDto userToCreate)
+    {
+        throw new NotImplementedException();
+    }
+}
+</code></pre>
+<p>The interface is implemented. And the User DAO is received through constructor dependency injection. If we register a UserDAO as a service, the framework will set this up for us. This allows us to adhere to the Dependency Inversion Principle,
+i.e. the Logic class knows only about the DAO interface, and its &quot;contract&quot;, i.e. &quot;I can save User objects&quot;, but the Logic class knows nothing about the DAO implementation, i.e. we are using JSON. This will make it easier to swap out for a real database later on.</p>
+<p>Now, we just need to fill out the body of the Create method.</p>
+<p>What is involved in creating a User?</p>
+<ul>
+<li>We need to verify the user name is not taken</li>
+<li>We need to verify whatever rules we define about the user name, lets say between 3 and 10 characters.</li>
+<li>We could add many more validation rules, e.g. no vulgar names, or no numbers or whatever. That is outside the scope of this tutorial</li>
+</ul>
+<p>So, we implement the body to adhere to the above rules:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;User&gt; Create(UserCreationDto dto)
+{
+    User? existing = await userDao.GetByUsername(dto.UserName);
+    if (existing != null)
+        throw new Exception(&quot;Username already taken!&quot;);
+
+    ValidateData(dto);
+    User toCreate = new User
+    {
+        UserName = dto.UserName
+    };
+    
+    User created = await userDao.Create(toCreate);
+    
+    return created;
+}
+</code></pre>
+<p>First we check if the username is taken. If so, an exception is thrown.
+This can be caught in a Controller class in the Web API, and an error code can be returned to the user.<br />
+We don't care how the user is informed about this problem, but <strong>it is important that the user is informed!</strong></p>
+<p>The <code>ValidateData()</code> method comes below, it just checks the rules of the username.</p>
+<p>A new User object is created, and handed over to the DAO for storage.<br />
+We return the newly created User object, now with an ID too. This ID is generated in the Data layer.</p>
+<p>Here we have the validation method:</p>
+<pre><code class="line-numbers language-csharp">private static void ValidateData(UserCreationDto userToCreate)
+{
+    string userName = userToCreate.UserName;
+
+    if (userName.Length &lt; 3)
+        throw new Exception(&quot;Username must be at least 3 characters!&quot;);
+
+    if (userName.Length &gt; 15)
+        throw new Exception(&quot;Username must be less than 16 characters!&quot;);
+}
+</code></pre>
+<p>The length is checked, and if problems are found, an exception is thrown.</p>
+<p>The method is <code>static</code> because it is a utility method. It just takes an argument, does something with that and either returns void or some object. We don't use any field variables.<br />
+Making the method <code>static</code> is a occasional, minor optimization, which your IDE may suggest to you. It is not necessary.</p>
+<h5 id="logic-placement">Logic placement</h5>
+<p>Validating the data of a User. Where to put that? I have it as a method, the one above, in the logic layer.<br />
+However, you may also see that this kind of logic is in the constructor of the Todo. This is also common practice. It will ensure that a Todo object is never created in an invalid state.<br />
+We would however still need to check the user name in the logic class, so I have decided to keep all validation logic together, it is just what I am used to. This way, the Todo object is kept clean and simple.</p>
+<h3 id="exceptions">Exceptions</h3>
+<p>Notice how it is always just an <code>Exception</code> being thrown. This means, the layer above, i.e. the Controllers of the Web API, may not be able to detect what kind of problem we have, and always just returns the same HTTP error code.<br />
+This is not very fine grained, but is acceptable for now.</p>
+<p>If you want to improve, you would create new custom Exceptions, e.g. <code>UnavailableUsernameException</code>, or <code>InvalidUsernameLengthException</code>, etc. Your custom exceptions are just a normal class, which extends <code>Exception</code>.<br />
+The Controller above can then catch different types of exceptions, and return a more telling error code. In the case of invalid username, it is a user-error. If something else happens, e.g. there is no connection to the database, it is a server error, resulting in two different HTTP error codes.</p>
+<p>These custom exceptions are outside the scope of this project. It is left to the interested reader to implement themselves. Often these exceptions are placed in the Domain component.</p>
+<p>Other, perhaps better, alternatives for error handling exists, but these are also outside the scope of this tutorial.</p>
+<h3 id="test">Test</h3>
+<p>We are not going to test the functionality in this tutorial, but now we could write unit tests to verify the behaviour and the validation. We would have to create a <em>Mock</em> for the DAO interface, i.e. a dummy implementation which doesn't do much.</p>
+<p>But this is a purpose of Domain Driven Design: That you focus on the domain logic first, and that you can then test it.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-web-api-controller">The Web API Controller</h1><hr/>
+<p>Next up, we will do the layer above the Application layer, i.e. the Web API. This is the access point into the system. We need a Web API endpoint which the client can call to create a new User object.</p>
+<h3 id="clean-up">Clean up</h3>
+<p>We already have the WebAPI component. Currently there are two template classes, and you can just delete them: WeatherForecast and WeatherForecastController.</p>
+<h3 id="user-controller">User Controller</h3>
+<p>Inside the Controllers directory, create a new class: &quot;UserController&quot;.
+This class will be responsible for everything User object related. Result <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/WebAPI/Controllers/UsersController.cs">found here</a>.</p>
+<p>This is the initial code:</p>
+<pre><code class="line-numbers language-csharp">using Domain.LogicInterfaces;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebAPI.Controllers;
+
+[ApiController]
+[Route(&quot;[controller]&quot;)]
+public class UsersController : ControllerBase
+{
+    private readonly IUserLogic userLogic;
+
+    public UserController(IUserLogic userLogic)
+    {
+        this.userLogic = userLogic;
+    }
+}
+</code></pre>
+<p>We first declare two using statements, and then the namespace.</p>
+<p>Then we have the attribute <code>[ApiController]</code>. This attribute marks this class as a Web API controller, so that the Web API framework will know about our class.</p>
+<p>The next attribute <code>[Route(&quot;[controller]&quot;)]</code> specifies the sub-URI to access this controller class.
+With that &quot;route template&quot;, the URI will be <code>localhost:port/users</code>.
+If we rename our UserController to something else, the path will be changed too.<br />
+We can define our own path with fx <code>[Route(&quot;api/users&quot;)]</code>, and then the URI would be <code>localhost:port/api/users</code>.
+It is up to you whether you just stick to the default name, or pick something else.</p>
+<p>The class extends ControllerBase to get access to various utility methods.</p>
+<p>Then a field variable, injected through the constructor, so we can get access to the application layer, i.e. the logic.</p>
+<h3 id="the-endpoint">The endpoint</h3>
+<p>We need a method for this.</p>
+<p>It should take the relevant data, pass it on to the logic layer, and return the result back to the client.<br />
+It looks like this:</p>
+<pre><code class="line-numbers language-csharp">[HttpPost]
+public async Task&lt;ActionResult&lt;User&gt;&gt; CreateAsync(UserCreationDto dto)
+{
+    try
+    {
+        User user = await userLogic.CreateAsync(dto);
+        return Created($&quot;/users/{user.Id}&quot;, user);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        return StatusCode(500, e.Message);
+    }
+}
+</code></pre>
+<p>First, in line 1, we mark the method as <code>[HttpPost]</code> to say that POST requests to <code>/users</code> should hit this endpoint.</p>
+<p>The method is <code>async</code>, to support asynchronous work. The return type is as a consequence a Task.
+This Task contains an ActionResult with a User inside. The ActionResult is an HTTP response type, which contains various extra data, other than what we provide.<br />
+It is just more information to the client, in case it is needed. It is good practice.</p>
+<p>We take a <code>UserCreationDto</code> as the argument. This is given to the logic layer through <code>userLogic</code> in line 6.<br />
+The resulting User is then returned, with the method <code>Created()</code>, which will create an ActionResult with status code 201, the new path to this specific User (the endpoint of which we haven't made yet, but probably will),
+and finally the user object is also included. In our case the server only sets the ID. But in other cases, all kinds of data can be set or modified when creating an object, so generally it is polite to return the result, so the client/user can verify the result.</p>
+<p>If anything goes wrong in the layers below, we return a status code 500. That is not very fine grained, but we do include the method of returning that error code.<br />
+A better approach is to create different custom exceptions, and catch them to then return different status codes. Maybe a ValidationException is thrown when validating the user data in the logic layer. We can then return a status code 400 indicating it was the clients fault, instead of the server.<br />
+See a <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">list of status codes</a>.</p>
+<p>Custom exceptions should be placed in the Domain component. They are, however, outside the scope of this tutorial. For now. Perhaps later steps will improve things in the future.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="user-data-access">User Data Access</h1><hr/>
+<p>With the logic and network layers in place, we just need to be able to store the new User.</p>
+<p>Inside FileData component, create a new directory, &quot;DAOs&quot;.</p>
+<p>Inside this directory, create the class &quot;UserFileDAO&quot;. The class is seen <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/FileData/DAOs/UserFileDAO.cs">here</a>.</p>
+<p>This is the initial setup of the class:</p>
+<pre><code class="line-numbers language-csharp">using Domain.DaoInterfaces;
+using Domain.Models;
+
+namespace FileData.DAOs;
+
+public class UserFileDAO : IUserDao
+{
+    private readonly FileContext context;
+
+    public UserFileDAO(FileContext context)
+    {
+        this.context = context;
+    }
+
+    public Task&lt;User&gt; CreateAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;User?&gt; GetByUsernameAsync(string userName)
+    {
+        throw new NotImplementedException();
+    }
+}
+</code></pre>
+<p>We implemented the <code>IUserDAO</code> interface from the Application component.</p>
+<p>We receive an instance of FileContext through constructor dependency injection.</p>
+<p>We have the two methods from the interface, currently without a working body. So, let's get on that.</p>
+<h3 id="create-user">Create User</h3>
+<p>This method should take the User object, assign a unique ID, add it to the collection in the FileContext, and save the changes, so that the data is persisted to the file.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">public Task&lt;User&gt; CreateAsync(User user)
+{
+    int userId = 1;
+    if (context.Users.Any())
+    {
+        userId = context.Users.Max(u =&gt; u.Id);
+        userId++;
+    }
+
+    user.Id = userId;
+
+    context.Users.Add(user);
+    context.SaveChanges();
+
+    return Task.FromResult(user);
+}
+</code></pre>
+<p>If there currently are no Users in the storage, then we just set the Id of the new User to be 1.<br />
+Otherwise:
+The <code>Max()</code> method looks through all the User objects and returns the max value found from the property <code>Id</code>. The result is incremented, and so we know this int is not currently in use as an ID.</p>
+<p>The return statement is a bit iffy, because the method signature says to return a Task<User>, but we are not doing anything asynchronous.<br />
+Remember, the Task<User> return type is because later on, when we add a real database, these methods will have to do asynchronous work against the database.</p>
+<p>But for now, it is synchronous code, looking like asynchronous. The consequence is just that we have to manually wrap the return value in a Task.</p>
+<h3 id="get-user">Get User</h3>
+<p>Next up, the method to find a user by user name.</p>
+<p>You could try and implement that method yourself first, and then afterwards look at the below hint, i.e. my approach:</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public Task&lt;User?&gt; GetByUsernameAsync(string userName)
+{
+    User? existing = context.Users.FirstOrDefault(u =&gt;
+        u.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
+    );
+    return Task.FromResult(existing);
+}
+</code></pre>
+<p>The <code>FirstOrDefault()</code> method will find the first object matching the criteria specified in the lambda expression.<br />
+If nothing is found, <code>null</code> is returned.</p>
+<p>In the Equals method I specify that the matching should not consider upper/lower case. I don't want a user called <code>Troels</code> and another <code>troels</code>.</p>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="final-touches">Final Touches</h1><hr/>
+<p>We have most of the code in place. We just need to bind it together. We have several places used constructor dependency injection, but we need to tell the framework is available for injection.<br />
+We do that in the WebAPI/Program.cs file. Open it.</p>
+<p>We need to register various services:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;FileContext&gt;();
+builder.Services.AddScoped&lt;IUserDao, UserFileDAO&gt;();
+builder.Services.AddScoped&lt;IUserLogic, UserLogic&gt;();
+</code></pre>
+<p>See result <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/WebAPI/Program.cs">here</a>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="testing">Testing</h1><hr/>
+<p>It is time to test, what we have done so far.</p>
+<p>Run your Web API. It should open the Swagger page in your browser.</p>
+<p>Try out the endpoint.</p>
+<p><img src="Resources/TestAddUser.gif" alt="" /></p>
+<p>After you have made the request, and gotten a success response, you should be able to find a new file in your Web API component, a file containing our data.</p>
+<p>If you inspect the file, you can see:</p>
+<p><code>{&quot;Users&quot;:[{&quot;Id&quot;:1,&quot;UserName&quot;:&quot;Troels&quot;}],&quot;Todos&quot;:[]}</code></p>
+<p>It is not particularly reader friendly, we will fix that. But, we can see the collection of Users, with my new User.
+And the collection of Todos are currently empty.</p>
+<p>Let's make it more reader friendly. Open the FileData/FileContext.cs file. Navigate to the <code>SaveChanges()</code> method.
+Modify it to be like this:</p>
+<pre><code class="line-numbers language-csharp">public void SaveChanges()
+{
+    string serialized = JsonSerializer.Serialize(dataContainer, new JsonSerializerOptions
+    {
+        WriteIndented = true
+    });
+    File.WriteAllText(filePath, serialized);
+    dataContainer = null;
+}
+</code></pre>
+<p>This will introduce line breaks to make things more readable. Test the endpoint again with another user, and inspect the file afterwards.</p>
+<p>The file content should now look like this:</p>
+<pre><code class="line-numbers language-json">{
+  &quot;Users&quot;: [
+    {
+      &quot;Id&quot;: 1,
+      &quot;UserName&quot;: &quot;Troels&quot;
+    },
+    {
+      &quot;Id&quot;: 2,
+      &quot;UserName&quot;: &quot;Jakob&quot;
+    }
+  ],
+  &quot;Todos&quot;: []
+}
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="get-all-users">Get All Users</h1><hr/>
+<p>We are ready for the next feature, available in <a href="">this branch on GitHub</a>:</p>
+<blockquote>
+<p>As a User I can get a list of all existing Users, so that I can assign Todos to them</p>
+</blockquote>
+<p>In order to assign a Todo to a user, we need to be able to select between the users, i.e. retrieve them.</p>
+<p>We will do a similar approach, with Domain Driven Design:</p>
+<ol>
+<li>First the application layer</li>
+<li>Then the Web API layer</li>
+<li>Then the data access layer</li>
+</ol>
+<p>Let's go.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="logic-layer-for-getting-users">Logic Layer for Getting Users</h1><hr/>
+<p>Now, there is not really any business logic associated with getting a list of Users, so the functionality in this layer is going to be fairly simple.</p>
+<h3 id="logic-interface">Logic interface</h3>
+<p>First we need to define what kind of information is needed by the logic layer to retrieve users.</p>
+<p>It could be nothing, if we just want all users.<br />
+It could be an Id or user name, if we just want a single user.<br />
+Or it could be a number of filtering criteria, if we had more information about a user.</p>
+<p>We are going with the last, and we want to be able to search for users containing a piece of text. E.g. if i searched for &quot;Ja&quot; we might get users Jakob, Jane, Jan, Jasmine.</p>
+<p>Now, the method in the interface could then look like this:</p>
+<p><code>... GetUsers(string containsText);</code></p>
+<p>However, if we later want to add more search criteria, I would have to modify potentially several method signatures across layers.</p>
+<p>Instead, we want to define an object to contain the search variables, a DTO.</p>
+<h6 id="note">Note</h6>
+<p>We have here avoided &quot;the primitive obsession anti pattern&quot;.</p>
+<h3 id="the-search-filters-dto">The search filters DTO</h3>
+<p>Inside Domain/DTOs directory, create the following class:</p>
+<pre><code class="line-numbers language-csharp">namespace Domain.DTOs;
+
+public class SearchUserParametersDto
+{
+    public string? UsernameContains { get;  }
+
+    public SearchUserFiltersDto(string? usernameContains)
+    {
+        UsernameContains = usernameContains;
+    }
+}
+</code></pre>
+<p>The property is marked with &quot;?&quot;, i.e. <code>string?</code> to indicate this search parameter can be null, i.e. it should be ignored when searching users.</p>
+<h3 id="the-interface-method">The interface method</h3>
+<p>We can now use our new search filter DTO in the method signature in the Logic interface, like so:</p>
+<pre data-line="9"><code class="line-numbers language-csharp">using Domain.DTOs;
+using Domain.Models;
+
+namespace Domain.LogicInterfaces;
+
+public interface IUserLogic
+{
+    public Task&lt;User&gt; Create(UserCreationDto dto);
+    public Task&lt;IEnumerable&lt;User&gt;&gt; GetAsync(SearchUserParametersDto searchParameters);
+}
+</code></pre>
+<p>We return an IEnumerable<User>. IEnumerable is just a kind of simple, non-modifiable collection. We could use ICollection, IList or something else, but there is a tendency to return IEnumerable for these kinds of things.</p>
+<h3 id="the-dao-interface-method">The dao interface method</h3>
+<p>Let us next define the method in the IUserDao interface.
+We do this before we start on the method implementation in UserLogic, because this implementation will need the method of the DAO interface.</p>
+<p>In IUserDao add the same method as above:</p>
+<pre><code class="line-numbers language-csharp">public Task&lt;IEnumerable&lt;User&gt;&gt; GetAsync(SearchUserParametersDto searchParameters);
+</code></pre>
+<h3 id="the-logic-implementation">The logic implementation</h3>
+<p>Finally, we define the method in the UserLogic class. It doesn't do anything other than delegate to the layer below:</p>
+<pre><code class="line-numbers language-csharp">public Task&lt;IEnumerable&lt;User&gt;&gt; GetAsync(SearchUserParametersDto searchParameters)
+{
+    return userDao.GetAsync(searchParameters);
+}
+</code></pre>
+<p>Notice that <code>userDao.GetAsync(searchParameters)</code> returns a Task, but we don't need to await it, because we do not need the result here.
+Instead, we actually just returns that task, to be awaited somewhere else.</p>
+<p>Next step would be to implement the search funtionality in the UserFileDao class. It should currently be complaining about not defining an implementation for the method we just defined in IUserDao.</p>
+<p>But first, a discussion. It's not needed for this tutorial, but maybe it causes you to reflect a little.</p>
+<h2 id="a-comment-on-architecture">A comment on architecture</h2>
+<p>Now, notice how the UserLogic class doesn't do anything, when we ask for data. It just forwards the method call to the Data Access layer below. So, is there really a point in going through the Logic layer for this? It is a fair assumption all data requests will be similar, i.e. the logic layer will do nothing other than just forwarding the request to the Data Access Layer.</p>
+<p>The point is, it may seem like silly extra work. We will do this work in this tutorial because it is just simpler for now, but there is another approach.</p>
+<p>There is an architectural pattern called &quot;Command Query Response Separation&quot;, or &quot;CQRS&quot;. The idea here is that you can devide functionality into two areas: commands and queries, i.e. &quot;do something&quot; and &quot;get something&quot;.<br />
+That means the &quot;create, update, delete&quot; operations are commands, and here we may need some extra logic, calculations, validations, before the command can be done. This work is done in the logic layer.<br />
+But for the &quot;read&quot; operations, there is no logic, so the CQRS pattern says to split things:</p>
+<p>Have a vertical slice for CUD operations, and another vertical slice for R operations.<br />
+There are different approaches to this, and the seemingly most common one is somewhat complex, relying on various libraries. But we will discuss the basic idea.</p>
+<p>Below is the &quot;minimum effort&quot; approach.</p>
+<p><img src="Resources/CQRS.svg" alt="cqrs" /></p>
+<p>The left side is our current approach, in the right side we have split out the &quot;Read&quot; requests into another interface.</p>
+<p>We have cut out the &quot;useless&quot; forwarding functionality in the UserLogic. If at some point, we need extra functionality when Reading in the logic layer, we can insert an implementation here, but because the UserController just knows about the interface, this modification should be fairly simple.</p>
+<p>Taking it a step further, we could split the UserFileDao implementation into two classes as well.</p>
+<p>The CQRS approach is not needed, or required. It is mainly to spark a thought.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="get-users-from-data-access-layer">Get Users from Data Access Layer</h1><hr/>
+<p>Now we need to fix the UserFileDao.cs. The compiler should be complaining, because we have added a method to IUserDao.</p>
+<p>Implement the method in UserFileDao. It looks like this:</p>
+<pre><code class="line-numbers language-csharp">public Task&lt;IEnumerable&lt;User&gt;&gt; GetAsync(SearchUserParametersDto searchParameters)
+{
+    IEnumerable&lt;User&gt; users = context.Users.AsEnumerable();
+    if (searchParameters.UsernameContains != null)
+    {
+        users = context.Users.Where(u =&gt; u.UserName.Contains(searchParameters.UsernameContains, StringComparison.OrdinalIgnoreCase));
+    }
+
+    return Task.FromResult(users);
+}
+</code></pre>
+<p>First, the method signature. The return type is Task, as usual. We get a collection of users, matching the search criteria.</p>
+<p>The first line of code takes the users from the context, and converts that ICollection to an IEnumerable. That's because of how the filtering is going to work, it uses IEnumerables. It's also a type of collection, just with fewer methods, it cannot be modified.</p>
+<p>We then check if the search parameter is not null, in which case we want to apply it.<br />
+We do that in line 6 with the <code>Where()</code> method, which goes through all the users,
+and selects those that matches the criteria specified by the lambda expression.</p>
+<p>In the end the result is returned.</p>
+<p>If we had more search parameters, we would for each of them make an if-statement to check if they should be applied.<br />
+With this approach we initially take all the users, and whittle them down search parameter by search parameter.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-controller-endpoint">The Controller Endpoint</h1><hr/>
+<p>With the Logic layer and the Data Access layer in place, we just need to create an endpoint in the UsersController, so that a client can request the data.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">[HttpGet]
+public async Task&lt;ActionResult&lt;IEnumerable&lt;User&gt;&gt;&gt; GetAsync([FromQuery] string? username)
+{
+    try
+    {
+        SearchUserParametersDto parameters = new(username);
+        IEnumerable&lt;User&gt; users = await userLogic.GetAsync(parameters);
+        return Ok(users);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        return StatusCode(500, e.Message);
+    }
+}
+</code></pre>
+<p>We mark the method with <code>[HttpGet]</code> so that GET requests to this controller ends here.</p>
+<p>The return value is the <code>IEnumerable&lt;User&gt;</code> wrapper in an HTTP response message.</p>
+<p>The argument is marked as <code>[FromQuery]</code> to indicate that this argument should be extracted from the query parameters of the URI.
+The argument is of type <code>string?</code> indicating that it can be left out, i.e. be <code>null</code>.</p>
+<p>A URI could look like:</p>
+<p><code>https://localhost:7093/Users?username=roe</code></p>
+<p>Indicating that we wish to filter the result by the user names which contains the text &quot;roe&quot;.</p>
+<p>Or if we want all users, we would use the URI:</p>
+<p><code>https://localhost:7093/Users</code></p>
+<p>If we later added other search parameters, e.g. age, we could have a URI like:</p>
+<p><code>https://localhost:7093/Users?username=roe&amp;age=25</code></p>
+<p>Which would result in all users where the user name contains &quot;roe&quot; and their age is 25.</p>
+<h3 id="test">Test</h3>
+<p>You should now be able to test your Web API. You could first put in a couple of users, and then try various filter texts and verify the result.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-todo">Add Todo</h1><hr/>
+<p>We have the necessary user functionality in place. Now it's time to get started in the features related to the Todo items.</p>
+<p>We will start with:</p>
+<blockquote>
+<p>As a User I can add a new Todo, so that I can remember important things</p>
+</blockquote>
+<p>We want to create a new Todo item, it contains some data, and is assigned to a specific user.</p>
+<p>Same approach as usual:</p>
+<ol>
+<li>Application layer
+<ol>
+<li>Logic interface</li>
+<li>DAO interface</li>
+<li>Logic imple</li>
+</ol>
+</li>
+<li>Data Access layer
+<ol>
+<li>JSON DAO implementation</li>
+</ol>
+</li>
+<li>Web API layer
+<ol>
+<li>New controller with endpoint</li>
+</ol>
+</li>
+</ol>
+<p>The order of 2 and 3 is not really relevant, they could be switched. If you want to do some integration testing along the way, the order may be relevant for you.</p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/004_AddTodo">This feature is found here</a>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="application-layer">Application layer</h1><hr/>
+<h2 id="solid">SOLID</h2>
+<p>We are of course applying our SOLID design principles, in this case specifically the ones about separation of concern, i.e. the S and I.<br />
+The result is that we must create a new vertical slice to handle Todo items. We already have a vertical slice for Users, i.e. Controller, Logic, DAO. Now we need the same for Todos.</p>
+<p>And again we apply a Domain Drive Design approach.\</p>
+<ol>
+<li>Logic interface: What is the contract? I.e. the data received and returned.</li>
+<li>DAO interface: What does the Logic class wish to persist?</li>
+<li>Logic implementation: What is the business logic involved in creating a Todo item.</li>
+</ol>
+<h2 id="new-classes-and-interfaces">New classes and interfaces</h2>
+<p>First we actually need the interface, let's call it &quot;ITodoLogic&quot;, and put it in Application/LogicInterfaces.</p>
+<h6 id="comment">Comment:</h6>
+<p>You will notice we are now organizing our code by layer. All DAO interfaces in the same directory, all logic interfaces in the same directory.</p>
+<p>An alternative would be to create a directory for everything related to Users, and another for the classes and interfaces related to Todos. Sometimes this latter approach is preferred, because that kind of organization is more coherent. The important thing is you pick an organization-approach, and that you are consistent.</p>
+<h2 id="the-itodologic-interfaces">The ITodoLogic interfaces</h2>
+<p>We need to define the contract: what does the logic layer need, what does it give back? I.e. the argument and the return type.</p>
+<h4 id="argument">Argument</h4>
+<p>In order to create a Todo we need to receive the following pieces of data:</p>
+<ul>
+<li>Title</li>
+<li>Owner ID</li>
+</ul>
+<p>The Todo class contains another two properties not relevant here, so similar to when we created a User, we can either just reuse the Todo class and leave some properties empty, or we can create a specialized DTO.<br />
+We'll go with the latter.</p>
+<p>Create the following class inside Domain/DTOs:</p>
+<pre><code class="line-numbers language-csharp">namespace Domain.DTOs;
+
+public class TodoCreationDto
+{
+    public int OwnerId { get; }
+    public string Title { get; }
+
+    public TodoCreationDto(int ownerId, string title)
+    {
+        OwnerId = ownerId;
+        Title = title;
+    }
+}
+</code></pre>
+<h4 id="return">Return</h4>
+<p>Similarly to the feature of creating a new User, some things are done to the Todo item, e.g. setting an ID. We therefore wish to return the finalized Todo item.</p>
+<h4 id="the-interface-method">The interface method</h4>
+<p>That leaves us the following method in <code>ITodoLogic</code>:</p>
+<pre><code class="line-numbers language-csharp">using Domain.DTOs;
+using Domain.Models;
+
+namespace Domain.LogicInterfaces;
+
+public interface ITodoLogic
+{
+    Task&lt;Todo&gt; CreateAsync(TodoCreationDto dto);
+}
+</code></pre>
+<p>Remember that all methods in an interface are implicitly &quot;public&quot;, we don't need to put that in front of the method.</p>
+<h2 id="the-dao-interface">The DAO interface</h2>
+<p>First, we need to create it. It goes inside Application/DaoInterfaces, call it &quot;ITodoDao&quot;.</p>
+<p>The method takes a Todo and returns a Todo (because the Id is set).</p>
+<p>Like this:</p>
+<pre><code class="line-numbers language-csharp">Task&lt;Todo&gt; CreateAsync(TodoCreationDto dto);
+</code></pre>
+<h3 id="the-logic">The logic</h3>
+<p>We have the input and output. But what is supposed to happen inside the box? It's similar to what we did with the user, certain rules must be adhered to, when creating Todo:</p>
+<ul>
+<li>Title must be set, we can put a min and max length on it.</li>
+<li>The Todo must be assigned to an existing User</li>
+<li>The Id is set by the Data Access layer</li>
+<li>The completed status of a new Todo is always false, i.e. &quot;not completed&quot;</li>
+</ul>
+<p>First, we need a new TodoLogic class:</p>
+<pre><code class="line-numbers language-csharp">using Domain.DaoInterfaces;
+using Domain.DTOs;
+using Domain.LogicInterfaces;
+using Domain.Models;
+
+namespace Domain.Logic;
+
+public class TodoLogic : ITodoLogic
+{
+    private readonly ITodoDao todoDao;
+    private readonly IUserDao userDao;
+
+    public TodoLogic(ITodoDao todoDao, IUserDao userDao)
+    {
+        this.todoDao = todoDao;
+        this.userDao = userDao;
+    }
+
+    public Task&lt;Todo&gt; CreateAsync(TodoCreationDto dto)
+    {
+        throw new NotImplementedException();
+    }
+}
+</code></pre>
+<p>The class implements the interface, the method is defined, though currently without body. The constructor receives the <code>ITodoDao</code>, and also the <code>IUserDao</code>.</p>
+<h4 id="the-methods">The methods</h4>
+<p>Then the functionality.
+We end up with the following two methods:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; CreateAsync(TodoCreationDto dto)
+{
+    User? user = await userDao.GetByIdAsync(dto.OwnerId);
+    if (user == null)
+    {
+        throw new Exception($&quot;User with id {dto.OwnerId} was not found.&quot;);
+    }
+
+    ValidateTodo(dto);
+    Todo todo = new Todo(user, dto.Title);
+    Todo created = await todoDao.Create(todo);
+    return created;
+}
+
+private void ValidateTodo(TodoCreationDto dto)
+{
+    if (string.IsNullOrEmpty(dto.Title)) throw new Exception(&quot;Title cannot be empty.&quot;);
+    // other validation stuff
+}
+</code></pre>
+<p>First, an existing user is searched for. We use a method <code>GetById()</code>, which does not exist. It is not easy to predict all the functionality needed up front, and it is okay to let the Logic layer drive these functionalities, and then implement them as needed.<br />
+We will fix this method shortly.</p>
+<p>If no user is found, an exception is thrown.</p>
+<p>Then the data is validated in the second method. I could put more rules in here, but that is less relevant for this tutorial. Again, this data could mostly be put into the Todo constructor, to ensure no invalid Todo is created. But the same discussion applies, as the last time.</p>
+<p>A new Todo is instantiated and handed over to the Data Access layer, which does its thing, and returns the finalized object. That object is returned out of the Logic layer.</p>
+<h4 id="getbyid">GetById</h4>
+<p>Let's just fix this compile error. You should be able to use <kbd>alt</kbd> + <kbd>enter</kbd> to quick fix this and create the method in the IUserDao interface.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">Task&lt;User?&gt; GetByIdAsync(int id);
+</code></pre>
+<p>This now causes a compile error in the implementing class, UserFileDao. So, let's get to that one.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-todo-in-data-access-layer">Add Todo in Data Access Layer</h1><hr/>
+<p>We need to fix two things in this layer, the method for finding a user by id and then the method for storing the Todo.</p>
+<h3 id="find-user">Find User</h3>
+<p>You should currently have a compile error in TodoFileDao, because the interface defines a method not yet implemented in the class.<br />
+Let's go ahead and implement that method.</p>
+<p>Given an Id we want to return the associated User, or null if none is found. Give it a go yourself first, and then look at the hint below:</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public Task&lt;User?&gt; GetByIdAsync(int id)
+{
+    User? existing = context.Users.FirstOrDefault(u =&gt;
+        u.Id == id
+    );
+    return Task.FromResult(existing);
+}
+</code></pre>
+</details>
+<h3 id="store-todo">Store Todo</h3>
+<p>First, we need a new <code>TodoFileDao</code> class, put it in FileData/DAOs.</p>
+<p>Then we need the method implemented. It should receive the Todo, set an Id, persist the Todo, and then return it. Very similar to what we did with the Users.</p>
+<p>Give this a go yourself, and then look at the hint below:</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public class TodoFileDao : ITodoDao
+{
+    private readonly FileContext context;
+
+    public TodoFileDao(FileContext context)
+    {
+        this.context = context;
+    }
+
+    public Task&lt;Todo&gt; CreateAsync(Todo todo)
+    {
+        int id = 1;
+        if (context.Todos.Any())
+        {
+            id = context.Todos.Max(t =&gt; t.Id);
+            id++;
+        }
+
+        todo.Id = id;
+        
+        context.Todos.Add(todo);
+        context.SaveChanges();
+
+        return Task.FromResult(todo);
+    }
+}
+</code></pre>
+</details>
+<p>Now we just need the Web API, and then we can test this feature.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-todo-controller-endpoint">Add Todo Controller Endpoint</h1><hr/>
+<p>We have the logic and data layer in place. We just need to provide access to the client, and for that we need:</p>
+<ul>
+<li>A new Controller class to handle Todos</li>
+<li>A POST endpoint to handle the creation of Todos</li>
+</ul>
+<h2 id="the-controller-class">The Controller Class</h2>
+<p>Create a new &quot;TodosController&quot; in WebAPI/Controllers.</p>
+<p>Set it up similarly to the UsersController, with the attributes and the inheritance.
+We need an ITodoLogic field variable as well. Give it a go, then look at the hint for verification.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">[ApiController]
+[Route(&quot;[controller]&quot;)]
+public class TodosController : ControllerBase
+{
+    private readonly ITodoLogic todoLogic;
+
+    public TodosController(ITodoLogic todoLogic)
+    {
+        this.todoLogic = todoLogic;
+    }
+}
+</code></pre>
+<p>This is almost identical to the other Controller class, we made, so if you forgot how things work, go back to slide 12.</p>
+</details>
+<h2 id="the-endpoint">The Endpoint</h2>
+<p>We now need the endpoint. You'll give this a go yourself as well first, it is very similar to the endpoint for creating a user.</p>
+<ul>
+<li>Mark it as a POST endpoint</li>
+<li>Hand over the data to the logic layer</li>
+<li>Return an informative response to the client</li>
+<li>In case of any errors, it is, as always, important to return information to the client</li>
+</ul>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">[HttpPost]
+public async Task&lt;ActionResult&lt;Todo&gt;&gt; CreateAsync(TodoCreationDto dto)
+{
+    try
+    {
+        Todo created = await todoLogic.CreateAsync(dto);
+        return Created($&quot;/todos/{created.Id}&quot;, created);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        return StatusCode(500, e.Message);
+    }
+}
+</code></pre>
+<p>This is almost identical to the other Controller class, we made, so if you forgot how things work, go back to slide 12.</p>
+</details>
+<p>See the final class <a href="https://github.com/TroelsMortensen/WasmTodo/blob/004_AddTodo/WebAPI/Controllers/TodosController.cs">here</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="register-services">Register Services</h1><hr/>
+<p>Now all the layers are in place. We just need to register services in the WebAPI/Program.cs class.</p>
+<p>Add these two lines:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;ITodoDao, TodoFileDao&gt;();
+builder.Services.AddScoped&lt;ITodoLogic, TodoLogic&gt;();
+</code></pre>
+<h2 id="test">Test</h2>
+<p>That should be everything for this feature.</p>
+<p>Let's test it.</p>
+<p>Run your app, make a request to create a new Todo through Swagger, Postman, or Rider's built in HTTP client.</p>
+<p>After a success response, go and have a look in WebAPI/data.json. Mine looks like this:</p>
+<pre data-line="12-21"><code class="line-numbers language-json">{
+  &quot;Users&quot;: [
+    {
+      &quot;Id&quot;: 1,
+      &quot;UserName&quot;: &quot;Troels&quot;
+    },
+    {
+      &quot;Id&quot;: 2,
+      &quot;UserName&quot;: &quot;Jakob&quot;
+    }
+  ],
+  &quot;Todos&quot;: [
+    {
+      &quot;Id&quot;: 1,
+      &quot;Owner&quot;: {
+        &quot;Id&quot;: 1,
+        &quot;UserName&quot;: &quot;Troels&quot;
+      },
+      &quot;Title&quot;: &quot;Test todo&quot;,
+      &quot;IsCompleted&quot;: false
+    }
+  ]
+}
+</code></pre>
+<p>The highlighted lines shows the collection of persisted Todos.</p>
+<p>Notice how the Todo contains the same User data as a User found in the Users collection. If the User objects had more properties, this JSON storage approach would really not scale well.</p>
+<p>Try to create a Todo with empty Title, or set the OwnerId to 0, to test the rainy scenario.
+It is always important to test that your system is robust and can handle abuse by the user. Users will always mistreat your system.</p>
+<p><img src="Resources/UserAbuse.gif" alt="" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="new-feature-view-todos">New Feature: View Todos</h1><hr/>
+<p>We are ready to start on the next feature:</p>
+<blockquote>
+<p>As a User I can view all or filtered Todos, so that I can remember what to do</p>
+</blockquote>
+<p>We wish to get a list of all Todos. We also want to be able to apply filtering. Maybe the user only wishes to see their own, or only un-completed items.<br />
+If a Todo had a deadline, we could add an ordering functionality. But that's in the next version.</p>
+<p>Same approach as before:</p>
+<ul>
+<li>Application layer</li>
+<li>Data layer</li>
+<li>Web API layer</li>
+</ul>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/005_GetTodos">This feature is found here</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="view-todos-logic-layer">View Todos Logic Layer</h1><hr/>
+<p>We wish to retrieve a list of Todos, and we want to be able to apply filtering. This is very similar to what we did with the User search.</p>
+<ul>
+<li>We need a DTO to contain the search criteria</li>
+<li>We need a method in the Logic interface to take the search criteria and return a collection of Todos</li>
+<li>We need a method in the DAO interface with a similar method</li>
+<li>The logic implementation does nothing other than forward the method call (boooring)</li>
+</ul>
+<h2 id="search-criteria-dto">Search Criteria DTO</h2>
+<p>We need to be able to search by the following:</p>
+<ul>
+<li>User name</li>
+<li>User ID</li>
+<li>Completed status</li>
+<li>Title contains a piece of text</li>
+</ul>
+<p>So, we wrap these criteria into a DTO class, put it in Domain/DTOs, call it &quot;SearchTodoParametersDto&quot;:</p>
+<pre><code class="line-numbers language-csharp">public class SearchTodoParametersDto
+{
+    public string? Username { get;}
+    public int? UserId { get;}
+    public bool? CompletedStatus { get;}
+    public string? TitleContains { get;}
+
+    public SearchTodoParametersDto(string? username, int? userId, bool? completedStatus, string? titleContains)
+    {
+        Username = username;
+        UserId = userId;
+        CompletedStatus = completedStatus;
+        TitleContains = titleContains;
+    }
+}
+</code></pre>
+<p>All properties are nullable, indicated with the <code>?</code>, meaning the property can be null. That is not a surprise for the strings, you should by now know strings can be null.<br />
+But simple types like ints and booleans, they cannot normally be null. We do however need a way to say that e.g. <code>CompletedStatus</code> should not be applied when filtering. This then gives us three applications for <code>CompletedStatus</code>:</p>
+<ol>
+<li>Include only completed Todos, value is <code>true</code></li>
+<li>Include only un-completed Todos, value is <code>false</code></li>
+<li>Don't apply this filter, value is <code>null</code></li>
+</ol>
+<p>The same reasoning holds for UserId.</p>
+<h2 id="logic-interface">Logic Interface</h2>
+<p>We need the following method in the ITodoLogic interface:</p>
+<pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;Todo&gt;&gt; Get(SearchTodoParametersDto searchParameters);
+</code></pre>
+<h2 id="data-interface">Data Interface</h2>
+<p>We need the same method signature in the ITodoDao interface.</p>
+<h2 id="logic-implementation">Logic Implementation</h2>
+<p>Implement the method from the interface, all it does is call the same method on the <code>todoDao</code> field variable. Same as what we did when getting the collection of users.</p>
+<h4 id="comment-on-logic-implementation">Comment on logic implementation</h4>
+<p>Sometimes you need to return data, which is combined from different domain objects. There are two approaches:</p>
+<ol>
+<li>Just ask the DAO layer, and have this layer construct everything and return DTOs</li>
+<li>Ask the DAO layer for relevant domain objects, and let logic layer put things together into DTOs</li>
+</ol>
+<p>Both approaches are doable. The first will result in many specific methods in your DAO interfaces, which some people are against. They believe in only basic CRUD operations.</p>
+<p>The second will keep the DAO interfaces &quot;pure&quot;, having only the simple CRUD operations, and not various read operations returning various DTOs. The benefit here is that you can have your DAO layer in place early, and not modify it. The drawback is that you will potentially need very many calls from the logic layer to the DAO layer, each resulting in database queries. This may not scale well, and slow the system down.</p>
+<p>With a specific get method in the DAO interface, you might only need one database request.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="retrieve-todos-from-data-access-layer">Retrieve Todos from Data Access Layer</h1><hr/>
+<p>Your compiler should complain about the TodoFileDao class, because we added a new method to the ITodoDao interface.<br />
+So, let's implement the method. It is going to work in the same way as what we did when getting users. Give it a go yourself first.</p>
+<p>After your own attempt, or if you're stuck, check out my approach in the hint below.</p>
+<p>The part about searching by user name is slightly complicated, but see if you can figure that out yourself.</p>
+<p>Remember, all search parameters can be used by themself, applied together with any other, or left out.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public Task&lt;IEnumerable&lt;Todo&gt;&gt; GetAsync(SearchTodoParametersDto searchParams)
+{
+    IEnumerable&lt;Todo&gt; result = context.Todos.AsEnumerable();
+
+    if (!string.IsNullOrEmpty(searchParams.Username))
+    {
+        // we know username is unique, so just fetch the first
+        result = context.Todos.Where(todo =&gt;
+            todo.Owner.UserName.Equals(searchParams.Username, StringComparison.OrdinalIgnoreCase));
+    }
+
+    if (searchParams.UserId != null)
+    {
+        result = result.Where(t =&gt; t.Owner.Id == searchParams.UserId);
+    }
+
+    if (searchParams.CompletedStatus != null)
+    {
+        result = result.Where(t =&gt; t.IsCompleted == searchParams.CompletedStatus);
+    }
+
+    if (!string.IsNullOrEmpty(searchParams.TitleContains))
+    {
+        result = result.Where(t =&gt;
+            t.Title.Contains(searchParams.TitleContains, StringComparison.OrdinalIgnoreCase));
+    }
+
+    return Task.FromResult(result);
+}
+</code></pre>
+<p>Again, we just have one if-statement after the other, one for each search parameter.</p>
+<p>The first case looks for all todos, where their Owner's username is equal to the search parameter, ignoring case.</p>
+<p>The others should be fairly straight forward.</p>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="web-api-endpoint-for-retrieval-of-todos">Web API Endpoint for Retrieval of Todos</h1><hr/>
+<p>Open TodosController.cs.</p>
+<p>We need a new method so the client can request todos.</p>
+<ul>
+<li>It is a GET endpoint</li>
+<li>It needs arguments matching the search parameters.</li>
+<li>We need to handle exceptions</li>
+<li>The search parameters are wrapped into the DTO and forwarded to the Logic layer</li>
+</ul>
+<p>Give it a go. Then look at the hint below for my solution and some comments.</p>
+<details>
+<summary>hint</summary>
+<p>Did you remember to make all arguments <strong>nullable</strong>? Otherwise they will get a default value, e.g. the &quot;completed status&quot; will be set to false. That is not the intended behaviour.</p>
+<p>Did you remember to mark the parameters with <code>[FromQuery]</code>?</p>
+<pre><code class="line-numbers language-csharp">[HttpGet]
+public async Task&lt;ActionResult&lt;IEnumerable&lt;Todo&gt;&gt;&gt; GetAsync([FromQuery] string? userName, [FromQuery] int? userId,
+    [FromQuery] bool? completedStatus, [FromQuery] string? titleContains)
+{
+    try
+    {
+        SearchTodoParametersDto parameters = new(userName, userId, completedStatus, titleContains);
+        var todos = await todoLogic.GetAsync(parameters);
+        return Ok(todos);
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        return StatusCode(500, e.Message);
+    }
+}
+</code></pre>
+<p>Now, if we have many search parameters, the number of method-arguments of the endpoint method is going to be fairly big, and that's somewhat inconvenient.<br />
+The problem is that with GET requests, we cannot include an object, like when we do POST requests. Otherwise we could just have the client create a <code>SearchTodoParametersDto</code> object and send that along.\</p>
+<p>We could make this a POST request and have the client send a SearchTodoParametersDto, serialized as JSON. It goes a bit against intuition, but POST can be used to <a href="https://stackoverflow.com/questions/14202257/design-restful-query-api-with-a-long-list-of-query-parameters/31984477#31984477">&quot;send some data for processing, which may not result in a new object being created&quot;</a>.</p>
+<p>We could make a kind of hack, where the query parameter of the URI could contain a json object, and on the server side, we would deserialize that. But I'm not convinced I like that approach.</p>
+<p>So, for now we have to accept the large number of arguments. Maybe I will stumble upon a better approach later.</p>
+</details>
+<h2 id="test">Test</h2>
+<p>You should be able to test this endpoint now. Try with different filters. Maybe create a few more Todos so you have more different things to search for.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="completing-a-todo-item">Completing a Todo Item</h1><hr/>
+<p>New feature. We are working towards CRUD operations for the Todo, i.e. create, read, update, delete.</p>
+<p>And we currently have create, and read.
+Now it is time to update Todos, part of them at least,
+because we want to be able to mark a Todo as completed.</p>
+<blockquote>
+<p>As a User I can complete a Todo, so that I can mark things as done</p>
+</blockquote>
+<p>We want to be able to change the completed status.</p>
+<p>Later, we also want to be able to change the owner, so that a Todo can be reassigned. And maybe it is at some point needed to change the title of the Todo.<br />
+This means we want to be able to send a Todo item to the server, have it verify the data, and then update an existing Todo.
+We are therefore doing a little more than what is needed for this user story.
+But, it is little extra work, and otherwise we might later have to go back and revise existing code, so that another property can be updated, and then again for a third property.
+So, we batch this together.</p>
+<h3 id="restful">RESTful</h3>
+<p>It would be preferable to implement the three features above separately:</p>
+<ol>
+<li>complete a Todo</li>
+<li>re-assign a Todo</li>
+<li>update the title of a Todo</li>
+</ol>
+<p>This would then result in three different endpoints in the Web API, i.e. three PATCH endpoints, because we use PATCH when updating a resource.<br />
+However, a RESTful Web API is organized around <em>resources and CRUD operations</em>, not all kinds of specific <em>actions</em>.</p>
+<p>We could abuse the Web API and make three endpoints with URIs like:</p>
+<p todo-id="">PATCH  /todos/complete/<br />
+PATCH  /todos/reassign/<br />
+PATCH  /todos/update/</p>
+<p>But this goes against the REST standard.</p>
+<p>Instead, we have to bundle all kinds of updates to the Todo into one endpoint:</p>
+<p>PATCH /todos</p>
+<p>And have just one vertical path through the server for everything update related.<br />
+Regarding the URI, we could put an ID here, or the ID can go into the argument. We will just do the latter.</p>
+<p>So, if you are in this position, you will have to make a choice. In our case, we follow conventions and stick with the one endpoint.</p>
+<h2 id="lets-go">Let's go</h2>
+<p>Same approach: application first, then data layer, and then Web API.</p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/006_CompleteTodo">This feature is found here</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="complete-todo-logic">Complete Todo Logic</h1><hr/>
+<p>We will start by defining the input and output of the application layer, i.e. the method in the interface.</p>
+<p>Again, we could reuse the Todo, but that would require sending along an entire User object too. That is not necessary. Instead, we make a new <code>TodoUpdateDto</code>:</p>
+<pre><code class="line-numbers language-csharp">public class TodoUpdateDto
+{
+    public int Id { get; }
+    public int? OwnerId { get; set; }
+    public string? Title { get; set; }
+    public bool? IsCompleted { get; set; }
+
+    public TodoUpdateDto(int id)
+    {
+        Id = id;
+    }
+}
+</code></pre>
+<p>The idea for this update, is that we only send what needs to <em>change</em>.<br />
+Therefore most of the properties are nullable, i.e. if they have no value, no change will be applied on the server.<br />
+This approach scales better. If the Todo had a large number of properties, but we want to only change one, we would otherwise have to send the complete Todo item, with a lot of redundant data.<br />
+The <code>Id</code> is required, so it is in the constructor. The rest are optional, so they will be set using the object initializer.</p>
+<p>Nothing needs to be returned. If the update is a success, the client will already have the data. If we had some property, which the server would re-calculate based on the updated data, we might want to return the resulting Todo to the client. That is, however, not our case this time.</p>
+<p>First the Logic interface, then the DAO interface, and then the Logic implementation</p>
+<h2 id="logic-interface">Logic Interface</h2>
+<p>It receives a <code>TodoUpdateDto</code> and it returns nothing.</p>
+<p>In case of errors, we throw exceptions.</p>
+<p>The method then looks like:</p>
+<pre><code class="line-numbers language-csharp">Task UpdateAsync(TodoUpdateDto todo);
+</code></pre>
+<p>Put that method in the <code>ITodoLogic</code> interface.</p>
+<h2 id="dao-interface">DAO Interface</h2>
+<p>We are going to need two methods here.</p>
+<h4 id="update">Update</h4>
+<p>The DAO interface needs a Todo objet, and there is no need to return anything. This means the Logic implementation will convert from TodoUpdateDto to Todo.</p>
+<pre><code class="line-numbers language-csharp">Task UpdateAsync(Todo todo);
+</code></pre>
+<h4 id="get-by-id">Get By Id</h4>
+<p>The other method is to retrieve a single Todo given an Id.
+We have a <code>GetAsync()</code> method in the DAO interface, however, it returns a collection.
+We could probably use this method, but I prefer specialized method to get one Todo.</p>
+<pre><code class="line-numbers language-csharp">Task&lt;Todo&gt; GetByIdAsync(int id);
+</code></pre>
+<h2 id="logic-implementation">Logic Implementation</h2>
+<p>In the TodoLogic class, implement the new method from the interface.</p>
+<p>What needs to be done?</p>
+<ol>
+<li>We need to verify that there is an existing Todo with the same ID as the one provided. When creating a new User, we looked for an existing User. This functionality could also have been placed in the DAO implementation. But I consider this check as part of the logic of creating/updating, and so I believe it belongs in the Logic layer. The drawback is that we do two interactions with the database, where we might only strictly need one, if we moved the check. In this case the drawback is accepted.</li>
+<li>We need to verify the owner ID corresponds to an existing user.</li>
+<li>We need to validate the new Todo data. Luckily we have that logic already, from when we created a Todo. However, we will have to update the method to take a <code>Todo</code> instead of <code>TodoCreationDto</code>.</li>
+<li>We could have more rules, e.g. a User may have a maximum of 5 Todos assigned to them.</li>
+<li>If the Users had Roles, and the Todos had categories, we could have rules about what kind of category Todos can be assigned to which Roles.</li>
+<li>Maybe it is not allowed to un-complete a completed Todo, and users should instead create new.</li>
+</ol>
+<p>This leads us to the method implementation. Give it a go yourself:</p>
+<ul>
+<li>Check that there is an existing Todo to update</li>
+<li>Validate the data, but modifying the existing <code>ValidateTodo</code> to take another type of argument.</li>
+<li>Hand over the Todo to the Data Access layer, through the ITodoDao interface.</li>
+</ul>
+<p>This tutorial will ignore most of the business rules. That kind of logic is not in focus here.
+But the reader is encouraged to implement various rules themself.</p>
+<p>We need a few things, so I will take you through it.</p>
+<h5 id="todo">Todo</h5>
+<p>Currently, the Todo class should have no mutator on the <code>IsCompleted</code> property. Add that:</p>
+<pre><code class="line-numbers language-csharp">public class Todo
+{
+    public int Id { get; set; }
+    public User Owner { get; }
+    public string Title { get; }
+
+    public bool IsCompleted { get; set; }
+
+    public Todo(User owner, string title)
+    {
+        Owner = owner;
+        Title = title;
+    }
+}
+</code></pre>
+<p>Again, we could put logic like checking that a completed Todo is not un-completed into the Todo class.
+But, <em>consistency is key</em>, and as we previously made the decision to put validation logic into the application layer, we will stick with that decision.</p>
+<h5 id="logic-update-method">Logic update method</h5>
+<p>We are now ready for the logic implementation. Not all suggested logic from above will be included in this tutorial.
+Here we go.</p>
+<pre><code class="line-numbers language-csharp">public async Task UpdateAsync(TodoUpdateDto dto)
+{
+    Todo? existing = await todoDao.GetByIdAsync(dto.Id);
+
+    if (existing == null)
+    {
+        throw new Exception($&quot;Todo with ID {dto.Id} not found!&quot;);
+    }
+
+    User? user = null;
+    if (dto.OwnerId != null)
+    {
+        user = await userDao.GetByIdAsync((int)dto.OwnerId);
+        if (user == null)
+        {
+            throw new Exception($&quot;User with id {dto.OwnerId} was not found.&quot;);
+        }
+    }
+
+    if (dto.IsCompleted != null &amp;&amp; existing.IsCompleted &amp;&amp; !(bool)dto.IsCompleted)
+    {
+        throw new Exception(&quot;Cannot un-complete a completed Todo&quot;);
+    }
+
+    User userToUse = user ?? existing.Owner;
+    string titleToUse = dto.Title ?? existing.Title;
+    bool completedToUse = dto.IsCompleted ?? existing.IsCompleted;
+    
+    Todo updated = new (userToUse, titleToUse)
+    {
+        IsCompleted = completedToUse,
+        Id = existing.Id,
+    };
+
+    ValidateTodo(updated);
+
+    await todoDao.UpdateAsync(updated);
+}
+
+private void ValidateTodo(Todo dto)
+{
+    if (string.IsNullOrEmpty(dto.Title)) throw new Exception(&quot;Title cannot be empty.&quot;);
+    // other validation stuff
+}
+</code></pre>
+<p>First, this is a somewhat long method, and it would benefit from being refactored into smaller methods, but that will add some complexity to explaining things.</p>
+<p>The idea is we receive the DTO, and only properties with a value, should be updated.</p>
+<p>The method first finds an existing Todo, we cannot update something non-existing.<br />
+Then, if the dto specifies a User, the assignee should be updated, so the new assignee User is found.<br />
+Then we check if the completed status should be updated (i.e. the property is not null), and the Todo is not completed and is changed to un-completed. I.e. we are not allowed to un-complete a completed Todo.</p>
+<p>Then three variables are defined. We use the <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-coalescing-operator">null coalescing operator &quot;??&quot;</a> to get the correct value.
+It works like this: if the value of the dto is not null, use that value. Otherwise use the value on the right side of ??, i.e. the value from the existing Todo.</p>
+<p>Then a new Todo is created with the (potentially) updated data.
+Alternatively, the existing Todo could be modified,
+but because it is being referenced from the FileContext class,
+i.e. still kept in the list, we may encounter unwanted behaviour:
+If the validation in line 27 does not go through,
+we would need to undo the modifications.<br />
+Yes, we are doing something because of the implementation of the DAO layer. We could make the DAO layer return a clone instead. We will stick with this solution for now, it is of little impact</p>
+<p>Finally the new Todo with updated values is passed to the DAO layer.</p>
+<h5 id="next-up">Next up</h5>
+<p>Let's go and fix that layer next.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="update-todo-data-access-layer">Update Todo Data Access Layer</h1><hr/>
+<p>In TodoFileDao implement the new methods from the interface, <code>UpdateAsync()</code> and <code>GetByIdAsync()</code>.</p>
+<h2 id="get-by-id">Get by ID</h2>
+<p>The <code>GetByIdAsync()</code> should just take Id and return either a matching Todo or return null. Give this a go yourself first, then look at the hint.</p>
+<details>
+<summary> hint</summary>
+<pre><code class="line-numbers language-csharp">public Task&lt;Todo?&gt; GetByIdAsync(int todoId)
+{
+    Todo? existing = context.Todos.FirstOrDefault(t =&gt; t.Id == todoId);
+    return Task.FromResult(existing);
+}
+</code></pre>
+<p>You have seen this before, when finding a User.</p>
+</details>
+<h2 id="update">Update</h2>
+<p>The <code>UpdateAsync()</code> must update the existing Todo. To do this, we will just do a <em>remove</em> followed by an <em>add</em>. If nothing could be removed, then the Todo does not exist, and an exception should be thrown.
+We cannot update something, which do not exist.</p>
+<p>Remember to save.</p>
+<p>Give it a go, then look at the hint below.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public Task UpdateAsync(Todo toUpdate)
+{
+    Todo? existing = context.Todos.FirstOrDefault(todo =&gt; todo.Id == toUpdate.Id);
+    if (existing == null)
+    {
+        throw new Exception($&quot;Todo with id {toUpdate.Id} does not exist!&quot;);
+    }
+
+    context.Todos.Remove(existing);
+    context.Todos.Add(toUpdate);
+    
+    context.SaveChanges();
+    
+    return Task.CompletedTask;
+}
+</code></pre>
+<p>First the existing todo is found by its ID. If none exist, an exception is thrown. I know, we also checked for the existing Todo in the logic layer, but this method may potentially be reused somewhere else.
+This is just an extra safety measure.</p>
+<p>We remove the existing Todo from the collection. Then add the new Todo. Essentially we overwrite the existing.</p>
+<p>The changes are saved, i.e. written to the file.</p>
+<p>Task.Completed task is returned, because the return type is Task, and the method is not marked &quot;async&quot;;</p>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="complete-todo-web-api-endpoint">Complete Todo Web API Endpoint</h1><hr/>
+<p>We move on to the Web API endpoint.</p>
+<p>Give it a try yourself first, with this method.</p>
+<p>It should be a PATCH, returns <code>Task&lt;ActionResult&gt;</code> and receives a TodoUpdateDto.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">[HttpPatch]
+public async Task&lt;ActionResult&gt; UpdateAsync([FromBody] TodoUpdateDto dto)
+{
+    try
+    {
+        await todoLogic.UpdateAsync(dto);
+        return Ok();
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        return StatusCode(500, e.Message);
+    }
+}
+</code></pre>
+</details>
+<p>Now test that you can update a Todo. Verify the changes by call the GET endpoint or checking the data.json file in the WebAPI project.</p>
+<p>Generally a PATCH request will contain only the changes. You should be able to remove some parts of the json sent, and it should still work.</p>
+<p>For example, if you just want to complete Todo with ID 1, you would send:</p>
+<pre><code class="line-numbers language-json">{
+  &quot;id&quot;: 1,
+  &quot;isCompleted&quot;: true
+}
+</code></pre>
+<p>The other properties of the <code>TodoUpdateDto</code> object will just be defaulted to <code>null</code>, and therefore no changes are made to those properties of the existing Todo.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="deleting-a-todo-item">Deleting a Todo Item</h1><hr/>
+<p>We are ready for the next feature, deleting a Todo:</p>
+<blockquote>
+<p>As a User I can delete a Todo, so that I can clean up</p>
+</blockquote>
+<p>You know the drill: logic layer, DAO layer, Web API layer.</p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/007_DeleteTodo">This branch is found here</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-todo-logic-layer">Delete Todo Logic Layer</h1><hr/>
+<p>This should also be familiar.</p>
+<p>First we consider input, output, and behaviour.</p>
+<p>Then we define interfaces for logic and dao. And then we implement the logic.</p>
+<h4 id="inputoutput">Input/output</h4>
+<p>The input is just an ID, we need no more information than that. That is true for both logic and Data Access interfaces.</p>
+<p>The output is nothing.</p>
+<h4 id="behaviour">Behaviour</h4>
+<p>Is there any logic associated with deleting a Todo?</p>
+<p>Suggestions:</p>
+<ul>
+<li>A Todo can only be deleted, if it is completed</li>
+<li>A Todo can only be deleted by certain Roles, if we had those</li>
+<li>A Todo can only be deleted <em>x</em> hours/days after it was completed</li>
+</ul>
+<p>You can probably come up with more ideas yourself. We will do only the first point.</p>
+<h2 id="logicdao-interface">Logic/DAO Interface</h2>
+<p>The input is an ID, and there is not output. The two interfaces need the same method signature:</p>
+<pre><code class="line-numbers language-csharp">Task DeleteAsync(int id);
+</code></pre>
+<p>Put this method in both interfaces</p>
+<h2 id="logic-implementation">Logic Implementation</h2>
+<p>We will do the check of the completed status, so only completed Todos can be deleted.</p>
+<p>The method in the TodoLogic class must then:</p>
+<ul>
+<li>Fetch existing Todo</li>
+<li>Check that the completed status is <code>true</code>, otherwise throw exception</li>
+<li>Call the <code>DeleteAsync()</code> method on ITodoDao interface</li>
+</ul>
+<p>Give it a go, then look at the hint.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task DeleteAsync(int id)
+{
+    Todo? todo = await todoDao.GetByIdAsync(id);
+    if (todo == null)
+    {
+        throw new Exception($&quot;Todo with ID {id} was not found!&quot;);
+    }
+
+    if (!todo.IsCompleted)
+    {
+        throw new Exception(&quot;Cannot delete un-completed Todo!&quot;);
+    }
+
+    await todoDao.DeleteAsync(id);
+}
+</code></pre>
+<p>The Todo is found, and checked for existence. The completed status is checked. If all is good, the id is passed to the Data Access layer for handling.</p>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-todo-in-data-access-layer">Delete Todo in Data Access Layer</h1><hr/>
+<p>You should already have a compile error in TodoFileDao because of the added method to the ITodoDao interface. Let's fix this, by implementing the method.</p>
+<p>We actually did the remove part, when doing the Update method. We could refactor that part out into our new method, and have the Update method first call <code>RemoveAsync()</code> and then <code>CreateAsync()</code>.</p>
+<p>Or you can just copy the remove part of <code>Update()</code> to the Delete method. Your pick.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public Task DeleteAsync(int id)
+{
+    Todo? existing = context.Todos.FirstOrDefault(todo =&gt; todo.Id == id);
+    if (existing == null)
+    {
+        throw new Exception($&quot;Todo with id {id} does not exist!&quot;);
+    }
+
+    context.Todos.Remove(existing); 
+    context.SaveChanges();
+    
+    return Task.CompletedTask;
+}
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-todo-web-api-endpoint">Delete Todo Web API Endpoint</h1><hr/>
+<p>Finally, we need the endpoint for the client to call.</p>
+<ul>
+<li>It is an HttpDelete method</li>
+<li>It returns nothing, i.e. Task<ActionResult></li>
+<li>The argument is an int, the ID, taken from the route</li>
+</ul>
+<p>Give it a go.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">[HttpDelete(&quot;{id:int}&quot;)]
+public async Task&lt;ActionResult&gt; DeleteAsync([FromRoute] int id)
+{
+    try
+    {
+        await todoLogic.DeleteAsync(id);
+        return Ok();
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        return StatusCode(500, e.Message);
+    }
+}
+</code></pre>
+<p id:int="">The [HttpDelete(&quot;&quot;)] marks this method for DELETE requests. The part in the parenthesis is the sub-uri, indicating you here put an id of type int.</p>
+<p>A URI could be: DELETE /todos/7</p>
+<p>This would then request to delete Todo with id 7.</p>
+<p>The id sub-part of the URI is passed as the argument, because the argument is marked [FromRoute], meaning this argument is found in the URI.
+The argument variable must be named the same as in the URI template, i.e. &quot;id&quot;.</p>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="conclusion">Conclusion</h1><hr/>
+<p>This concludes the tutorial for now. We have implemented 6 user stories in total: create and get for Users, and CRUD for Todos.</p>
+<p>The reader may implement update and delete functionality for users, if they wish.</p>
+<p>The next part of the tutorial series will continue with a Blazor-WASM client. In part 3 the JSON storage will be swapped out for SQLite and Entity Framework Core.</p>
+
+</div>
+
+
+
+        
+        <div style="overflow:auto; padding-bottom: 10px">
+            <hr/>
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>

@@ -60,6 +60,8 @@ Here's an overview of the branches:
 [003_GetUsers](https://github.com/TroelsMortensen/WasmTodo/tree/003_GetUsers): This contains code for the feature of retrieving Users.\
 [004_AddTodo](https://github.com/TroelsMortensen/WasmTodo/tree/004_AddTodo): This branch is for adding a new Todo.\
 [005_GetTodos](https://github.com/TroelsMortensen/WasmTodo/tree/005_GetTodos): Here we retrieve Todos.\
+[006_CompleteTodo](https://github.com/TroelsMortensen/WasmTodo/tree/006_CompleteTodo): This covers updating a Todo.\
+[007_DeleteTodo](https://github.com/TroelsMortensen/WasmTodo/tree/007_DeleteTodo): This feature allows us to delete a Todo.
 
 
 ## Code mismatch
@@ -83,3 +85,4 @@ As mentioned, we are doing a Todo app. Below are the user stories, which we will
 3) As a User I can add a new Todo, so that I can remember important things
 4) As a User I can view all or filtered Todos, so that I can remember what to do
 5) As a User I can complete a Todo, so that I can mark things as done
+6) As a User I can delete a Todo, so that I can clean up

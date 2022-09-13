@@ -7,19 +7,20 @@ Again, we could reuse the Todo, but that would require sending along an entire U
 public class TodoUpdateDto
 {
     public int Id { get; }
-    public int OwnerId { get; }
-    public string Title { get; }
-    public bool IsCompleted { get; }
+    public int? OwnerId { get; set; }
+    public string? Title { get; set; }
+    public bool? IsCompleted { get; set; }
 
-    public TodoUpdateDto(int id, int ownerId, string title, bool isCompleted)
+    public TodoUpdateDto(int id)
     {
         Id = id;
-        OwnerId = ownerId;
-        Title = title;
-        IsCompleted = isCompleted;
     }
 }
 ```
+The idea for this update, is that we only send what needs to _change_.\
+Therefore most of the properties are nullable, i.e. if they have no value, no change will be applied on the server.\
+This approach scales better. If the Todo had a large number of properties, but we want to only change one, we would otherwise have to send the complete Todo item, with a lot of redundant data.\
+The `Id` is required, so it is in the constructor. The rest are optional, so they will be set using the object initializer. 
 
 Nothing needs to be returned. If the update is a success, the client will already have the data. If we had some property, which the server would re-calculate based on the updated data, we might want to return the resulting Todo to the client. That is, however, not our case this time.
 
@@ -82,14 +83,13 @@ But the reader is encouraged to implement various rules themself.
 We need a few things, so I will take you through it.
 
 ##### Todo
-Currently, the Todo class should have no mutator on the Owner property. We will need that.
-Just add a "set;" to the Owner. This is also needed for IsCompleted, and Title.
+Currently, the Todo class should have no mutator on the `IsCompleted` property. Add that:
 
 ```csharp
 public class Todo
 {
     public int Id { get; set; }
-    public User Owner { get; set; }
+    public User Owner { get; }
     public string Title { get; }
 
     public bool IsCompleted { get; set; }
@@ -108,54 +108,76 @@ But, _consistency is key_, and as we previously made the decision to put validat
 ##### Logic update method 
 
 We are now ready for the logic implementation. Not all suggested logic from above will be included in this tutorial.
+Here we go.
 
 ```csharp
-    public async Task UpdateAsync(TodoUpdateDto dto)
+public async Task UpdateAsync(TodoUpdateDto dto)
+{
+    Todo? existing = await todoDao.GetByIdAsync(dto.Id);
+
+    if (existing == null)
     {
-        Todo? existing = await todoDao.GetByIdAsync(dto.Id);
+        throw new Exception($"Todo with ID {dto.Id} not found!");
+    }
 
-        if (existing == null)
-        {
-            throw new Exception($"Todo with ID {dto.Id} not found!");
-        }
-
-        User? user = await userDao.GetByIdAsync(dto.OwnerId);
+    User? user = null;
+    if (dto.OwnerId != null)
+    {
+        user = await userDao.GetByIdAsync((int)dto.OwnerId);
         if (user == null)
         {
             throw new Exception($"User with id {dto.OwnerId} was not found.");
         }
-        
-        if (existing.IsCompleted && !dto.IsCompleted)
-        {
-            throw new Exception("Cannot un-complete a completed Todo");
-        }
-
-        Todo updated = new Todo(user, dto.Title)
-        {
-            Id = existing.Id,
-            IsCompleted = dto.IsCompleted
-        };
-        
-        ValidateTodo(updated);
-
-        await todoDao.UpdateAsync(updated);
     }
 
-    private void ValidateTodo(Todo dto)
+    if (dto.IsCompleted != null && existing.IsCompleted && !(bool)dto.IsCompleted)
     {
-        if (string.IsNullOrEmpty(dto.Title)) throw new Exception("Title cannot be empty.");
-        // other validation stuff
+        throw new Exception("Cannot un-complete a completed Todo");
     }
+
+    User userToUse = user ?? existing.Owner;
+    string titleToUse = dto.Title ?? existing.Title;
+    bool completedToUse = dto.IsCompleted ?? existing.IsCompleted;
+    
+    Todo updated = new (userToUse, titleToUse)
+    {
+        IsCompleted = completedToUse,
+        Id = existing.Id,
+    };
+
+    ValidateTodo(updated);
+
+    await todoDao.UpdateAsync(updated);
+}
+
+private void ValidateTodo(Todo dto)
+{
+    if (string.IsNullOrEmpty(dto.Title)) throw new Exception("Title cannot be empty.");
+    // other validation stuff
+}
 ```
 
 First, this is a somewhat long method, and it would benefit from being refactored into smaller methods, but that will add some complexity to explaining things.
 
-The method first finds an existing Todo.\
-Then the new assignee User is found.\
-Then we check that the Todo is not completed and is changed to un-completed.
+The idea is we receive the DTO, and only properties with a value, should be updated.
 
-Then a new Todo is created with the updated data. Alternatively, the existing Todo could be modified, but because it is being referenced from the FileContext class, i.e. still kept in the list, we may encounter unwanted behaviour: If the validation in line 27 does not go through, we would need to undo the modifications.
+The method first finds an existing Todo, we cannot update something non-existing.\
+Then, if the dto specifies a User, the assignee should be updated, so the new assignee User is found.\
+Then we check if the completed status should be updated (i.e. the property is not null), and the Todo is not completed and is changed to un-completed. I.e. we are not allowed to un-complete a completed Todo.
+
+Then three variables are defined. We use the [null coalescing operator "??"](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/null-coalescing-operator) to get the correct value.
+It works like this: if the value of the dto is not null, use that value. Otherwise use the value on the right side of ??, i.e. the value from the existing Todo.
+
+Then a new Todo is created with the (potentially) updated data. 
+Alternatively, the existing Todo could be modified, 
+but because it is being referenced from the FileContext class, 
+i.e. still kept in the list, we may encounter unwanted behaviour: 
+If the validation in line 27 does not go through, 
+we would need to undo the modifications.\
+Yes, we are doing something because of the implementation of the DAO layer. We could make the DAO layer return a clone instead. We will stick with this solution for now, it is of little impact
 
 Finally the new Todo with updated values is passed to the DAO layer.
 
+
+##### Next up
 Let's go and fix that layer next.

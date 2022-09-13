@@ -9,8 +9,9 @@
 
 [Simple Blazor-server login](./Tutorials/BlazorLogin/Page.html)
 
-
 [JWT Login](./Tutorials/BlazorWasmJwtAuth/Page.html)
+
+[Todo App Part 1 - Web API](./Tutorials/NetTodoApp-Part1-WebAPI/Page.html)
 
 ### Videos
 ...
