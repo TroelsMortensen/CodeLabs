@@ -1,37 +1,3 @@
-Der skal væres users, og en page, hvor man kan tilføje en ny user.
-
-Der skal være clean architecture på server side.
-Huske fejl beskeder, også i OnINitialized.
-
-Users skal kunne vælges i en drop down.
-
-Ved input skal jeg ikke bruge det indbyggede EditForm. Brug basic html.
-
-catch clauses skal stadig printe til console
-
-skriv mange gange, det er vigtigt at give feedback til brugeren.
-
-Få en HTtpClient gennem constructor. De skal åbenbart ikke disposes.
-
-Seed fra Program.cs file. Lav mange todos, e.g. 25, og så brug noget paging og indexing.
-
-
-
-Beskriv domain, ansvar, H or for acces interfaces, hvorfor dao interfaces. Hvorfor ligeglad med omkringliggende layers, de er ligegyldige detaljer. 
-
-why is it called contracts component? What is a contract?
-
-component diagram over inter-component dependencies.
-
-
-
-
-Async all method names
-
-
-----
-
-
 # Introduction
 This is the first part of a 3 part tutorial series (at least according to the current plan). 
 
