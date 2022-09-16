@@ -1940,21 +1940,16 @@ The argument variable must be named the same as in the URI template, i.e. &quot;
 <li>Logic implementation
 <ol>
 <li>Nothing here really, other than forwarding the call to the Data Access Layer</li>
+<li>Alternatively, if you decide to return a DTO, the DAO already has a method to retrieve a Todo by id. You would then convert this to a DTO.</li>
 </ol>
 </li>
-<li>DAO interface
+<li>DAO
 <ol>
-<li>Same signature as in Logic interface</li>
-</ol>
-</li>
-<li>DAO implementation
-<ol>
-<li>Find the Todo which matches the given id.</li>
-<li>If none is found, throw an exception</li>
-<li>Return either the Todo or a new DTO</li>
+<li>There is already a <code>GetByIdAsync()</code> method. You could reuse this.</li>
 </ol>
 </li>
 </ol>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/008_GetTodoById">My version is found here</a></p>
 
 </div>
 <div class="tab">

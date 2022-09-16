@@ -26,15 +26,12 @@ You are to implement this functionality now. Here are a few key points:
    3) Remember asynchronous
 3) Logic implementation
    1) Nothing here really, other than forwarding the call to the Data Access Layer
-4) DAO interface
-   1) Same signature as in Logic interface
-5) DAO implementation
-   1) Find the Todo which matches the given id. 
-   2) If none is found, throw an exception
-   3) Return either the Todo or a new DTO
+   2) Alternatively, if you decide to return a DTO, the DAO already has a method to retrieve a Todo by id. You would then convert this to a DTO.
+5) DAO 
+   1) There is already a `GetByIdAsync()` method. You could reuse this.
 
 
-
+[My version is found here](https://github.com/TroelsMortensen/WasmTodo/tree/008_GetTodoById)
 
 
 
