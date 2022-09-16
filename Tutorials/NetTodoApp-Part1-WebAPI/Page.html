@@ -52,7 +52,8 @@
 <li class="step" onclick="setTab(33)">34 Delete Todo Logic</li>
 <li class="step" onclick="setTab(34)">35 Delete Todo DAO</li>
 <li class="step" onclick="setTab(35)">36 Delete Todo endpoint</li>
-<li class="step" onclick="setTab(36)">37 Conclusion</li>
+<li class="step" onclick="setTab(36)">37 Get Todo by id</li>
+<li class="step" onclick="setTab(37)">38 Conclusion</li>
 
         </ol>
     </div>
@@ -1906,6 +1907,54 @@ public async Task&lt;ActionResult&gt; DeleteAsync([FromRoute] int id)
 <p>The id sub-part of the URI is passed as the argument, because the argument is marked [FromRoute], meaning this argument is found in the URI.
 The argument variable must be named the same as in the URI template, i.e. &quot;id&quot;.</p>
 </details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="get-todo-by-id">Get Todo By Id</h1><hr/>
+<p>If we were to have a feature like</p>
+<blockquote>
+<p>As a User I can update title of a Todo, so that I can fix mistakes made when created</p>
+</blockquote>
+<p>or</p>
+<blockquote>
+<p>As a User I can re-assign a Todo, so that others can take over if the assignee is too busy</p>
+</blockquote>
+<p>The flow would be to first retrieve the relevant Todo from the server, make various modifications on the client side, and send those changes back again to the server.</p>
+<p>We will include this feature in the client, in the next tutorial.</p>
+<h2 id="implement-the-functionality">Implement the functionality</h2>
+<p>We can already update Todos with the PATCH endpoint implemented previously. But we cannot get a single Todo. We could use the endpoint, which returns a collection of Todos, but for practice, let's make a specialized endpoint.</p>
+<p>You are to implement this functionality now. Here are a few key points:</p>
+<ol>
+<li>Web API
+<ol>
+<li>The endpoint is a GET with URI /todos/</li>
+</ol>
+</li>
+<li>Logic interface
+<ol>
+<li>The argument is an int</li>
+<li>The result is the Todo, or a DTO, that is up to you. Maybe you don't want to send back the nested User object, but just the user name</li>
+<li>Remember asynchronous</li>
+</ol>
+</li>
+<li>Logic implementation
+<ol>
+<li>Nothing here really, other than forwarding the call to the Data Access Layer</li>
+</ol>
+</li>
+<li>DAO interface
+<ol>
+<li>Same signature as in Logic interface</li>
+</ol>
+</li>
+<li>DAO implementation
+<ol>
+<li>Find the Todo which matches the given id.</li>
+<li>If none is found, throw an exception</li>
+<li>Return either the Todo or a new DTO</li>
+</ol>
+</li>
+</ol>
 
 </div>
 <div class="tab">
