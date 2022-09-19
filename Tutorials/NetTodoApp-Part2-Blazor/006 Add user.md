@@ -77,17 +77,7 @@ We use the client to make a POST request to "/users", sending the dto. The dto w
 
 Now, "/users" is not enough. We know the URI should be "https://localhost:7093/Users". However, on the HttpClient you can set a "base url", which is the first part, and we then only need to provide the part of the URI after the port.
 
-#### Interlude: Setting base address of HttpClient
-If you open BlazorWASM/Program.cs, we will find that an HttpClient is added as a scoped service, and the base address is set to be the address of the host environment, i.e. the localhost.
 
-The host address is that of your Blazor WASM app. However, we need to contact the Web API, which has a different address.\
-Run your Web API to see in the console which https address it is listening on. Copy this address into the object inializer, like this:
-
-```csharp
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7093") });
-```
-
-#### Continuing
 Every request returns a response, whether we actually expect an object back or not. 
 We know that this endpoint will either return an error message, or the created User. 
 So, we read the content of the response.\
