@@ -49,8 +49,7 @@ Then the implementation. Give it a go yourself first, it is very similar to how 
 ```csharp
 public async Task CreateAsync(TodoCreationDto dto)
 {
-    string dtoAsJson = JsonSerializer.Serialize(dto);
-    HttpResponseMessage response = await client.PostAsJsonAsync("/todos",dtoAsJson);
+    HttpResponseMessage response = await client.PostAsJsonAsync("/todos",dto);
     if (!response.IsSuccessStatusCode)
     {
         string content = await response.Content.ReadAsStringAsync();
