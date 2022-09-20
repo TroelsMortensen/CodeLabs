@@ -58,7 +58,7 @@ That leaves us the following method in `ITodoLogic`:
 using Domain.DTOs;
 using Domain.Models;
 
-namespace Domain.LogicInterfaces;
+namespace Application.LogicInterfaces;
 
 public interface ITodoLogic
 {
@@ -90,13 +90,6 @@ We have the input and output. But what is supposed to happen inside the box? It'
 First, we need a new TodoLogic class:
 
 ```csharp
-using Domain.DaoInterfaces;
-using Domain.DTOs;
-using Domain.LogicInterfaces;
-using Domain.Models;
-
-namespace Domain.Logic;
-
 public class TodoLogic : ITodoLogic
 {
     private readonly ITodoDao todoDao;
@@ -114,6 +107,8 @@ public class TodoLogic : ITodoLogic
     }
 }
 ```
+
+Fix import errors.
 
 The class implements the interface, the method is defined, though currently without body. The constructor receives the `ITodoDao`, and also the `IUserDao`.
 
