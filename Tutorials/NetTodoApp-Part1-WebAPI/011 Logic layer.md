@@ -27,8 +27,6 @@ Inside Domain component, create a new directory, call it DTOs.\
 Inside this directory, create the following class:
 
 ```csharp
-namespace Domain.DTOs;
-
 public class UserCreationDto
 {
     public string UserName { get;}
@@ -70,16 +68,12 @@ We will apply the loose approach for convenience in this smaller example.
 Now we can define the method in IUserLogic interface:
 
 ```csharp
-using Domain.DTOs;
-using Domain.Models;
-
-namespace Domain.LogicInterfaces;
-
 public interface IUserLogic
 {
     Task<User> CreateAsync(UserCreationDto userToCreate);
 }
 ```
+Fix import errors.
 
 The return type is `Task<User>` because we may want to do some work asynchronously. There is nothing yet, but when the database is attached and we use EFC, things will have to be asynchronous.\
 The data needed is wrapped in the `UserCreationDto`, i.e. the argument.\
@@ -107,10 +101,6 @@ Inside Application component, create the directory "DaoInterfaces".
 Inside this new directory, create the following interface:
 
 ```csharp
-using Domain.Models;
-
-namespace Domain.DaoInterfaces;
-
 public interface IUserDao
 {
     Task<User> CreateAsync(User user);
@@ -142,13 +132,6 @@ It must implement the IUserLogic interface, and it will depend on some way of st
 
 
 ```csharp
-using Domain.DaoInterfaces;
-using Domain.DTOs;
-using Domain.LogicInterfaces;
-using Domain.Models;
-
-namespace Domain.Logic;
-
 public class UserLogic : IUserLogic
 {
     private readonly IUserDao userDao;

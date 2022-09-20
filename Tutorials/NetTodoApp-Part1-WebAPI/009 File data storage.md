@@ -17,16 +17,13 @@ Inside FileData component create a class: `DataContainer`.
 It looks like this:
 
 ```csharp
-using Domain.Models;
-
-namespace FileData;
-
 public class DataContainer
 {
     public ICollection<User> Users { get; set; }
     public ICollection<Todo> Todos { get; set; }
 }
 ```
+Fix import errors.
 
 The point is, we will read data from the file and load into these two collections. 
 The collections are essentially our database tables. 

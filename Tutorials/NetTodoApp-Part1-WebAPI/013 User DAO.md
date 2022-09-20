@@ -8,11 +8,6 @@ Inside this directory, create the class "UserFileDAO". The class is seen [here](
 This is the initial setup of the class:
 
 ```csharp
-using Domain.DaoInterfaces;
-using Domain.Models;
-
-namespace FileData.DAOs;
-
 public class UserFileDAO : IUserDao
 {
     private readonly FileContext context;

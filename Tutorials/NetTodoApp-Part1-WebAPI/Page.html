@@ -371,16 +371,13 @@ We do it like this, because it will be very similar to how we are later going to
 <p>First, we will create a class to hold the data. Having all data in one class makes it easier to write it to a file, it is a bit of a hack, and this doesn't scale. We will essentially load all data into memory. But, the JSON storage is just for our initial minimum viable product, or proof of concept.</p>
 <p>Inside FileData component create a class: <code>DataContainer</code>.</p>
 <p>It looks like this:</p>
-<pre><code class="line-numbers language-csharp">using Domain.Models;
-
-namespace FileData;
-
-public class DataContainer
+<pre><code class="line-numbers language-csharp">public class DataContainer
 {
     public ICollection&lt;User&gt; Users { get; set; }
     public ICollection&lt;Todo&gt; Todos { get; set; }
 }
 </code></pre>
+<p>Fix import errors.</p>
 <p>The point is, we will read data from the file and load into these two collections.
 The collections are essentially our database tables.
 If we were to need more model classes in the future, e.g. Category, Project, or something else, we would add more collections.</p>
@@ -508,9 +505,7 @@ However, that class contains more properties than what is needed in our case of 
 We could just leave some properties empty, but that may not always be convenient. In our case, we will instead create a new DTO with just the properties needed to create a new User.</p>
 <p>Inside Domain component, create a new directory, call it DTOs.<br />
 Inside this directory, create the following class:</p>
-<pre><code class="line-numbers language-csharp">namespace Domain.DTOs;
-
-public class UserCreationDto
+<pre><code class="line-numbers language-csharp">public class UserCreationDto
 {
     public string UserName { get;}
 
@@ -541,16 +536,12 @@ On the other hand, the separation is better. We must weigh the pros and cons.<br
 We will apply the loose approach for convenience in this smaller example.</p>
 <h2 id="logic-interface-content">Logic Interface Content</h2>
 <p>Now we can define the method in IUserLogic interface:</p>
-<pre><code class="line-numbers language-csharp">using Domain.DTOs;
-using Domain.Models;
-
-namespace Domain.LogicInterfaces;
-
-public interface IUserLogic
+<pre><code class="line-numbers language-csharp">public interface IUserLogic
 {
     Task&lt;User&gt; CreateAsync(UserCreationDto userToCreate);
 }
 </code></pre>
+<p>Fix import errors.</p>
 <p>The return type is <code>Task&lt;User&gt;</code> because we may want to do some work asynchronously. There is nothing yet, but when the database is attached and we use EFC, things will have to be asynchronous.<br />
 The data needed is wrapped in the <code>UserCreationDto</code>, i.e. the argument.<br />
 And the data returned is the finalized User object.
@@ -570,11 +561,7 @@ We use the question mark <code>User?</code> to indicate we might return null, in
 <p>We know that we need to store the new User, which we have just created. Let's define the DAO interface for this.</p>
 <p>Inside Application component, create the directory &quot;DaoInterfaces&quot;.</p>
 <p>Inside this new directory, create the following interface:</p>
-<pre><code class="line-numbers language-csharp">using Domain.Models;
-
-namespace Domain.DaoInterfaces;
-
-public interface IUserDao
+<pre><code class="line-numbers language-csharp">public interface IUserDao
 {
     Task&lt;User&gt; CreateAsync(User user);
     Task&lt;User?&gt; GetByUsernameAsync(string userName);
@@ -598,14 +585,7 @@ The resulting class is <a href="https://github.com/TroelsMortensen/WasmTodo/blob
 <p>In Application component, create a new directory: &quot;Logic&quot;.<br />
 In here, create a new class: &quot;UserLogic&quot;.</p>
 <p>It must implement the IUserLogic interface, and it will depend on some way of storing data, i.e. the IUserDao interface, so we start here:</p>
-<pre><code class="line-numbers language-csharp">using Domain.DaoInterfaces;
-using Domain.DTOs;
-using Domain.LogicInterfaces;
-using Domain.Models;
-
-namespace Domain.Logic;
-
-public class UserLogic : IUserLogic
+<pre><code class="line-numbers language-csharp">public class UserLogic : IUserLogic
 {
     private readonly IUserDao userDao;
 
@@ -693,7 +673,7 @@ The Controller above can then catch different types of exceptions, and return a 
 <p>Inside the Controllers directory, create a new class: &quot;UserController&quot;.
 This class will be responsible for everything User object related. Result <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/WebAPI/Controllers/UsersController.cs">found here</a>.</p>
 <p>This is the initial code:</p>
-<pre><code class="line-numbers language-csharp">using Domain.LogicInterfaces;
+<pre><code class="line-numbers language-csharp">using Application.LogicInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -757,12 +737,7 @@ See a <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">list of 
 <p>Inside FileData component, create a new directory, &quot;DAOs&quot;.</p>
 <p>Inside this directory, create the class &quot;UserFileDAO&quot;. The class is seen <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/FileData/DAOs/UserFileDAO.cs">here</a>.</p>
 <p>This is the initial setup of the class:</p>
-<pre><code class="line-numbers language-csharp">using Domain.DaoInterfaces;
-using Domain.Models;
-
-namespace FileData.DAOs;
-
-public class UserFileDAO : IUserDao
+<pre><code class="line-numbers language-csharp">public class UserFileDAO : IUserDao
 {
     private readonly FileContext context;
 

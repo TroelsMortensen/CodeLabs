@@ -12,7 +12,7 @@ This class will be responsible for everything User object related. Result [found
 This is the initial code:
 
 ```csharp
-using Domain.LogicInterfaces;
+using Application.LogicInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
