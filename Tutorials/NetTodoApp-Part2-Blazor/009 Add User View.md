@@ -33,9 +33,11 @@ I have added a little extra, which will be explained, and then the view looks li
 **Line 1**: This is the page directive. It defines the sub-uri to access this specific page.\
 **Line 2-3**: Importing various namespaces.\
 **Line 4**: Here we inject an instance of `IUserService`.
-This instance is created an provided by the dependency injection framework, and we can do this, when we have registered the interface and implementing class as services in Program.cs, as we did the previous slide.\
+This instance is created and provided by the dependency injection framework, and we can do this, when we have registered the interface and implementing class as services in Program.cs, as we did the previous slide.\
 We hereby achieve dependency inversion, and if we were to change the network technology, the idea is, we shouldn't have to rework any of our pages, because they just know about the interface.\
 However, because we decided to put the interfaces into the HttpClients component, we would still have to modify all pages, if we changed network technology. Notice the using statement in line 3, this references the namespace HttpClients. We have chosen to accept this flaw, as we will not change network technology. Remember the discussion on slide 2 on where to put the interfaces.
+
+But, this page does not know about the implementation behind the interface.
 
 Then comes a mix of HTML and razor-syntax, i.e. inlined C#.\
 First there is a containing `<div>` in line 6. We will add some styling later to setup the page a little nicer.

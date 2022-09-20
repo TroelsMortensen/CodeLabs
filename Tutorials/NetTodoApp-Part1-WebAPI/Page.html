@@ -1294,7 +1294,7 @@ public class TodosController : ControllerBase
 <details>
 <summary>hint</summary>
 <pre><code class="line-numbers language-csharp">[HttpPost]
-public async Task&lt;ActionResult&lt;Todo&gt;&gt; CreateAsync(TodoCreationDto dto)
+public async Task&lt;ActionResult&lt;Todo&gt;&gt; CreateAsync([FromBody]TodoCreationDto dto)
 {
     try
     {

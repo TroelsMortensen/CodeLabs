@@ -45,7 +45,7 @@ We now need the endpoint. You'll give this a go yourself as well first, it is ve
 
 ```csharp
 [HttpPost]
-public async Task<ActionResult<Todo>> CreateAsync(TodoCreationDto dto)
+public async Task<ActionResult<Todo>> CreateAsync([FromBody]TodoCreationDto dto)
 {
     try
     {
