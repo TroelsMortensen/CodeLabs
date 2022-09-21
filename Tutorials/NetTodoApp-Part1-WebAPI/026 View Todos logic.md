@@ -54,10 +54,8 @@ Task<IEnumerable<Todo>> Get(SearchTodoParametersDto searchParameters);
 We need the same method signature in the ITodoDao interface.
 
 ```csharp
-Task<IEnumerable<Todo>> Get(SearchTodoParametersDto searchParams);
+Task<IEnumerable<Todo>> Get(SearchTodoParametersDto searchParameters);
 ```
-
-###### (I am aware of the different argument names, but realized far later in the tutorial, so I haven't updated this yet) 
 
 ## Logic Implementation
 Implement the method from the interface, all it does is call the same method on the `todoDao` field variable. Same as what we did when getting the collection of users.

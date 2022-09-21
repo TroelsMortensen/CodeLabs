@@ -8,7 +8,7 @@ Inside this directory, create the class "UserFileDAO". The class is seen [here](
 This is the initial setup of the class:
 
 ```csharp
-public class UserFileDAO : IUserDao
+public class UserFileDao : IUserDao
 {
     private readonly FileContext context;
 
@@ -29,7 +29,7 @@ public class UserFileDAO : IUserDao
 }
 ```
 
-We implemented the `IUserDAO` interface from the Application component.
+We implemented the `IUserDao` interface from the Application component.
 
 We receive an instance of FileContext through constructor dependency injection.
 

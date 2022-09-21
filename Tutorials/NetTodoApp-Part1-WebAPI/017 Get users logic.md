@@ -48,7 +48,7 @@ We can now use our new search filter DTO in the method signature in the Logic in
 using Domain.DTOs;
 using Domain.Models;
 
-namespace Domain.LogicInterfaces;
+namespace Application.LogicInterfaces;
 
 public interface IUserLogic
 {
