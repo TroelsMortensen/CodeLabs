@@ -737,7 +737,7 @@ See a <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">list of 
 <p>Inside FileData component, create a new directory, &quot;DAOs&quot;.</p>
 <p>Inside this directory, create the class &quot;UserFileDAO&quot;. The class is seen <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/FileData/DAOs/UserFileDAO.cs">here</a>.</p>
 <p>This is the initial setup of the class:</p>
-<pre><code class="line-numbers language-csharp">public class UserFileDAO : IUserDao
+<pre><code class="line-numbers language-csharp">public class UserFileDao : IUserDao
 {
     private readonly FileContext context;
 
@@ -757,7 +757,7 @@ See a <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">list of 
     }
 }
 </code></pre>
-<p>We implemented the <code>IUserDAO</code> interface from the Application component.</p>
+<p>We implemented the <code>IUserDao</code> interface from the Application component.</p>
 <p>We receive an instance of FileContext through constructor dependency injection.</p>
 <p>We have the two methods from the interface, currently without a working body. So, let's get on that.</p>
 <h3 id="create-user">Create User</h3>
@@ -909,7 +909,7 @@ public class SearchUserParametersDto
 <pre data-line="9"><code class="line-numbers language-csharp">using Domain.DTOs;
 using Domain.Models;
 
-namespace Domain.LogicInterfaces;
+namespace Application.LogicInterfaces;
 
 public interface IUserLogic
 {
@@ -1390,9 +1390,8 @@ But simple types like ints and booleans, they cannot normally be null. We do how
 </code></pre>
 <h2 id="data-interface">Data Interface</h2>
 <p>We need the same method signature in the ITodoDao interface.</p>
-<pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;Todo&gt;&gt; Get(SearchTodoParametersDto searchParams);
+<pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;Todo&gt;&gt; Get(SearchTodoParametersDto searchParameters);
 </code></pre>
-<h6 id="i-am-aware-of-the-different-argument-names-but-realized-far-later-in-the-tutorial-so-i-havent-updated-this-yet">(I am aware of the different argument names, but realized far later in the tutorial, so I haven't updated this yet)</h6>
 <h2 id="logic-implementation">Logic Implementation</h2>
 <p>Implement the method from the interface, all it does is call the same method on the <code>todoDao</code> field variable. Same as what we did when getting the collection of users.</p>
 <h4 id="comment-on-logic-implementation">Comment on logic implementation</h4>
