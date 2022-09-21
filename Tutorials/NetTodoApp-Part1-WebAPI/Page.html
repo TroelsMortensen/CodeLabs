@@ -1104,7 +1104,7 @@ public interface ITodoLogic
 <p>First, we need to create it. It goes inside Application/DaoInterfaces, call it &quot;ITodoDao&quot;.</p>
 <p>The method takes a Todo and returns a Todo (because the Id is set).</p>
 <p>Like this:</p>
-<pre><code class="line-numbers language-csharp">Task&lt;Todo&gt; CreateAsync(Todo dto);
+<pre><code class="line-numbers language-csharp">Task&lt;Todo&gt; CreateAsync(Todo todo);
 </code></pre>
 <h3 id="the-logic">The logic</h3>
 <p>We have the input and output. But what is supposed to happen inside the box? It's similar to what we did with the user, certain rules must be adhered to, when creating Todo:</p>
@@ -1126,7 +1126,7 @@ public interface ITodoLogic
         this.userDao = userDao;
     }
 
-    public Task&lt;Todo&gt; CreateAsync(TodoCreationDto dto)
+    public Task&lt;Todo&gt; CreateAsync(Todo todo)
     {
         throw new NotImplementedException();
     }
@@ -1390,6 +1390,9 @@ But simple types like ints and booleans, they cannot normally be null. We do how
 </code></pre>
 <h2 id="data-interface">Data Interface</h2>
 <p>We need the same method signature in the ITodoDao interface.</p>
+<pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;Todo&gt;&gt; Get(SearchTodoParametersDto searchParams);
+</code></pre>
+<h6 id="i-am-aware-of-the-different-argument-names-but-realized-far-later-in-the-tutorial-so-i-havent-updated-this-yet">(I am aware of the different argument names, but realized far later in the tutorial, so I haven't updated this yet)</h6>
 <h2 id="logic-implementation">Logic Implementation</h2>
 <p>Implement the method from the interface, all it does is call the same method on the <code>todoDao</code> field variable. Same as what we did when getting the collection of users.</p>
 <h4 id="comment-on-logic-implementation">Comment on logic implementation</h4>

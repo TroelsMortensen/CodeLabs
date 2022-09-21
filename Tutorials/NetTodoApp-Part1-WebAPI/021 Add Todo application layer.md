@@ -76,7 +76,7 @@ The method takes a Todo and returns a Todo (because the Id is set).
 Like this:
 
 ```csharp
-Task<Todo> CreateAsync(Todo dto);
+Task<Todo> CreateAsync(Todo todo);
 ```
 
 ### The logic
@@ -101,7 +101,7 @@ public class TodoLogic : ITodoLogic
         this.userDao = userDao;
     }
 
-    public Task<Todo> CreateAsync(TodoCreationDto dto)
+    public Task<Todo> CreateAsync(Todo todo)
     {
         throw new NotImplementedException();
     }
