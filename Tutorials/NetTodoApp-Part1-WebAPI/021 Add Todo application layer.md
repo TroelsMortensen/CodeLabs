@@ -76,7 +76,7 @@ The method takes a Todo and returns a Todo (because the Id is set).
 Like this:
 
 ```csharp
-Task<Todo> CreateAsync(TodoCreationDto dto);
+Task<Todo> CreateAsync(Todo dto);
 ```
 
 ### The logic

@@ -1104,7 +1104,7 @@ public interface ITodoLogic
 <p>First, we need to create it. It goes inside Application/DaoInterfaces, call it &quot;ITodoDao&quot;.</p>
 <p>The method takes a Todo and returns a Todo (because the Id is set).</p>
 <p>Like this:</p>
-<pre><code class="line-numbers language-csharp">Task&lt;Todo&gt; CreateAsync(TodoCreationDto dto);
+<pre><code class="line-numbers language-csharp">Task&lt;Todo&gt; CreateAsync(Todo dto);
 </code></pre>
 <h3 id="the-logic">The logic</h3>
 <p>We have the input and output. But what is supposed to happen inside the box? It's similar to what we did with the user, certain rules must be adhered to, when creating Todo:</p>
