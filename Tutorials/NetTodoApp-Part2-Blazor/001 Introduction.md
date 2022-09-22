@@ -31,3 +31,14 @@ We already have the server-side of multiple features from part 1. We will now co
 Again, each feature has its own branch on GitHub. Below is an overview:
 
 * [009_ClientSetup]() Here the initial setup of the Client components are done.
+
+## Running your programs
+
+When you run your programs, either Web API or Blazor app, you **do not use the "IIS Express" version**. That requires extra setup, and I don't really know what it is about.
+
+
+![img.png](Resources/RunningYourPrograms.png)
+
+You can also just right-click your Web API or Blazor project, and run things from there, not worrying about ISS:
+
+![img.png](Resources/RightClickToRun.png)

@@ -16,8 +16,26 @@ Task<ICollection<Todo>> GetAsync(string? userName, int? userId, bool? completedS
 
 Next up, we implement the method in TodoHttpClient.
 
-We need to build up the URI with the correct query arguments. It looks like this:
+The method for fetching the data looks like this:
 
 ```csharp
+public async Task<ICollection<Todo>> GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
+{
+    HttpResponseMessage response = await client.GetAsync("/todos");
+    string content = await response.Content.ReadAsStringAsync();
+    if (!response.IsSuccessStatusCode)
+    {
+        throw new Exception(content);
+    }
 
+    ICollection<Todo> todos = JsonSerializer.Deserialize<ICollection<Todo>>(content, new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    })!;
+    return todos;
+}
 ```
+
+It takes the four filter criteria, all nullable, in case we don't want to apply a specific filter. We currently use none of them. We will modify this code later, when we apply the filters.
+
+It is the usual about making a GET request, checking the status code, and deserializing the response. You have seen this before.

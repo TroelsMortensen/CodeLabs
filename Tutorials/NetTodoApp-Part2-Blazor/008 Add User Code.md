@@ -8,8 +8,8 @@ It looks like this:
 ```csharp
 @code {
     private string username = "";
-    private string resultMsg;
-    private string color;
+    private string resultMsg = "";
+    private string color = "";
     
     private async Task Create()
     {
