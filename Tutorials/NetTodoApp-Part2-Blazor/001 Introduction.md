@@ -42,3 +42,46 @@ When you run your programs, either Web API or Blazor app, you **do not use the "
 You can also just right-click your Web API or Blazor project, and run things from there, not worrying about ISS:
 
 ![img.png](Resources/RightClickToRun.png)
+
+### Tired of Swagger opening all the time?
+Whenever you need to test something, you almost always need to start your Web API, and then Blazor. And your Web API will open a Swagger page.
+If you get tired of this, you can go to WebAPI/Properties/launchSettings.json and modify the following line:
+
+```json{15}
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:21227",
+      "sslPort": 44331
+    }
+  },
+  "profiles": {
+    "WebAPI": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7093;http://localhost:5093",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
+```
+
+"launchBrowser: true". Change this to false, and the browser will not launch.
+
+You can do the same for the Blazor app. You can then either just hard refresh with <kbd>ctrl</kbd>+<kbd>F5</kbd>.\
+And in the console in Rider you can also click on the link with https to open a window.

@@ -18,13 +18,15 @@ First, create a directory called "icons" here:
 
 This directory will house our icons. Since they are inside the "wwwroot" we can easily use them in the pages.
 
-Next, download the two following funnel icons, and place them into the directory. You should be able to right click them, and select to "save as".
+Next, download the two following funnel icons, and place them into the directory. You should be able to right click them, and select to "save as". [Otherwise find them here](https://github.com/TroelsMortensen/WasmTodo/tree/014_ViewTodosWithFilter/BlazorWASM/wwwroot/icons)
 
 ![](Resources/funnel.png)
 
 ![](Resources/clear_funnel.png)
 
-We will use these icons as buttons to open/close the filters.
+We will use these icons as buttons to open/close the filters. Take a moment to appreciate the icons, I made them myself.
+
+![](Resources/IMadeIt.gif)
 
 ## Code Block
 
@@ -32,7 +34,7 @@ We must provide field variables to hold the data for the new input fields. They 
 
 It looks like this:
 
-```csharp{5-8,19}
+```csharp{6-9,20}
 @code {
     private IEnumerable<Todo>? todos;
     private string msg = "";
@@ -179,52 +181,52 @@ In this class we need to take the filter arguments and construct a string of que
 We make the following changes. There is a new line of code in the existing `GetAsync()` method, the first line. And a new method. Here:
 
 ```csharp{3}
-    public async Task<ICollection<Todo>> GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
+public async Task<ICollection<Todo>> GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
+{
+    string query = ConstructQuery(userName, userId, completedStatus, titleContains);
+
+    HttpResponseMessage response = await client.GetAsync("/todos"+query);
+    string content = await response.Content.ReadAsStringAsync();
+    if (!response.IsSuccessStatusCode)
     {
-        string query = ConstructQuery(userName, userId, completedStatus, titleContains);
-
-        HttpResponseMessage response = await client.GetAsync("/todos"+query);
-        string content = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception(content);
-        }
-
-        ICollection<Todo> todos = JsonSerializer.Deserialize<ICollection<Todo>>(content, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        })!;
-        return todos;
+        throw new Exception(content);
     }
 
-    private static string ConstructQuery(string? userName, int? userId, bool? completedStatus, string? titleContains)
+    ICollection<Todo> todos = JsonSerializer.Deserialize<ICollection<Todo>>(content, new JsonSerializerOptions
     {
-        string query = "";
-        if (!string.IsNullOrEmpty(userName))
-        {
-            query += $"?username={userName}";
-        }
+        PropertyNameCaseInsensitive = true
+    })!;
+    return todos;
+}
 
-        if (userId != null)
-        {
-            query += string.IsNullOrEmpty(query) ? "?" : "&";
-            query += $"userid={userId}";
-        }
-
-        if (completedStatus != null)
-        {
-            query += string.IsNullOrEmpty(query) ? "?" : "&";
-            query += $"completedstatus={completedStatus}";
-        }
-
-        if (!string.IsNullOrEmpty(titleContains))
-        {
-            query += string.IsNullOrEmpty(query) ? "?" : "&";
-            query += $"titlecontains={titleContains}";
-        }
-
-        return query;
+private static string ConstructQuery(string? userName, int? userId, bool? completedStatus, string? titleContains)
+{
+    string query = "";
+    if (!string.IsNullOrEmpty(userName))
+    {
+        query += $"?username={userName}";
     }
+
+    if (userId != null)
+    {
+        query += string.IsNullOrEmpty(query) ? "?" : "&";
+        query += $"userid={userId}";
+    }
+
+    if (completedStatus != null)
+    {
+        query += string.IsNullOrEmpty(query) ? "?" : "&";
+        query += $"completedstatus={completedStatus}";
+    }
+
+    if (!string.IsNullOrEmpty(titleContains))
+    {
+        query += string.IsNullOrEmpty(query) ? "?" : "&";
+        query += $"titlecontains={titleContains}";
+    }
+
+    return query;
+}
 ```
 
 So, the second method, `ConstructQuery(...)` is the interesting one.
