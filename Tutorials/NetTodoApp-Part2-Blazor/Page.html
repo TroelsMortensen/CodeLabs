@@ -47,6 +47,7 @@
 <li class="step" onclick="setTab(28)">29 GetTodoById</li>
 <li class="step" onclick="setTab(29)">30 Edit Todo Page</li>
 <li class="step" onclick="setTab(30)">31 Navigate To Edit</li>
+<li class="step" onclick="setTab(31)">32 Delete Todo Feature</li>
 
         </ol>
     </div>
@@ -1040,8 +1041,8 @@ Copy the styles from your style-behind in here.</p>
 <p>Initially it will just display all Todos.<br />
 Then we add filtering functionality.<br />
 Then the next user story is about completing a Todo, so we expand this page for that.<br />
+We can edit Todos, which will be initiated in this page.<br />
 We will also be able to delete Todos.<br />
-We can edit Todos.<br />
 And finally we will show a popup.</p>
 <p>All these things, one thing at a time.</p>
 <p>First, just load and display all Todos.</p>
@@ -1149,7 +1150,7 @@ Notice the <code>Owner</code> is a User object, therefore, we need to go a step 
 <h2 id="code-block">Code Block</h2>
 <p>We must provide field variables to hold the data for the new input fields. They must be passed to the call to get Todos from the ITodoService.</p>
 <p>It looks like this:</p>
-<pre data-line="5-8,19"><code class="line-numbers language-csharp">@code {
+<pre data-line="6-9,20"><code class="line-numbers language-csharp">@code {
     private IEnumerable&lt;Todo&gt;? todos;
     private string msg = &quot;&quot;;
     private bool doShowFilters = false;
@@ -1273,52 +1274,52 @@ All four fields are nullable, so we can choose to not provide a value, to indica
 <h2 id="todohttpclient">TodoHttpClient</h2>
 <p>In this class we need to take the filter arguments and construct a string of query parameters to suffix to the URI.</p>
 <p>We make the following changes. There is a new line of code in the existing <code>GetAsync()</code> method, the first line. And a new method. Here:</p>
-<pre data-line="3"><code class="line-numbers language-csharp">    public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
+<pre data-line="3"><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
+{
+    string query = ConstructQuery(userName, userId, completedStatus, titleContains);
+
+    HttpResponseMessage response = await client.GetAsync(&quot;/todos&quot;+query);
+    string content = await response.Content.ReadAsStringAsync();
+    if (!response.IsSuccessStatusCode)
     {
-        string query = ConstructQuery(userName, userId, completedStatus, titleContains);
-
-        HttpResponseMessage response = await client.GetAsync(&quot;/todos&quot;+query);
-        string content = await response.Content.ReadAsStringAsync();
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception(content);
-        }
-
-        ICollection&lt;Todo&gt; todos = JsonSerializer.Deserialize&lt;ICollection&lt;Todo&gt;&gt;(content, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        })!;
-        return todos;
+        throw new Exception(content);
     }
 
-    private static string ConstructQuery(string? userName, int? userId, bool? completedStatus, string? titleContains)
+    ICollection&lt;Todo&gt; todos = JsonSerializer.Deserialize&lt;ICollection&lt;Todo&gt;&gt;(content, new JsonSerializerOptions
     {
-        string query = &quot;&quot;;
-        if (!string.IsNullOrEmpty(userName))
-        {
-            query += $&quot;?username={userName}&quot;;
-        }
+        PropertyNameCaseInsensitive = true
+    })!;
+    return todos;
+}
 
-        if (userId != null)
-        {
-            query += string.IsNullOrEmpty(query) ? &quot;?&quot; : &quot;&amp;&quot;;
-            query += $&quot;userid={userId}&quot;;
-        }
-
-        if (completedStatus != null)
-        {
-            query += string.IsNullOrEmpty(query) ? &quot;?&quot; : &quot;&amp;&quot;;
-            query += $&quot;completedstatus={completedStatus}&quot;;
-        }
-
-        if (!string.IsNullOrEmpty(titleContains))
-        {
-            query += string.IsNullOrEmpty(query) ? &quot;?&quot; : &quot;&amp;&quot;;
-            query += $&quot;titlecontains={titleContains}&quot;;
-        }
-
-        return query;
+private static string ConstructQuery(string? userName, int? userId, bool? completedStatus, string? titleContains)
+{
+    string query = &quot;&quot;;
+    if (!string.IsNullOrEmpty(userName))
+    {
+        query += $&quot;?username={userName}&quot;;
     }
+
+    if (userId != null)
+    {
+        query += string.IsNullOrEmpty(query) ? &quot;?&quot; : &quot;&amp;&quot;;
+        query += $&quot;userid={userId}&quot;;
+    }
+
+    if (completedStatus != null)
+    {
+        query += string.IsNullOrEmpty(query) ? &quot;?&quot; : &quot;&amp;&quot;;
+        query += $&quot;completedstatus={completedStatus}&quot;;
+    }
+
+    if (!string.IsNullOrEmpty(titleContains))
+    {
+        query += string.IsNullOrEmpty(query) ? &quot;?&quot; : &quot;&amp;&quot;;
+        query += $&quot;titlecontains={titleContains}&quot;;
+    }
+
+    return query;
+}
 </code></pre>
 <p>So, the second method, <code>ConstructQuery(...)</code> is the interesting one.</p>
 <p>It will check each filter argument, check if they are not null, in which case they should be ignore. And otherwise include the needed filter arguments in the query parameter string.</p>
@@ -1506,7 +1507,7 @@ Put the using statement back again.</p>
 <p>Your front page should now look like this:</p>
 <p><img src="Resources/CheckBoxInAction.gif" alt="" /></p>
 <p>My god, is that fancy or what?!</p>
-<p>Okay, we haven't provided any parameters to it just yet. So let's god an use it for real.</p>
+<p>Okay, we haven't provided any parameters to it just yet. So let's go and use it for real.</p>
 <p>You may delete the component from the Index.razor page, if you wish.</p>
 
 </div>
@@ -1514,6 +1515,7 @@ Put the using statement back again.</p>
 <hr/><h1 id="using-the-checkbox">Using the Checkbox</h1><hr/>
 <p>We need to modify the ViewTodos page, so that instead of displaying a textual value, we use the new</p>
 <p><img src="Resources/FancyCheckBoxMeme.png" alt="img.png" /></p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/015_CheckBoxComponent">The code is found in this branch</a></p>
 <h2 id="the-service">The Service</h2>
 <p>First, we must create a new method in TodoHttpClient responsible for making update requests.</p>
 <h4 id="interface">Interface</h4>
@@ -1636,7 +1638,8 @@ In case of an exception we would set back the IsCompleted property.</p>
 </div>
 <div class="tab">
 <hr/><h1 id="edit-todo">Edit Todo</h1><hr/>
-<p>This isn't exactly a user story. However, we have the Web API endpoint which can update a Todo, so let's make the front end part of that functionality.</p>
+<p>This isn't exactly a user story. However, we have the Web API endpoint which can update a Todo, so let's make the front end part of that functionality.<br />
+<a href="https://github.com/TroelsMortensen/WasmTodo/tree/016_EditTodo">You can find the code in this branch</a></p>
 <p>Furthermore, this will show a way to pass arguments to a page.</p>
 <p>For the View Todos page, we would potentially select some filters, and ask to load the data with the click of a button.<br />
 Sometimes you want the page to auto-load something, but what that something is may vary.</p>
@@ -1840,7 +1843,75 @@ But you can access the page by manually typing in the URI in the browser's addre
 </div>
 <div class="tab">
 <hr/><h1 id="navigate-to-the-edit-todo-page">Navigate to the Edit Todo Page</h1><hr/>
-<p>The testing was done by manually</p>
+<p>The testing was done by manually typing in the URI in the address bar of the browser. That is inconvenient for a user.</p>
+<p>We will add a column to the table View Todos, with a button, which when clicked, will take you to the EditTodo page.</p>
+<p><img src="Resources/LetsDoThis.png" alt="img.png" /></p>
+<h2 id="icon">Icon</h2>
+<p>We need a new icon to press. We will use this one:</p>
+<p><img src="Resources/edit.gif" alt="" /></p>
+<p>Download it like the funnel icons. Place it in the same folder: wwwroot/icons.</p>
+<h2 id="the-view-first">The View First</h2>
+<p>Open ViewTodos.razor. We will modify the table, here's the snippet part:</p>
+<pre data-line="1,16,29-31"><code class="line-numbers language-razor">@inject NavigationManager navMgr
+
+
+...
+
+
+else
+{
+    &lt;table class=&quot;table&quot;&gt;
+        &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Todo ID&lt;/th&gt;
+            &lt;th&gt;Owner ID&lt;/th&gt;
+            &lt;th&gt;Title&lt;/th&gt;
+            &lt;th&gt;Completed?&lt;/th&gt;
+            &lt;th&gt;Edit&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        @foreach (var item in todos)
+        {
+            &lt;tr&gt;
+                &lt;td&gt;@item.Id&lt;/td&gt;
+                &lt;td&gt;@item.Owner.UserName&lt;/td&gt;
+                &lt;td&gt;@item.Title&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;FancyCheckBox IsCompleted=&quot;@item.IsCompleted&quot; OnChange=&quot;@((status) =&gt; CompleteTodo(item, status))&quot;/&gt;
+                &lt;/td&gt;
+                &lt;td&gt;
+                    &lt;img src=&quot;icons/edit.gif&quot; class=&quot;funnel&quot; @onclick=&quot;@(() =&gt; navMgr.NavigateTo($&quot;/EditTodo/{item.Id}&quot;))&quot;/&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        }
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+}
+
+...
+</code></pre>
+<p>Okay, we need a NavigationManager, so that is injected at the top of the page, along with the other inject statements.</p>
+<p>Then we have the part of the view with the table definition. Notice the highlighted:</p>
+<ul>
+<li>There is a new column, defined by the new table header with &quot;Edit&quot;</li>
+<li>And then the content of that column is defined in the new <code>&lt;td&gt;</code>. We insert an image, the source being our gif above. The style class is the same as the funnel-filter icons. That is just lazy, but it works for now. When the icon is clicked, we use the NavigationManager to navigate to the page EditTodo, and we add the ID of the Todo displayed in this row.</li>
+</ul>
+<h2 id="testing-testing-1-2-testing">Testing, Testing, 1, 2, Testing</h2>
+<p>Let's do this.</p>
+<p>Run the usual, navigate to View Todos. At the right there is a new column with the edit gifs. Click on one, and pay attention to the data of that row, it should now be displayed on the EditTodo page.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-todo-feature-introduction">Delete Todo Feature Introduction</h1><hr/>
+<p>Next up, we have our final user story:</p>
+<blockquote>
+<p>As a User I can delete a Todo, so that I can clean up</p>
+</blockquote>
+<p>We will do this by again modifying the View Todos page, adding a new column with a little delete icon to be clicked.</p>
+<p><a href="">The code for this feature is found here</a></p>
+<h2 id="the-view">The View</h2>
+<p>Open again ViewTodos.razor. We must edit the table.</p>
 
 </div>
 
