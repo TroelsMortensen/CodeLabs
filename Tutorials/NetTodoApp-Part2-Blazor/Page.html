@@ -48,6 +48,8 @@
 <li class="step" onclick="setTab(29)">30 Edit Todo Page</li>
 <li class="step" onclick="setTab(30)">31 Navigate To Edit</li>
 <li class="step" onclick="setTab(31)">32 Delete Todo Feature</li>
+<li class="step" onclick="setTab(32)">33 Delete Todo Service</li>
+<li class="step" onclick="setTab(33)">34 Delete Todo View</li>
 
         </ol>
     </div>
@@ -1910,8 +1912,121 @@ else
 </blockquote>
 <p>We will do this by again modifying the View Todos page, adding a new column with a little delete icon to be clicked.</p>
 <p><a href="">The code for this feature is found here</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-todo-in-the-todo-service">Delete Todo in the Todo Service</h1><hr/>
+<p>We start with the client layer.</p>
+<h2 id="the-interface">The Interface</h2>
+<p>First we define the method in the ITodoService interface. It does not need to return anything, and the argument is just the id of the Todo, we want to delete.</p>
+<p>Put this method in the interface:</p>
+<pre><code class="line-numbers language-csharp">Task DeleteAsync(int id);
+</code></pre>
+<h2 id="the-implementation">The Implementation</h2>
+<p>The we need the implementation of the method, in TodoHttpClient.</p>
+<p>We already have a Delete endpoint in the TodosController. Implement the Delete method in TodoHttpClient yourself.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task DeleteAsync(int id)
+{
+    HttpResponseMessage response = await client.DeleteAsync($&quot;Todos/{id}&quot;);
+    if (!response.IsSuccessStatusCode)
+    {
+        string content = await response.Content.ReadAsStringAsync();
+        throw new Exception(content);
+    }
+}
+</code></pre>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-todo-view">Delete Todo View</h1><hr/>
+<p>We need to add a new column with an icon.</p>
+<h2 id="the-code-block">The Code Block</h2>
+<p>We need a new method in the code block of the View Todos page.</p>
+<p>I should take an ID, pass it to the Todo Service so that the Server can delete it.<br />
+Then we also want to update the data in the view to reflect this deletion.</p>
+<p>The method looks like this:</p>
+<pre><code class="line-numbers language-csharp">private async Task RemoveTodo(int todoId)
+{
+    msg = &quot;&quot;;
+    try
+    {
+        await todoService.DeleteAsync(todoId);
+        
+        var list = new List&lt;Todo&gt;(todos!);
+        list.RemoveAll(todo =&gt; todo.Id == todoId);
+        todos = list.AsEnumerable();
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        msg = e.Message;
+    }
+}
+</code></pre>
+<p>Line 6 makes the call to the Todo Service.<br />
+Lines 8-10 removes the deleted Todo from the <code>todos</code> collection, which holds the data shown in the view. This variable is an IEnumerable, which cannot be modified. So:</p>
+<ul>
+<li>First convert the IEnumerable to a List</li>
+<li>Then remove from the List</li>
+<li>Then assign <code>todos</code> to be the List converted to an IEnumerable.</li>
+</ul>
+<p>It is a bit inconvenient. We could have made the TodoHttpClient::Get() method return an ICollection or IList instead, which might be easier to work with. But I don't want to go back and refactor that. The reader is welcome to use that approach instead.</p>
+<p>Alternatively we could just call <code>LoadTodos()</code> again, to reload the todos from the server. This requires an extra call across the network, which may be resource heavy. It is the quick fix, but probably not the most efficient solution.</p>
 <h2 id="the-view">The View</h2>
-<p>Open again ViewTodos.razor. We must edit the table.</p>
+<p>Open again ViewTodos.razor. We must edit the table. We will add another column with an icon to click, when a Todo should be deleted.</p>
+<p>The table part of the view is shown here:</p>
+<pre data-line="13,29-33"><code class="line-numbers language-razor">...
+
+else
+{
+    &lt;table class=&quot;table&quot;&gt;
+        &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Todo ID&lt;/th&gt;
+            &lt;th&gt;Owner ID&lt;/th&gt;
+            &lt;th&gt;Title&lt;/th&gt;
+            &lt;th&gt;Completed?&lt;/th&gt;
+            &lt;th&gt;Edit&lt;/th&gt;
+            &lt;th&gt;Delete?&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+        @foreach (var item in todos)
+        {
+            &lt;tr&gt;
+                &lt;td&gt;@item.Id&lt;/td&gt;
+                &lt;td&gt;@item.Owner.UserName&lt;/td&gt;
+                &lt;td&gt;@item.Title&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;FancyCheckBox IsCompleted=&quot;@item.IsCompleted&quot; OnChange=&quot;@((status) =&gt; CompleteTodo(item, status))&quot;/&gt;
+                &lt;/td&gt;
+                &lt;td&gt;
+                    &lt;img src=&quot;icons/edit.gif&quot; class=&quot;funnel&quot; @onclick=&quot;@(() =&gt; navMgr.NavigateTo($&quot;/EditTodo/{item.Id}&quot;))&quot;/&gt;
+                &lt;/td&gt;
+                &lt;td&gt;
+                    &lt;label @onclick=&quot;@(() =&gt; RemoveTodo(item.Id))&quot; style=&quot;cursor:pointer; color: red; font-weight: bold&quot;&gt;
+                        &amp;#x2717;
+                    &lt;/label&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;
+        }
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+}
+
+...
+</code></pre>
+<p>Notice the new table column in line 13. And in lines 29-33 we define the content of that column to be an icon, given by the code <code>&amp;#x2717;</code>, which is a red X:</p>
+<p><img src="Resources/XIcon.png" alt="img.png" /></p>
+<p>Obviously we could have used an actual icon file, like the funnels or the edit.</p>
+<p>The <code>&lt;label&gt;</code> tag contains an <code>@onclick</code>-handler, i.e. a lambda expression to call the <code>RemoveTodo()</code> method defined above. I also have a bit of inline styling. You may move this to a css file, if you prefer. You probably have a style-behind for ViewTodos.razor.</p>
+<h2 id="testing">Testing</h2>
+<p>It is time to test the feature. Run the usual. Navigate to View Todos. Load all Todos.</p>
+<p>First: Try to delete an un-completed Todo. The server should not allow you to. You should see the error message below the table.</p>
+<p>Then: Delete a completed Todo. If you have none, then first complete a Todo. You should see the view be updated. To verify the deletion was saved on the server, navigate to a different page, and back, and reload the Todos.</p>
 
 </div>
 

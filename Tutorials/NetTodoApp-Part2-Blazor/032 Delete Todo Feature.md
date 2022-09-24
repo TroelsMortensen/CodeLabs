@@ -8,7 +8,3 @@ We will do this by again modifying the View Todos page, adding a new column with
 
 [The code for this feature is found here]()
 
-## The View
-
-Open again ViewTodos.razor. We must edit the table.
-
