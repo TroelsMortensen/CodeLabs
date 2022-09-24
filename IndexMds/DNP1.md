@@ -13,5 +13,7 @@
 
 [Todo App Part 1 - Web API](./Tutorials/NetTodoApp-Part1-WebAPI/Page.html)
 
+[Todo App Part 2 - Blazor](./Tutorials/NetTodoApp-Part2-Blazor/Page.html)
+
 ### Videos
 ...
