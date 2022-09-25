@@ -19,8 +19,7 @@ However, if we later want to add more search criteria, I would have to modify po
 
 Instead, we want to define an object to contain the search variables, a DTO.
 
-###### Note
-We have here avoided "the primitive obsession anti pattern". 
+###### Note: We have here avoided "the primitive obsession anti pattern". 
 
 ### The search filters DTO
 Inside Domain/DTOs directory, create the following class:
@@ -32,7 +31,7 @@ public class SearchUserParametersDto
 {
     public string? UsernameContains { get;  }
 
-    public SearchUserFiltersDto(string? usernameContains)
+    public SearchUserParametersDto(string? usernameContains)
     {
         UsernameContains = usernameContains;
     }

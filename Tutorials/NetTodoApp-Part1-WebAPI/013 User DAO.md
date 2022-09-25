@@ -3,7 +3,7 @@ With the logic and network layers in place, we just need to be able to store the
 
 Inside FileData component, create a new directory, "DAOs".
 
-Inside this directory, create the class "UserFileDAO". The class is seen [here](https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/FileData/DAOs/UserFileDAO.cs).
+Inside this directory, create the class "UserFileDao". The class is seen [here](https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/FileData/DAOs/UserFileDAO.cs).
 
 This is the initial setup of the class:
 
@@ -12,7 +12,7 @@ public class UserFileDao : IUserDao
 {
     private readonly FileContext context;
 
-    public UserFileDAO(FileContext context)
+    public UserFileDao(FileContext context)
     {
         this.context = context;
     }

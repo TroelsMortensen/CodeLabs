@@ -24,7 +24,7 @@ i.e. storing data in JSON file or use EFC to database. These are frameworks and 
 If we unfold the diagram a little bit, it looks more like your familiar layered system, just shuffled around, 
 so the higher layers are the "unstable" ones.
 
-![](Resources/clean unfolded.png)
+![](Resources/cleanUnfolded.png)
 
 The point to notice in both cases are the dependencies. Outer layers in the onion knows about inner layers, not vice versa. And in the unfolded version, upper layers know about those below, and not vice versa.
 We will come back to these dependencies, and why this is the way.
@@ -64,7 +64,7 @@ The following diagram shows the components (grey boxes) of our project. The gree
 
 The grey boxes are "components". I will steal the following explanation from Robert C. Martin's book "Clean Architecture":
 
-> Components are units of deployment. They are the smallets entities that can be deployed as part of a system. In Java, they are jar files. In .NET they are DDLs.
+> Components are units of deployment. They are the smallets entities that can be deployed as part of a system. In Java, they are jar files. In .NET they are DLLs.
 
 In Java, components are often organized in _modules_. In .NET, components can be organized into various _projects_. 
 Components can be considered a bit like lego-building blocks, 

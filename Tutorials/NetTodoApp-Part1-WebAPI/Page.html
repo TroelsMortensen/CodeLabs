@@ -133,7 +133,7 @@ The green layer is in our case REST controllers, i.e. our Web API, and the Data 
 i.e. storing data in JSON file or use EFC to database. These are frameworks and libraries, which might be changed.</p>
 <p>If we unfold the diagram a little bit, it looks more like your familiar layered system, just shuffled around,
 so the higher layers are the &quot;unstable&quot; ones.</p>
-<p>![](Resources/clean unfolded.png)</p>
+<p><img src="Resources/cleanUnfolded.png" alt="" /></p>
 <p>The point to notice in both cases are the dependencies. Outer layers in the onion knows about inner layers, not vice versa. And in the unfolded version, upper layers know about those below, and not vice versa.
 We will come back to these dependencies, and why this is the way.</p>
 <h2 id="architecture-overview">Architecture overview</h2>
@@ -157,7 +157,7 @@ We will apply the Dependency Inversion Principle, and hide the Data Access layer
 <p><img src="Resources/ComponentDiagram.svg" alt="img" /></p>
 <p>The grey boxes are &quot;components&quot;. I will steal the following explanation from Robert C. Martin's book &quot;Clean Architecture&quot;:</p>
 <blockquote>
-<p>Components are units of deployment. They are the smallets entities that can be deployed as part of a system. In Java, they are jar files. In .NET they are DDLs.</p>
+<p>Components are units of deployment. They are the smallets entities that can be deployed as part of a system. In Java, they are jar files. In .NET they are DLLs.</p>
 </blockquote>
 <p>In Java, components are often organized in <em>modules</em>. In .NET, components can be organized into various <em>projects</em>.
 Components can be considered a bit like lego-building blocks,
@@ -610,7 +610,7 @@ i.e. the Logic class knows only about the DAO interface, and its &quot;contract&
 <li>We could add many more validation rules, e.g. no vulgar names, or no numbers or whatever. That is outside the scope of this tutorial</li>
 </ul>
 <p>So, we implement the body to adhere to the above rules:</p>
-<pre><code class="line-numbers language-csharp">public async Task&lt;User&gt; Create(UserCreationDto dto)
+<pre><code class="line-numbers language-csharp">public async Task&lt;User&gt; CreateAsync(UserCreationDto dto)
 {
     User? existing = await userDao.GetByUsername(dto.UserName);
     if (existing != null)
@@ -735,13 +735,13 @@ See a <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">list of 
 <hr/><h1 id="user-data-access">User Data Access</h1><hr/>
 <p>With the logic and network layers in place, we just need to be able to store the new User.</p>
 <p>Inside FileData component, create a new directory, &quot;DAOs&quot;.</p>
-<p>Inside this directory, create the class &quot;UserFileDAO&quot;. The class is seen <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/FileData/DAOs/UserFileDAO.cs">here</a>.</p>
+<p>Inside this directory, create the class &quot;UserFileDao&quot;. The class is seen <a href="https://github.com/TroelsMortensen/WasmTodo/blob/002_AddUser/FileData/DAOs/UserFileDAO.cs">here</a>.</p>
 <p>This is the initial setup of the class:</p>
 <pre><code class="line-numbers language-csharp">public class UserFileDao : IUserDao
 {
     private readonly FileContext context;
 
-    public UserFileDAO(FileContext context)
+    public UserFileDao(FileContext context)
     {
         this.context = context;
     }
@@ -887,8 +887,7 @@ Or it could be a number of filtering criteria, if we had more information about 
 <p><code>... GetUsers(string containsText);</code></p>
 <p>However, if we later want to add more search criteria, I would have to modify potentially several method signatures across layers.</p>
 <p>Instead, we want to define an object to contain the search variables, a DTO.</p>
-<h6 id="note">Note</h6>
-<p>We have here avoided &quot;the primitive obsession anti pattern&quot;.</p>
+<h6 id="note-we-have-here-avoided-the-primitive-obsession-anti-pattern">Note: We have here avoided &quot;the primitive obsession anti pattern&quot;.</h6>
 <h3 id="the-search-filters-dto">The search filters DTO</h3>
 <p>Inside Domain/DTOs directory, create the following class:</p>
 <pre><code class="line-numbers language-csharp">namespace Domain.DTOs;
@@ -897,7 +896,7 @@ public class SearchUserParametersDto
 {
     public string? UsernameContains { get;  }
 
-    public SearchUserFiltersDto(string? usernameContains)
+    public SearchUserParametersDto(string? usernameContains)
     {
         UsernameContains = usernameContains;
     }
@@ -997,7 +996,7 @@ public async Task&lt;ActionResult&lt;IEnumerable&lt;User&gt;&gt;&gt; GetAsync([F
 }
 </code></pre>
 <p>We mark the method with <code>[HttpGet]</code> so that GET requests to this controller ends here.</p>
-<p>The return value is the <code>IEnumerable&lt;User&gt;</code> wrapper in an HTTP response message.</p>
+<p>The return value is the <code>IEnumerable&lt;User&gt;</code> wrapped in an HTTP response message.</p>
 <p>The argument is marked as <code>[FromQuery]</code> to indicate that this argument should be extracted from the query parameters of the URI.
 The argument is of type <code>string?</code> indicating that it can be left out, i.e. be <code>null</code>.</p>
 <p>A URI could look like:</p>

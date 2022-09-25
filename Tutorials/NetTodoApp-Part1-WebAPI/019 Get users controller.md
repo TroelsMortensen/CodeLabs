@@ -24,7 +24,7 @@ public async Task<ActionResult<IEnumerable<User>>> GetAsync([FromQuery] string? 
 
 We mark the method with `[HttpGet]` so that GET requests to this controller ends here.
 
-The return value is the `IEnumerable<User>` wrapper in an HTTP response message.
+The return value is the `IEnumerable<User>` wrapped in an HTTP response message.
 
 The argument is marked as `[FromQuery]` to indicate that this argument should be extracted from the query parameters of the URI.
 The argument is of type `string?` indicating that it can be left out, i.e. be `null`.

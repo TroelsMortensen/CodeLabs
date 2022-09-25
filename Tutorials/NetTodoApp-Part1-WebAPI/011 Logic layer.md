@@ -162,7 +162,7 @@ What is involved in creating a User?
 So, we implement the body to adhere to the above rules:
 
 ```csharp
-public async Task<User> Create(UserCreationDto dto)
+public async Task<User> CreateAsync(UserCreationDto dto)
 {
     User? existing = await userDao.GetByUsername(dto.UserName);
     if (existing != null)
