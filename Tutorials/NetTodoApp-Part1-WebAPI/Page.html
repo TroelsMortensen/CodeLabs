@@ -1125,7 +1125,7 @@ public interface ITodoLogic
         this.userDao = userDao;
     }
 
-    public Task&lt;Todo&gt; CreateAsync(Todo todo)
+    public Task&lt;Todo&gt; CreateAsync(TodoCreationDto todo)
     {
         throw new NotImplementedException();
     }
@@ -1146,7 +1146,7 @@ We end up with the following two methods:</p>
 
     ValidateTodo(dto);
     Todo todo = new Todo(user, dto.Title);
-    Todo created = await todoDao.Create(todo);
+    Todo created = await todoDao.CreateAsync(todo);
     return created;
 }
 

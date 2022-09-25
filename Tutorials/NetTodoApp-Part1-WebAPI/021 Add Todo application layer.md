@@ -101,7 +101,7 @@ public class TodoLogic : ITodoLogic
         this.userDao = userDao;
     }
 
-    public Task<Todo> CreateAsync(Todo todo)
+    public Task<Todo> CreateAsync(TodoCreationDto todo)
     {
         throw new NotImplementedException();
     }
@@ -128,7 +128,7 @@ public async Task<Todo> CreateAsync(TodoCreationDto dto)
 
     ValidateTodo(dto);
     Todo todo = new Todo(user, dto.Title);
-    Todo created = await todoDao.Create(todo);
+    Todo created = await todoDao.CreateAsync(todo);
     return created;
 }
 
