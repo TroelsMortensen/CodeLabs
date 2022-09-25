@@ -1385,11 +1385,11 @@ But simple types like ints and booleans, they cannot normally be null. We do how
 <p>The same reasoning holds for UserId.</p>
 <h2 id="logic-interface">Logic Interface</h2>
 <p>We need the following method in the ITodoLogic interface:</p>
-<pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;Todo&gt;&gt; Get(SearchTodoParametersDto searchParameters);
+<pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;Todo&gt;&gt; GetAsync(SearchTodoParametersDto searchParameters);
 </code></pre>
 <h2 id="data-interface">Data Interface</h2>
 <p>We need the same method signature in the ITodoDao interface.</p>
-<pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;Todo&gt;&gt; Get(SearchTodoParametersDto searchParameters);
+<pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;Todo&gt;&gt; GetAsync(SearchTodoParametersDto searchParameters);
 </code></pre>
 <h2 id="logic-implementation">Logic Implementation</h2>
 <p>Implement the method from the interface, all it does is call the same method on the <code>todoDao</code> field variable. Same as what we did when getting the collection of users.</p>

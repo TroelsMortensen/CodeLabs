@@ -46,7 +46,7 @@ The same reasoning holds for UserId.
 We need the following method in the ITodoLogic interface:
 
 ```csharp
-Task<IEnumerable<Todo>> Get(SearchTodoParametersDto searchParameters);
+Task<IEnumerable<Todo>> GetAsync(SearchTodoParametersDto searchParameters);
 ```
 
 ## Data Interface
@@ -54,7 +54,7 @@ Task<IEnumerable<Todo>> Get(SearchTodoParametersDto searchParameters);
 We need the same method signature in the ITodoDao interface.
 
 ```csharp
-Task<IEnumerable<Todo>> Get(SearchTodoParametersDto searchParameters);
+Task<IEnumerable<Todo>> GetAsync(SearchTodoParametersDto searchParameters);
 ```
 
 ## Logic Implementation
