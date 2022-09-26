@@ -28,6 +28,10 @@ body {
     padding-top: 3ch;
 }
 
+.tab h3 {
+    padding-top: 3ch;
+}
+
 h6 {
     font-size: medium;
     color: gray;
