@@ -50,6 +50,9 @@
 <li class="step" onclick="setTab(31)">32 Delete Todo Feature</li>
 <li class="step" onclick="setTab(32)">33 Delete Todo Service</li>
 <li class="step" onclick="setTab(33)">34 Delete Todo View</li>
+<li class="step" onclick="setTab(34)">35 Summation</li>
+<li class="step" onclick="setTab(35)">36 Component Communication</li>
+<li class="step" onclick="setTab(36)">37 Popup</li>
 
         </ol>
     </div>
@@ -2027,6 +2030,174 @@ else
 <p>It is time to test the feature. Run the usual. Navigate to View Todos. Load all Todos.</p>
 <p>First: Try to delete an un-completed Todo. The server should not allow you to. You should see the error message below the table.</p>
 <p>Then: Delete a completed Todo. If you have none, then first complete a Todo. You should see the view be updated. To verify the deletion was saved on the server, navigate to a different page, and back, and reload the Todos.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="what-have-we-done-so-far">What Have We Done So Far?</h1><hr/>
+<p>We started out with six user stories:</p>
+<ol>
+<li>As a user of the system I can add a new User, so that Todos can be assigned to Users.</li>
+<li>As a User I can get a list of all existing Users, so that I can assign Todos to them</li>
+<li>As a User I can add a new Todo, so that I can remember important things</li>
+<li>As a User I can view all or filtered Todos, so that I can remember what to do</li>
+<li>As a User I can complete a Todo, so that I can mark things as done</li>
+<li>As a User I can delete a Todo, so that I can clean up</li>
+</ol>
+<p>We have now implemented these, along with an extra feature to edit a Todo.</p>
+<p>We have seen how to define different views with pages.<br />
+We have seen how to dynamically generate a view using HTML and razor syntax.<br />
+We have used the HttpClient to make requests of the Web API.</p>
+<p>And with this you're pretty well off to start your Blazor-WASM adventure.</p>
+<p>But there are a bit more complexity to be explored with regards to blazor components. The next few slides will core more elaborate component usage.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="component-communication">Component Communication</h1><hr/>
+<p>It has been mentioned before: Blazor is very modular when components are used. We have already done one component: the FancyChecBox, the purpose of which was to provide a re-usable UI element.</p>
+<p>The re-usability is a big motivator for using components. Another factor is clarity of the code. HTML tends to get a bit incomprehensible when the code grows to many lines. Pieces of the HTML can be split out into smaller components to organize the HTML in a different way.</p>
+<p>When using components, we often need to pass data from one to another. There are different ways of doing that.</p>
+<h2 id="passing-data">Passing Data</h2>
+<p>Depending on whether you have a page or a component, and also how pages/components are associated, passing data between them can follow various patterns. The purpose of this slide is to show the different ways of passing data back and forth between pages and components</p>
+<h3 id="data-to-a-page">Data to a Page</h3>
+<p>Whenever you navigate to a new page, sometimes we wish to provide data to that page, so that it can load and display the relevant data.</p>
+<p>We have already seen an example of this: using a route parameter. This was covered in slide 30.</p>
+<p>We can define a page URI which includes a single, simple parameter. Often just an int or a simple string. In that way it is somewhat similar to how we may define routes to endpoints in the Web API.</p>
+<p>We must define the page-directive, and a public property to hold the data:</p>
+<pre><code class="line-numbers language-razor">@page &quot;/EditTodo/{id}
+
+@code {
+    [Parameter]
+    public string Id {get;set;}
+}
+</code></pre>
+<p>By default, the property is a string, but as seen we can put a constraint on the route argument: <code>{id:int}</code>, which converts it to an int.</p>
+<p>This is the primary way of passing data to a page.</p>
+<p>There is sort of an alternative, which uses the observer pattern. This will be covered later.</p>
+<h4 id="with-query-parameters">With Query Parameters</h4>
+<p>Similar to what we can do with Web API endpoints and query parameters, we can do that for the URI of a blazor page.</p>
+<p><a href="https://www.coderschmoder.com/five-ways-to-pass-data-from-one-blazor-component-to-another/">This post covers that under the section &quot;QUERYSTRING PARAMETERS&quot;</a></p>
+<p>You put nothing extra in the page directive, but have a couple of properties marked with [Parameter] and [SupplyParameterFromQuery]. Here's an example:</p>
+<pre><code class="line-numbers language-razor">@page &quot;/displayemployee&quot;
+&lt;h3&gt;Display  Employee&lt;/h3&gt;
+&lt;p&gt;Employee Id: @Id&lt;/p&gt;
+&lt;p&gt;Department: @Department&lt;/p&gt;
+&lt;p&gt;Employee First Name: @FName&lt;/p&gt;
+&lt;p&gt;Employee Last Name: @LName&lt;/p&gt;
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? Id { get; set; }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? Department { get; set; }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? LName { get; set; }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? FName { get; set; }
+}
+</code></pre>
+<h3 id="data-to-a-child-component">Data to a Child Component</h3>
+<p>When a component <code>CompA</code> is used inside a page (or other component) <code>PageB</code>,
+the CompA is considered a &quot;child&quot; of the PageB, which is the &quot;parent&quot;.</p>
+<p>Take this example (which I spent <em>way</em> too long time designing):</p>
+<p><img src="Resources/ChildComponentImageExample.png" alt="img.png" /></p>
+<p>There is a page displayed, with some text.
+The &quot;cards&quot; (<a href="https://www.w3schools.com/howto/howto_css_cards.asp">a &quot;card&quot; is common concept</a>) each display some information about a student, and the profile-image. This card could be defined as a component, we would then generate a number of &quot;card-components&quot; equal to the number of students,
+and provide each card-component with a <code>Student</code> object containing the student information.</p>
+<p>It might look something like this:</p>
+<pre><code class="line-numbers language-razor">@foreach(Student stud in students) {
+    &lt;StudentCard Student=&quot;@stud&quot;/&gt;
+}
+</code></pre>
+<p>Where the body of the for-loop is the component.</p>
+<p>In this way a <em>parent</em> (whether it is a page or component) can pass data to a <em>child</em>.<br />
+This is somewhat similar as passing arguments to a constructor of a class. Here, we can pass variables as arguments as well.</p>
+<p>The <code>Student</code> property in the <code>StudentCard</code> component must be marked <code>[Parameter]</code>, e.g.:</p>
+<pre><code class="line-numbers language-razor">&lt;div class=&quot;card&quot;&gt;
+    &lt;img src=&quot;@Student.ImgUrl&quot;/&gt;
+    &lt;p&gt;@Student.Description&lt;/p&gt;
+&lt;/div&gt;
+
+@code{
+    [Parameter]
+    public Student Student {get;set;}
+}
+</code></pre>
+<p>We used this approach with the FancyCheckBox, where we passed in the initial boolean value of the check-box.</p>
+<h3 id="data-to-a-parent-component">Data to a Parent Component</h3>
+<p>Sometimes a child-component needs to pass data back to a parent-component (or -parent).
+We do this using a delegate, more specifically the <code>EventCallback</code>. We did this in the in the FancyCheckBox. When the check-box was clicked, the EventCallback was invoked with the new value.</p>
+<pre><code class="line-numbers language-razor">@code {
+    [Parameter]
+    public EventCallback&lt;bool&gt; OnChange { get; set; }
+}
+</code></pre>
+<p>And subscribing a method to the EventCallback:</p>
+<pre data-line="3"><code class="line-numbers language-razor">&lt;FancyCheckBox 
+    IsCompleted=&quot;@item.IsCompleted&quot; 
+    OnChange=&quot;@((status) =&gt; CompleteTodo(item, status))&quot;
+/&gt;
+</code></pre>
+<p>We provide it with either a lambda-expression or a method reference.</p>
+<h3 id="child-content">Child Content</h3>
+<p>Sometimes, it is convenient to pass more than just data to a component. We can actually pass an entire snippet of HTML (with other components or razor-syntax).</p>
+<p>Assume we make a Card component (like above), but it is intended to be reused for various types of cards across. It could be the students from the example above, but we might wish to use the same card for presenting other data. And maybe the card has some extra functionality, so that we cannot just achieve this with a <code>&lt;div class=&quot;card&quot;&gt;</code>.
+Here are is the idea of the same card but with different content:</p>
+<p><img src="Resources/DifferentCards.png" alt="img.png" /></p>
+<p>Or, you can consider these slides, they behave similarly, have buttons at the top and bottom, but the content is different.</p>
+<p>We can then define a component, which can receive the content as a kind of parameter. It might look like this:</p>
+<pre><code class="line-numbers language-razor">&lt;MyFancyCard&gt;
+    &lt;div class=&quot;student-card-content&gt;
+        &lt;img src=..../&gt;
+        &lt;p&gt;bla bla bla&lt;p&gt;
+    &lt;/div&gt;
+&lt;/MyFancyCard&gt;
+</code></pre>
+<p>The outer tag <code>&lt;MyFancyCard&gt;</code> is actually a component. The inner content, lines 2-5, is the &quot;child-content&quot;, i.e. the content we wish to display in the card.</p>
+<p>The <code>MyFancyCard</code> component might then be defined as:</p>
+<pre><code class="line-numbers language-razor">&lt;div class=&quot;fancy-card&quot;&gt;
+    @ChildContent
+&lt;/div&gt;
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent {get;set;}
+    
+    ...
+}
+</code></pre>
+<p>The property must be exactly like this, the type, and the name. This property will then receive the HTML from above, and we can put it in the view of the component with a reference, as in line 2.</p>
+<p>We will use this on the next slide to create a popup dialog.</p>
+<h3 id="data-to-a-sibling-component">Data to a Sibling Component</h3>
+<p>Finally, you may have a page containing two (or more) components. So the page has two child-components, but the components do not know about each other, i.e. neither component is parent/child of the other: They are siblings.<br />
+The web site design above show multiple cards, each card a component, all cards at the same level in the HTML, so they are siblings.</p>
+<p>If you are industrious with regards to refactoring your page into smaller components, you may end up in this situation, where you click a button in one component, and you wish to update the view in another component.</p>
+<p>To achieve this, we use a &quot;state container&quot;. It a simple class, which has a delegate and a piece of data. Then we need a set-method to set the data, which will also invoke the delegate. The components will subscribe their own methods to the delegate, and upon invocation will update their view accordingly.<br />
+The state container must be registered as a <em>scoped service</em> in Program.cs, and injected into the components. Alternatively, when using Blazor WASM, a singleton pattern might also achieve this effect.</p>
+<p>This could be an example of a state container:</p>
+<pre><code class="line-numbers language-csharp">public class StateContainer{
+
+    private int number = 0;
+    public Action&lt;int&gt; OnChange {get;set;}
+    
+    public void SetNumber(int i){
+        number = i;
+        OnChange?.Invoke(number);
+    }
+}
+</code></pre>
+<p>The two components will interact with each other through this StateContainer:</p>
+<p><img src="Resources/SetAndNotify.png" alt="img.png" /></p>
+<p>I have the ambition of showing a very simple example at the end of this tutorial.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="creating-a-popup">Creating a Popup</h1><hr/>
+<p>Currently whenever you have successfully added a Todo, you are just being navigated to the View Todos page. A user might be confused, because no success message was displayed first.</p>
+<p>We are going to create a success message shown in a popup. The popup will be a component, and the content and functionality of the popup will be arguments to the component.</p>
+<p>The purpose of this functionality is to show another way of passing data to a component.</p>
 
 </div>
 
