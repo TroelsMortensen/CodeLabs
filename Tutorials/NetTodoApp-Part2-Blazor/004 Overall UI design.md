@@ -24,8 +24,9 @@ Out of the box, it looks like this:
     </main>
 </div>
 ```
+Most is just standard HTML, you should recognize this.
 
-You may notice the `<NavMenu/>` in line 5, which is the component (not project component, but Blazor component) that contains the HTML and code for the left side navigation menu.
+You may notice the `<NavMenu/>` in line 5, which is the component (not project component, but Blazor component which is a piece of UI) that contains the HTML and code for the left side navigation menu.
 If you remove this line, the navigation menu disappears.
 
 Also notice the 
@@ -38,8 +39,8 @@ Also notice the
 
 This is the top bar, always present. You can modify, or remove this. Some pages have navigation menus in the top panel instead of the side.
 
-Actually, the only thing of the view, you cannot remove here, is the `@Body`. This variable is extremely important:\
-Whenever you open a new page, the content of the page will be inserted at this variable.
+Actually, the only thing of the view, you cannot remove, is the `@Body`. This variable is extremely important:\
+Whenever you open a new page, the content of the page will be inserted at this variable. If the variable is gone, nothing will be displayed.
 
 So, if you want a very different layout of your app, this file is where to change the overall structure.
 

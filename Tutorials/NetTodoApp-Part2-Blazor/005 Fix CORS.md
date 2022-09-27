@@ -17,11 +17,18 @@ It must be after the app variable is defined, [see here](https://github.com/Troe
 If you wish to know more about CORS, [read here](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS). For this course, it is just something we enable, without caring too much about it. It is a security measure, which we are disabling.
 
 ## Setting base address of HttpClient
-If you open BlazorWASM/Program.cs, we will find that an HttpClient is added as a scoped service, and the base address is set to be the address of the host environment, i.e. the localhost.
+If we open BlazorWASM/Program.cs, we will find that an HttpClient is added as a scoped service, and the base address is set to be the address of the host environment, i.e. the localhost.
 
 The host address is that of your Blazor WASM app. However, we need to contact the Web API, which has a different address.\
-Run your Web API to see in the console which https address it is listening on. Copy this address into the object inializer, like this:
+Run your Web API to see in the console which https address it is listening on. Or look in the launchSettings.json, mentioned on slide 1.
 
-```csharp
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7093") });
+Copy this address into the object initializer, like this:
+
+```csharp{4}
+builder.Services.AddScoped(
+    sp => 
+        new HttpClient { 
+            BaseAddress = new Uri("https://localhost:7093") 
+        }
+);
 ```

@@ -9,9 +9,9 @@ This means we start here:
 ## Interface
 Whether we start developing the feature with the HttpClient layer or the UI layer, they both depend on the interface in between. So, let's start there.
 
-In HttpClients components, create a new directory: ClientInterfaces.
+In HttpClients component, create a new directory: "ClientInterfaces".
 
-Inside this directory, create a new interface: IUserService.
+Inside this directory, create a new interface: "IUserService".
 
 We already have a DTO for creating Users, used on the server side: `UserCreationDto`. 
 Let us use this as the argument, and the return type will be the resulting User.  We get a User back from the endpoint, so this seems fitting.
@@ -29,9 +29,9 @@ We will do the implementation next, and finally the UI.
 
 ## The Implementation
 
-Inside HttpClients component, create a new directory to house the implementations. Call the directory: Implementations.
+Inside HttpClients component, create a new directory to house the implementations. Call the directory: "Implementations".
 
-We need a new class here: TodoHttpClient. It should implement the interface. Initially the class looks like this:
+We need a new class here: "TodoHttpClient". It should implement the interface from above. Initially the class looks like this:
 
 ```csharp
 public class UserHttpClient : IUserService
@@ -50,13 +50,13 @@ public class UserHttpClient : IUserService
 }
 ```
 
-We request an HttpClient through the constructor, thereby leaving the creation of the HttpClient up to the Blazor framework. The is best practice, and will improve longtime performance of your app.
+We request an HttpClient through the constructor, thereby leaving the creation of the HttpClient up to the Blazor framework. This is best practice, and will improve longtime performance of your app.
 
 If you are curious, [Nick Chapsas has an elaborate video about performance](https://www.youtube.com/watch?v=Z6Y2adsMnAA).
 
 #### The method
 
-First, add `async` to the method signature. Then let's do the method body. It looks like this:
+First, add `async` to the method signature, otherwise we cannot await anything in the method body. Then let's do the method body. It looks like this:
 
 ```csharp
 public async Task<User> Create(UserCreationDto dto)
@@ -73,9 +73,9 @@ public async Task<User> Create(UserCreationDto dto)
 }
 ```
 
-We use the client to make a POST request to "/users", sending the dto. The dto will be serialized to JSON, and wrapped in an appropriate HttpContent object.
+We use the client to make a POST request to "/users", sending the dto. The dto will be serialized to JSON, and wrapped in an appropriate StringContent object.
 
-Now, "/users" is not enough. We know the URI should be "https://localhost:7093/Users". However, on the HttpClient you can set a "base url", which is the first part, and we then only need to provide the part of the URI after the port.
+Now, "/users" is generally not enough. We know the URI should be "https://localhost:7093/Users". However, on the HttpClient you can set a "base url", which is the first part, and we then only need to provide the part of the URI after the port. This base URL was set in Program.cs, in slide 5.
 
 
 Every request returns a response, whether we actually expect an object back or not. 
