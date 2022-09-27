@@ -21,7 +21,17 @@ We already have the server-side of multiple features from part 1. We will now co
 
 Again, each feature has its own branch on GitHub. Below is an overview:
 
-* [009_ClientSetup]() Here the initial setup of the Client components are done.
+* [009_ClientSetup](https://github.com/TroelsMortensen/WasmTodo/tree/009_ClientSetup) Here the initial setup of the Client components are done.
+* [010_AddUser](https://github.com/TroelsMortensen/WasmTodo/tree/010_AddUser): Add a new User
+* [011_ViewUsers](https://github.com/TroelsMortensen/WasmTodo/tree/011_ViewUsers): Show an overview of the registered Users
+* [012_CreateTodo](https://github.com/TroelsMortensen/WasmTodo/tree/012_CreateTodo): Create a new Todo
+* [013_ViewTodos](https://github.com/TroelsMortensen/WasmTodo/tree/013_ViewTodos): View all Todos
+* [014_ViewTodosWithFilter](https://github.com/TroelsMortensen/WasmTodo/tree/014_ViewTodosWithFilter): Adding filtering functionality to the Todo overview
+* [015_CheckBoxComponent](https://github.com/TroelsMortensen/WasmTodo/tree/015_CheckBoxComponent): Creating a check-box component
+* [016_EditTodo](https://github.com/TroelsMortensen/WasmTodo/tree/016_EditTodo): Edit and existing Todo
+* [017_DeleteTodo](https://github.com/TroelsMortensen/WasmTodo/tree/017_DeleteTodo): Delete an existing Todo
+* [018_PopupSuccessMessage](https://github.com/TroelsMortensen/WasmTodo/tree/018_PopupSuccessMessage): Show a pop-up message
+* [019_StateContainer](https://github.com/TroelsMortensen/WasmTodo/tree/019_StateContainer): Component to component communication
 
 ## Running your programs
 
@@ -74,5 +84,6 @@ If you get tired of this, you can go to WebAPI/Properties/launchSettings.json an
 
 "launchBrowser: true". Change this to false, and the browser will not launch.
 
-You can do the same for the Blazor app. You can then either just hard refresh with <kbd>ctrl</kbd>+<kbd>F5</kbd>.\
-And in the console in Rider you can also click on the link with https to open a window.
+You can do the same for the Blazor app. 
+In the console in Rider you can also click on the link with https to open a window.\
+Whenever you restart the app, you can then just hard refresh the browser with <kbd>ctrl</kbd>+<kbd>F5</kbd>. This usually works.

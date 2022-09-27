@@ -89,7 +89,17 @@
 <h2 id="branches">Branches</h2>
 <p>Again, each feature has its own branch on GitHub. Below is an overview:</p>
 <ul>
-<li><a href="">009_ClientSetup</a> Here the initial setup of the Client components are done.</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/009_ClientSetup">009_ClientSetup</a> Here the initial setup of the Client components are done.</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/010_AddUser">010_AddUser</a>: Add a new User</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/011_ViewUsers">011_ViewUsers</a>: Show an overview of the registered Users</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/012_CreateTodo">012_CreateTodo</a>: Create a new Todo</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/013_ViewTodos">013_ViewTodos</a>: View all Todos</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/014_ViewTodosWithFilter">014_ViewTodosWithFilter</a>: Adding filtering functionality to the Todo overview</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/015_CheckBoxComponent">015_CheckBoxComponent</a>: Creating a check-box component</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/016_EditTodo">016_EditTodo</a>: Edit and existing Todo</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/017_DeleteTodo">017_DeleteTodo</a>: Delete an existing Todo</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/018_PopupSuccessMessage">018_PopupSuccessMessage</a>: Show a pop-up message</li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/019_StateContainer">019_StateContainer</a>: Component to component communication</li>
 </ul>
 <h2 id="running-your-programs">Running your programs</h2>
 <p>When you run your programs, either Web API or Blazor app, you <strong>do not use the &quot;IIS Express&quot; version</strong>. That requires extra setup, and I don't really know what it is about.</p>
@@ -132,8 +142,9 @@ If you get tired of this, you can go to WebAPI/Properties/launchSettings.json an
 }
 </code></pre>
 <p>&quot;launchBrowser: true&quot;. Change this to false, and the browser will not launch.</p>
-<p>You can do the same for the Blazor app. You can then either just hard refresh with <kbd>ctrl</kbd>+<kbd>F5</kbd>.<br />
-And in the console in Rider you can also click on the link with https to open a window.</p>
+<p>You can do the same for the Blazor app.
+In the console in Rider you can also click on the link with https to open a window.<br />
+Whenever you restart the app, you can then just hard refresh the browser with <kbd>ctrl</kbd>+<kbd>F5</kbd>. This usually works.</p>
 
 </div>
 <div class="tab">
@@ -146,7 +157,7 @@ It does not make sense to do the same on the client side, as it has a different 
 <p>The &quot;UI&quot; layer is a Blazor WASM app, and the &quot;Clients&quot; layer is a library with classes, which can make HTTP requests to the Web API.</p>
 <p>The &quot;UI&quot; layer has a &quot;sub-layer&quot; marked &quot;View models&quot;. That is because they are often tightly intertwined with the UI. I.e. the View models are not a separate layer or component.</p>
 <p>Now, we will need at least two new components: one per layer. That leaves the interfaces, where to put them?<br />
-Sometimes you might see people put them in their own component, called Contracts. However, in our case that might be a bit excessive.</p>
+Sometimes you might see people put them in their own component, e.g. called Contracts. However, in our case that might be a bit excessive.</p>
 <p>We will revisit the consideration from the clean approach, giving the following discussion:</p>
 <p>Put the interfaces in the component least likely to be swapped out. In this case here, the Clients are swapped out, if we changed network technology, i.e. we move from REST to e.g. gRPC or GraphQL or something else.<br />
 The UI layer may be swapped out, if we don't like Blazor-WASM.</p>
@@ -166,7 +177,10 @@ We will keep it simple, and put the interfaces in Clients.</p>
 <p>Each grey container is a component. The Domain already exists in your solution, it was created in part 1 of the Tutorial.</p>
 <p>The light blue containers are directories. Not all directories are shown, just the most important ones.</p>
 <h2 id="class-diagram">Class Diagram</h2>
-<p>The final class diagram will eventually be shown here, after which this text will be updated.</p>
+<p>The final system is displayed in the below class diagram.</p>
+<p>You may notice, I have forgotten to suffix some methods with async, e.g. in <code>IUserService</code>, and several pages. It is super important to fix, so that will not happen. That a method is asynchronous is also implied by the return type of Task.</p>
+<p>The Domain component already exists, we created this in the previous tutorial. But I include it here as well, because the Client app also uses it: It is a shared library.</p>
+<p><img src="Resources/ClassDiagram.svg" alt="" /></p>
 
 </div>
 <div class="tab">
@@ -2438,6 +2452,22 @@ When the changed is initiated internally in the component/page, it can usually f
 <li>work with components in various ways</li>
 </ul>
 <p>There is plenty more to learn, but with these basics you are off to a very good start.</p>
+<h2 id="class-diagram">Class Diagram</h2>
+<p>I display here again the class diagram, because now you have a better basis for understanding it.</p>
+<p>You may notice, I have forgotten to suffix some methods with async, e.g. in <code>IUserService</code>, and several pages. It is super important to fix, so that will not happen. That a method is asynchronous is also implied by the return type of Task.</p>
+<p>Notice how pages are marked with the <strong>stereotype</strong> &quot;page&quot;, and components are marked with &quot;comp&quot;.</p>
+<p>The grey boxes are components, identified by the lille upside-down fork thingy at the top.</p>
+<p><img src="Resources/ClassDiagram.svg" alt="" /></p>
+<p>I have a habbit of color coding things:</p>
+<ul>
+<li>Components are grey</li>
+<li>Directories are blue, with the blue becoming darker for each nested directory. See Pages and UIComponents.</li>
+<li>Pages are light purple, and components are dark purple</li>
+<li>Class are white</li>
+<li>Interfaces are green</li>
+<li>I take care to collapse association arrows neatly, and sometimes it helps to provide different colors to different groupings of arrows, i.e. the red and blue.</li>
+</ul>
+<p>These are just my own conventions, you need not follow them. As long as you take care to make your diagrams readable.</p>
 
 </div>
 

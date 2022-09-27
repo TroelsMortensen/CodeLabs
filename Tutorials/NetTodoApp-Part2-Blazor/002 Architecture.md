@@ -14,7 +14,7 @@ The "UI" layer is a Blazor WASM app, and the "Clients" layer is a library with c
 The "UI" layer has a "sub-layer" marked "View models". That is because they are often tightly intertwined with the UI. I.e. the View models are not a separate layer or component.
 
 Now, we will need at least two new components: one per layer. That leaves the interfaces, where to put them?\
-Sometimes you might see people put them in their own component, called Contracts. However, in our case that might be a bit excessive.
+Sometimes you might see people put them in their own component, e.g. called Contracts. However, in our case that might be a bit excessive.
 
 We will revisit the consideration from the clean approach, giving the following discussion: 
 
@@ -47,4 +47,11 @@ The light blue containers are directories. Not all directories are shown, just t
 
 ## Class Diagram
 
-The final class diagram will eventually be shown here, after which this text will be updated.
+The final system is displayed in the below class diagram.
+
+You may notice, I have forgotten to suffix some methods with async, e.g. in `IUserService`, and several pages. It is super important to fix, so that will not happen. That a method is asynchronous is also implied by the return type of Task.
+
+The Domain component already exists, we created this in the previous tutorial. But I include it here as well, because the Client app also uses it: It is a shared library.
+
+![](Resources/ClassDiagram.svg)
+
