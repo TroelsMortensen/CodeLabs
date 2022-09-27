@@ -11,10 +11,4 @@ We started out with six user stories:
 
 We have now implemented these, along with an extra feature to edit a Todo.
 
-We have seen how to define different views with pages.\
-We have seen how to dynamically generate a view using HTML and razor syntax.\
-We have used the HttpClient to make requests of the Web API.
-
-And with this you're pretty well off to start your Blazor-WASM adventure.
-
-But there are a bit more complexity to be explored with regards to blazor components. The next few slides will core more elaborate component usage.
+But there are a bit more complexity to be explored with regards to blazor components. The next few slides will cover more elaborate component usage.

@@ -53,6 +53,10 @@
 <li class="step" onclick="setTab(34)">35 Summation</li>
 <li class="step" onclick="setTab(35)">36 Component Communication</li>
 <li class="step" onclick="setTab(36)">37 Popup</li>
+<li class="step" onclick="setTab(37)">38 Using the Popup</li>
+<li class="step" onclick="setTab(38)">39 Edit Todo Popup</li>
+<li class="step" onclick="setTab(39)">40 State Container Example</li>
+<li class="step" onclick="setTab(40)">41 Conclusion</li>
 
         </ol>
     </div>
@@ -2044,11 +2048,7 @@ else
 <li>As a User I can delete a Todo, so that I can clean up</li>
 </ol>
 <p>We have now implemented these, along with an extra feature to edit a Todo.</p>
-<p>We have seen how to define different views with pages.<br />
-We have seen how to dynamically generate a view using HTML and razor syntax.<br />
-We have used the HttpClient to make requests of the Web API.</p>
-<p>And with this you're pretty well off to start your Blazor-WASM adventure.</p>
-<p>But there are a bit more complexity to be explored with regards to blazor components. The next few slides will core more elaborate component usage.</p>
+<p>But there are a bit more complexity to be explored with regards to blazor components. The next few slides will cover more elaborate component usage.</p>
 
 </div>
 <div class="tab">
@@ -2195,9 +2195,253 @@ The state container must be registered as a <em>scoped service</em> in Program.c
 </div>
 <div class="tab">
 <hr/><h1 id="creating-a-popup">Creating a Popup</h1><hr/>
+<p>The purpose of this functionality is to show another way of passing data to a component, i.e. using &quot;Child Content&quot;.</p>
 <p>Currently whenever you have successfully added a Todo, you are just being navigated to the View Todos page. A user might be confused, because no success message was displayed first.</p>
 <p>We are going to create a success message shown in a popup. The popup will be a component, and the content and functionality of the popup will be arguments to the component.</p>
-<p>The purpose of this functionality is to show another way of passing data to a component.</p>
+<p>There are several libraries, mentioned in step 32, which can do this, but let's start with a manual approach. There are probably smarter ways to do this, but this approach is also to reiterate how to pass arguments to components.</p>
+<h2 id="ui-element-type">UI Element Type</h2>
+<p>There are different kinds of popup-types, and these kinds of popups have some common names based on how they are shown.
+We will make a modal (or sometimes called toast). There is another called snackbar, and probably more variations. It's good to know, if you need to google for examples.</p>
+<h2 id="new-component">New Component</h2>
+<p>First, create a new blazor component, inside the Pages/UIComponents directory. Call it &quot;Modal&quot;.</p>
+<h2 id="the-code-and-view">The Code and View</h2>
+<p>This is the entire component code:</p>
+<pre><code class="line-numbers language-razor">@namespace UIComponents
+
+@if (ShowModal)
+{
+    &lt;div class=&quot;modal-background&quot; style=&quot;display:block; height: 100%&quot;&gt;
+        &lt;div class=&quot;modal-box&quot;&gt;
+
+            @ChildContent
+
+        &lt;/div&gt;
+    &lt;/div&gt;
+}
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+    
+    [Parameter]
+    public bool ShowModal { get; set; }
+}
+</code></pre>
+<p>We define the namespace of the component at the top, because it is in a different directory than the pages.<br />
+Then some <code>&lt;div&gt;</code>s to wrap things, with various styling, see below.\</p>
+<p>This piece of html (and css) was taken from an <a href="https://www.w3schools.com/howto/howto_css_modals.asp">example found on w3shcools</a>.</p>
+<p>There isn't much here. The component is just a &quot;wrapper&quot;, which can take some html content, and show it in a popup.</p>
+<p><strong>Line 6</strong> is important, it defines @ChildContent, and this means you can pass html/razor-syntax to a component, by setting the ChildContent. It has to be named like this, and the property must be defined as shown in the code above. How to use it will be shown later.</p>
+<p>Everything is wrapped in an if-statement, so that the popup can be displayed or hidden.</p>
+<p>In the code block, we have one parameter, which will be the content to be shown in the popup.</p>
+<h2 id="the-style">The Style</h2>
+<p>Next up, we need the styling. Add a style-behind. Paste in the following:</p>
+<pre><code class="line-numbers language-css">.modal-background { /* This style class makes the background darker, and un-clickable */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.47); /* Black w/ opacity */
+    display:block;
+}
+
+/* Modal Content/Box */
+.modal-box {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #000000;
+    /*display:inline-block;*/
+    width: 30%; /* Could be more or less, depending on screen size */
+    min-width: 300px;
+    border-radius: 25px;
+    box-shadow: 0 5px 30px 15px #3f3f3f;
+}
+</code></pre>
+<p>Again, it's stolen from the example, linked above, you may modify it if you please.</p>
+<p>That's the basic component. Next up, we need to use it for something.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="using-the-popup">Using the Popup</h1><hr/>
+<p>Now, let us put the popup into action. As mentioned, we wish to display a message, when a Todo is succesfully added.</p>
+<p>Open &quot;CreateTodo.razor&quot;.</p>
+<p>We will have to modify various places.</p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/018_PopupSuccessMessage">Code found in this branch</a></p>
+<h2 id="the-view">The View</h2>
+<p>We need to inject a <code>NavigationManager</code>, and import the UIComponents namespace, at the top:</p>
+<pre><code class="line-numbers language-razor">@using UIComponents
+@inject NavigationManager navMgr
+</code></pre>
+<p>Then we need to insert the Modal somewhere, you can just put it at the bottom of the view part:</p>
+<pre><code class="line-numbers language-razor">&lt;Modal ShowModal=&quot;showModal&quot;&gt;
+    &lt;p&gt;You have successfully added a new Todo item. You should be very proud of yourself!&lt;/p&gt;
+    &lt;button @onclick=&quot;@Proceed&quot;&gt;Wonderful&lt;/button&gt;
+&lt;/Modal&gt;
+</code></pre>
+<p>So, the content of the popup is just a short message, and button. When the button is clicked, the user is taken to the View Todos page. So, we need to implement this method.</p>
+<h2 id="the-code">The Code</h2>
+<p>We will need a boolean field variable to manage whether the popup is displayed.</p>
+<p>And we will need a method to call. The functionality of this method is just to navigate to the View Todos page.</p>
+<p>Add this to the code block:</p>
+<pre><code class="line-numbers language-csharp">private bool showModal;
+
+private void Proceed()
+{
+    showModal = false;
+    navMgr.NavigateTo(&quot;/ViewTodos&quot;);
+}
+</code></pre>
+<p>In the method <code>Create</code>, after the Todo has been created, we reset the view:</p>
+<pre><code class="line-numbers language-csharp">selectedUserId = null;
+todoTitle = &quot;&quot;;
+msg = &quot;Todo created&quot;;
+</code></pre>
+<p>This is no longer needed, as the user is taken away from the page. You may remove this.</p>
+<p>Instead, we must set the <code>showModal</code> to <code>true</code>, so they try block looks like this:</p>
+<pre><code class="line-numbers language-csharp">try
+{
+    TodoCreationDto dto = new((int)selectedUserId, todoTitle);
+    await todoService.CreateAsync(dto);
+    showModal = true;
+}
+</code></pre>
+<p>Notice how the modal is displayed after the <code>CreateAsync(..)</code> returns, meaning the request was a success.<br />
+If the request fails, and exception will be thrown from Todo Service, and the <code>showModal = true</code> is skipped.</p>
+<h2 id="test">Test</h2>
+<p>We should be ready test this new fancy feature.</p>
+<p>Run the usual stuff.</p>
+<p>Navigate to the Create Todo page.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="edit-todo-popup">Edit Todo Popup</h1><hr/>
+<p>Here's a challenge to you, if you are brave enough, the tutorial will not contain the code for this.</p>
+<p>Your task:</p>
+<ul>
+<li>Currently, when you click the Edit icon on ViewTodos, you are taken to a new page, where you can edit a todo.</li>
+<li>Instead, when clicking this icon, a popup should be shown, where you can edit the todo.</li>
+<li>It should contain the same input fields, and functionality.</li>
+<li>When the accept button is clicked:
+<ul>
+<li>On success, close the popup</li>
+<li>On failure display an error message inside the popup.</li>
+</ul>
+</li>
+</ul>
+
+</div>
+<div class="tab">
+<hr/><h1 id="state-container-example">State Container Example</h1><hr/>
+<p>The purpose of this example is to show a way for communication between &quot;sibling&quot; components.</p>
+<p>The idea is that we have a class, which is registered as a scoped service, i.e. the StateContainer class.<br />
+It is injected into all the components, which wish to communicate.<br />
+A component may call a method on the StateContainer, which will then invoke its internal delegate.<br />
+Methods from the components are subscribed to this delegate.</p>
+<p>We will just expand on the simple Counter example, which comes with the default Blazor template. So, this has nothing to do with the Todo tutorial.</p>
+<p><a href="">The code is found in this branch.</a></p>
+<h2 id="the-statecontainer">The StateContainer</h2>
+<p>First, we need the state container, this class holds the shared data.</p>
+<p>You can put it where, if you are implementing along here. I have created a new directory: BlazorWASM/StateContainers.</p>
+<p>Here, I place a new class, &quot;CounterStateContainer&quot;. The code looks like this:</p>
+<pre><code class="line-numbers language-csharp">namespace BlazorWASM.StateContainers;
+
+public class CounterStateContainer
+{
+    public Action&lt;int&gt; OnChange { get; set; }
+
+    private int count = 0;
+
+    public void Increment()
+    {
+        count++;
+        OnChange?.Invoke(count);
+    }
+}
+</code></pre>
+<p>We then register the CounterStateContainer as a scoped service in Program.cs.</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;CounterStateContainer&gt;();
+</code></pre>
+<h2 id="counter-component">Counter Component</h2>
+<p>Create a new Component, e.g. &quot;CounterComponent&quot;. I've put mine in the UIComponents directory.</p>
+<p>This is the code:</p>
+<pre><code class="line-numbers language-razor">@using BlazorWASM.StateContainers
+@namespace UIComponents
+@inject CounterStateContainer stateContainer
+
+&lt;div&gt;
+    &lt;label&gt;Counter @Id&lt;/label&gt;
+    &lt;label&gt;@count&lt;/label&gt;
+    &lt;button @onclick=&quot;stateContainer.Increment&quot;&gt;Increment&lt;/button&gt;
+&lt;/div&gt;
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private int count = 0;
+
+    protected override void OnInitialized()
+    {
+        stateContainer.OnChange += i =&gt;
+        {
+            count = i;
+            StateHasChanged();
+        };
+    }
+}
+</code></pre>
+<p>The first line is to import the StateContainer. Then the namespace declaration.<br />
+In the third line we inject the CounterStateContainer. Because it is registered as &quot;scoped&quot; in Program.cs, whenever a page/component requests an instance of CounterStateContainer, it will be the same instance. Until the app is refreshed. Then a new shared instance will be created.</p>
+<p>The view is just a labe with text, then a label to display the current count, and then a button.<br />
+When the button is clicked, the <code>CounterStateContainer::Increment()</code> method is called. I have here made a method reference. Alternatively the same could be achieved with a lambda expresion:</p>
+<pre><code class="line-numbers language-csharp">() =&gt; stateContainer.Increment()
+</code></pre>
+<p>The code block holds a Parameter int, so that multiple instances of the component can be distinguished. It's not really all that important.<br />
+There is a field for the current count.</p>
+<p>In the <code>OnInitialized</code> method, which is called when the component/page is rendered, we subscribe some functionality to the delegate in the CounterStateContainer.</p>
+<p>First, the argument <code>i</code> is what the CounterStateContainer sends. We assign that to <code>count</code>. Then, we have to tell the component, that some change has occured, and it should update. We do this by calling <code>StateHasChanged()</code>. This is usually needed, when the change to a field comes from outside of the component, in this case the state container.<br />
+When the changed is initiated internally in the component/page, it can usually figure out to update the view by itself.</p>
+<p>The idea is to put two instances of this component into a page. When the button of one instance is clicked, the <code>Increment</code> method of CounterStateContainer is called, which will push out the new int value to interested parties, i.e. our components. They will then update their internal state, i.e. the <code>count</code> appropriately.</p>
+<h2 id="counter-page">Counter Page</h2>
+<p>Let's test this.</p>
+<p>Create a new page, e.g. &quot;CounterExample&quot; in directory Pages.</p>
+<p>It looks like his:</p>
+<pre><code class="line-numbers language-razor">@page &quot;/CounterExample&quot;
+@using UIComponents
+
+&lt;CounterComponent Id=&quot;1&quot;/&gt;
+&lt;br/&gt;
+&lt;CounterComponent Id=&quot;2&quot;/&gt;
+
+</code></pre>
+<p>It is pretty empty, we just insert two instances of the CounterComponent, with different ids.</p>
+<p>Run the app.</p>
+<p>Manually navigate to the page, by typing in the URI in the browser's address bar.</p>
+<p>You should see something like below, and if you click either button, both counters are updated.</p>
+<p><img src="Resources/SiblinbComponentInAction.gif" alt="" /></p>
+<p>So, that is the very basics of communication between components/pages, which are do not have a parent-child structured relationship.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="conclusion">Conclusion</h1><hr/>
+<p>This concludes the tutorial.</p>
+<p>We now a working end-to-end Todo app.</p>
+<p>You have seen how to:</p>
+<ul>
+<li>define different views with pages.</li>
+<li>dynamically generate a view using HTML and razor syntax.</li>
+<li>use the HttpClient to make requests of the Web API.</li>
+<li>navigate between pages</li>
+<li>rearrange the template UI structure</li>
+<li>work with components in various ways</li>
+</ul>
+<p>There is plenty more to learn, but with these basics you are off to a very good start.</p>
 
 </div>
 
