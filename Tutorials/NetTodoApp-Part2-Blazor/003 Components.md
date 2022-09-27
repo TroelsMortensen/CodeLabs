@@ -20,6 +20,6 @@ Make inter-component dependencies as follows:
 * HttpClients -> Domain
 * BlazorWASM -> HttpClients
 
-Now, as last time, this gives us a transitive dependency: BlazorWASM -> HttpClients -> Domain, meaning that the Blazor component has access to everything in the Domain component.
+Now, like last time, this gives us a transitive dependency: BlazorWASM -> HttpClients -> Domain, meaning that the Blazor component has access to everything in the Domain component.
 
 That should be all for setting up. We are ready for the first feature.

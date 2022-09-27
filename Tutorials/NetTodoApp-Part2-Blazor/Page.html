@@ -72,10 +72,6 @@
         <!-- One "tab" for each step in the form: -->
 
         <div class="tab">
-<p>Huske fejl beskeder, også i OnINitialized.</p>
-<p>Users skal kunne vælges i en drop down.</p>
-<p>Ved input skal jeg ikke bruge det indbyggede EditForm. Brug basic html.</p>
-<p>Få en HTtpClient gennem constructor. De skal åbenbart ikke disposes.</p>
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>This is the <em>second</em> part of a 3 part tutorial series.</p>
 <p>You should already have the Todo Web API in place from the first part. We will continue working in the same Solution so as to reuse certain things.</p>
@@ -188,7 +184,7 @@ We will keep it simple, and put the interfaces in Clients.</p>
 <li>HttpClients -&gt; Domain</li>
 <li>BlazorWASM -&gt; HttpClients</li>
 </ul>
-<p>Now, as last time, this gives us a transitive dependency: BlazorWASM -&gt; HttpClients -&gt; Domain, meaning that the Blazor component has access to everything in the Domain component.</p>
+<p>Now, like last time, this gives us a transitive dependency: BlazorWASM -&gt; HttpClients -&gt; Domain, meaning that the Blazor component has access to everything in the Domain component.</p>
 <p>That should be all for setting up. We are ready for the first feature.</p>
 
 </div>
