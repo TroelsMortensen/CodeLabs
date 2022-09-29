@@ -1,6 +1,6 @@
 # Edit Todo Popup
 
-Here's a challenge to you, if you are brave enough, the tutorial will not contain the code for this.
+Here's a challenge for you, if you are brave enough, the tutorial will not contain the code for this.
 
 Your task:
 

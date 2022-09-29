@@ -34,7 +34,7 @@ Here we have the three nav menu items, e.g. lines 3-7 defines a single nav menu 
 
 We can just copy the div and nested content and adjust a little bit. Make it like this:
 
-```razor{18-23}
+```razor{18-22}
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
@@ -61,7 +61,7 @@ We can just copy the div and nested content and adjust a little bit. Make it lik
 </div>
 ```
 
-The `href=..` says which page to open, it should match the sub-URI in your page directive in the CreateUser.razor file.
+The `href=..` in line 19 says which page to open, it should match the sub-URI in your page directive in the CreateUser.razor file.
 
 ## Cleaning up
 
@@ -106,3 +106,7 @@ Those are the two links to Counter and Fetch data, respectively.
 Now, you can also delete the two files, Counter.razor and FetchData.razor, from the Pages directory.
 
 Let us leave the Index.razor, so we have some kind of home page.
+
+
+###
+Verify everthing still works, and that you now have your new nav-item in the left side menu. You don't need to run the Web API for this.

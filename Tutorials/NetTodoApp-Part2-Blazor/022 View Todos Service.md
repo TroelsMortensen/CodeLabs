@@ -9,14 +9,21 @@ We need to be able to retrieve Todos, and request them with filtering. We alread
 In ITodoService interface add the following method:
 
 ```csharp
-Task<ICollection<Todo>> GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains);
+Task<ICollection<Todo>> GetAsync(
+        string? userName, 
+        int? userId, 
+        bool? completedStatus, 
+        string? titleContains
+    );
 ```
+
+You don't really need to split it across multiple lines. I do this for readability when there are many arguments.
 
 ## Implementation
 
 Next up, we implement the method in TodoHttpClient.
 
-The method for fetching the data looks like this:
+The method for fetching the data initially looks like below. However, the filter is not yet applied. We do that later:
 
 ```csharp
 public async Task<ICollection<Todo>> GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)

@@ -1,13 +1,13 @@
 # Component Communication
 
-It has been mentioned before: Blazor is very modular when components are used. We have already done one component: the FancyChecBox, the purpose of which was to provide a re-usable UI element.
+It has been mentioned before: Blazor is very modular when components are used. We have already done one component: the FancyCheckBox, the purpose of which was to provide a re-usable UI element.
 
 The re-usability is a big motivator for using components. Another factor is clarity of the code. HTML tends to get a bit incomprehensible when the code grows to many lines. Pieces of the HTML can be split out into smaller components to organize the HTML in a different way.
 
-When using components, we often need to pass data from one to another. There are different ways of doing that.
+When using components, we often need to pass data from one to another. There are different ways of doing that, you have seen some. We will cover more here.
 
 ## Passing Data
-Depending on whether you have a page or a component, and also how pages/components are associated, passing data between them can follow various patterns. The purpose of this slide is to show the different ways of passing data back and forth between pages and components
+Depending on whether you have a page or a component, and also how pages/components are associated, passing data between them can follow various patterns. The purpose of this slide is to show the different ways of passing data back and forth between pages/components
 
 ### Data to a Page
 Whenever you navigate to a new page, sometimes we wish to provide data to that page, so that it can load and display the relevant data.
@@ -16,7 +16,7 @@ We have already seen an example of this: using a route parameter. This was cover
 
 We can define a page URI which includes a single, simple parameter. Often just an int or a simple string. In that way it is somewhat similar to how we may define routes to endpoints in the Web API.
 
-We must define the page-directive, and a public property to hold the data:
+We must define the @page-directive, and a public property to hold the data:
 
 ```razor
 @page "/EditTodo/{id}
@@ -31,7 +31,7 @@ By default, the property is a string, but as seen we can put a constraint on the
 
 This is the primary way of passing data to a page.
 
-There is sort of an alternative, which uses the observer pattern. This will be covered later.
+There is sort of an alternative, which uses an observer-like pattern (delegates). This will be covered later.
 
 #### With Query Parameters
 Similar to what we can do with Web API endpoints and query parameters, we can do that for the URI of a blazor page.
@@ -63,17 +63,24 @@ You put nothing extra in the page directive, but have a couple of properties mar
 }
 ```
 
+The page can then be access with e.g.:
+
+"localhost:port/displayemployee?id=3&lname=whatever"
+
 ### Data to a Child Component
 
 When a component `CompA` is used inside a page (or other component) `PageB`, 
 the CompA is considered a "child" of the PageB, which is the "parent".
 
-Take this example (which I spent _way_ too long time designing):
+This is the way we have used the FancyCheckBox.
+
+Take this example (which I spent _way_ too long time designing. Appreciate it.):
 
 ![img.png](Resources/ChildComponentImageExample.png)
 
 There is a page displayed, with some text. 
-The "cards" ([a "card" is common concept](https://www.w3schools.com/howto/howto_css_cards.asp)) each display some information about a student, and the profile-image. This card could be defined as a component, we would then generate a number of "card-components" equal to the number of students,
+The "cards" ([a "card" is common concept](https://www.w3schools.com/howto/howto_css_cards.asp)) each display some information about a student, and their profile-image. 
+This card could be defined as a component, we would then generate a number of "card-components" equal to the number of students,
 and provide each card-component with a `Student` object containing the student information.
 
 It might look something like this:
@@ -92,7 +99,7 @@ This is somewhat similar as passing arguments to a constructor of a class. Here,
 The `Student` property in the `StudentCard` component must be marked `[Parameter]`, e.g.:
 
 ```razor
-<div class="card">
+<div class="student-card">
     <img src="@Student.ImgUrl"/>
     <p>@Student.Description</p>
 </div>
@@ -107,7 +114,7 @@ We used this approach with the FancyCheckBox, where we passed in the initial boo
 
 ### Data to a Parent Component
 
-Sometimes a child-component needs to pass data back to a parent-component (or -parent). 
+Sometimes a child-component needs to pass data back to a parent-component (or -page). 
 We do this using a delegate, more specifically the `EventCallback`. We did this in the in the FancyCheckBox. When the check-box was clicked, the EventCallback was invoked with the new value. 
 
 ```razor
@@ -136,7 +143,7 @@ Here are is the idea of the same card but with different content:
 
 ![img.png](Resources/DifferentCards.png)
 
-Or, you can consider these slides, they behave similarly, have buttons at the top and bottom, but the content is different.
+Or, you can consider the slides of this tutorial: they behave similarly, have buttons at the top and bottom, but the content is different.
 
 We can then define a component, which can receive the content as a kind of parameter. It might look like this:
 
@@ -149,7 +156,7 @@ We can then define a component, which can receive the content as a kind of param
 </MyFancyCard>
 ```
 
-The outer tag `<MyFancyCard>` is actually a component. The inner content, lines 2-5, is the "child-content", i.e. the content we wish to display in the card.
+The outer tag `<MyFancyCard>` is actually a component, with a closing "tag" in the last line. The inner content, lines 2-5, is the "child-content", i.e. the content we wish to display in the card.
 
 The `MyFancyCard` component might then be defined as:
 
@@ -177,8 +184,9 @@ The web site design above show multiple cards, each card a component, all cards 
 
 If you are industrious with regards to refactoring your page into smaller components, you may end up in this situation, where you click a button in one component, and you wish to update the view in another component.
 
-To achieve this, we use a "state container". It a simple class, which has a delegate and a piece of data. Then we need a set-method to set the data, which will also invoke the delegate. The components will subscribe their own methods to the delegate, and upon invocation will update their view accordingly.\
-The state container must be registered as a _scoped service_ in Program.cs, and injected into the components. Alternatively, when using Blazor WASM, a singleton pattern might also achieve this effect.
+To achieve this, we use a "state container". It a simple class, which has a delegate and a piece of data (or more delegates, and much data). Then we need a set-method to set the data, which will also invoke the delegate. The components will subscribe their own methods to the delegate, and upon invocation will update their view accordingly.
+
+The state container must be registered as a _scoped service_ in Program.cs, and injected into the components. Alternatively, _when using Blazor WASM_, a singleton pattern might also achieve this effect.
 
 This could be an example of a state container:
 
@@ -199,4 +207,8 @@ The two components will interact with each other through this StateContainer:
 
 ![img.png](Resources/SetAndNotify.png)
 
-I have the ambition of showing a very simple example at the end of this tutorial.
+This will be shown in action at the end of the tutorial.
+
+
+### Cascading Parameter?
+You probably won't need this. You may google it.

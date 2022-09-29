@@ -37,11 +37,11 @@ This leads to the component/package diagram.
 
 ## Component Diagram
 
-Below is a rough component diagram of the Client app.
+Below is a component diagram of the Client app, with important directories included.
 
 ![img.png](Resources/ClientComponentDiagram.png)
 
-Each grey container is a component. The Domain already exists in your solution, it was created in part 1 of the Tutorial.
+Each grey container is a component/project. The Domain already exists in your solution, it was created in part 1 of the Tutorial.
 
 The light blue containers are directories. Not all directories are shown, just the most important ones.
 

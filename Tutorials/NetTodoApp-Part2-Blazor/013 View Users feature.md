@@ -27,6 +27,12 @@ Let's also add it as a menu Item right away. Go ahead and do that, in the same w
 
 Notice that for each nav menu item in the HTML of NavMenu.razor, there is a `<span>` tag, with the class defining what icon should be next to the text.
 
+For example:
+
+```razor
+<span class="oi oi-list" aria-hidden="true"></span> View users
+```
+
 [You can find many available icons here](https://icon-sets.iconify.design/oi/), they seem to be included in bootstrap, located in a file here: BlazorWASM/wwwroot/open-iconic/font/css/open-iconic-bootstrap.min.css.
 
-So, maybe the icon for the menu item should be a list. Or something else. You can pick whatever.
+So, maybe the icon for this menu item should be a list. Or something else. You can pick whatever.

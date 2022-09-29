@@ -3,7 +3,7 @@
 We start with the client layer.
 
 ## The Interface
-First we define the method in the ITodoService interface. It does not need to return anything, and the argument is just the id of the Todo, we want to delete.
+First we define the method in the `ITodoService` interface. It does not need to return anything, and the argument is just the id of the Todo, we want to delete.
 
 Put this method in the interface:
 
@@ -12,9 +12,9 @@ Task DeleteAsync(int id);
 ```
 
 ## The Implementation
-The we need the implementation of the method, in TodoHttpClient.
+Then we need the implementation of the method, in TodoHttpClient.
 
-We already have a Delete endpoint in the TodosController. Implement the Delete method in TodoHttpClient yourself.
+We already have a DELETE endpoint in the `TodosController`. Implement the Delete method in TodoHttpClient yourself.
 
 <details>
 <summary>hint</summary>

@@ -1,16 +1,18 @@
 # View Todos With Filtering
 
-[This part of the feature is in a new branch here]().
+~~[This part of the feature is in a new branch here]()~~ -> apparently I forgot to create a new branch, so...
+
+![](Resources/Shrug.png)
 
 We will continue on the View Todos page, by adding some filtering functionality to it. 
 
-This requires four input fields in the view. The data of these should then be passed to the ITodoService.
+This requires four input fields in the view. The data of these should then be passed to the `ITodoService`.
 
 Our Web API should already be able to handle things from there.
 
 ## Icons
 
-We are going to use two icons.
+We are going to use two icons, which will be clicked to show/hide the filter inputs.
 
 First, create a directory called "icons" here:
 
@@ -65,15 +67,16 @@ It looks like this:
 }
 ```
 
-In lines 14-18 we get the value of the input field for the completed status. We are using a drop-down menu, with the values "all", "true", "false". And so, if all is selected, the filter is not applied. Otherwise the value is parsed to a boolean.\
+In lines 15-19 we get the value of the input field for the completed status. 
+We are using a drop-down menu, with the values "all", "true", "false". And so, if `all` is selected, the filter is not applied. Otherwise the value is parsed to a boolean.\
 All four fields are nullable, so we can choose to not provide a value, to indicate a specific filter should be ignored.
 
-Notice also the field `doShowFilters`, which is used to determine whether the filters should be shown or not.
+Notice also the field variable `doShowFilters`, which is used to determine whether the filters should be shown or not.
 
 ## View
 We must update the view to display the four new required input fields. We will make a show/hide functionality using the funnel icons from above.
 
-Below is shown the first part of the view, but not the table definition.
+Below is shown the first part of the updated view, but the table definition is not shown, as it is not relevant for this.
 
 ```razor
 @page "/ViewTodos"
@@ -114,6 +117,8 @@ Below is shown the first part of the view, but not the table definition.
 <div>
     <button @onclick="LoadTodos">Load</button>
 </div>
+
+... 
 ```
 
 The new part is from the `<div>` tag, with the class of "filter-bar". Here we create a container to hold the filter input fields.
@@ -133,21 +138,21 @@ There is an onclick handler attached, with the `@onclick`, containing the follow
 ```csharp
 () => doShowFilters = !doShowFilters
 ```
-What this will do is simple to just flip the value of doShowFilters. If it is `false`, it will become `true` and vice versa.
+What this will do is simply to just flip the value of doShowFilters. If it is `false`, it will become `true` and vice versa.
 
 Then we have the `@if`-statement checking if the filter inputs should be displayed. We have:
-1) First a text input for the ser name.
+1) First a text input for the User name.
 2) Then a number input to filter by User ID.
 3) Then a drop down, i.e. `<select>`, with three values: all, true, false. If all is selected, this filter is not used.
 4) And finally a text input to check if the Title of a Todo contains the inserted text.
 
-The div, and nested button, below already existed, they are merely included so that you can see what part of the view is new.
+The div and nested button below (lines 36-38) already existed, they are merely included so that you can see what part of the view is ne, i.e. most of the above.
 
 ## Styling
 
-We do need a bit of styling, e.g. the icons are too large, and the filters should be organized just a little bit.
+We do need a bit of styling, e.g. the icons are too large (they are .png files, and should have just been made smaller, e.g. 30 by 30 pixels), and the filters should be organized just a little bit.
 
-Create a style-behind, `ViewTodos.razor.css`, and paste in the following style:
+Create a style-behind, "ViewTodos.razor.css", and paste in the following style:
 
 ```css
 .filter-bar {
@@ -178,9 +183,11 @@ You are obviously welcome to fiddle around, if you wish to make it prettier.
 ## TodoHttpClient
 In this class we need to take the filter arguments and construct a string of query parameters to suffix to the URI.
 
-We make the following changes. There is a new line of code in the existing `GetAsync()` method, the first line. And a new method. Here:
+We make the following changes. There is a new line of code in the existing `GetAsync()` method, the first line of the method body. We use the `query` in line 5 as the method argument.
 
-```csharp{3}
+And a new method.
+
+```csharp{3,5}
 public async Task<ICollection<Todo>> GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
 {
     string query = ConstructQuery(userName, userId, completedStatus, titleContains);
@@ -231,7 +238,8 @@ private static string ConstructQuery(string? userName, int? userId, bool? comple
 
 So, the second method, `ConstructQuery(...)` is the interesting one.
 
-It will check each filter argument, check if they are not null, in which case they should be ignore. And otherwise include the needed filter arguments in the query parameter string.
+It will check each filter argument, check if they are not null, in which case they should be ignore. 
+And otherwise include the needed filter argument in the query parameter string.
 
 Results could for example be:
 
@@ -242,7 +250,7 @@ Results could for example be:
 The query string must always start with a "?", and each query is separated with "&".
 
 This is achieved by all the ternary expressions, e.g. `query += string.IsNullOrEmpty(query) ? "?" : "&";`. The `query` variable is expanded upon for each if-statement.\
-If it is empty, it means we are about to append the first query parameter, and the string must start with "?". If the `query` is _not_ empty, we are about to append another query parameter, and so we must insert "&" to separate the existing with the new parameter.
+If `query` is empty, it means we are about to append the first query parameter, and the string must start with "?". If the `query` is _not_ empty, we are about to append another query parameter, and so we must insert "&" to separate the existing with the new parameter.
 
 The result of this method, the finished query string, is returned, and appended to "/todos", so that they can be passed to the endpoint handling GET requests of "/todos".
 
@@ -265,4 +273,4 @@ Navigate to the page.
 
 First just click load without applying filters, to verify that we didn't break anything.
 
-Then play around with the filters, apply one or more in various combinations to verify the result is as expected.
+Then play around with the filters, apply one or more in various combinations to verify the result is as expected. 

@@ -15,9 +15,10 @@ Insert the below styling:
 ```
 
 ## Test
-Run Web API and then run Blazor.
 
 You might want to add a couple of users first, so you have a handful.
+
+Run Web API and then run Blazor.
 
 Then open the ViewUsers page, it should look something like this:
 

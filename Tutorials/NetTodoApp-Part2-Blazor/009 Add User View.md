@@ -35,7 +35,8 @@ I have added a little extra, which will be explained, and then the view looks li
 **Line 4**: Here we inject an instance of `IUserService`.
 This instance is created and provided by the dependency injection framework, and we can do this, when we have registered the interface and implementing class as services in Program.cs, as we did the previous slide.\
 We hereby achieve dependency inversion, and if we were to change the network technology, the idea is, we shouldn't have to rework any of our pages, because they just know about the interface.\
-However, because we decided to put the interfaces into the HttpClients component, we would still have to modify all pages, if we changed network technology. Notice the using statement in line 3, this references the namespace HttpClients. We have chosen to accept this flaw, as we will not change network technology. Remember the discussion on slide 2 on where to put the interfaces.
+However, because we decided to put the interfaces into the HttpClients component, we would still have to modify all pages, if we changed network technology. A new network implementation would most likely be placed in a different namespace.\
+Notice the using statement in line 3, this references the namespace HttpClients. We have chosen to accept this flaw, as we will not change network technology. Remember the discussion on slide 2 on where to put the interfaces.
 
 But, this page does not know about the implementation behind the interface.
 
@@ -48,10 +49,10 @@ The first interesting thing comes in **line 10**. This is a text input field:
 <input type="text" @bind="username" @bind:event="oninput"/>
 ```
 
-We have two "@-attributes". The first one says that the value of the text field should be stored in the field variable `username`.
+We have two "@-attributes". The first one says that the value of the text field should be stored in the field variable `username`. The binding is two-way: if the field variable is changed from the code, the view will update to show this value.
 
 The second `@` is then the type of event, which should cause the value of the input field to be put into the field variable.
-We want it to be "oninput", i.e. each key press will cause an update to the value of the field variable.
+We want it to be "oninput", i.e. each key press will cause an update to the value of the field variable.\
 The default is "onchange", which will cause the update when you de-focus the text input, i.e. click somewhere outside of it. If we just want the default onchange we can leave out the second `@bind:eve...`.\
 We want the "oninput", because the button should be  disabled, when there is nothing in the input field.
 
@@ -65,5 +66,5 @@ We check if there is anything in the `resultMsg` field, and if so, we display a 
 ```
 
 We specify the method to be called when the button is clicked with `@onclick="Create"`. We could also here provide a lambda expression instead of the method name.\
-THen the `disabled=` is a standard HTML attribute, which value must be "true" or "false".
+Then the `disabled=` is a standard HTML attribute, the value of which must be "true" or "false".
 Here we evaluate the state with `@(string.IsNullOrEmpty(username))`, the @ indicating razor-syntax to be avaluated when rendered. We check if the `username` has a value. If there is no value, it doesn't make sense to be able to click the button, so it will be disabled.

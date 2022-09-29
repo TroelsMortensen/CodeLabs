@@ -1,16 +1,16 @@
 # Checkbox Component
 
 ## Purpose
-The main purpose here is the introduction to the concept of BlazorComponents.
+The main purpose here is the introduction to the concept of Blazor components.
 
-A secondary purpose is to show one way of passing parameters to a nested component, from a parent component/page
+A secondary purpose is to show one way of passing parameters to a nested component, from a parent component/page. This will also be discussed again towards the end of the tutorial.
 
 
 ## Let's Go
 
 We start by creating a new component file. It is the same as what we have done when creating pages, we just don't need the @page directive at the top. That is the only difference.
 
-First, we might want to organize our files a bit, create a new directory inside Pages, call it UIComponents.
+First, we might want to organize our files a bit, create a new directory inside Pages, call it "UIComponents".
 
 Inside this new directory, create a new component, call it "FancyCheckBox".
 
@@ -30,7 +30,7 @@ This will give you a file with the following content:
 }
 ```
 
-Notice, the only difference of a new Page and new Component, is that the Page has the @page directive at the top.
+Notice, the only difference of a new Page and new Component, is that the Page has the @page directive at the top. We can manually add a @page directive, and turn this component into a page.
 
 Remember, Pages can work as Components too, even though that may be less standard.
 
@@ -38,7 +38,10 @@ In this file, FancyCheckBox, we just want to have HTML for a checkbox, a little 
 
 ## The Code
 
-We just need the initial value of the Todo::IsCompleted, and we need a call-back delegate. When the value of this component changes, we want to set the value of the Todo::IsCompleted property. Think observer pattern, we use a delegate. Or more specifically, we use a sub-class called `EventCallback<..>`, which is generally used in Blazor.
+We just need the initial value of the `Todo::IsCompleted`, and we need a call-back delegate. 
+When the value of this component changes, we want to set the value of the `Todo::IsCompleted` property. 
+Think observer pattern, so we use a delegate. 
+Or more specifically, we use a sub-class called `EventCallback<..>`, which is generally used in Blazor, in part because of async capability.
 
 So, the code looks like this:
 
@@ -56,18 +59,23 @@ So, the code looks like this:
 We have the two properties, one for the initial value, `IsCompleted`, and a delegate to notify interested parties of changes, the `OnChange`.\
 But each have an attribute, `[Parameter]`, now what's that about?
 
-When you instantiate new classes in C#, they often have a constructor, so that you can pass arguments to the class.\
-What we have here is similar. Wherever we use this component (which may be many places across a large app), we wish to provide it with some initial information, the value of `IsCompleted`, and we may want to subscribe methods to the `OnChange`. This must be done from the "outside" of this component.\
+![img.png](Resources/AMystery.png)
+
+When you instantiate new classes in C#, they often have a constructor, so that you can pass arguments to the class.
+
+What we have here is similar. Wherever we use this component (which may be many places across a large app), 
+we wish to provide it with some initial data, i.e. the value of `IsCompleted`, and we may want to subscribe methods to the `OnChange`. This must be done from the "outside" of this component.
+
 We can set these properties from the outside, when we mark them with `[Parameter]`. We will see how shortly.
 
 The point is, initially the checkbox value must be set to either true or false, given the value of the specific Todo. And we must subscribe a method to be invoked, whenever the checkbox is clicked, so that we may update the todo.
 
-Let's take a look at 
+Let's take a look at that.
 
 ## The View
-Now, I style this specific checkbox visual from some online example, and it is obviously more fancy than what we need. We could just use the default HTML-checkbox, but that is dull.
+Now, I style this specific checkbox visual from some online example, and it is obviously more fancy than what we need. We could just use the default HTML-checkbox, but that is dull. And I have been waiting for an opportunity to apply this. So, here we are
 
-So, this is the view:
+This is the view:
 
 ```razor
 @namespace UIComponents
@@ -139,11 +147,12 @@ It looks like this, put it in a style-behind of the FancyCheckBox.
 }
 ```
 
+I don't particularly care about what it does.
 
 ## Initial Test
 Before actually taking it in use, let's test if the graphics work as expected.
 
-Open the page Index.razor.
+Open the page Index.razor file.
 
 Modify it to look like this:
 
@@ -170,12 +179,13 @@ Your IDE, however, should color code it different from standard HTML. Here's wha
 
 ![img.png](Resources/ComponentHighlight.png)
 
-Notice the component is in purple, same as the SurveyPrompt, which is another component, that came with the template project. `<PageTitle>` is again also a component, defined in the Blazor framework.
+Notice the component is in purple, same as the SurveyPrompt, which is another component, that came with the template project. `<PageTitle>` is again also a component, defined in the Blazor framework. Also notice the naming convention of components versus HTML: PascalCase vs alllowercase.
 
-Now, go ahead and delete the line `@using UIComponents`, and you should see your component change color to that of HTML, in my case blue. The colors help to indicate that you may have forgotten to import a specific component, and so it will not show up in the UI, when running the app.\
-Put the using statement back again.
+Now, go ahead and delete the line `@using UIComponents`, and you should see your component change color to that of HTML, in my case blue. The colors help to indicate that you may have forgotten to import a specific component, and so it will not show up in the UI, when running the app.This often happens.
 
-When the UI is rendered, the content of the component is extracted, and inserted into the final page, so when you inspect the html of the UI in the browser, you will not see that some of the html came from a component.
+**Put the using statement back again.**
+
+When the UI is rendered, the content of the component is extracted, and inserted into the final page, so when you inspect the HTML of the UI in the browser, you will not see that some of the HTML came from a component.
 
 You can duplicate the line of `<FancyCheckBox/>` a couple of times to get more checkboxes. That's the easy re-usability mentioned earlier.
 
@@ -188,6 +198,8 @@ Your front page should now look like this:
 ![](Resources/CheckBoxInAction.gif)
 
 My god, is that fancy or what?!
+
+![img.png](Resources/SoFancy.png)
 
 Okay, we haven't provided any parameters to it just yet. So let's go and use it for real. 
 

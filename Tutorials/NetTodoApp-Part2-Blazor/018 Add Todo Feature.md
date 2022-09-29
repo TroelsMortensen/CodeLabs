@@ -4,7 +4,8 @@ We are ready for the next feature:
 
 > As a User I can add a new Todo, so that I can remember important things
 
-The user should input title, and assignee of a Todo. The assignee is to be selected from a drop-down menu. This may not scale too well, if there are hundreds of users, but we will keep it simple for now.
+The user should input title, and assignee of a Todo. The assignee is to be selected from a drop-down menu. 
+This may not scale too well, if there are hundreds of users, but we will keep it simple for now. Later we might introduce some search functionality to find a specific User.
 
 We need:
 * Create a new Service interface, responsible for Todos.

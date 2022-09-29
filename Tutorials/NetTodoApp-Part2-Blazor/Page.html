@@ -172,9 +172,9 @@ The latter is perhaps more flexible, if we expect to add other client apps, but 
 We will keep it simple, and put the interfaces in Clients.</p>
 <p>This leads to the component/package diagram.</p>
 <h2 id="component-diagram">Component Diagram</h2>
-<p>Below is a rough component diagram of the Client app.</p>
+<p>Below is a component diagram of the Client app, with important directories included.</p>
 <p><img src="Resources/ClientComponentDiagram.png" alt="img.png" /></p>
-<p>Each grey container is a component. The Domain already exists in your solution, it was created in part 1 of the Tutorial.</p>
+<p>Each grey container is a component/project. The Domain already exists in your solution, it was created in part 1 of the Tutorial.</p>
 <p>The light blue containers are directories. Not all directories are shown, just the most important ones.</p>
 <h2 id="class-diagram">Class Diagram</h2>
 <p>The final system is displayed in the below class diagram.</p>
@@ -315,7 +315,10 @@ Let us use this as the argument, and the return type will be the resulting User.
         throw new Exception(result);
     }
 
-    User user = JsonSerializer.Deserialize&lt;User&gt;(result)!;
+    User user = JsonSerializer.Deserialize&lt;User&gt;(result, new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    })!;
     return user;
 }
 </code></pre>
@@ -328,7 +331,9 @@ If the response is not a success code, i.e. an error code in the 400 or 500 rang
 we know the result content is the error message, and an exception is thrown with that message.<br />
 The exception can then be caught in the page and a message can be shown to the user of the app.</p>
 <p>It is <em>always</em> important to give feedback to the user, in both sunny or rainy scenarios. If there is no feedback, they might try again, and create two users, or they may not be aware that the user was not created. User feeback is <em><strong>important</strong></em>.</p>
-<p>If the status code is success, in this case we expect a &quot;201 Created&quot;, we know the result is a User as JSON, and it is deserialized and returned.</p>
+<p>If the status code is success, in this case we expect a &quot;201 Created&quot;, we know the result is a User as JSON, and it is deserialized and returned.<br />
+We supply the <code>JsonSerializer</code> with options to ignore casing, because the result from the Web API will be camelCase, but our model classes use PascalCase for the properties.<br />
+At the end of the call, line 13, there is a null-suppressor: &quot;!&quot;, i.e. the exclamation mark. This is because, the Deserialize method returns a nullable object, i.e. <code>User?</code>, but we just above checked if the request went well, so at this point we know <em>there is</em> a User to be deserialized.</p>
 <p>Most of our client methods will have a very similar structure.</p>
 <h2 id="register-as-service">Register as service</h2>
 <p>We will register the TodoHttpClient as a service in <code>Program.cs</code>, so that the dependency framework can inject an instance into our pages, when needed.</p>
@@ -428,16 +433,17 @@ And then we need a way to display messages held in the <code>resultMsg</code>.</
 <strong>Line 4</strong>: Here we inject an instance of <code>IUserService</code>.
 This instance is created and provided by the dependency injection framework, and we can do this, when we have registered the interface and implementing class as services in Program.cs, as we did the previous slide.<br />
 We hereby achieve dependency inversion, and if we were to change the network technology, the idea is, we shouldn't have to rework any of our pages, because they just know about the interface.<br />
-However, because we decided to put the interfaces into the HttpClients component, we would still have to modify all pages, if we changed network technology. Notice the using statement in line 3, this references the namespace HttpClients. We have chosen to accept this flaw, as we will not change network technology. Remember the discussion on slide 2 on where to put the interfaces.</p>
+However, because we decided to put the interfaces into the HttpClients component, we would still have to modify all pages, if we changed network technology. A new network implementation would most likely be placed in a different namespace.<br />
+Notice the using statement in line 3, this references the namespace HttpClients. We have chosen to accept this flaw, as we will not change network technology. Remember the discussion on slide 2 on where to put the interfaces.</p>
 <p>But, this page does not know about the implementation behind the interface.</p>
 <p>Then comes a mix of HTML and razor-syntax, i.e. inlined C#.<br />
 First there is a containing <code>&lt;div&gt;</code> in line 6. We will add some styling later to setup the page a little nicer.</p>
 <p>The first interesting thing comes in <strong>line 10</strong>. This is a text input field:</p>
 <pre><code class="line-numbers language-razor">&lt;input type=&quot;text&quot; @bind=&quot;username&quot; @bind:event=&quot;oninput&quot;/&gt;
 </code></pre>
-<p>We have two &quot;@-attributes&quot;. The first one says that the value of the text field should be stored in the field variable <code>username</code>.</p>
+<p>We have two &quot;@-attributes&quot;. The first one says that the value of the text field should be stored in the field variable <code>username</code>. The binding is two-way: if the field variable is changed from the code, the view will update to show this value.</p>
 <p>The second <code>@</code> is then the type of event, which should cause the value of the input field to be put into the field variable.
-We want it to be &quot;oninput&quot;, i.e. each key press will cause an update to the value of the field variable.
+We want it to be &quot;oninput&quot;, i.e. each key press will cause an update to the value of the field variable.<br />
 The default is &quot;onchange&quot;, which will cause the update when you de-focus the text input, i.e. click somewhere outside of it. If we just want the default onchange we can leave out the second <code>@bind:eve...</code>.<br />
 We want the &quot;oninput&quot;, because the button should be  disabled, when there is nothing in the input field.</p>
 <p><strong>Line 11-14</strong>: This is a code snippet, started with the <code>@</code> to indicate some razor-syntax follows, which should be evaluated when generating the html.<br />
@@ -446,7 +452,7 @@ We check if there is anything in the <code>resultMsg</code> field, and if so, we
 <pre><code class="line-numbers language-csharp">&lt;button @onclick=&quot;Create&quot; disabled=&quot;@(string.IsNullOrEmpty(username))&quot; class=&quot;acceptbtn&quot;&gt;Create&lt;/button&gt;
 </code></pre>
 <p>We specify the method to be called when the button is clicked with <code>@onclick=&quot;Create&quot;</code>. We could also here provide a lambda expression instead of the method name.<br />
-THen the <code>disabled=</code> is a standard HTML attribute, which value must be &quot;true&quot; or &quot;false&quot;.
+Then the <code>disabled=</code> is a standard HTML attribute, the value of which must be &quot;true&quot; or &quot;false&quot;.
 Here we evaluate the state with <code>@(string.IsNullOrEmpty(username))</code>, the @ indicating razor-syntax to be avaluated when rendered. We check if the <code>username</code> has a value. If there is no value, it doesn't make sense to be able to click the button, so it will be disabled.</p>
 
 </div>
@@ -455,12 +461,13 @@ Here we evaluate the state with <code>@(string.IsNullOrEmpty(username))</code>, 
 <p>We should now have the functionality in place. We will add a bit of styling later, but let's test it first.</p>
 <p>Run first your Web API. You can just close the Swagger page, which opens.</p>
 <p>Run then the BlazorWASM. It should open a new tab in your browser.</p>
-<p>In the address bar put &quot;https://localhost:7205/CreateUser&quot; to navigate to the page, we have just worked on.</p>
+<p>In the address bar put &quot;https://localhost:7205/CreateUser&quot; to navigate to the page, we have just worked on (your port may be different).</p>
 <p>You should then see your page:</p>
 <p><img src="Resources/CreateUserPageView.png" alt="img.png" /></p>
 <p>Type in something in the text-field and see how the button becomes enabled.</p>
 <p>Try first a user name, you know exists. We should see an error message.</p>
-<p>Then try a new user name, non-existing. This should work, and you should see a green success mesage.</p>
+<p>Then try a new user name, non-existing. This should work, and you should see a green success message.<br />
+If you have no users, do the above in reverse order.</p>
 
 </div>
 <div class="tab">
@@ -537,7 +544,7 @@ Here we evaluate the state with <code>@(string.IsNullOrEmpty(username))</code>, 
 <p>Here we have the three nav menu items, e.g. lines 3-7 defines a single nav menu item, the home button:</p>
 <p><img src="Resources/NavMenuItemHome.png" alt="" /></p>
 <p>We can just copy the div and nested content and adjust a little bit. Make it like this:</p>
-<pre data-line="18-23"><code class="line-numbers language-razor">&lt;div class=&quot;@NavMenuCssClass&quot; @onclick=&quot;ToggleNavMenu&quot;&gt;
+<pre data-line="18-22"><code class="line-numbers language-razor">&lt;div class=&quot;@NavMenuCssClass&quot; @onclick=&quot;ToggleNavMenu&quot;&gt;
     &lt;nav class=&quot;flex-column&quot;&gt;
         &lt;div class=&quot;nav-item px-3&quot;&gt;
             &lt;NavLink class=&quot;nav-link&quot; href=&quot;&quot; Match=&quot;NavLinkMatch.All&quot;&gt;
@@ -562,7 +569,7 @@ Here we evaluate the state with <code>@(string.IsNullOrEmpty(username))</code>, 
     &lt;/nav&gt;
 &lt;/div&gt;
 </code></pre>
-<p>The <code>href=..</code> says which page to open, it should match the sub-URI in your page directive in the CreateUser.razor file.</p>
+<p>The <code>href=..</code> in line 19 says which page to open, it should match the sub-URI in your page directive in the CreateUser.razor file.</p>
 <h2 id="cleaning-up">Cleaning up</h2>
 <p>Initially, there are two demo pages: Counter and Fetch Data. We might as well delete them and remove the links.</p>
 <p>Remove the following from NavMenu:</p>
@@ -599,6 +606,8 @@ Here we evaluate the state with <code>@(string.IsNullOrEmpty(username))</code>, 
 <p>Those are the two links to Counter and Fetch data, respectively.</p>
 <p>Now, you can also delete the two files, Counter.razor and FetchData.razor, from the Pages directory.</p>
 <p>Let us leave the Index.razor, so we have some kind of home page.</p>
+<h3 id="section"></h3>
+<p>Verify everthing still works, and that you now have your new nav-item in the left side menu. You don't need to run the Web API for this.</p>
 
 </div>
 <div class="tab">
@@ -622,19 +631,28 @@ Here we evaluate the state with <code>@(string.IsNullOrEmpty(username))</code>, 
 <h2 id="add-to-menu">Add to menu</h2>
 <p>Let's also add it as a menu Item right away. Go ahead and do that, in the same way as the previous page.</p>
 <p>Notice that for each nav menu item in the HTML of NavMenu.razor, there is a <code>&lt;span&gt;</code> tag, with the class defining what icon should be next to the text.</p>
+<p>For example:</p>
+<pre><code class="line-numbers language-razor">&lt;span class=&quot;oi oi-list&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt; View users
+</code></pre>
 <p><a href="https://icon-sets.iconify.design/oi/">You can find many available icons here</a>, they seem to be included in bootstrap, located in a file here: BlazorWASM/wwwroot/open-iconic/font/css/open-iconic-bootstrap.min.css.</p>
-<p>So, maybe the icon for the menu item should be a list. Or something else. You can pick whatever.</p>
+<p>So, maybe the icon for this menu item should be a list. Or something else. You can pick whatever.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="user-service-method">User Service Method</h1><hr/>
 <p>We start by implementing a method to retrieve all users.</p>
-<p>In IUserService interface we need the following method. The Web API actually allows us to search for Users by user name, so lets include that.</p>
+<p>In IUserService interface we need the following method. The Web API actually allows us to search for Users by user name, so lets include that .</p>
 <pre><code class="line-numbers language-csharp">Task&lt;IEnumerable&lt;User&gt;&gt; GetUsers(string? usernameContains = null);
 </code></pre>
+<h6 id="yes-the-method-name-should-have-been-suffixed-async.you-may-do-this.i-may-change-this">(yes, the method name should have been suffixed &quot;Async&quot;. You may do this. I may change this.)</h6>
 <p>By assigning the argument to null here, we can provide a default value. This means we do not need to provide an argument when calling the method, and if we don't, the argument will be set to null. Alternatively, we would have to actively pass <code>null</code> as the argument, when calling the method from a page's code block.</p>
+<p>The method can be called like this:</p>
+<pre><code class="line-numbers language-csharp">IEnumerable&lt;User&gt; users = await userService.GetUsers();
+</code></pre>
 <h2 id="implementation">Implementation</h2>
-<p>Let's implement the method in UserHttpClient:</p>
+<p>Let's implement the method in UserHttpClient.
+We must construct the URI and take into account the <code>usernameContains</code> variable.
+Then make the request, check the response, deserialize the response content, and return it.</p>
 <pre><code class="line-numbers language-csharp">public async Task&lt;IEnumerable&lt;User&gt;&gt; GetUsers(string? usernameContains = null)
 {
     string uri = &quot;/users&quot;;
@@ -649,20 +667,27 @@ Here we evaluate the state with <code>@(string.IsNullOrEmpty(username))</code>, 
         throw new Exception(result);
     }
 
-    IEnumerable&lt;User&gt; users = JsonSerializer.Deserialize&lt;IEnumerable&lt;User&gt;&gt;(result)!;
+    IEnumerable&lt;User&gt; users = JsonSerializer.Deserialize&lt;IEnumerable&lt;User&gt;&gt;(result, new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    })!;
     return users;
 }
 </code></pre>
-<p>The method is async, because we make a call to the Web API, which may take time. The argument is again defaulted to null. And the return type is <code>IEnumerable&lt;Users&gt;</code>, i.e. the immutable collection returned from the Web API endpoint.</p>
+<p>The method is async, because we make a call to the Web API, which may take time.
+The argument is again defaulted to <code>null</code> here, like in the interface.
+And the return type is <code>IEnumerable&lt;Users&gt;</code>, i.e. the immutable collection returned from the Web API endpoint.<br />
+(We can actually deserialize the JSON into any kind of collection, it need not be IEnumerable).</p>
 <p>First the sub-URI is defined to be &quot;/users&quot;.<br />
-Then, if the method-argument is not null, we suffix that to the URI as a query parameter. The URI might then e.g. be: &quot;/users?username=roe&quot;, to fetch all users whose name contains &quot;roe&quot;.</p>
+Then, if the method-argument is not null, we suffix that to the URI as a query parameter. The URI might then e.g. be: <code>/users?username=roe</code>, to fetch all users whose name contains &quot;roe&quot;.</p>
 <p>Next follows template code very similar to the other method in the class. A GET request is made, the response is checked for success. In case of failure, an error is thrown. In case of success, the string is de-serialized from JSON to <code>IEnumerable&lt;User&gt;</code>, which is then returned.</p>
 <p>That should be all for the service.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="view-users-code-block">View Users Code Block</h1><hr/>
-<p>Next up, let's do the code block in the page.</p>
+<p>With the service implementation done, let's move to the page.</p>
+<p>We will start with the code block in the page.</p>
 <p>When it loads, we need to retrieve the list of users, so that it can be displayed. Here we go:</p>
 <pre><code class="line-numbers language-csharp">@code {
     private IEnumerable&lt;User&gt;? users;
@@ -683,18 +708,24 @@ Then, if the method-argument is not null, we suffix that to the URI as a query p
     }
 }
 </code></pre>
-<p>We have first a field to hold the users. It is marked as nullable, because it will be <code>null</code> until the data is retrieved from the server.</p>
-<p>Then a field to hold any messages, in case of errors.</p>
-<p>The method is overridden from ComponentBase. All blazor components automatically inherits from it.<br />
+<p>We have first a field variable to hold the users. It is marked as nullable, because it will be <code>null</code> until the data is retrieved from the server.<br />
+First, the page will be rendered and displayed, then the <code>OnInitializedAsync</code> method is called, and then part of the page is re-renderd, because of the change to the field variable <code>users</code>.</p>
+<p>Then a field variable, <code>msg</code>, to hold any messages, in case of errors.</p>
+<p>The method, <code>OnInitializedAsync</code>, is overridden from ComponentBase. All blazor components automatically inherits from it.<br />
 This specific method is automatically called, whenever the page loads.<br />
 It just retrieves a collection of Users from through the IUserService. In case of errors, the message is assigned to <code>msg</code>, which can then be displayed in the view.</p>
-<p>Remember, if the IUserService implementation receives a failure status code from the Web API, an exception is thrown. That's what we catch here.</p>
+<p>Remember, if the IUserService implementation receives a failure status code from the Web API, an exception is thrown. That's what we catch here.<br />
+It means most of our methods in the pages will have this try-catch structure, which is not particularly pretty, but it is the simple solution.<br />
+Better alternatives probably exist, but we will not cover that here.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="view-users-view">View Users View</h1><hr/>
-<p>So, the view part of viewing users. The HTML.</p>
-<p>We wish to display all user names. That can be formatted in different ways. It could just be a bullet list, or something else. I have again attempted to apply some kind of fancy styling. We'll take that on the next slide.</p>
+<p>So, the view part of viewing users. The HTML and razor-syntax (i.e. inline C# code).</p>
+<p>We wish to display all user names. That can be formatted in different ways.
+It could just be a bullet list, or something else.
+I have again attempted to try some attempt of maybe applying some kind of fancy styling, sort of.
+We'll take that on the next slide.</p>
 <p>Here is the html razor-syntax:</p>
 <pre><code class="line-numbers language-csharp">@page &quot;/ViewUsers&quot;
 @using Domain.Models
@@ -733,14 +764,14 @@ else
 <p><strong>Line 1</strong>: The page directive, i.e. the URI to access this page.</p>
 <p><strong>Lines 2-3</strong>: Import statements, so that we can access classes <code>User</code> and <code>IUserService</code>.</p>
 <p><strong>Line 4</strong>: Here we inject an <code>IUserService</code> instance.</p>
-<p><strong>Line 5</strong>: It's just a header. I have committed crimes and just inlined a bit of styling in the tag.</p>
-<p><strong>Line 7</strong>: Here we display the <code>msg</code> in case it has any value. This happens in case of errors.</p>
-<p><strong>Line 14</strong>: Here starts an if-elseif-else.</p>
-<p><strong>if</strong>: If the <code>users</code> variable is null, it is because no data has been retrieved from the server.<br />
-<strong>else if</strong>: this is the case, when the <code>users</code> are loaded, but the collection is empty. The method <code>Any()</code> returns true, if there are any elements in the collection.<br />
-<strong>else</strong>: finally, here we have loaded data, and there is actually some data. We wish to display all users. There is a <code>foreach</code> to loop the <code>users</code>, and for each user object, we generate a little piece of html, i.e. the <code>&lt;div</code> and <code>&lt;label&gt;</code> tags.
+<p><strong>Line 6</strong>: It's just a header. I have committed crimes and just inlined a bit of styling in the tag.</p>
+<p><strong>Line 8</strong>: Here we display the <code>msg</code> in case it has any value. This happens in case of errors.</p>
+<p><strong>Line 15</strong>: Here starts an if-else if-else:</p>
+<p><strong>if</strong>: the <code>users</code> variable is null, it is because no data has been retrieved from the server.</p>
+<p><strong>else if</strong>: this is the case, when the <code>users</code> are loaded, but the collection is empty. The method <code>Any()</code> returns true, if there are any elements in the collection.</p>
+<p><strong>else</strong>: finally, here we have loaded data, and there is actually some data. We wish to display all users. There is a <code>foreach</code> to loop through the <code>users</code>, and for each User object, we generate a little piece of html, i.e. the <code>&lt;div</code> and <code>&lt;label&gt;</code> tags.\
 This piece here: <code>&lt;label&gt;@user.UserName&lt;/label&gt;</code>, notice how we use the <code>user</code> variable from the foreach-loop, and get the <code>UserName</code>. This is a string, which will then be displayed in the UI.</p>
-<p>Again, notice how <code>@</code> is used to inline some C# code, which is evaluated to generate the resulting HTML. We can inline C# just about anywhere, so the dynamic HTML generation can be very flexible.</p>
+<p>Again, notice how <code>@</code> is used to inline some C# code, which is evaluated to generate the resulting HTML. We can inline C# just about anywhere, so the dynamic HTML generation can be <em>very</em> flexible.</p>
 <p>Finally, let's add some styling.</p>
 
 </div>
@@ -757,8 +788,8 @@ This piece here: <code>&lt;label&gt;@user.UserName&lt;/label&gt;</code>, notice 
 }
 </code></pre>
 <h2 id="test">Test</h2>
-<p>Run Web API and then run Blazor.</p>
 <p>You might want to add a couple of users first, so you have a handful.</p>
+<p>Run Web API and then run Blazor.</p>
 <p>Then open the ViewUsers page, it should look something like this:</p>
 <p><img src="Resources/ViewUsersPage.png" alt="img.png" /></p>
 
@@ -769,7 +800,8 @@ This piece here: <code>&lt;label&gt;@user.UserName&lt;/label&gt;</code>, notice 
 <blockquote>
 <p>As a User I can add a new Todo, so that I can remember important things</p>
 </blockquote>
-<p>The user should input title, and assignee of a Todo. The assignee is to be selected from a drop-down menu. This may not scale too well, if there are hundreds of users, but we will keep it simple for now.</p>
+<p>The user should input title, and assignee of a Todo. The assignee is to be selected from a drop-down menu.
+This may not scale too well, if there are hundreds of users, but we will keep it simple for now. Later we might introduce some search functionality to find a specific User.</p>
 <p>We need:</p>
 <ul>
 <li>Create a new Service interface, responsible for Todos.</li>
@@ -781,10 +813,10 @@ This piece here: <code>&lt;label&gt;@user.UserName&lt;/label&gt;</code>, notice 
 </div>
 <div class="tab">
 <hr/><h1 id="service-for-handling-todos">Service for Handling Todos</h1><hr/>
-<p>We start by defining the interfaces. Then the implementation</p>
+<p>We start by defining the interfaces. Then the implementation.</p>
 <h2 id="interfaces">Interfaces</h2>
-<p>We need to be able to retrieve users, so that we can select an assignee. That already exists in the IUserService.</p>
-<p>We also need a new interface, ITodoService. Create this in HttpClients/ClientInterfaces.</p>
+<p>We need to be able to retrieve users, so that we can select an assignee. That already exists in the <code>IUserService</code>.</p>
+<p>We also need a new interface, &quot;ITodoService&quot;. Create this in HttpClients/ClientInterfaces.</p>
 <p>It needs a method to create Todos. It does not need to return anything. And the argument is the <code>TodoCreationDto</code> we already have.</p>
 <p>The interface then looks like this:</p>
 <pre><code class="line-numbers language-csharp">public interface ITodoService
@@ -792,8 +824,10 @@ This piece here: <code>&lt;label&gt;@user.UserName&lt;/label&gt;</code>, notice 
     Task CreateAsync(TodoCreationDto dto);
 }
 </code></pre>
+<h6 id="notice-how-i-remembered-to-suffix-it-async">(Notice how I remembered to suffix it &quot;Async&quot;.)</h6>
+<p>We could again return the result Todo, like we did with the Create User method. Maybe we will change this method later, if it is needed.</p>
 <h2 id="implementation">Implementation</h2>
-<p>Next up, create a new class, TodoHttpClient in side HttpClients/Implementations.</p>
+<p>Next up, create a new class, &quot;TodoHttpClient&quot; inside HttpClients/Implementations.</p>
 <p>It initially looks like this:</p>
 <pre><code class="line-numbers language-csharp">public class TodoHttpClient : ITodoService
 {
@@ -823,7 +857,7 @@ This piece here: <code>&lt;label&gt;@user.UserName&lt;/label&gt;</code>, notice 
     }
 }
 </code></pre>
-<p>The argument is serialized. Then the client is used to make a POST request with the JSON. The response is checked for failure, in which case an exception is thrown.</p>
+<p>The client is used to make a POST request with the JSON. The response is checked for failure, in which case an exception is thrown.</p>
 </details>
 <h2 id="add-as-service">Add as Service</h2>
 <p>Add your new interface and implementation as services in BlazorWASM/Program.cs:</p>
@@ -840,7 +874,7 @@ This piece here: <code>&lt;label&gt;@user.UserName&lt;/label&gt;</code>, notice 
 <h2 id="code-block">Code block</h2>
 <p>We start with the code block.</p>
 <p>We need to initially load the users. And we need a method to take the input, wrap it up and forward it to the client class.</p>
-<p>It looks like this:</p>
+<p>It looks like this. Read through it, see if it makes sense, then read the comments below:</p>
 <pre><code class="line-numbers language-csharp">@code {
     private IEnumerable&lt;User&gt;? users;
     private int? selectedUserId;
@@ -896,15 +930,16 @@ This piece here: <code>&lt;label&gt;@user.UserName&lt;/label&gt;</code>, notice 
 <p>And the fourth is for any messages, in case of errors and such.</p>
 <p>The method <code>OnInitializedAsync()</code> just fetches all Users from the server.</p>
 <p>The <code>Create()</code> method will first reset the <code>msg</code>. Then we check if User and Title is set. This is also checked on the server, but we do a basic check here, so we don't have to contact the server if the User have not filled out everything.<br />
-Then a new <code>TodoCreationDto</code> is created, this class already exists, it what the Web API requires. It is handed over to the ITodoService to be sent to the server.\</p>
-<p>In both methods we catch any potential errors from the layers below, and display the message through the <code>msg</code> field.</p>
-<h5 id="navigationmanager">NavigationManager</h5>
+Then a new <code>TodoCreationDto</code> is created, this class already exists in the Domain component, it is what the Web API requires. It is handed over to the ITodoService to be sent to the server.</p>
+<p>In both methods we catch any potential errors from the layer below, and display the message through the <code>msg</code> field.</p>
+<h4 id="navigationmanager">NavigationManager</h4>
 <p>After the call to the <code>ITodoService::CreateAsync()</code> we do something different. For the CreateUser page, we would just display a message saying success. Here we take the opportunity to introduce a new helper class, the <code>NavigationManager</code></p>
-<p>This class is injected, see below, and we can use it to navigate to a different page. So far, the user has been in control of navigating between pages in the app. But sometimes something happens, and we want to take the user to a different page.</p>
+<p>This class is injected like the services, see below. It is by default available, we do not need to register it as a service, and we can use it to navigate to a different page. So far, the user has been in control of navigating between pages in the app, by clicking the menu items.
+But sometimes something happens, and we want to take the user to a different page.</p>
 <p>The argument <code>(&quot;/&quot;)</code> is the URI of the page we want to display. For now, we navigate to the home page. Later we will change this, so we are taken to the Todo overview page. The argument will then be <code>(&quot;/ViewTodos&quot;)</code>.</p>
-<p>No success message is shown to the user now, only in case of errors. Whether that is user friendly is less relevant.</p>
+<p>No success message is shown to the user now, only in case of errors. Whether that is user friendly is less relevant for the example. It will be changed later, though.</p>
 <h2 id="the-view">The View</h2>
-<p>We have to again to the if-elseif-else thing to check for Users. If there are users, we display the input elements for the User.</p>
+<p>Again we have to do the if-else if-else thing to check for Users. If there are users, we display the input elements for creating a Todo.</p>
 <p>It looks like this:</p>
 <pre><code class="line-numbers language-razor">@page &quot;/CreateTodo&quot;
 @using HttpClients.ClientInterfaces
@@ -921,7 +956,7 @@ Then a new <code>TodoCreationDto</code> is created, this class already exists, i
     }
     else if (!users.Any())
     {
-        &lt;label&gt;No users, you cannot create a Todo&lt;/label&gt;
+        &lt;label&gt;No users, you cannot create a Todo without assignee.&lt;/label&gt;
     }
     else
     {
@@ -950,17 +985,23 @@ Then a new <code>TodoCreationDto</code> is created, this class already exists, i
     }
 &lt;/div&gt;
 </code></pre>
-<p>Page directive first, then importing namespaces, and we inject both <code>IUserService</code> and <code>ITodoService</code>.</p>
+<p>Page directive first, then importing namespaces, and we inject both <code>IUserService</code>, <code>ITodoService</code>, and the <code>NavigationManager</code>.</p>
 <p>Everything is wrapped in a <code>&lt;div&gt;</code>, we will make it card-ish, like we did with the create User page.</p>
-<p>Then we have the if-else if-else. It is similar to the ViewUsers page, same purpose. If there are Users, the input elements are displayed.<br />
-There is a header, <code>&lt;h3&gt;</code> and then a <code>&lt;div&gt;</code> containing a simple text input field. The value of which is bound to the field variable <code>todoTitle</code>. This time, we just use the default @bind, but don't specify an event. This means the value of todoTitle will be updated, when the input field is de-focused, i.e. you press enter, or click outside of it.<br />
-Then the next div to hold a drop down menu. In HTML that is a <code>&lt;select&gt;</code>. Here we bind the value of what is selected to the field <code>selectedUserId</code>.<br />
-We use a <code>@foreach</code> to generate all the options in the <code>&lt;select&gt;</code> tag. The value=&quot;@user.Id&quot; specifies what will be pushed to the field variable <code>selectedUserId. The </code>@user.UserName` is what will be displayed.<br />
+<p>Then we have the if-else if-else. It is similar to the ViewUsers page, same purpose.<br />
+If there are Users, the input elements are displayed.<br />
+There is a header, <code>&lt;h3&gt;</code> and then a <code>&lt;div&gt;</code> containing a simple text input field, the value of which is bound to the field variable <code>todoTitle</code>.<br />
+This time, we just use the default @bind, but don't specify an event. This means the value of todoTitle will be updated, when the input field is de-focused, i.e. you press enter, or click outside of it.</p>
+<p>Then the next div to hold a drop down menu. In HTML that is a <code>&lt;select&gt;</code>. Here we bind the value of what is selected to the field <code>selectedUserId</code>.<br />
+We use a <code>@foreach</code> to generate all the options in the <code>&lt;select&gt;</code> tag. The <code>value=&quot;@user.Id&quot;</code> in <em>line 31</em> specifies what will be pushed to the field variable <code>selectedUserId</code>. The <code>@user.UserName</code> is what will be displayed.<br />
 I have included a &quot;dummy option&quot;, called &quot;Choose&quot; before the for-loop, just so that you have to make an active choice.</p>
 <p>In the last div, we have the error message, and the button.</p>
 <p>We could apply the same logic as seen in CreateUser page, where the button is disabled when there is no valid data. But here we see a simpler approach, just for some diversity.</p>
+<h4 id="comment">Comment</h4>
+<p>This simpler approach is not necessarily better. In general your UI becomes more user friendly, if you can block a user from doing something, rather than let them attempt something and get an error response.</p>
+<p>So, not being able to click a button, when the input is not correct can be an improvement. However, sometimes it may not be clear why a button is disabled. So on the other hand, if you leave it enabled, the user can click it and get a message saying what the still need to fill out.<br />
+You have to help your users, and spend some time figuring out the best way.</p>
 <h2 id="styling">Styling</h2>
-<p>Create a style-behind for CreateTodo.razor. Insert the following styles (actually just copied from the style of CreateUser.razor.css):</p>
+<p>Create a style-behind for <code>CreateTodo.razor</code>. Insert the following styles (actually just copied from the style of CreateUser.razor.css):</p>
 <pre><code class="line-numbers language-css">.card {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     transition: 0.3s;
@@ -988,16 +1029,18 @@ I have included a &quot;dummy option&quot;, called &quot;Choose&quot; before the
     margin-top: 15px;
 }
 </code></pre>
-<p>Yes, it is identical to what you have in another page. We will optimize later.</p>
+<p>Yes, it is identical to what you have in another page. We will optimize below, after testing.</p>
 <h2 id="test">Test</h2>
 <p>Run the Web API and your Blazor app. Open the page to create a new Todo. It should look like this:</p>
 <p><img src="Resources/CreateTodoPageView.png" alt="img.png" /></p>
 <p>Do some sunny and rainy tests. Verify you get error messages as expected, and verify the Todo goes into the data.json file in WebAPI component, when succeeding in creating a Todo.</p>
 <h2 id="refactoring-styles">Refactoring Styles</h2>
-<p>Now, because we are using the same styles twice, it would be a good idea to centralize it. If I wish to update the color of accept buttons, I would now have to do it in two places. So, repeating code is rarely good.<br />
+<p>Now, because we are using the same styles twice, it would be a good idea to centralize it, make the styles available app-wide.
+If I wish to update the color of accept buttons, I would now have to do it in two places. Repeating code is rarely good.<br />
 We could just copy the style into the existing default file here: BlazorWASM/wwwroot/css/app.css.<br />
-This file is &quot;global&quot;, i.e. styles here are accessible across your app. When doing style-behinds, those styles are available only to that specific page.</p>
-<p>Alternatively we an create a new global style sheet, let's do that.</p>
+This file is &quot;global&quot;, i.e. styles here are accessible across your app.
+When doing style-behinds, those styles are available only to that specific page. Officially, I believe they are called &quot;isolated css&quot;</p>
+<p>Alternatively we can create a new global style sheet, let's do that, so you see how it is done.</p>
 <p>At this location: BlazorWASM/wwwroot/css create a new file: &quot;styles.css&quot;. Or whatever you want to call it.<br />
 Copy the styles from your style-behind in here.</p>
 <p>We then need to tell the app to load this style sheet too. Open BlazorWASM/wwwroot/index.html.</p>
@@ -1015,8 +1058,9 @@ Copy the styles from your style-behind in here.</p>
 </code></pre>
 <p>Notice how the already existing app.css is loaded in line 7. And by default a non-existing style-sheet with a name matching your project name is loaded in line 9. For whatever reason.</p>
 <h3 id="delete-style-behinds">Delete style behinds.</h3>
-<p>Now delete the two style behinds <code>CreateTodo.razor.css</code> and <code>CreateUser.razor.css</code>. Or do a &quot;soft-delete&quot; by just commenting out the comment in those two files for now.</p>
-<p>Sometimes a Blazor app does not reload new styles correctly, and you will have to press <kbd>shift</kbd>+<kbd>F5</kbd> in your browser to do a hard refresh.</p>
+<p>Now delete the two style behinds <code>CreateTodo.razor.css</code> and <code>CreateUser.razor.css</code>. Or do a &quot;soft-delete&quot; by just commenting out the content in those two files for now.</p>
+<p>Sometimes a Blazor app does not reload new styles correctly, and you will have to press <kbd>ctrl</kbd>+<kbd>F5</kbd> in your browser to do a hard refresh. And maybe a clean-rebuild of the project too:</p>
+<p><img src="Resources/CleanRebuild.png" alt="img.png" /></p>
 
 </div>
 <div class="tab">
@@ -1025,7 +1069,7 @@ Copy the styles from your style-behind in here.</p>
 <blockquote>
 <p>As a User I can view all or filtered Todos, so that I can remember what to do</p>
 </blockquote>
-<p>We want to se all todos, and potentially do some filtering.</p>
+<p>We want to see all todos, and potentially do some filtering.</p>
 <p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/013_ViewTodos">This feature is found here on GitHub</a></p>
 
 </div>
@@ -1035,11 +1079,17 @@ Copy the styles from your style-behind in here.</p>
 <p>We need to be able to retrieve Todos, and request them with filtering. We already have an endpoint for this.</p>
 <h2 id="interface">Interface</h2>
 <p>In ITodoService interface add the following method:</p>
-<pre><code class="line-numbers language-csharp">Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains);
+<pre><code class="line-numbers language-csharp">Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(
+        string? userName, 
+        int? userId, 
+        bool? completedStatus, 
+        string? titleContains
+    );
 </code></pre>
+<p>You don't really need to split it across multiple lines. I do this for readability when there are many arguments.</p>
 <h2 id="implementation">Implementation</h2>
 <p>Next up, we implement the method in TodoHttpClient.</p>
-<p>The method for fetching the data looks like this:</p>
+<p>The method for fetching the data initially looks like below. However, the filter is not yet applied. We do that later:</p>
 <pre><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
 {
     HttpResponseMessage response = await client.GetAsync(&quot;/todos&quot;);
@@ -1064,14 +1114,16 @@ Copy the styles from your style-behind in here.</p>
 <hr/><h1 id="view-all-todos-page">View All Todos Page</h1><hr/>
 <p>First, create a new Blazor page in the Pages directory. Call it &quot;ViewTodos&quot;.</p>
 <p>This page is going to be a bit more complicated, we will expand it over a few iterations.</p>
-<p>Initially it will just display all Todos.<br />
-Then we add filtering functionality.<br />
-Then the next user story is about completing a Todo, so we expand this page for that.<br />
-We can edit Todos, which will be initiated in this page.<br />
-We will also be able to delete Todos.<br />
-And finally we will show a popup.</p>
+<ul>
+<li>Initially it will just display all Todos.</li>
+<li>Then we add filtering functionality.</li>
+<li>Then the next user story is about completing a Todo, so we expand this page for that.</li>
+<li>We can edit Todos, which will be initiated in this page.</li>
+<li>We will also be able to delete Todos, from this page.</li>
+<li>And finally we will show a popup.</li>
+</ul>
 <p>All these things, one thing at a time.</p>
-<p>First, just load and display all Todos.</p>
+<p>First, we will just load and display all Todos.</p>
 <h2 id="the-code">The Code</h2>
 <p>We need a method to fetch the Todos. So the code block looks like this:</p>
 <pre><code class="line-numbers language-csharp">@code {
@@ -1093,9 +1145,10 @@ And finally we will show a popup.</p>
 }
 </code></pre>
 <p>We have a field to hold the Todos, and a <code>msg</code> for any messages to the user.</p>
-<p>The method will get the Todos from the <code>ITodoService</code>. The method takes the four filter criteria, but we have none, currently</p>
+<p>The method will get the Todos from the <code>ITodoService</code>. The method takes the four filter criteria, but we have none, currently.
+Therefore, the arguments are just <code>null</code>, meaning no filtering is applied.</p>
 <h2 id="the-view">The View</h2>
-<p>The view code is shown below:</p>
+<p>The view code is shown below. Same approach with if-else if-else in order to show Todos.</p>
 <pre><code class="line-numbers language-csharp">@page &quot;/ViewTodos&quot;
 @using Domain.Models
 @using HttpClients.ClientInterfaces
@@ -1143,13 +1196,13 @@ else
     &lt;label style=&quot;color: red&quot;&gt;@msg&lt;/label&gt;
 }
 </code></pre>
-<p>The usual at the top, page directive, imports, injects.</p>
+<p>The usual at the top: page directive, imports, injects.</p>
 <p>We have the button in line 9 to call the <code>LoadTodos()</code> method.</p>
 <p>Then the usual checks we do, when we want to display a collection: if-else if-else.</p>
 <p>The else-part is the only interesting thing here. We define a table. Lines 24-27 are the column titles.<br />
-The rows are generated with a foreach-loop, iterating over the Todos.<br />
+The rows are generated with a foreach-loop, iterating over the Todos, in line 31.<br />
 Each row consists of some table data, each cell is in the <code>&lt;td&gt;</code> tags. Here we pull the data from the Todos to display in the view.<br />
-Notice the <code>Owner</code> is a User object, therefore, we need to go a step deeper for the actual user name.</p>
+Notice the <code>Owner</code> is a User object, therefore, we need to go a step deeper for the actual user name: <code>@item.Owner.UserName</code>.</p>
 <h4 id="styling">Styling</h4>
 <p>We will skip styling, the reader is welcome to apply some themself. Define the css in either a style-behind (we won't do other tables, so isolating the css might be fine), or use one of the global css files.</p>
 <h2 id="test">Test</h2>
@@ -1159,12 +1212,13 @@ Notice the <code>Owner</code> is a User object, therefore, we need to go a step 
 </div>
 <div class="tab">
 <hr/><h1 id="view-todos-with-filtering">View Todos With Filtering</h1><hr/>
-<p><a href="">This part of the feature is in a new branch here</a>.</p>
+<p><del><a href="">This part of the feature is in a new branch here</a></del> -&gt; apparently I forgot to create a new branch, so...</p>
+<p><img src="Resources/Shrug.png" alt="" /></p>
 <p>We will continue on the View Todos page, by adding some filtering functionality to it.</p>
-<p>This requires four input fields in the view. The data of these should then be passed to the ITodoService.</p>
+<p>This requires four input fields in the view. The data of these should then be passed to the <code>ITodoService</code>.</p>
 <p>Our Web API should already be able to handle things from there.</p>
 <h2 id="icons">Icons</h2>
-<p>We are going to use two icons.</p>
+<p>We are going to use two icons, which will be clicked to show/hide the filter inputs.</p>
 <p>First, create a directory called &quot;icons&quot; here:</p>
 <p><img src="Resources/IconsFolder.png" alt="img.png" /></p>
 <p>This directory will house our icons. Since they are inside the &quot;wwwroot&quot; we can easily use them in the pages.</p>
@@ -1205,12 +1259,13 @@ Notice the <code>Owner</code> is a User object, therefore, we need to go a step 
     }
 }
 </code></pre>
-<p>In lines 14-18 we get the value of the input field for the completed status. We are using a drop-down menu, with the values &quot;all&quot;, &quot;true&quot;, &quot;false&quot;. And so, if all is selected, the filter is not applied. Otherwise the value is parsed to a boolean.<br />
+<p>In lines 15-19 we get the value of the input field for the completed status.
+We are using a drop-down menu, with the values &quot;all&quot;, &quot;true&quot;, &quot;false&quot;. And so, if <code>all</code> is selected, the filter is not applied. Otherwise the value is parsed to a boolean.<br />
 All four fields are nullable, so we can choose to not provide a value, to indicate a specific filter should be ignored.</p>
-<p>Notice also the field <code>doShowFilters</code>, which is used to determine whether the filters should be shown or not.</p>
+<p>Notice also the field variable <code>doShowFilters</code>, which is used to determine whether the filters should be shown or not.</p>
 <h2 id="view">View</h2>
 <p>We must update the view to display the four new required input fields. We will make a show/hide functionality using the funnel icons from above.</p>
-<p>Below is shown the first part of the view, but not the table definition.</p>
+<p>Below is shown the first part of the updated view, but the table definition is not shown, as it is not relevant for this.</p>
 <pre><code class="line-numbers language-razor">@page &quot;/ViewTodos&quot;
 @using Domain.Models
 @using HttpClients.ClientInterfaces
@@ -1249,6 +1304,8 @@ All four fields are nullable, so we can choose to not provide a value, to indica
 &lt;div&gt;
     &lt;button @onclick=&quot;LoadTodos&quot;&gt;Load&lt;/button&gt;
 &lt;/div&gt;
+
+... 
 </code></pre>
 <p>The new part is from the <code>&lt;div&gt;</code> tag, with the class of &quot;filter-bar&quot;. Here we create a container to hold the filter input fields.</p>
 <p>The <code>&lt;img&gt;</code> tag displays either the &quot;funnel&quot; icon or the &quot;clear_funnel&quot; icon, based on the value of <code>doShowFilters</code>. This part here:</p>
@@ -1262,18 +1319,18 @@ All four fields are nullable, so we can choose to not provide a value, to indica
 <p>There is an onclick handler attached, with the <code>@onclick</code>, containing the following lambda expression:</p>
 <pre><code class="line-numbers language-csharp">() =&gt; doShowFilters = !doShowFilters
 </code></pre>
-<p>What this will do is simple to just flip the value of doShowFilters. If it is <code>false</code>, it will become <code>true</code> and vice versa.</p>
+<p>What this will do is simply to just flip the value of doShowFilters. If it is <code>false</code>, it will become <code>true</code> and vice versa.</p>
 <p>Then we have the <code>@if</code>-statement checking if the filter inputs should be displayed. We have:</p>
 <ol>
-<li>First a text input for the ser name.</li>
+<li>First a text input for the User name.</li>
 <li>Then a number input to filter by User ID.</li>
 <li>Then a drop down, i.e. <code>&lt;select&gt;</code>, with three values: all, true, false. If all is selected, this filter is not used.</li>
 <li>And finally a text input to check if the Title of a Todo contains the inserted text.</li>
 </ol>
-<p>The div, and nested button, below already existed, they are merely included so that you can see what part of the view is new.</p>
+<p>The div and nested button below (lines 36-38) already existed, they are merely included so that you can see what part of the view is ne, i.e. most of the above.</p>
 <h2 id="styling">Styling</h2>
-<p>We do need a bit of styling, e.g. the icons are too large, and the filters should be organized just a little bit.</p>
-<p>Create a style-behind, <code>ViewTodos.razor.css</code>, and paste in the following style:</p>
+<p>We do need a bit of styling, e.g. the icons are too large (they are .png files, and should have just been made smaller, e.g. 30 by 30 pixels), and the filters should be organized just a little bit.</p>
+<p>Create a style-behind, &quot;ViewTodos.razor.css&quot;, and paste in the following style:</p>
 <pre><code class="line-numbers language-css">.filter-bar {
     border: 1px solid #ccc;
     border-radius: 10px;
@@ -1299,8 +1356,9 @@ All four fields are nullable, so we can choose to not provide a value, to indica
 <p>You are obviously welcome to fiddle around, if you wish to make it prettier.</p>
 <h2 id="todohttpclient">TodoHttpClient</h2>
 <p>In this class we need to take the filter arguments and construct a string of query parameters to suffix to the URI.</p>
-<p>We make the following changes. There is a new line of code in the existing <code>GetAsync()</code> method, the first line. And a new method. Here:</p>
-<pre data-line="3"><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
+<p>We make the following changes. There is a new line of code in the existing <code>GetAsync()</code> method, the first line of the method body. We use the <code>query</code> in line 5 as the method argument.</p>
+<p>And a new method.</p>
+<pre data-line="3,5"><code class="line-numbers language-csharp">public async Task&lt;ICollection&lt;Todo&gt;&gt; GetAsync(string? userName, int? userId, bool? completedStatus, string? titleContains)
 {
     string query = ConstructQuery(userName, userId, completedStatus, titleContains);
 
@@ -1348,7 +1406,8 @@ private static string ConstructQuery(string? userName, int? userId, bool? comple
 }
 </code></pre>
 <p>So, the second method, <code>ConstructQuery(...)</code> is the interesting one.</p>
-<p>It will check each filter argument, check if they are not null, in which case they should be ignore. And otherwise include the needed filter arguments in the query parameter string.</p>
+<p>It will check each filter argument, check if they are not null, in which case they should be ignore.
+And otherwise include the needed filter argument in the query parameter string.</p>
 <p>Results could for example be:</p>
 <ul>
 <li>&quot;?username=Troels&amp;titlecontains=hej&quot;</li>
@@ -1357,7 +1416,7 @@ private static string ConstructQuery(string? userName, int? userId, bool? comple
 </ul>
 <p>The query string must always start with a &quot;?&quot;, and each query is separated with &quot;&amp;&quot;.</p>
 <p>This is achieved by all the ternary expressions, e.g. <code>query += string.IsNullOrEmpty(query) ? &quot;?&quot; : &quot;&amp;&quot;;</code>. The <code>query</code> variable is expanded upon for each if-statement.<br />
-If it is empty, it means we are about to append the first query parameter, and the string must start with &quot;?&quot;. If the <code>query</code> is <em>not</em> empty, we are about to append another query parameter, and so we must insert &quot;&amp;&quot; to separate the existing with the new parameter.</p>
+If <code>query</code> is empty, it means we are about to append the first query parameter, and the string must start with &quot;?&quot;. If the <code>query</code> is <em>not</em> empty, we are about to append another query parameter, and so we must insert &quot;&amp;&quot; to separate the existing with the new parameter.</p>
 <p>The result of this method, the finished query string, is returned, and appended to &quot;/todos&quot;, so that they can be passed to the endpoint handling GET requests of &quot;/todos&quot;.</p>
 <h6 id="thoughts">Thoughts</h6>
 <p>As discussed in the tutorial of the Web API, when constructing the endpoint we are using here, it was discussed to instead use a POST with an object containing the query parameters. This might have been simpler.
@@ -1380,7 +1439,7 @@ If we wish to add another query parameter, or remove one, we currently have to m
 <p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/015_CheckBoxComponent">This part of the tutorial is found here</a></p>
 <h2 id="what-are-components">What Are Components?</h2>
 <p>Blazor is relying on a component structure. Here we talk about Blazor-components, not the components mentioned in the discussion of architecture, i.e. the projects in your solution.</p>
-<p>You don't strictly need components, we have not used them so far, and we have done just fine, but they can provide various benefits.</p>
+<p>You don't strictly need components, we have not really used them so far, and we have done just fine, but they can provide various benefits.</p>
 <p>Various UI elements can be made into components, so that they can be reused, without you having to copy-paste code. This can be very convenient.</p>
 <p>Consider the &quot;Create&quot;-button we used in both CreateTodo and CreateUser.
 It looked the same, had the same styling, it could have the same functionality (with the disabling).<br />
@@ -1401,11 +1460,11 @@ Currently we have duplicated the HTML and code, but we could make the button int
 <div class="tab">
 <hr/><h1 id="checkbox-component">Checkbox Component</h1><hr/>
 <h2 id="purpose">Purpose</h2>
-<p>The main purpose here is the introduction to the concept of BlazorComponents.</p>
-<p>A secondary purpose is to show one way of passing parameters to a nested component, from a parent component/page</p>
+<p>The main purpose here is the introduction to the concept of Blazor components.</p>
+<p>A secondary purpose is to show one way of passing parameters to a nested component, from a parent component/page. This will also be discussed again towards the end of the tutorial.</p>
 <h2 id="lets-go">Let's Go</h2>
 <p>We start by creating a new component file. It is the same as what we have done when creating pages, we just don't need the @page directive at the top. That is the only difference.</p>
-<p>First, we might want to organize our files a bit, create a new directory inside Pages, call it UIComponents.</p>
+<p>First, we might want to organize our files a bit, create a new directory inside Pages, call it &quot;UIComponents&quot;.</p>
 <p>Inside this new directory, create a new component, call it &quot;FancyCheckBox&quot;.</p>
 <p><img src="Resources/NewComponent.png" alt="img.png" /></p>
 <p>And then:</p>
@@ -1417,11 +1476,14 @@ Currently we have duplicated the HTML and code, but we could make the button int
     
 }
 </code></pre>
-<p>Notice, the only difference of a new Page and new Component, is that the Page has the @page directive at the top.</p>
+<p>Notice, the only difference of a new Page and new Component, is that the Page has the @page directive at the top. We can manually add a @page directive, and turn this component into a page.</p>
 <p>Remember, Pages can work as Components too, even though that may be less standard.</p>
 <p>In this file, FancyCheckBox, we just want to have HTML for a checkbox, a little bit of functionality, and some styling, for the &quot;Fancy&quot; part.</p>
 <h2 id="the-code">The Code</h2>
-<p>We just need the initial value of the Todo<span>IsCompleted, and we need a call-back delegate. When the value of this component changes, we want to set the value of the Todo</span>IsCompleted property. Think observer pattern, we use a delegate. Or more specifically, we use a sub-class called <code>EventCallback&lt;..&gt;</code>, which is generally used in Blazor.</p>
+<p>We just need the initial value of the <code>Todo::IsCompleted</code>, and we need a call-back delegate.
+When the value of this component changes, we want to set the value of the <code>Todo::IsCompleted</code> property.
+Think observer pattern, so we use a delegate.
+Or more specifically, we use a sub-class called <code>EventCallback&lt;..&gt;</code>, which is generally used in Blazor, in part because of async capability.</p>
 <p>So, the code looks like this:</p>
 <pre><code class="line-numbers language-csharp">@code {
     
@@ -1434,14 +1496,16 @@ Currently we have duplicated the HTML and code, but we could make the button int
 </code></pre>
 <p>We have the two properties, one for the initial value, <code>IsCompleted</code>, and a delegate to notify interested parties of changes, the <code>OnChange</code>.<br />
 But each have an attribute, <code>[Parameter]</code>, now what's that about?</p>
-<p>When you instantiate new classes in C#, they often have a constructor, so that you can pass arguments to the class.<br />
-What we have here is similar. Wherever we use this component (which may be many places across a large app), we wish to provide it with some initial information, the value of <code>IsCompleted</code>, and we may want to subscribe methods to the <code>OnChange</code>. This must be done from the &quot;outside&quot; of this component.<br />
-We can set these properties from the outside, when we mark them with <code>[Parameter]</code>. We will see how shortly.</p>
+<p><img src="Resources/AMystery.png" alt="img.png" /></p>
+<p>When you instantiate new classes in C#, they often have a constructor, so that you can pass arguments to the class.</p>
+<p>What we have here is similar. Wherever we use this component (which may be many places across a large app),
+we wish to provide it with some initial data, i.e. the value of <code>IsCompleted</code>, and we may want to subscribe methods to the <code>OnChange</code>. This must be done from the &quot;outside&quot; of this component.</p>
+<p>We can set these properties from the outside, when we mark them with <code>[Parameter]</code>. We will see how shortly.</p>
 <p>The point is, initially the checkbox value must be set to either true or false, given the value of the specific Todo. And we must subscribe a method to be invoked, whenever the checkbox is clicked, so that we may update the todo.</p>
-<p>Let's take a look at</p>
+<p>Let's take a look at that.</p>
 <h2 id="the-view">The View</h2>
-<p>Now, I style this specific checkbox visual from some online example, and it is obviously more fancy than what we need. We could just use the default HTML-checkbox, but that is dull.</p>
-<p>So, this is the view:</p>
+<p>Now, I style this specific checkbox visual from some online example, and it is obviously more fancy than what we need. We could just use the default HTML-checkbox, but that is dull. And I have been waiting for an opportunity to apply this. So, here we are</p>
+<p>This is the view:</p>
 <pre><code class="line-numbers language-razor">@namespace UIComponents
 
 &lt;label class=&quot;checkbox-container&quot;&gt;
@@ -1502,9 +1566,10 @@ Line 5: We define what should happen, when the value changes: we provide a lambd
     transition: all 0.375s;
 }
 </code></pre>
+<p>I don't particularly care about what it does.</p>
 <h2 id="initial-test">Initial Test</h2>
 <p>Before actually taking it in use, let's test if the graphics work as expected.</p>
-<p>Open the page Index.razor.</p>
+<p>Open the page Index.razor file.</p>
 <p>Modify it to look like this:</p>
 <pre><code class="line-numbers language-razor">@page &quot;/&quot;
 @using UIComponents
@@ -1523,16 +1588,17 @@ Welcome to your new app.
 <p>And then the bottom line, where we insert the component. It almost looks like we are just using a normal HTML tag.</p>
 <p>Your IDE, however, should color code it different from standard HTML. Here's what my theme looks like:</p>
 <p><img src="Resources/ComponentHighlight.png" alt="img.png" /></p>
-<p>Notice the component is in purple, same as the SurveyPrompt, which is another component, that came with the template project. <code>&lt;PageTitle&gt;</code> is again also a component, defined in the Blazor framework.</p>
-<p>Now, go ahead and delete the line <code>@using UIComponents</code>, and you should see your component change color to that of HTML, in my case blue. The colors help to indicate that you may have forgotten to import a specific component, and so it will not show up in the UI, when running the app.<br />
-Put the using statement back again.</p>
-<p>When the UI is rendered, the content of the component is extracted, and inserted into the final page, so when you inspect the html of the UI in the browser, you will not see that some of the html came from a component.</p>
+<p>Notice the component is in purple, same as the SurveyPrompt, which is another component, that came with the template project. <code>&lt;PageTitle&gt;</code> is again also a component, defined in the Blazor framework. Also notice the naming convention of components versus HTML: PascalCase vs alllowercase.</p>
+<p>Now, go ahead and delete the line <code>@using UIComponents</code>, and you should see your component change color to that of HTML, in my case blue. The colors help to indicate that you may have forgotten to import a specific component, and so it will not show up in the UI, when running the app.This often happens.</p>
+<p><strong>Put the using statement back again.</strong></p>
+<p>When the UI is rendered, the content of the component is extracted, and inserted into the final page, so when you inspect the HTML of the UI in the browser, you will not see that some of the HTML came from a component.</p>
 <p>You can duplicate the line of <code>&lt;FancyCheckBox/&gt;</code> a couple of times to get more checkboxes. That's the easy re-usability mentioned earlier.</p>
 <p>Sometimes components are made for re-usability, but I find that often components are made because your page grows too large. You can then take parts of a page, and refactor out into a new component. This can be a very good way to organize your pages.</p>
 <p>Now, the test. Run your Blazor app, we don't need the Web API for this, as we are not retrieving any data just yet.</p>
 <p>Your front page should now look like this:</p>
 <p><img src="Resources/CheckBoxInAction.gif" alt="" /></p>
 <p>My god, is that fancy or what?!</p>
+<p><img src="Resources/SoFancy.png" alt="img.png" /></p>
 <p>Okay, we haven't provided any parameters to it just yet. So let's go and use it for real.</p>
 <p>You may delete the component from the Index.razor page, if you wish.</p>
 
@@ -1541,7 +1607,7 @@ Put the using statement back again.</p>
 <hr/><h1 id="using-the-checkbox">Using the Checkbox</h1><hr/>
 <p>We need to modify the ViewTodos page, so that instead of displaying a textual value, we use the new</p>
 <p><img src="Resources/FancyCheckBoxMeme.png" alt="img.png" /></p>
-<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/015_CheckBoxComponent">The code is found in this branch</a></p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/015_CheckBoxComponent">The code should be in this branch</a></p>
 <h2 id="the-service">The Service</h2>
 <p>First, we must create a new method in TodoHttpClient responsible for making update requests.</p>
 <h4 id="interface">Interface</h4>
@@ -1552,7 +1618,7 @@ Put the using statement back again.</p>
 <h4 id="implementation">Implementation</h4>
 <p>Now, we must implement the method in TodoHttpClient.</p>
 <p>It is similar to the <code>CreateAsync()</code> method in this class. We must make a PATCH request, and check the response for error code.</p>
-<p>However, where there is a <code>PostAsJson()</code> method, there is no <code>PatchAsJson</code>. So, we must use the client slightly differently.</p>
+<p>However, where there is a <code>PostAsJson()</code> method, there is no <code>PatchAsJson</code> (which I find strange, but apparently you can <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.json.httpclientjsonextensions.patchasjsonasync?view=net-7.0">import it</a> as an <a href="https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods">extension method</a>). So, we must use the client slightly differently.</p>
 <p>This is then the method:</p>
 <pre><code class="line-numbers language-csharp">public async Task UpdateAsync(TodoUpdateDto dto)
 {
@@ -1567,10 +1633,10 @@ Put the using statement back again.</p>
     }
 }
 </code></pre>
-<p>First the dto argument is manually serialized to JSON. That was otherwise handled for us when using <code>PostAsJson(..)</code>.<br />
+<p>First the dto argument is serialized to JSON. We do this manually, like a lowly pleb. That was otherwise handled for us when using <code>PostAsJson(..)</code>.<br />
 Then we create a <code>StringContent</code> to hold the data in the body of the request message. We provide as arguments first the &quot;dto as JSON&quot;, then the encoding, and finally the format of the string. We are sending JSON, so we pass &quot;application/json&quot;. I don't know why it must be prefixed with &quot;application/&quot;, maybe someone will some day google this, and tell me.</p>
 <p>We make a Patch request with the client, providing endpoint URI and the content for the body.</p>
-<p>Then the status is checked, and in case of errors from the server, we throw an exception, so we can provide feedback to the user.</p>
+<p>Then the status is checked, and in case of errors from the server, we throw an exception, so we can provide feedback to the user. Business as usual.</p>
 <h2 id="the-view">The View</h2>
 <p>First, we must import the component in ViewTodos.razor at the top:</p>
 <pre data-line="4"><code class="line-numbers language-razor">@page &quot;/ViewTodos&quot;
@@ -1610,9 +1676,9 @@ else
 }
 ..
 </code></pre>
-<p>Notice lines 20-22. Here we use the FancyCheckBox component. This time we also set the properties.<br />
+<p>Notice lines 20-22. We previously displayed the <code>item.IsCompleted</code>. Now we use the FancyCheckBox component. This time we also set the properties.<br />
 The <code>IsCompleted</code> property is set to the value of the <code>item</code> from the foreach loop.<br />
-To the <code>OnChange</code> delegate we subscribe a lambda expresion. The argument is a bool, i.e. the value of the check box, and we pass that bool, along with the <code>item</code> variable to a method, yet to be created.</p>
+To the <code>OnChange</code> delegate we subscribe a lambda expression. The argument, <code>status</code>, is a bool, i.e. the value of the check box, and we pass that bool, along with the <code>item</code> variable to a method, yet to be created. See below.</p>
 <p>So the component is initialized with the IsCompleted value of the <code>item</code>, and whenever we click the checkbox, the <code>CompleteTodo(..)</code> method is called. Let's define that method next.</p>
 <h2 id="the-code-block">The Code Block</h2>
 <p>We must add the new method to the code block, it looks like this:</p>
@@ -1635,7 +1701,7 @@ To the <code>OnChange</code> delegate we subscribe a lambda expresion. The argum
 }
 </code></pre>
 <p>First we create an instance of <code>TodoUpdateDto</code>. The ID must be set through the constructor, to indicate which Todo is to be updated.
-The other properties are optional, so we only set the <code>IsCompleted</code>, because that is the only thing, we wish to change.</p>
+The other properties are optional/nullable, so we only set the <code>IsCompleted</code>, because that is the only thing, we wish to change.</p>
 <p>We pass the dto to the TodoHttpService, and display any error messages.</p>
 <p>That should all, time for testing.</p>
 <h2 id="testing">Testing</h2>
@@ -1645,8 +1711,8 @@ The other properties are optional, so we only set the <code>IsCompleted</code>, 
 <p>You just reload the page, or navigate to a different page and back again to reload the data. Be aware that modified Todos are at the bottom now.</p>
 <h4 id="a-bug">A Bug?</h4>
 <p><img src="Resources/ComputerBug.png" alt="img.png" /></p>
-<p>Remember, on the server side we implemented a business rule stating that completed Todo items cannot be uncompleted.</p>
-<p>Now, if you were to try to un-complete an item, that would sort of go okay:</p>
+<p>Remember, on the server side we implemented a business rule stating that <em>completed Todo items cannot be uncompleted</em>.</p>
+<p>Now, if you were to try to un-complete an item, that would sort of go medium-okay:</p>
 <ul>
 <li>You will see that check checkmark changes back to a box, indicating the Todo is no longer complete.</li>
 <li>You will also see an error message below the table, indicating the Todo could <em>not</em> be un-completed.</li>
@@ -1655,8 +1721,8 @@ The other properties are optional, so we only set the <code>IsCompleted</code>, 
 <p>So, the server logic works. But the UI does not match the effect entirely.</p>
 <h4 id="a-fix">A Fix?</h4>
 <p>We could attempt to make it so that when you click the checkbox, it would attempt to change the value, but in case of errors it would not change.</p>
-<p>In the FancyCheckBox component, instead of the lambda expression simply invoking the EventCallback, we could have the <code>@onchange</code> call a method, which would invoke the EventCallback, and catch exceptions.
-In case of an exception we would set back the IsCompleted property.</p>
+<p>In the FancyCheckBox component, instead of the lambda expression simply invoking the EventCallback, we could have the <code>@onchange</code> call a method in the code-block of FancyCheckBox, which would invoke the EventCallback, and catch exceptions.<br />
+In case of an exception we would set back the IsCompleted property. Or specialize it even more, and just check here if the value is true, then it cannot be changed to false.</p>
 <p>We would have to re-throw the exception caught in ViewTodos::CompleteTodo.</p>
 <p>Is it important to fix this bug for the purpose of this tutorial? Not really. So, I'll leave it for now, and maybe come back to it later.</p>
 <p><img src="Resources/DealWithIt.png" alt="img.png" /></p>
@@ -1666,17 +1732,17 @@ In case of an exception we would set back the IsCompleted property.</p>
 <hr/><h1 id="edit-todo">Edit Todo</h1><hr/>
 <p>This isn't exactly a user story. However, we have the Web API endpoint which can update a Todo, so let's make the front end part of that functionality.<br />
 <a href="https://github.com/TroelsMortensen/WasmTodo/tree/016_EditTodo">You can find the code in this branch</a></p>
-<p>Furthermore, this will show a way to pass arguments to a page.</p>
+<p>Furthermore, this will show a way to pass arguments to a page, which is important to know about.</p>
 <p>For the View Todos page, we would potentially select some filters, and ask to load the data with the click of a button.<br />
-Sometimes you want the page to auto-load something, but what that something is may vary.</p>
+Sometimes you want the page to auto-load something, but what that something is may vary. We already automatically load users in multiple pages.</p>
 <p>Imaging this: Your Todo object has many more properties than the current version. The View Todos will provide an overview, but not show details for each Todo.<br />
-To see details, we would click on a row in the table, or an icon in a row, to &quot;view details&quot;.<br />
-We would be taken to a different page, and that page should automatically display details for the Todo we selected.<br />
-We don't want to have to search for a specific Todo on this next page.</p>
+To see details, we would click on a row in the table, or an icon in a row, to &quot;view details&quot;.</p>
+<p>We would be taken to a different page, and that page should automatically display details for the specific Todo we selected.<br />
+We don't want to have to search for a specific Todo on this next page, though. So we need to tell the page which Todo to load.</p>
 <p>This is a common case, you will often need, so we include the feature here.</p>
 <p>It requires a new page, and modifications to the ViewTodos.razor.</p>
-<p>We already have a method in ITodoService to support this feature: ITodoService::UpdateAsync.<br />
-We will need another method to Get a single Todo, by Id.</p>
+<p>We already have a method in ITodoService to support this feature: <code>ITodoService::UpdateAsync</code>.<br />
+We will need another method to Get a single Todo, by Id, though.</p>
 
 </div>
 <div class="tab">
@@ -1687,7 +1753,7 @@ We will need another method to Get a single Todo, by Id.</p>
 <pre><code class="line-numbers language-csharp">Task&lt;TodoBasicDto&gt; GetByIdAsync(int id);
 </code></pre>
 <h2 id="the-implementation">The Implementation</h2>
-<p>You must make a GET request, with the id, to the Web API. It should return a single <code>TodoBasicDto</code>, which is deserialized and returned. Check error status codes.</p>
+<p>You must make a GET request, with the <code>id</code>, to the Web API. You will get a single <code>TodoBasicDto</code>, which is deserialized and returned. Check error status codes as always.</p>
 <p>Give it a try yourself.</p>
 <details>
 <summary>hint</summary>
@@ -1700,17 +1766,20 @@ We will need another method to Get a single Todo, by Id.</p>
         throw new Exception(content);
     }
 
-    TodoBasicDto todo = JsonSerializer.Deserialize&lt;TodoBasicDto&gt;(content, new JsonSerializerOptions
-    {
-        PropertyNameCaseInsensitive = true
-    })!;
+    TodoBasicDto todo = JsonSerializer.Deserialize&lt;TodoBasicDto&gt;(content, 
+        new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        }
+    )!;
     return todo;
 }
 </code></pre>
-<p>This should be pretty standard, no big surprises here. Notice the null-suppressor &quot;!&quot; at the end of line 13.</p>
+<p>This should be pretty standard, no big surprises here. Notice the null-suppressor &quot;!&quot; at the end of line 13. You have seen this before.</p>
 </details>
 <h4 id="comment">Comment</h4>
-<p>Now the Web API returns a <code>TodoBasicDto</code> instead of a Todo. That might be annoying, and we could consider changing it. But let is stick with it for now, to minimize the required changes to existing code.</p>
+<p>Now, the Web API returns a <code>TodoBasicDto</code> instead of a Todo. That might be annoying, and we could consider changing it.
+But let us stick with it for now, to minimize the required changes to existing code.</p>
 
 </div>
 <div class="tab">
@@ -1747,7 +1816,8 @@ private string msg = &quot;&quot;;
 private IEnumerable&lt;User&gt;? users;
 </code></pre>
 <p>It's a longer code block, with several things to notice.</p>
-<p id:int=""><strong>Lines 1-2</strong>: Here we define the int property to hold the ID of the Todo we wish to edit. Remember, the value for this property was provided through the URI to the page: in the @page directive, we specified &quot;/&quot;. Because the property has the same name (ignoring case) as the uri parameter, and is marked with the parameter attribute, the value from the uri will be pasted into the property when the page is accessed.</p>
+<p><strong>Lines 1-2</strong>: Here we define the int property to hold the ID of the Todo we wish to edit. Remember, the value for this property was provided through the URI to the page: in the @page directive, we specified <code>/{id:int}</code>.
+Because the property has the same name (ignoring case) as the URI parameter, and is marked with the parameter attribute, the value from the URI will be pasted into the property when the page is accessed.</p>
 <p><strong>Lines 4-6</strong>: Various properties. <code>dto</code> will hold the data of the Todo we wish to edit, and then the modified data. <code>msg</code> is as always for user feedback. <code>users</code> is used in a drop down to select a User, if we wish to reassign a Todo to a different User.</p>
 <h3 id="loading-data">Loading data</h3>
 <p>Then comes the first method:</p>
@@ -1773,10 +1843,12 @@ private IEnumerable&lt;User&gt;? users;
     }
 }
 </code></pre>
-<p><strong>Line 6</strong>: We load the users, so they can be displayed in a drop-down if the user wish to reassign a Todo.<br />
-<strong>Line 7</strong>: Here the specific Todo is fetched, given the <code>Id</code>.<br />
-<strong>Line 8</strong>: The <code>TodoBasicDto</code> contains only the user name, not the user id. So we need to find the User in the collection, given the user name. The Id is used in the TodoUpdateDto. We can do this, because the server ensures, the username is unique.<br />
-<strong>Lines 10-14</strong>: The <code>dto</code> property is initialized to a new <code>TodoUpdateDto</code>, with the data from the fetched TodoBasicDto. We ignore the IsCompleted, because that is updated in the View Todos page.<br />
+<p><strong>Line 6</strong>: We load the users, so they can be displayed in a drop-down if the user wish to reassign a Todo.</p>
+<p><strong>Line 7</strong>: Here the specific Todo is fetched, given the <code>Id</code>.</p>
+<p><strong>Line 8</strong>: The <code>TodoBasicDto</code> contains only the User name, not the User id. So, we need to find the User in the collection, given the User name.
+The Id is used in the TodoUpdateDto. We can do this, because the server ensures, the User name is unique.</p>
+<p><strong>Lines 10-14</strong>: The <code>dto</code> property is initialized to a new <code>TodoUpdateDto</code>, with the data from the fetched TodoBasicDto.
+We ignore the <code>IsCompleted</code> property, because that is updated in the View Todos page.<br />
 We will bind input fields in the View to the <code>dto</code>, so the input fields will initially have values matching the Todo we are about to edit.</p>
 <p>Now all the data is loaded.</p>
 <h3 id="updating-data">Updating data</h3>
@@ -1796,7 +1868,8 @@ We will bind input fields in the View to the <code>dto</code>, so the input fiel
 }
 </code></pre>
 <p>We hand over the <code>dto</code> to the ITodoService, and then we navigate back to the View Todos page.</p>
-<p>In the Add Todo page, we included some basic checks for the data not being null or empty. We might do the same here. I will leave that to the reader.</p>
+<p>In the Add Todo page, we included some basic checks for the data not being null or empty. We might do the same here.
+I will leave that to the reader. Remember, the server also checks this, so it is not strictly necessary to have here.</p>
 <h2 id="the-view">The View</h2>
 <p>The view will look pretty similar to the Add Todo page. The data which can be modified is the same as what was inserted when adding a Todo: Title and the User. So, we can steal much of the HTML to also make the page look similar.</p>
 <p>We end up with this:</p>
@@ -1850,32 +1923,40 @@ We will bind input fields in the View to the <code>dto</code>, so the input fiel
 &lt;/div&gt;
 </code></pre>
 <p>We have the usual stuff at the top: page directive, using statements, injecting stuff.</p>
-<p>We have the usual checks of things not being null or empty in the HTML, because we might get errors trying to render something from a <code>null</code>-variable, and if there is no data, the user should be informed.<br />
-The <code>else</code> part is the interesting.</p>
-<p>There is a text input field for the Title, with the data bound to the <code>dto.Title</code>. Notice here how we don't need a string field variable in the code block, like we did in the Add Todo. Often it is cleaner to bind data to the properties of a data object, like a DTO. This will potentially reduce the number of fields in the code block significantly, simplifying the code, and making it easier to reset things if needed, by just assigning the dto to a new instance.</p>
-<p>We have also again the drop down menu of all the users.</p>
-<p>Then there's the button, and finally the message for user feedback.</p>
+<p>We have the usual checks of things not being null or empty in the HTML,
+because we might get errors trying to render something from a <code>null</code>-variable.
+If there is no data, e.g. <code>!users.Any()</code>, the user should be informed.</p>
+<p>The <code>else</code> part is the interesting stuff, again.</p>
+<p>There is a text input field for the Title (line 28), with the data bound to the <code>dto.Title</code>.
+Notice here how we don't need a string field variable in the code block, like we did in the Add Todo.<br />
+Often it is cleaner to bind data to the properties of a data object, like a DTO.
+This will potentially reduce the number of fields in the code block significantly,
+simplifying the code, and making it easier to reset things if needed, by just assigning the DTO to a new instance.</p>
+<p>We have also again the drop down menu of all the users, lines 32-38.</p>
+<p>Then there's the button (40-42), and finally the message for user feedback (44-47).</p>
 <h2 id="styling">Styling</h2>
 <p>If you moved the styles of CreateTodo.razor and CreateUser.razor to the global style sheet, the above HTML will reuse that, and all will be fine. Otherwise you may have to create a style-behind for this page.</p>
 <h2 id="testing">Testing</h2>
-<p>And that should be all for that feature. Sort of, almost. We still cannot navigate to the page from the URI.<br />
+<p>And that should be all for that feature. Sort of, almost. We still cannot navigate to the page from the nav menu.<br />
 But you can access the page by manually typing in the URI in the browser's address bar. Let's try that.</p>
 <p>Run Web API, and Blazor app.</p>
 <p>Type in here:</p>
 <p><img src="Resources/ManualNavigation.png" alt="img.png" /></p>
 <p>Notice, your port may be different. And make sure to put a number which matches the ID of an existing Todo.</p>
-<p>Modify some values, update the Title, and assign it to another User. Click the button, which will then take you to the View Todos page. Load the data to inspect your modified Todo.</p>
+<p>Modify some values: update the Title, and assign it to another User. Click the button, which will then take you to the View Todos page. Load the data to inspect your modified Todo.
+The Todo will now be at the bottom.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="navigate-to-the-edit-todo-page">Navigate to the Edit Todo Page</h1><hr/>
 <p>The testing was done by manually typing in the URI in the address bar of the browser. That is inconvenient for a user.</p>
-<p>We will add a column to the table View Todos, with a button, which when clicked, will take you to the EditTodo page.</p>
+<p>We will add a column to the table in View Todos, with a button, which when clicked, will take you to the EditTodo page.</p>
 <p><img src="Resources/LetsDoThis.png" alt="img.png" /></p>
 <h2 id="icon">Icon</h2>
 <p>We need a new icon to press. We will use this one:</p>
 <p><img src="Resources/edit.gif" alt="" /></p>
 <p>Download it like the funnel icons. Place it in the same folder: wwwroot/icons.</p>
+<h6 id="you-need-not-appreciate-this-icon-as-much-as-the-funnels-as-i-did-not-make-it">You need not appreciate this icon as much as the funnels, as I did not make it.</h6>
 <h2 id="the-view-first">The View First</h2>
 <p>Open ViewTodos.razor. We will modify the table, here's the snippet part:</p>
 <pre data-line="1,16,29-31"><code class="line-numbers language-razor">@inject NavigationManager navMgr
@@ -1920,8 +2001,11 @@ else
 <p>Okay, we need a NavigationManager, so that is injected at the top of the page, along with the other inject statements.</p>
 <p>Then we have the part of the view with the table definition. Notice the highlighted:</p>
 <ul>
-<li>There is a new column, defined by the new table header with &quot;Edit&quot;</li>
-<li>And then the content of that column is defined in the new <code>&lt;td&gt;</code>. We insert an image, the source being our gif above. The style class is the same as the funnel-filter icons. That is just lazy, but it works for now. When the icon is clicked, we use the NavigationManager to navigate to the page EditTodo, and we add the ID of the Todo displayed in this row.</li>
+<li>There is a new column, defined by the new table header with &quot;Edit&quot; (line 16)</li>
+<li>And then the content of that column is defined in the new <code>&lt;td&gt;</code> (lines 29-31).</li>
+<li>We insert an image, the source being our gif above.</li>
+<li>The style class is the same as the funnel-filter icons. That is just lazy, but it works for now, but the two types of icon has nothing to do with each other, so the style might change for funnels, without a need to change edit icon. We should at some point create a new &quot;edit-icon&quot;-style.<br />
+When the icon is clicked, we use the NavigationManager to navigate to the page EditTodo, and we add the ID of the Todo displayed in this row.</li>
 </ul>
 <h2 id="testing-testing-1-2-testing">Testing, Testing, 1, 2, Testing</h2>
 <p>Let's do this.</p>
@@ -1935,20 +2019,20 @@ else
 <p>As a User I can delete a Todo, so that I can clean up</p>
 </blockquote>
 <p>We will do this by again modifying the View Todos page, adding a new column with a little delete icon to be clicked.</p>
-<p><a href="">The code for this feature is found here</a></p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/007_DeleteTodo">The code for this feature is found here</a></p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="delete-todo-in-the-todo-service">Delete Todo in the Todo Service</h1><hr/>
 <p>We start with the client layer.</p>
 <h2 id="the-interface">The Interface</h2>
-<p>First we define the method in the ITodoService interface. It does not need to return anything, and the argument is just the id of the Todo, we want to delete.</p>
+<p>First we define the method in the <code>ITodoService</code> interface. It does not need to return anything, and the argument is just the id of the Todo, we want to delete.</p>
 <p>Put this method in the interface:</p>
 <pre><code class="line-numbers language-csharp">Task DeleteAsync(int id);
 </code></pre>
 <h2 id="the-implementation">The Implementation</h2>
-<p>The we need the implementation of the method, in TodoHttpClient.</p>
-<p>We already have a Delete endpoint in the TodosController. Implement the Delete method in TodoHttpClient yourself.</p>
+<p>Then we need the implementation of the method, in TodoHttpClient.</p>
+<p>We already have a DELETE endpoint in the <code>TodosController</code>. Implement the Delete method in TodoHttpClient yourself.</p>
 <details>
 <summary>hint</summary>
 <pre><code class="line-numbers language-csharp">public async Task DeleteAsync(int id)
@@ -1966,11 +2050,12 @@ else
 </div>
 <div class="tab">
 <hr/><h1 id="delete-todo-view">Delete Todo View</h1><hr/>
-<p>We need to add a new column with an icon.</p>
+<p>We need to add a new column with an icon to the table in View Todos page.</p>
+<p>We start with..</p>
 <h2 id="the-code-block">The Code Block</h2>
 <p>We need a new method in the code block of the View Todos page.</p>
-<p>I should take an ID, pass it to the Todo Service so that the Server can delete it.<br />
-Then we also want to update the data in the view to reflect this deletion.</p>
+<p>It should take an ID, pass it to the Todo Service so that the Server can delete it.<br />
+Then we also want to update the data in the view to reflect this deletion, if successful.</p>
 <p>The method looks like this:</p>
 <pre><code class="line-numbers language-csharp">private async Task RemoveTodo(int todoId)
 {
@@ -1997,8 +2082,9 @@ Lines 8-10 removes the deleted Todo from the <code>todos</code> collection, whic
 <li>Then remove from the List</li>
 <li>Then assign <code>todos</code> to be the List converted to an IEnumerable.</li>
 </ul>
-<p>It is a bit inconvenient. We could have made the TodoHttpClient::Get() method return an ICollection or IList instead, which might be easier to work with. But I don't want to go back and refactor that. The reader is welcome to use that approach instead.</p>
-<p>Alternatively we could just call <code>LoadTodos()</code> again, to reload the todos from the server. This requires an extra call across the network, which may be resource heavy. It is the quick fix, but probably not the most efficient solution.</p>
+<p>It is a bit inconvenient. We could have made the <code>TodoHttpClient::Get()</code> method return an ICollection or IList instead, which might be easier to work with. But I don't want to go back and refactor that. The reader is welcome to use that approach instead.</p>
+<p>Alternatively we could just call <code>LoadTodos()</code> again, to reload the todos from the server. This requires an extra call across the network, which may be resource heavy. It is the quick fix, but probably not the most efficient solution.
+If there is no need to call the server, then there is no need to call the server</p>
 <h2 id="the-view">The View</h2>
 <p>Open again ViewTodos.razor. We must edit the table. We will add another column with an icon to click, when a Todo should be deleted.</p>
 <p>The table part of the view is shown here:</p>
@@ -2045,7 +2131,7 @@ else
 </code></pre>
 <p>Notice the new table column in line 13. And in lines 29-33 we define the content of that column to be an icon, given by the code <code>&amp;#x2717;</code>, which is a red X:</p>
 <p><img src="Resources/XIcon.png" alt="img.png" /></p>
-<p>Obviously we could have used an actual icon file, like the funnels or the edit.</p>
+<p>Obviously we could have used an actual icon file, like the funnels or the edit. But this special <em>x</em> is fancy. And you know, we like fancy.</p>
 <p>The <code>&lt;label&gt;</code> tag contains an <code>@onclick</code>-handler, i.e. a lambda expression to call the <code>RemoveTodo()</code> method defined above. I also have a bit of inline styling. You may move this to a css file, if you prefer. You probably have a style-behind for ViewTodos.razor.</p>
 <h2 id="testing">Testing</h2>
 <p>It is time to test the feature. Run the usual. Navigate to View Todos. Load all Todos.</p>
@@ -2064,22 +2150,22 @@ else
 <li>As a User I can complete a Todo, so that I can mark things as done</li>
 <li>As a User I can delete a Todo, so that I can clean up</li>
 </ol>
-<p>We have now implemented these, along with an extra feature to edit a Todo.</p>
+<p>We have now implemented these, along with an extra feature to edit a Todo. As such, we are done.</p>
 <p>But there are a bit more complexity to be explored with regards to blazor components. The next few slides will cover more elaborate component usage.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="component-communication">Component Communication</h1><hr/>
-<p>It has been mentioned before: Blazor is very modular when components are used. We have already done one component: the FancyChecBox, the purpose of which was to provide a re-usable UI element.</p>
+<p>It has been mentioned before: Blazor is very modular when components are used. We have already done one component: the FancyCheckBox, the purpose of which was to provide a re-usable UI element.</p>
 <p>The re-usability is a big motivator for using components. Another factor is clarity of the code. HTML tends to get a bit incomprehensible when the code grows to many lines. Pieces of the HTML can be split out into smaller components to organize the HTML in a different way.</p>
-<p>When using components, we often need to pass data from one to another. There are different ways of doing that.</p>
+<p>When using components, we often need to pass data from one to another. There are different ways of doing that, you have seen some. We will cover more here.</p>
 <h2 id="passing-data">Passing Data</h2>
-<p>Depending on whether you have a page or a component, and also how pages/components are associated, passing data between them can follow various patterns. The purpose of this slide is to show the different ways of passing data back and forth between pages and components</p>
+<p>Depending on whether you have a page or a component, and also how pages/components are associated, passing data between them can follow various patterns. The purpose of this slide is to show the different ways of passing data back and forth between pages/components</p>
 <h3 id="data-to-a-page">Data to a Page</h3>
 <p>Whenever you navigate to a new page, sometimes we wish to provide data to that page, so that it can load and display the relevant data.</p>
 <p>We have already seen an example of this: using a route parameter. This was covered in slide 30.</p>
 <p>We can define a page URI which includes a single, simple parameter. Often just an int or a simple string. In that way it is somewhat similar to how we may define routes to endpoints in the Web API.</p>
-<p>We must define the page-directive, and a public property to hold the data:</p>
+<p>We must define the @page-directive, and a public property to hold the data:</p>
 <pre><code class="line-numbers language-razor">@page &quot;/EditTodo/{id}
 
 @code {
@@ -2089,7 +2175,7 @@ else
 </code></pre>
 <p>By default, the property is a string, but as seen we can put a constraint on the route argument: <code>{id:int}</code>, which converts it to an int.</p>
 <p>This is the primary way of passing data to a page.</p>
-<p>There is sort of an alternative, which uses the observer pattern. This will be covered later.</p>
+<p>There is sort of an alternative, which uses an observer-like pattern (delegates). This will be covered later.</p>
 <h4 id="with-query-parameters">With Query Parameters</h4>
 <p>Similar to what we can do with Web API endpoints and query parameters, we can do that for the URI of a blazor page.</p>
 <p><a href="https://www.coderschmoder.com/five-ways-to-pass-data-from-one-blazor-component-to-another/">This post covers that under the section &quot;QUERYSTRING PARAMETERS&quot;</a></p>
@@ -2115,13 +2201,17 @@ else
     public string? FName { get; set; }
 }
 </code></pre>
+<p>The page can then be access with e.g.:</p>
+<p>&quot;localhost:port/displayemployee?id=3&amp;lname=whatever&quot;</p>
 <h3 id="data-to-a-child-component">Data to a Child Component</h3>
 <p>When a component <code>CompA</code> is used inside a page (or other component) <code>PageB</code>,
 the CompA is considered a &quot;child&quot; of the PageB, which is the &quot;parent&quot;.</p>
-<p>Take this example (which I spent <em>way</em> too long time designing):</p>
+<p>This is the way we have used the FancyCheckBox.</p>
+<p>Take this example (which I spent <em>way</em> too long time designing. Appreciate it.):</p>
 <p><img src="Resources/ChildComponentImageExample.png" alt="img.png" /></p>
 <p>There is a page displayed, with some text.
-The &quot;cards&quot; (<a href="https://www.w3schools.com/howto/howto_css_cards.asp">a &quot;card&quot; is common concept</a>) each display some information about a student, and the profile-image. This card could be defined as a component, we would then generate a number of &quot;card-components&quot; equal to the number of students,
+The &quot;cards&quot; (<a href="https://www.w3schools.com/howto/howto_css_cards.asp">a &quot;card&quot; is common concept</a>) each display some information about a student, and their profile-image.
+This card could be defined as a component, we would then generate a number of &quot;card-components&quot; equal to the number of students,
 and provide each card-component with a <code>Student</code> object containing the student information.</p>
 <p>It might look something like this:</p>
 <pre><code class="line-numbers language-razor">@foreach(Student stud in students) {
@@ -2132,7 +2222,7 @@ and provide each card-component with a <code>Student</code> object containing th
 <p>In this way a <em>parent</em> (whether it is a page or component) can pass data to a <em>child</em>.<br />
 This is somewhat similar as passing arguments to a constructor of a class. Here, we can pass variables as arguments as well.</p>
 <p>The <code>Student</code> property in the <code>StudentCard</code> component must be marked <code>[Parameter]</code>, e.g.:</p>
-<pre><code class="line-numbers language-razor">&lt;div class=&quot;card&quot;&gt;
+<pre><code class="line-numbers language-razor">&lt;div class=&quot;student-card&quot;&gt;
     &lt;img src=&quot;@Student.ImgUrl&quot;/&gt;
     &lt;p&gt;@Student.Description&lt;/p&gt;
 &lt;/div&gt;
@@ -2144,7 +2234,7 @@ This is somewhat similar as passing arguments to a constructor of a class. Here,
 </code></pre>
 <p>We used this approach with the FancyCheckBox, where we passed in the initial boolean value of the check-box.</p>
 <h3 id="data-to-a-parent-component">Data to a Parent Component</h3>
-<p>Sometimes a child-component needs to pass data back to a parent-component (or -parent).
+<p>Sometimes a child-component needs to pass data back to a parent-component (or -page).
 We do this using a delegate, more specifically the <code>EventCallback</code>. We did this in the in the FancyCheckBox. When the check-box was clicked, the EventCallback was invoked with the new value.</p>
 <pre><code class="line-numbers language-razor">@code {
     [Parameter]
@@ -2163,7 +2253,7 @@ We do this using a delegate, more specifically the <code>EventCallback</code>. W
 <p>Assume we make a Card component (like above), but it is intended to be reused for various types of cards across. It could be the students from the example above, but we might wish to use the same card for presenting other data. And maybe the card has some extra functionality, so that we cannot just achieve this with a <code>&lt;div class=&quot;card&quot;&gt;</code>.
 Here are is the idea of the same card but with different content:</p>
 <p><img src="Resources/DifferentCards.png" alt="img.png" /></p>
-<p>Or, you can consider these slides, they behave similarly, have buttons at the top and bottom, but the content is different.</p>
+<p>Or, you can consider the slides of this tutorial: they behave similarly, have buttons at the top and bottom, but the content is different.</p>
 <p>We can then define a component, which can receive the content as a kind of parameter. It might look like this:</p>
 <pre><code class="line-numbers language-razor">&lt;MyFancyCard&gt;
     &lt;div class=&quot;student-card-content&gt;
@@ -2172,7 +2262,7 @@ Here are is the idea of the same card but with different content:</p>
     &lt;/div&gt;
 &lt;/MyFancyCard&gt;
 </code></pre>
-<p>The outer tag <code>&lt;MyFancyCard&gt;</code> is actually a component. The inner content, lines 2-5, is the &quot;child-content&quot;, i.e. the content we wish to display in the card.</p>
+<p>The outer tag <code>&lt;MyFancyCard&gt;</code> is actually a component, with a closing &quot;tag&quot; in the last line. The inner content, lines 2-5, is the &quot;child-content&quot;, i.e. the content we wish to display in the card.</p>
 <p>The <code>MyFancyCard</code> component might then be defined as:</p>
 <pre><code class="line-numbers language-razor">&lt;div class=&quot;fancy-card&quot;&gt;
     @ChildContent
@@ -2191,8 +2281,8 @@ Here are is the idea of the same card but with different content:</p>
 <p>Finally, you may have a page containing two (or more) components. So the page has two child-components, but the components do not know about each other, i.e. neither component is parent/child of the other: They are siblings.<br />
 The web site design above show multiple cards, each card a component, all cards at the same level in the HTML, so they are siblings.</p>
 <p>If you are industrious with regards to refactoring your page into smaller components, you may end up in this situation, where you click a button in one component, and you wish to update the view in another component.</p>
-<p>To achieve this, we use a &quot;state container&quot;. It a simple class, which has a delegate and a piece of data. Then we need a set-method to set the data, which will also invoke the delegate. The components will subscribe their own methods to the delegate, and upon invocation will update their view accordingly.<br />
-The state container must be registered as a <em>scoped service</em> in Program.cs, and injected into the components. Alternatively, when using Blazor WASM, a singleton pattern might also achieve this effect.</p>
+<p>To achieve this, we use a &quot;state container&quot;. It a simple class, which has a delegate and a piece of data (or more delegates, and much data). Then we need a set-method to set the data, which will also invoke the delegate. The components will subscribe their own methods to the delegate, and upon invocation will update their view accordingly.</p>
+<p>The state container must be registered as a <em>scoped service</em> in Program.cs, and injected into the components. Alternatively, <em>when using Blazor WASM</em>, a singleton pattern might also achieve this effect.</p>
 <p>This could be an example of a state container:</p>
 <pre><code class="line-numbers language-csharp">public class StateContainer{
 
@@ -2207,18 +2297,21 @@ The state container must be registered as a <em>scoped service</em> in Program.c
 </code></pre>
 <p>The two components will interact with each other through this StateContainer:</p>
 <p><img src="Resources/SetAndNotify.png" alt="img.png" /></p>
-<p>I have the ambition of showing a very simple example at the end of this tutorial.</p>
+<p>This will be shown in action at the end of the tutorial.</p>
+<h3 id="cascading-parameter">Cascading Parameter?</h3>
+<p>You probably won't need this. You may google it.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="creating-a-popup">Creating a Popup</h1><hr/>
 <p>The purpose of this functionality is to show another way of passing data to a component, i.e. using &quot;Child Content&quot;.</p>
-<p>Currently whenever you have successfully added a Todo, you are just being navigated to the View Todos page. A user might be confused, because no success message was displayed first.</p>
+<p>Currently, whenever you have successfully added a Todo, you are just being navigated to the View Todos page. A user might be confused, because no success message was displayed first.</p>
 <p>We are going to create a success message shown in a popup. The popup will be a component, and the content and functionality of the popup will be arguments to the component.</p>
-<p>There are several libraries, mentioned in step 32, which can do this, but let's start with a manual approach. There are probably smarter ways to do this, but this approach is also to reiterate how to pass arguments to components.</p>
+<p>There are several libraries, mentioned in step 32, which can do this, but let's start with our own approach. There are probably smarter ways to do this, but this approach is also to reiterate how to pass arguments to components.</p>
 <h2 id="ui-element-type">UI Element Type</h2>
 <p>There are different kinds of popup-types, and these kinds of popups have some common names based on how they are shown.
-We will make a modal (or sometimes called toast). There is another called snackbar, and probably more variations. It's good to know, if you need to google for examples.</p>
+We will make a modal (or sometimes called toast). There is another called snackbar, and probably more variations.
+It's good to know the names of these, if you need to google for examples.</p>
 <h2 id="new-component">New Component</h2>
 <p>First, create a new blazor component, inside the Pages/UIComponents directory. Call it &quot;Modal&quot;.</p>
 <h2 id="the-code-and-view">The Code and View</h2>
@@ -2246,10 +2339,10 @@ We will make a modal (or sometimes called toast). There is another called snackb
 }
 </code></pre>
 <p>We define the namespace of the component at the top, because it is in a different directory than the pages.<br />
-Then some <code>&lt;div&gt;</code>s to wrap things, with various styling, see below.\</p>
-<p>This piece of html (and css) was taken from an <a href="https://www.w3schools.com/howto/howto_css_modals.asp">example found on w3shcools</a>.</p>
-<p>There isn't much here. The component is just a &quot;wrapper&quot;, which can take some html content, and show it in a popup.</p>
-<p><strong>Line 6</strong> is important, it defines @ChildContent, and this means you can pass html/razor-syntax to a component, by setting the ChildContent. It has to be named like this, and the property must be defined as shown in the code above. How to use it will be shown later.</p>
+Then some <code>&lt;div&gt;</code>s to wrap things, with various styling, see below.</p>
+<p>This piece of HTML (and css) was taken from an <a href="https://www.w3schools.com/howto/howto_css_modals.asp">example found on w3shcools</a>.</p>
+<p>There isn't much here. The component is just a &quot;wrapper&quot;, which can take some HTML content, and show it in a popup.</p>
+<p><strong>Line 6</strong> is important, it defines @ChildContent, and this means you can pass HTML/razor-syntax to a component, by setting the ChildContent. It has to be named like this, and the property must be defined as shown in the code above. How to use it will be shown later.</p>
 <p>Everything is wrapped in an if-statement, so that the popup can be displayed or hidden.</p>
 <p>In the code block, we have one parameter, which will be the content to be shown in the popup.</p>
 <h2 id="the-style">The Style</h2>
@@ -2281,6 +2374,8 @@ Then some <code>&lt;div&gt;</code>s to wrap things, with various styling, see be
 }
 </code></pre>
 <p>Again, it's stolen from the example, linked above, you may modify it if you please.</p>
+<p>The <code>.modal-background</code> creates a black overlay over the rest of the UI.<br />
+The <code>.modal-box</code> will display a <em>card</em> over the background.</p>
 <p>That's the basic component. Next up, we need to use it for something.</p>
 
 </div>
@@ -2290,7 +2385,7 @@ Then some <code>&lt;div&gt;</code>s to wrap things, with various styling, see be
 <p>Open &quot;CreateTodo.razor&quot;.</p>
 <p>We will have to modify various places.</p>
 <p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/018_PopupSuccessMessage">Code found in this branch</a></p>
-<h2 id="the-view">The View</h2>
+<h2 id="the-view-of-createtodo">The View of CreateTodo</h2>
 <p>We need to inject a <code>NavigationManager</code>, and import the UIComponents namespace, at the top:</p>
 <pre><code class="line-numbers language-razor">@using UIComponents
 @inject NavigationManager navMgr
@@ -2301,8 +2396,9 @@ Then some <code>&lt;div&gt;</code>s to wrap things, with various styling, see be
     &lt;button @onclick=&quot;@Proceed&quot;&gt;Wonderful&lt;/button&gt;
 &lt;/Modal&gt;
 </code></pre>
-<p>So, the content of the popup is just a short message, and button. When the button is clicked, the user is taken to the View Todos page. So, we need to implement this method.</p>
-<h2 id="the-code">The Code</h2>
+<p>So, the content of the popup is just a short message, and button.
+When the button is clicked, the user is taken to the View Todos page. We need to implement this method.</p>
+<h2 id="the-code-in-createtodo">The Code in CreateTodo</h2>
 <p>We will need a boolean field variable to manage whether the popup is displayed.</p>
 <p>And we will need a method to call. The functionality of this method is just to navigate to the View Todos page.</p>
 <p>Add this to the code block:</p>
@@ -2320,7 +2416,7 @@ todoTitle = &quot;&quot;;
 msg = &quot;Todo created&quot;;
 </code></pre>
 <p>This is no longer needed, as the user is taken away from the page. You may remove this.</p>
-<p>Instead, we must set the <code>showModal</code> to <code>true</code>, so they try block looks like this:</p>
+<p>Instead, we must set the <code>showModal</code> to <code>true</code>, so the try block looks like this:</p>
 <pre><code class="line-numbers language-csharp">try
 {
     TodoCreationDto dto = new((int)selectedUserId, todoTitle);
@@ -2338,7 +2434,7 @@ If the request fails, and exception will be thrown from Todo Service, and the <c
 </div>
 <div class="tab">
 <hr/><h1 id="edit-todo-popup">Edit Todo Popup</h1><hr/>
-<p>Here's a challenge to you, if you are brave enough, the tutorial will not contain the code for this.</p>
+<p>Here's a challenge for you, if you are brave enough, the tutorial will not contain the code for this.</p>
 <p>Your task:</p>
 <ul>
 <li>Currently, when you click the Edit icon on ViewTodos, you are taken to a new page, where you can edit a todo.</li>
@@ -2361,10 +2457,10 @@ It is injected into all the components, which wish to communicate.<br />
 A component may call a method on the StateContainer, which will then invoke its internal delegate.<br />
 Methods from the components are subscribed to this delegate.</p>
 <p>We will just expand on the simple Counter example, which comes with the default Blazor template. So, this has nothing to do with the Todo tutorial.</p>
-<p><a href="">The code is found in this branch.</a></p>
+<p><a href="https://github.com/TroelsMortensen/WasmTodo/tree/019_StateContainer">The code is found in this branch.</a></p>
 <h2 id="the-statecontainer">The StateContainer</h2>
 <p>First, we need the state container, this class holds the shared data.</p>
-<p>You can put it where, if you are implementing along here. I have created a new directory: BlazorWASM/StateContainers.</p>
+<p>You can put it wherever, if you are implementing along here. I have created a new directory: BlazorWASM/StateContainers.</p>
 <p>Here, I place a new class, &quot;CounterStateContainer&quot;. The code looks like this:</p>
 <pre><code class="line-numbers language-csharp">namespace BlazorWASM.StateContainers;
 
@@ -2415,12 +2511,12 @@ public class CounterStateContainer
 </code></pre>
 <p>The first line is to import the StateContainer. Then the namespace declaration.<br />
 In the third line we inject the CounterStateContainer. Because it is registered as &quot;scoped&quot; in Program.cs, whenever a page/component requests an instance of CounterStateContainer, it will be the same instance. Until the app is refreshed. Then a new shared instance will be created.</p>
-<p>The view is just a labe with text, then a label to display the current count, and then a button.<br />
+<p>The view is just a label with text, then a label to display the current count, and then a button.<br />
 When the button is clicked, the <code>CounterStateContainer::Increment()</code> method is called. I have here made a method reference. Alternatively the same could be achieved with a lambda expresion:</p>
 <pre><code class="line-numbers language-csharp">() =&gt; stateContainer.Increment()
 </code></pre>
-<p>The code block holds a Parameter int, so that multiple instances of the component can be distinguished. It's not really all that important.<br />
-There is a field for the current count.</p>
+<p>The code block holds a Parameter int <code>Id</code>, so that multiple instances of the component can be distinguished. It's not really all that important.<br />
+There is a field for the current <code>count</code>.</p>
 <p>In the <code>OnInitialized</code> method, which is called when the component/page is rendered, we subscribe some functionality to the delegate in the CounterStateContainer.</p>
 <p>First, the argument <code>i</code> is what the CounterStateContainer sends. We assign that to <code>count</code>. Then, we have to tell the component, that some change has occured, and it should update. We do this by calling <code>StateHasChanged()</code>. This is usually needed, when the change to a field comes from outside of the component, in this case the state container.<br />
 When the changed is initiated internally in the component/page, it can usually figure out to update the view by itself.</p>
@@ -2438,7 +2534,7 @@ When the changed is initiated internally in the component/page, it can usually f
 
 </code></pre>
 <p>It is pretty empty, we just insert two instances of the CounterComponent, with different ids.</p>
-<p>Run the app.</p>
+<p>Run the app. No need for Web API.</p>
 <p>Manually navigate to the page, by typing in the URI in the browser's address bar.</p>
 <p>You should see something like below, and if you click either button, both counters are updated.</p>
 <p><img src="Resources/SiblinbComponentInAction.gif" alt="" /></p>
@@ -2454,23 +2550,25 @@ When the changed is initiated internally in the component/page, it can usually f
 <li>define different views with pages.</li>
 <li>dynamically generate a view using HTML and razor syntax.</li>
 <li>use the HttpClient to make requests of the Web API.</li>
-<li>navigate between pages</li>
-<li>rearrange the template UI structure</li>
-<li>work with components in various ways</li>
+<li>navigate between pages.</li>
+<li>rearrange the template UI structure.</li>
+<li>work with components in various ways .</li>
 </ul>
 <p>There is plenty more to learn, but with these basics you are off to a very good start.</p>
 <h2 id="class-diagram">Class Diagram</h2>
 <p>I display here again the class diagram, because now you have a better basis for understanding it.</p>
-<p>You may notice, I have forgotten to suffix some methods with async, e.g. in <code>IUserService</code>, and several pages. It is super important to fix, so that will not happen. That a method is asynchronous is also implied by the return type of Task.</p>
-<p>Notice how pages are marked with the <strong>stereotype</strong> &quot;page&quot;, and components are marked with &quot;comp&quot;.</p>
-<p>The grey boxes are components, identified by the lille upside-down fork thingy at the top.</p>
+<p>You may notice, I have forgotten to suffix some methods with async, e.g. in <code>IUserService</code>, and several pages. It is not super important to fix, so that will probably not happen.
+The fact that a method is asynchronous is also implied by the return type of Task.</p>
+<p>Notice how pages (just normal classes in the diagram) are marked with the <strong>stereotype</strong> &quot;page&quot;, and components are marked with &quot;comp&quot;. In Astah this is done like this:</p>
+<p><img src="Resources/AstahStereotype.png" alt="img.png" /></p>
+<p>The grey boxes are components, identified by the little upside-down fork thingy at the top.</p>
 <p><img src="Resources/ClassDiagram.svg" alt="" /></p>
 <p>I have a habbit of color coding things:</p>
 <ul>
 <li>Components are grey</li>
 <li>Directories are blue, with the blue becoming darker for each nested directory. See Pages and UIComponents.</li>
 <li>Pages are light purple, and components are dark purple</li>
-<li>Class are white</li>
+<li>Classes are white</li>
 <li>Interfaces are green</li>
 <li>I take care to collapse association arrows neatly, and sometimes it helps to provide different colors to different groupings of arrows, i.e. the red and blue.</li>
 </ul>

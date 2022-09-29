@@ -2,7 +2,7 @@
 
 The testing was done by manually typing in the URI in the address bar of the browser. That is inconvenient for a user.
 
-We will add a column to the table View Todos, with a button, which when clicked, will take you to the EditTodo page.
+We will add a column to the table in View Todos, with a button, which when clicked, will take you to the EditTodo page.
 
 ![img.png](Resources/LetsDoThis.png)
 
@@ -13,6 +13,8 @@ We need a new icon to press. We will use this one:
 ![](Resources/edit.gif)
 
 Download it like the funnel icons. Place it in the same folder: wwwroot/icons.
+
+###### You need not appreciate this icon as much as the funnels, as I did not make it.
 
 ## The View First
 
@@ -62,8 +64,11 @@ else
 Okay, we need a NavigationManager, so that is injected at the top of the page, along with the other inject statements.
 
 Then we have the part of the view with the table definition. Notice the highlighted:
-* There is a new column, defined by the new table header with "Edit"
-* And then the content of that column is defined in the new `<td>`. We insert an image, the source being our gif above. The style class is the same as the funnel-filter icons. That is just lazy, but it works for now. When the icon is clicked, we use the NavigationManager to navigate to the page EditTodo, and we add the ID of the Todo displayed in this row.
+* There is a new column, defined by the new table header with "Edit" (line 16)
+* And then the content of that column is defined in the new `<td>` (lines 29-31). 
+* We insert an image, the source being our gif above. 
+* The style class is the same as the funnel-filter icons. That is just lazy, but it works for now, but the two types of icon has nothing to do with each other, so the style might change for funnels, without a need to change edit icon. We should at some point create a new "edit-icon"-style.\
+When the icon is clicked, we use the NavigationManager to navigate to the page EditTodo, and we add the ID of the Todo displayed in this row.
 
 ## Testing, Testing, 1, 2, Testing
 

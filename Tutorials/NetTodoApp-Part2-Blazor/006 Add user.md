@@ -68,7 +68,10 @@ public async Task<User> Create(UserCreationDto dto)
         throw new Exception(result);
     }
 
-    User user = JsonSerializer.Deserialize<User>(result)!;
+    User user = JsonSerializer.Deserialize<User>(result, new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    })!;
     return user;
 }
 ```
@@ -87,7 +90,10 @@ The exception can then be caught in the page and a message can be shown to the u
 
 It is _always_ important to give feedback to the user, in both sunny or rainy scenarios. If there is no feedback, they might try again, and create two users, or they may not be aware that the user was not created. User feeback is _**important**_.
 
-If the status code is success, in this case we expect a "201 Created", we know the result is a User as JSON, and it is deserialized and returned.
+If the status code is success, in this case we expect a "201 Created", we know the result is a User as JSON, and it is deserialized and returned.\
+We supply the `JsonSerializer` with options to ignore casing, because the result from the Web API will be camelCase, but our model classes use PascalCase for the properties.\
+At the end of the call, line 13, there is a null-suppressor: "!", i.e. the exclamation mark. This is because, the Deserialize method returns a nullable object, i.e. `User?`, but we just above checked if the request went well, so at this point we know _there is_ a User to be deserialized.
+
 
 Most of our client methods will have a very similar structure.
 

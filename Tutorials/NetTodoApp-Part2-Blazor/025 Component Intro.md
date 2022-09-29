@@ -10,7 +10,7 @@ This gives us an opportunity to create our own fancy checkbox as a component, to
 
 Blazor is relying on a component structure. Here we talk about Blazor-components, not the components mentioned in the discussion of architecture, i.e. the projects in your solution.
 
-You don't strictly need components, we have not used them so far, and we have done just fine, but they can provide various benefits.
+You don't strictly need components, we have not really used them so far, and we have done just fine, but they can provide various benefits.
 
 Various UI elements can be made into components, so that they can be reused, without you having to copy-paste code. This can be very convenient.
 

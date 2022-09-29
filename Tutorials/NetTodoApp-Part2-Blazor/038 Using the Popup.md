@@ -8,7 +8,7 @@ We will have to modify various places.
 
 [Code found in this branch](https://github.com/TroelsMortensen/WasmTodo/tree/018_PopupSuccessMessage)
 
-## The View
+## The View of CreateTodo
 
 We need to inject a `NavigationManager`, and import the UIComponents namespace, at the top:
 
@@ -26,10 +26,11 @@ Then we need to insert the Modal somewhere, you can just put it at the bottom of
 </Modal>
 ```
 
-So, the content of the popup is just a short message, and button. When the button is clicked, the user is taken to the View Todos page. So, we need to implement this method.
+So, the content of the popup is just a short message, and button. 
+When the button is clicked, the user is taken to the View Todos page. We need to implement this method.
 
 
-## The Code
+## The Code in CreateTodo
 
 We will need a boolean field variable to manage whether the popup is displayed.
 
@@ -57,7 +58,7 @@ msg = "Todo created";
 
 This is no longer needed, as the user is taken away from the page. You may remove this.
 
-Instead, we must set the `showModal` to `true`, so they try block looks like this:
+Instead, we must set the `showModal` to `true`, so the try block looks like this:
 ```csharp
 try
 {

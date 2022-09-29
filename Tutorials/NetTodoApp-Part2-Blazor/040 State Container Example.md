@@ -9,13 +9,13 @@ Methods from the components are subscribed to this delegate.
 
 We will just expand on the simple Counter example, which comes with the default Blazor template. So, this has nothing to do with the Todo tutorial.
 
-[The code is found in this branch.]()
+[The code is found in this branch.](https://github.com/TroelsMortensen/WasmTodo/tree/019_StateContainer)
 
 ## The StateContainer
 
 First, we need the state container, this class holds the shared data.
 
-You can put it where, if you are implementing along here. I have created a new directory: BlazorWASM/StateContainers.
+You can put it wherever, if you are implementing along here. I have created a new directory: BlazorWASM/StateContainers.
 
 Here, I place a new class, "CounterStateContainer". The code looks like this:
 
@@ -79,15 +79,15 @@ This is the code:
 The first line is to import the StateContainer. Then the namespace declaration.\
 In the third line we inject the CounterStateContainer. Because it is registered as "scoped" in Program.cs, whenever a page/component requests an instance of CounterStateContainer, it will be the same instance. Until the app is refreshed. Then a new shared instance will be created.
 
-The view is just a labe with text, then a label to display the current count, and then a button.\
+The view is just a label with text, then a label to display the current count, and then a button.\
 When the button is clicked, the `CounterStateContainer::Increment()` method is called. I have here made a method reference. Alternatively the same could be achieved with a lambda expresion:
 
 ```csharp
 () => stateContainer.Increment()
 ```
 
-The code block holds a Parameter int, so that multiple instances of the component can be distinguished. It's not really all that important.\
-There is a field for the current count.
+The code block holds a Parameter int `Id`, so that multiple instances of the component can be distinguished. It's not really all that important.\
+There is a field for the current `count`.
 
 In the `OnInitialized` method, which is called when the component/page is rendered, we subscribe some functionality to the delegate in the CounterStateContainer.
 
@@ -116,7 +116,7 @@ It looks like his:
 
 It is pretty empty, we just insert two instances of the CounterComponent, with different ids.
 
-Run the app.
+Run the app. No need for Web API.
 
 Manually navigate to the page, by typing in the URI in the browser's address bar.
 

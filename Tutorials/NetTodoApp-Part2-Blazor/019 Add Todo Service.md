@@ -1,12 +1,12 @@
 # Service for Handling Todos
 
-We start by defining the interfaces. Then the implementation
+We start by defining the interfaces. Then the implementation.
 
 ## Interfaces
 
-We need to be able to retrieve users, so that we can select an assignee. That already exists in the IUserService.
+We need to be able to retrieve users, so that we can select an assignee. That already exists in the `IUserService`.
 
-We also need a new interface, ITodoService. Create this in HttpClients/ClientInterfaces.
+We also need a new interface, "ITodoService". Create this in HttpClients/ClientInterfaces.
 
 It needs a method to create Todos. It does not need to return anything. And the argument is the `TodoCreationDto` we already have.
 
@@ -19,8 +19,12 @@ public interface ITodoService
 }
 ```
 
+###### (Notice how I remembered to suffix it "Async".)
+
+We could again return the result Todo, like we did with the Create User method. Maybe we will change this method later, if it is needed.
+
 ## Implementation
-Next up, create a new class, TodoHttpClient in side HttpClients/Implementations.
+Next up, create a new class, "TodoHttpClient" inside HttpClients/Implementations.
 
 It initially looks like this:
 
@@ -58,7 +62,7 @@ public async Task CreateAsync(TodoCreationDto dto)
 }
 ```
 
-The argument is serialized. Then the client is used to make a POST request with the JSON. The response is checked for failure, in which case an exception is thrown.
+The client is used to make a POST request with the JSON. The response is checked for failure, in which case an exception is thrown.
 
 </details>
 

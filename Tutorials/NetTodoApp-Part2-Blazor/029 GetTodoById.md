@@ -12,7 +12,7 @@ Task<TodoBasicDto> GetByIdAsync(int id);
 ```
 
 ## The Implementation
-You must make a GET request, with the id, to the Web API. It should return a single `TodoBasicDto`, which is deserialized and returned. Check error status codes.
+You must make a GET request, with the `id`, to the Web API. You will get a single `TodoBasicDto`, which is deserialized and returned. Check error status codes as always.
 
 Give it a try yourself.
 
@@ -29,19 +29,22 @@ public async Task<TodoBasicDto> GetByIdAsync(int id)
         throw new Exception(content);
     }
 
-    TodoBasicDto todo = JsonSerializer.Deserialize<TodoBasicDto>(content, new JsonSerializerOptions
-    {
-        PropertyNameCaseInsensitive = true
-    })!;
+    TodoBasicDto todo = JsonSerializer.Deserialize<TodoBasicDto>(content, 
+        new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        }
+    )!;
     return todo;
 }
 ```
 
-This should be pretty standard, no big surprises here. Notice the null-suppressor "!" at the end of line 13. 
+This should be pretty standard, no big surprises here. Notice the null-suppressor "!" at the end of line 13. You have seen this before. 
 
 </details>
 
 
 #### Comment
-Now the Web API returns a `TodoBasicDto` instead of a Todo. That might be annoying, and we could consider changing it. But let is stick with it for now, to minimize the required changes to existing code.
+Now, the Web API returns a `TodoBasicDto` instead of a Todo. That might be annoying, and we could consider changing it. 
+But let us stick with it for now, to minimize the required changes to existing code.
 

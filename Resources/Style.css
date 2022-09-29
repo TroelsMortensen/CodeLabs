@@ -1,5 +1,4 @@
 ﻿
-
 * {
     box-sizing: border-box;
 }
@@ -63,8 +62,8 @@ h6 {
     display: none;
 }
 
-.next-button{
-    margin-right:10px;
+.next-button {
+    margin-right: 10px;
     width: 80px;
 
 }
@@ -85,11 +84,11 @@ button {
     transition: all 0.5s;
     cursor: pointer;
     margin: 9px;
-    box-shadow: 0 5px 10px 0px rgba(0, 0, 0,.5);
-    
+    box-shadow: 0 5px 10px 0px rgba(0, 0, 0, .5);
+
 }
 
-button{
+button {
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -97,8 +96,8 @@ button{
 }
 
 button:hover {
-    box-shadow: 0 8px 10px 2px rgba(0, 0, 0,.7);
-    transform: translateY(-5px);
+    box-shadow: 0 8px 10px 2px rgba(0, 0, 0, .7);
+    transform: translateY(-3px);
 }
 
 .next-button:after {
@@ -110,9 +109,9 @@ button:hover {
     transition: 0.25s;
 }
 
-.next-button:hover{
+.next-button:hover {
     padding-right: 24px;
-    padding-left:0px;
+    padding-left: 0px;
 }
 
 .next-button:hover:after {
@@ -129,9 +128,9 @@ button:hover {
     transition: 0.25s;
 }
 
-.prev-button:hover{
+.prev-button:hover {
     padding-right: 0px;
-    padding-left:24px;
+    padding-left: 24px;
 }
 
 .prev-button:hover:after {
@@ -282,21 +281,21 @@ kbd {
     font-weight: 700;
     line-height: 1;
     padding: 2px 4px;
-    margin:1px;
-    white-space: nowrap; 
+    margin: 1px;
+    white-space: nowrap;
 }
 
 details[open] {
     display: block;
 }
 
-details{
+details {
     display: inline-block;
     border: 1px solid #b4b4b4;
     padding: 15px;
-    box-shadow: 0px 0px 0px 0px rgb(60 64 67), 0px 0px 10px 1px rgb(60 64 150);
+    box-shadow: 0px 0px 0px 0px rgb(60 64 67), 0px 0px 10px 1px rgb(100 100 100);
     border-radius: 10px;
-    
+    background-color: lightgrey;
 }
 
 details > summary {
