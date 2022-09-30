@@ -1,8 +1,12 @@
 ﻿# Recursive Relationships
 
-The rules are similar to those the 1:1 binary relationships just described previously.
+A recursive relationship (or unary) is a relationship from an entity to itself. We can have various multiplicities at both ends.
+
+
 
 ## 1..1 : 1..1
+
+The rules are similar to those the 1:1 binary relationships just described previously.
 
 ![](1to1rec-mandatory.svg)
 
@@ -50,9 +54,12 @@ Optional on both sides:
 **Example**: A student _may_ tutor another student, maximum one tutee. 
 A student _may_ be tutored by another student, maximum one tutor.
 
-**Solution**: Create a new relation to track pairs. Relationship attributes go into this new relation.
+**Solution**: Create a _new_ relation to track pairs. Relationship attributes go into this new relation.\
+The result is a relation for `EntityA`, and another one for each EntityA<->EntityA occurrence.
 
 ![](1to1-op-op-relation.png)
+
+In the PairAA relation, attrA1_1 will reference one instance of EntityA, and attrA1_2 will reference (perhaps another) instance of EntityA.
 
 ## 1:*
 

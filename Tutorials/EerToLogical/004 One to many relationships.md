@@ -18,7 +18,7 @@ If the parent side has 1..1, it indicates the child-entity is weak, and the `{PK
 
 If the child-entity is weak, the `{PK}` is unfinished, and the `{PK}` of the parent is included in the composite primary key of the child.
 
-### Example 1
+## Example - Strong child
 
 Given the below simple EER diagram, the child is a strong entity:
 
@@ -28,7 +28,7 @@ We get the following two relations:
 
 ![](OneToManyRelations.png)
 
-### Example 2
+## Example - Weak child
 
 Given another simple EER diagram, the child-entity is weak, and `attrB1` is marked as `{PPK}` (or not present at all), i.e. the primary key is unfinished.
 

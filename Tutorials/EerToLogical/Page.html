@@ -49,6 +49,10 @@
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>The following guide will explain how to map from the EER conceptual model to the logical model, i.e. a relational schema and a Global Relations Diagram.</p>
 <p>The intention is that you can just go through the steps in order, though based on your specific case, you may have to go back and redo some steps.</p>
+<h2 id="an-iterative-approach">An Iterative Approach</h2>
+<p>Therefore, you go through the steps, and map what you can.
+Some things cannot be mapped until an inheritance hierarchy is mapped, which happens half way through the mapping steps.</p>
+<p>When you finish your first pass-through of the 9 steps, you may have to go over them again, after you have mapped the inheritance.</p>
 
 </div>
 <div class="tab">
@@ -56,22 +60,23 @@
 <p>An entity is considered strong if it can exist without depending on other entities.</p>
 <p>The following is an arbitrary entity:</p>
 <p><img src="ArbitraryEntity.svg" alt="Entity" /></p>
-<p><code>attr_a_1</code> is primary key.<br />
-<code>attr_a_2</code> is a simple attribute.<br />
-<code>attr_a_3</code> is marked as alternate key (or candidate key), to indicate it is unique. It could be an email or phone number.<br />
-<code>attr_a_4</code> is multivalued.<br />
-<code>attr_a_5</code> is a composite attribute.<br />
-<code>attr_a_6</code> is a derived attribute.</p>
-<p>When mapping to a relation, keys, and simple attributes are included.
+<p><code>attr1</code> is primary key.<br />
+<code>attr2</code> is a simple attribute.<br />
+<code>attr3</code> is marked as alternate key (or candidate key), to indicate it is unique. It could be an email or phone number.<br />
+<code>attr4</code> is multivalued.<br />
+<code>attr5</code> is a composite attribute.<br />
+<code>attr6</code> is a derived attribute.</p>
+<p>When mapping to a relation, we include keys and simple attributes.
 Composite attributes are &quot;flattened&quot;, i.e. we get a simple attribute per attribute in the composite.</p>
-<p>Multivalued attributes are handled in a later step, i.e. left out for now.
+<p>Multivalued attributes are handled in a later step, i.e. left out for now. See slide 14.
 This is because the relational database handles multivalued attributes in a special way. Remember that each cell in a table should contain a single value.</p>
 <p>Derived attributes are also included, and marked as derived.</p>
 <p>The resulting relation looks like this:</p>
 <p><img src="img.png" alt="img.png" /></p>
-<p>If no Primary Key was marked on the entity, you may introduce a new <em>surrogate key</em>. This is just a new attribute, you create.
-These are often just: movie_id, person_id, department_id, etc.</p>
-<p>For the derived attribute, you might explain the calculation in the parenthesis, e.g.</p>
+<p>If no Primary Key was marked on the entity, you may introduce a new <em>surrogate key</em>.
+This is just a new attribute, you create.
+Often just called <code>id</code>.</p>
+<p>For the derived attribute, you might explain the calculation in the parenthesis, if it is not too complex, e.g.</p>
 <ul>
 <li><strong>Derived</strong>: age ( currentDate() - date_of_birth )</li>
 <li><strong>Derived</strong>: movie_rating ( average of all ratings)</li>
@@ -85,24 +90,30 @@ These are often just: movie_id, person_id, department_id, etc.</p>
 <li>A Profile cannot exist without a User</li>
 <li>A Ticket cannot exist without Customer and Concert</li>
 <li>A Room cannot exist without a Building</li>
-<li>A Playlist cannot exist without a User</li>
+<li>A loan must point to some person</li>
+<li>A payment cannot be done without a loan</li>
+<li>A Netflix profile cannot exist without an account</li>
 </ul>
 <p>Weak entities are mapped similar to strong entities.
-They will at a later point include one or more foreign keys.
+They will at a later point include one or more foreign keys to the &quot;owning&quot; entity.\
 This is done when mapping relationships.</p>
-<p>A weak entity results in a relation.</p>
+<p>A weak entity results in a relation, just like strong entities.</p>
 <ul>
 <li>Include all simple attributes</li>
 <li>Composite attributes are broken into simple attributes</li>
 <li>The primary key is partially or fully derived from the owner entity. This means we cannot define the primary key until after all relationships are mapped.</li>
-<li>Multivalues are left out for now</li>
+<li>Multi-values are left out for now</li>
 <li>Derived attributes are included and explained, as in the previous step</li>
 </ul>
-<h3 id="example">Example</h3>
+<p>It may not always be entirely clear whether an entity is strong or weak. When in doubt, map such an ambiguous entity with the weak.</p>
+<h2 id="general-example">General Example</h2>
+<p>Below is an entity. In this particular case it is very clear that it is weak, because <code>attr1</code> is part of the composite primary key, it is marked <code>{PPK}</code>.<br />
+However, there is no other <code>{PPK}</code> attribute, which is because the complete primary key will include the attribute, which is a foreign key to the owning entity.</p>
+<p>It is not always, we are able to mark an attribute with <code>{PPK}</code>.</p>
 <p><img src="WeakEntity.svg" alt="WE" /></p>
 <p>In the above entity, <code>attr1</code> is marked as PPK, to indicate this attribute is part of the Primary Key (partial primary key), but is not enough in itself.<br />
 As it is a weak entity, we (usually) need to include one or more foreign keys in a composite primary key.<br />
-This is done in a later step, when the relationship is mapped.</p>
+This is done in a later step, when the relationship to the owning entity is mapped.</p>
 <p>The resulting (currently unfinished) relation:</p>
 <p><img src="WeakRelation.png" alt="" /></p>
 <p>The primary key is unfinished, so currently we have included a temporary placeholder: <code>?</code>.</p>
@@ -110,8 +121,23 @@ This is done in a later step, when the relationship is mapped.</p>
 <h4 id="note">Note</h4>
 <p>In theory the primary key of a weak entity will be a composite key, which will include the FK(s) that points to the owner(s)'s PK.</p>
 <p>You may have a project with a name, run by a department, which has PK: dep_id.<br />
-The project name itself may not be unique, but combined with the dep_id it can be a key, as a department will not create to projects with the same name.</p>
+The project name itself may not be unique, but combined with the dep_id it can be a key, as a department will not create two projects with the same name.</p>
 <p>Sometimes this results in large composite keys (i.e. containing many attributes), and it may be better to introduce a surrogate key.</p>
+<h2 id="non-general-example">Non-general example</h2>
+<p>A cinema chain has multiple cinemas, a maximum of one per city, so they are identified by city name, e.g. &quot;Cinemaxx Århus&quot;, or &quot;Cinemaxx København&quot;. A cinema has multiple halls, identified by letters: A, B, C, D, etc.<br />
+Each hall is unique, and uniquely identifiable within a cinema. But multiple cinemas have halls named A, B, C, etc.</p>
+<p>This gives us a simple ER diagram:</p>
+<p><img src="WeakHall.png" alt="" /></p>
+<p>Clearly &quot;Hall&quot; is a weak entity, owned by the strong entity &quot;Cinema&quot;.</p>
+<p>Now, each hall is identified by a letter, within a cinema. But halls in different cinemas may have the same letter.<br />
+We can mark the attribute &quot;Letter&quot; as part of the primary key. But we cannot yet define the complete key.<br />
+The result of mapping the &quot;Hall&quot; entity is thus simply:</p>
+<pre><code class="line-numbers language-json">Hall(letter)
+PK: letter, ?
+</code></pre>
+<p>until the relationship to the owning entity is mapped.</p>
+<h2 id="no-ppk">No PPK?</h2>
+<p>Sometimes there is no good attribute to mark as <code>{PPK}</code>. We may end up creating a surrogate primary key, and not include the foreign key in the primary key.</p>
 
 </div>
 <div class="tab">
@@ -126,12 +152,12 @@ The mapping approach is the same.</p>
 <p>The child-entity (EntityB) received a <code>{PK}</code> or <code>{PPK}</code> in previous steps.</p>
 <p>If the parent side has 1..1, it indicates the child-entity is weak, and the <code>{PK}</code> of the parent will be included in the composite primary key of the child.</p>
 <p>If the child-entity is weak, the <code>{PK}</code> is unfinished, and the <code>{PK}</code> of the parent is included in the composite primary key of the child.</p>
-<h3 id="example-1">Example 1</h3>
+<h2 id="example-strong-child">Example - Strong child</h2>
 <p>Given the below simple EER diagram, the child is a strong entity:</p>
 <p><img src="OneToManyRelationShipEntities.svg" alt="" /></p>
 <p>We get the following two relations:</p>
 <p><img src="OneToManyRelations.png" alt="" /></p>
-<h3 id="example-2">Example 2</h3>
+<h2 id="example-weak-child">Example - Weak child</h2>
 <p>Given another simple EER diagram, the child-entity is weak, and <code>attrB1</code> is marked as <code>{PPK}</code> (or not present at all), i.e. the primary key is unfinished.</p>
 <p><img src="OneToManyWeakEntityRelationship.svg" alt="" /></p>
 <p>The result is (EntityA is same as above):</p>
@@ -152,7 +178,6 @@ The mapping approach is the same.</p>
 <p>Combine the two entities into one relation.</p>
 <p>Pick one of the primary keys as the primary key of the relation.</p>
 <p>The other can probably be marked as an Alternate Key.</p>
-<p>Any relationship attributes are also included in the relation.</p>
 <p>The result:</p>
 <p><img src="1to1mandatory-relation.png" alt="" /></p>
 
@@ -160,9 +185,9 @@ The mapping approach is the same.</p>
 <div class="tab">
 <hr/><h1 id="to-0.1">1..1 to 0..1</h1><hr/>
 <p>This means mandatory on one side, and optional on the other.</p>
-<p>We define the mandatory side as parent (1..1 side), and the optional as child (0..1 side).</p>
+<p>We define the mandatory side as parent (1..1 side, EntityA), and the optional as child (0..1 side, EntityB).</p>
 <p>The result will be a relation per entity.</p>
-<p>We post the <code>{PK}</code> of the parent into the child.</p>
+<p>We post the <code>{PK}</code> of the parent into the child, i.e. <code>attrA1</code> goes into the relation <code>EntityB</code> as a foreign key.</p>
 <p>Example:</p>
 <p><img src="MandatoryOptional1to1.svg" alt="" /></p>
 <p>Here, EntityA is parent, and EntityB is child.</p>
@@ -182,18 +207,19 @@ The mapping approach is the same.</p>
 EntityA will then <em>most</em> of the time have a non-<code>null</code> value in the cell for the foreign key.</p>
 <p>If it is the other way around, then the foreign key goes into EntityB.</p>
 <p>You will have to make the choice.</p>
-<p>If it's even how often the foreign key will be <code>null</code>, you make a choice.</p>
+<p>If it's even how often the foreign key will be <code>null</code>, you can pick either.</p>
 <h3 id="example">Example</h3>
 <p><img src="StaffDepartmentEntityExample.svg" alt="" /></p>
-<p>This diagram indicates that a member of Staff may lead 1 Department, and a Department may sometimes be lead by a member of the Staff.
-But for whatever reason, in very rare occasions a Department is leader-less.</p>
+<p>This diagram indicates that a member of Staff <em>may</em> lead 1 Department, and a Department may sometimes be lead by a member of the Staff.
+But for whatever reason, in very rare occasions a Department is leader-less, in our example.</p>
 <p>In this case, we would define Department to be the child, and Staff to be parent: The Department relation will get a foreign key to Staff.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="recursive-relationships">Recursive Relationships</h1><hr/>
-<p>The rules are similar to those the 1:1 binary relationships just described previously.</p>
+<p>A recursive relationship (or unary) is a relationship from an entity to itself. We can have various multiplicities at both ends.</p>
 <h2 id="section">1..1 : 1..1</h2>
+<p>The rules are similar to those the 1:1 binary relationships just described previously.</p>
 <p><img src="1to1rec-mandatory.svg" alt="" /></p>
 <p>Create a copy of PK in the relation. It is an FK pointing to a PK of another occurrence (instance) in the same relation.</p>
 <p>If the recursive relationship has any attributes, those are included in the relation as well.</p>
@@ -221,8 +247,10 @@ But for whatever reason, in very rare occasions a Department is leader-less.</p>
 <p><img src="1to1-op-op-rec.svg" alt="" /></p>
 <p><strong>Example</strong>: A student <em>may</em> tutor another student, maximum one tutee.
 A student <em>may</em> be tutored by another student, maximum one tutor.</p>
-<p><strong>Solution</strong>: Create a new relation to track pairs. Relationship attributes go into this new relation.</p>
+<p><strong>Solution</strong>: Create a <em>new</em> relation to track pairs. Relationship attributes go into this new relation.<br />
+The result is a relation for <code>EntityA</code>, and another one for each EntityA&lt;-&gt;EntityA occurrence.</p>
 <p><img src="1to1-op-op-relation.png" alt="" /></p>
+<p>In the PairAA relation, attrA1_1 will reference one instance of EntityA, and attrA1_2 will reference (perhaps another) instance of EntityA.</p>
 <h2 id="section-3">1:*</h2>
 <p>You may choose either of the previous two approaches:</p>
 <ol>
@@ -237,7 +265,10 @@ A student <em>may</em> be tutored by another student, maximum one tutor.</p>
 <div class="tab">
 <hr/><h1 id="inheritance">Inheritance</h1><hr/>
 <p>There are 4 versions when dealing with inheritance.</p>
-<p>Which to pick is determined by the inheritance-constraints (participation and disjoint), as there are four combinations:</p>
+<p>First, it is important to note that the four versions are <em>suggestions</em>. However, there may be cases where a suggestions does not fit well.<br />
+This usually happens if the various entities involved in the hierarchy have various relationships to entities outside the hierarchy.<br />
+Some versions of mapping cannot easily include such relationships. Usually the &quot;optional,or&quot; versions is well suited for these special cases.</p>
+<p>Which to pick is determined (suggested) by the inheritance-constraints (participation and disjoint), as there are four combinations:</p>
 <ul>
 <li>{mandatory, and}</li>
 <li>{mandatory, or}</li>
@@ -248,43 +279,51 @@ A student <em>may</em> be tutored by another student, maximum one tutor.</p>
 However, sometimes you may have good reason to use an approach other than the recommended.</p>
 <h2 id="mandatory-and">{mandatory, and}</h2>
 <p>It could look like this.</p>
-<p><img src="MandatoryAnd-EER.svg" alt="" /></p>
-<p AK="">You create a single relation to cover the super- and sub-entities.
-You add attributes to indicate whether a row is <strong>SubA</strong> or <strong>SubB</strong> or <strong>SubAB</strong>, this attribute is called a discriminator.<br />
-Usually the sub-types do not define primary keys, and so the primary key is commonly just the BaseEntity's primary key.<br />
+<p><img src="MandatoryAndEER.png" alt="" /></p>
+<p>You create a single relation to cover the super- and sub-entities. I.e. we combine everything inside the red box:</p>
+<p><img src="MandatoryAndEerResult.png" alt="" /></p>
+<p AK="">You add attributes to indicate whether a row is <strong>SubA</strong> or <strong>SubB</strong> or <strong>SubAB</strong>, this attribute is called a discriminator.<br />
+Usually the sub-types do not define primary keys (but they may, as shown above), and so the primary key is commonly just the Base-Entity's primary key.<br />
 Other Primary Keys (if present) are marked as Alternate Keys .</p>
 <p>You can either add a boolean attribute for each sub-entity in the relation, to say whether the row is A, B, AB, or something else.</p>
 <p>Or you can just add a single attribute, which can indicate which combination of sub-entities are used.</p>
 <p>The result is either of the below:</p>
 <p><img src="ManOr-Relation.png" alt="" /></p>
-<p>If there are many sub-entity-types, a single attribute discriminator may be easier to deal with.</p>
+<p>If there are many sub-entity-types, a single attribute discriminator may be easier to deal with, i.e. the lower of the above relations.</p>
 <h2 id="mandatory-or">{mandatory, or}</h2>
-<p><img src="ManOr-ER.svg" alt="" /></p>
+<p><img src="MandatoryOr-Eer.png" alt="" /></p>
 <p>In this case, it doesn't make sense to combine the Sub-types, because the disjoint constraint is &quot;or&quot;. It would lead to many null values. Or if you're not careful, then a row can represent two sub-entities, which should not be allowed according to the constraints.</p>
-<p>The solution is to create many relations: one per combination of Base-SubType. I.e. you will get a number of relations equal to the number of sub-types.</p>
+<p>The solution is to create many relations: one per combination of Base-SubType.
+I.e. you will get a number of relations equal to the number of sub-types, each of these relations includes the attributes of the Base entity.</p>
+<p>It is displayed here, we get a relation covering the red box, and another covering the blue box:</p>
+<p><img src="MandatoryOr-Eer-Relations.png" alt="" /></p>
 <p>From the above example, we would get two relations: Base-SubA, and Base-SubB.</p>
 <p>Result:</p>
 <p><img src="ManOrRelation.png" alt="" /></p>
-<p>Naming of the relations is up to you, &quot;BaseA&quot; is perhaps not a fantastic name.</p>
+<p>If the sub-entities had primary keys, they are marked as alternate keys.</p>
 <h2 id="optional-and">{optional, and}</h2>
-<p><img src="OpAnd-ER.svg" alt="" /></p>
+<p><img src="OptionalAndEer.png" alt="" /></p>
 <p>Here, we make two relations:</p>
 <ul>
 <li>one for the super-entity</li>
-<li>one to combine all sub-entities, with discriminator attribute(s) to distinguish the type of each row.</li>
+<li>one to combine all sub-entities, with discriminator attribute(s) to distinguish the type of each row (like we saw above).</li>
 </ul>
+<p>We define relations per box:</p>
+<p><img src="OptionalAndBoxes.png" alt="" /></p>
 <p>The primary key of the relation for the sub-entities will be the same as the primary key of the base-relation, acting as foreign key as well.</p>
 <p>The result:</p>
 <p><img src="OpAnd-relation.png" alt="" /></p>
 <p>Here the <code>subType</code> attribute tells which type of combination of A, B, or AB it is. Similar to the case for <strong>{mandatory, and}</strong>.<br />
-Alternatively a number of boolean attributes could be used.</p>
+Alternatively a number of boolean attributes could be used: isA, isB.</p>
 <h2 id="optional-or">{optional, or}</h2>
-<p><img src="OpOr-ER.svg" alt="" /></p>
-<p>This is handled with a relation per entity: Base, SubA, and SubB.</p>
-<p>The primary keys of sub-relations (if non are present) will be a copy of the primary key attribute(s) of the super-relation.<br />
+<p><img src="OptionalOrEer.png" alt="" /></p>
+<p>This is handled with a relation per entity: Base, SubA, and SubB. Like this:</p>
+<p><img src="OptionalOrBoxes.png" alt="" /></p>
+<p>The primary keys of sub-relations (if none are present) will be a copy of the primary key attribute(s) of the super-relation.<br />
 The sub-relation will then reference the super-relation.</p>
-<p>Result:</p>
+<p>Result, where we assume no primary keys were present on the sub-entities:</p>
 <p><img src="OpOr-relation.png" alt="" /></p>
+<p>Alternatively, if the sub-entities had primary keys, we may keep these attributes as primary keys. We still need <code>base1</code> as a foreign key, though.</p>
 <h2 id="complex">Complex</h2>
 <p>Sometimes, your inheritance hierarchy may span multiple levels, e.g.:</p>
 <p><img src="MultiTierHierarchy.svg" alt="" /></p>
@@ -297,16 +336,17 @@ The sub-relation will then reference the super-relation.</p>
 <hr/><h1 id="aggregation-composition">Aggregation &amp; Composition</h1><hr/>
 <p>These are handled like normal relationships.</p>
 <p><img src="img_1.png" alt="img_1.png" /></p>
+<p>There may be an implementation detail later, but for now, they are not special.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="relationships">*:* Relationships</h1><hr/>
 <p><img src="ManyToMany-ER.svg" alt="" /></p>
-<p>You should alread have relations for <code>EntityA</code> and <code>EntityB</code>.</p>
+<p>You should alread have relations for <code>EntityA</code> and <code>EntityB</code>, mapped on slide 2 or 3.</p>
 <p>You need a new relation to track each pair of EntityA-EntityB. This relation will also contain any relationship attributes.<br />
 We call this a &quot;join-relation&quot;, or &quot;join-table&quot;. Or sometimes &quot;relationship-relation&quot;, but that sounds silly.</p>
-<p>The primary key of each relation will be posted into the join-relation, and act as foreign keys, each pointing back to a relation.</p>
-<p>The join-relation's primary key will be the combination of the two foreign keys.</p>
+<p>The primary key of each relation will be posted into the join-relation, and be foreign keys, each pointing back to a relation: EntityA or EntityB.</p>
+<p>The join-relation's primary key will be the combination of the two foreign keys (usually). There may be special cases where the primary key of the join-relation will contain some of the relationship attributes too.</p>
 <p>Result:</p>
 <p><img src="manytomany-relation.png" alt="" /></p>
 
@@ -351,7 +391,7 @@ We need a new for the multivalued values.</p>
 <hr/><h1 id="global-relations-diagram">Global Relations Diagram</h1><hr/>
 <p>Once the relational schema is created, you can convert it into a Global Relations Diagram.</p>
 <p>Such a diagram is often better for understanding the structure of the database.</p>
-<p>It looks very similar to the EER diagram, but now it just presents the information from the relational schema.</p>
+<p>It looks very similar to the EER diagram, but now it just presents the information from the relational schema (most of the information, at least).</p>
 <p>The GRD includes:</p>
 <ul>
 <li>Entities/relations</li>
@@ -359,6 +399,7 @@ We need a new for the multivalued values.</p>
 <li>Primary keys</li>
 <li>Foreign keys</li>
 <li>Alternate keys</li>
+<li>Derived attributes</li>
 </ul>
 <p>We no longer have:</p>
 <ul>
@@ -379,7 +420,8 @@ We need a new for the multivalued values.</p>
 <p>There are a few tricks for readability:</p>
 <ul>
 <li>All relationship reading directions points in the direction of the foreign key. E.g. Dependent references Employee, so the arrow points from Dependent to Employee.</li>
-<li>The relationship arrows are anchored at specific attributes, instead of the box for the Entity. This also helps to indicate which foreign key points to which primary key.</li>
+<li>The relationship arrows are anchored at specific attributes, instead of the box for the Entity. This also helps to indicate which foreign key points to which primary key.<br />
+Notice how <code>employee::ssn</code> has three relationships into it. This cannot easily be done in Astah, but it does help readability, if you take the time to do it.</li>
 </ul>
 <p>Draw.IO can handle the attribute anchoring decently. Astah cannot, that's more tedious to work with.</p>
 

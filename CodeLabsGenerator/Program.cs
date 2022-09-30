@@ -14,7 +14,8 @@ namespace CodeLabsGenerator
             
             
             // GenerateOne("NetTodoApp-Part1-WebAPI");
-            GenerateOne("NetTodoApp-Part2-Blazor");
+            GenerateOne("EerToLogical");
+            // GenerateOne("NetTodoApp-Part2-Blazor");
             
             
             // GenerateMany();
