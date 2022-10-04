@@ -336,7 +336,7 @@ We supply the <code>JsonSerializer</code> with options to ignore casing, because
 At the end of the call, line 13, there is a null-suppressor: &quot;!&quot;, i.e. the exclamation mark. This is because, the Deserialize method returns a nullable object, i.e. <code>User?</code>, but we just above checked if the request went well, so at this point we know <em>there is</em> a User to be deserialized.</p>
 <p>Most of our client methods will have a very similar structure.</p>
 <h2 id="register-as-service">Register as service</h2>
-<p>We will register the TodoHttpClient as a service in <code>Program.cs</code>, so that the dependency framework can inject an instance into our pages, when needed.</p>
+<p>We will register the UserHttpClient as a service in <code>Program.cs</code>, so that the dependency framework can inject an instance into our pages, when needed.</p>
 <p>Open BlazorWASM/Program.cs. Put in the line:</p>
 <pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;IUserService, UserHttpClient&gt;();
 </code></pre>

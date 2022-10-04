@@ -98,7 +98,7 @@ At the end of the call, line 13, there is a null-suppressor: "!", i.e. the excla
 Most of our client methods will have a very similar structure.
 
 ## Register as service
-We will register the TodoHttpClient as a service in `Program.cs`, so that the dependency framework can inject an instance into our pages, when needed.
+We will register the UserHttpClient as a service in `Program.cs`, so that the dependency framework can inject an instance into our pages, when needed.
 
 Open BlazorWASM/Program.cs. Put in the line:
 
