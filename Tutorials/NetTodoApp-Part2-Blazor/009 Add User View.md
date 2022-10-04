@@ -68,3 +68,18 @@ We check if there is anything in the `resultMsg` field, and if so, we display a 
 We specify the method to be called when the button is clicked with `@onclick="Create"`. We could also here provide a lambda expression instead of the method name.\
 Then the `disabled=` is a standard HTML attribute, the value of which must be "true" or "false".
 Here we evaluate the state with `@(string.IsNullOrEmpty(username))`, the @ indicating razor-syntax to be avaluated when rendered. We check if the `username` has a value. If there is no value, it doesn't make sense to be able to click the button, so it will be disabled.
+
+
+## Mouse events
+To the button we have added an `@onclick` event, and assigned a method to be called, when the button is clicked.
+
+We can do the same for just about any HTML element. We will later put a similar `@onclick` event handler on an image, slide 24.
+
+There are a number of different event types, e.g.:
+* onclick
+* onmousedown
+* onmouseup
+* onmouseover
+* ondrag
+
+and many more. [See a list here](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/event-handling?view=aspnetcore-6.0)

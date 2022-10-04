@@ -4,6 +4,8 @@ The following guide will explain how to map from the EER conceptual model to the
 
 The intention is that you can just go through the steps in order, though based on your specific case, you may have to go back and redo some steps.
 
+
+
 ## An Iterative Approach
 
 Therefore, you go through the steps, and map what you can. 
