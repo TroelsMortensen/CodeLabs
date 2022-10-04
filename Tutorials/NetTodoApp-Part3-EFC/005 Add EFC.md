@@ -1,4 +1,4 @@
-# Setting up the Database
+# Add EFC Packages
 
 Entity Framework Core (EFC) is an "**O**bject **R**elational **M**apper". 
 That means it can generate a **relational** database, with tables, attributes, relationships (foreign keys), etc, based on your domain classes, and their associations.

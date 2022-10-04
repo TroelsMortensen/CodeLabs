@@ -31,7 +31,7 @@ We will do the implementation next, and finally the UI.
 
 Inside HttpClients component, create a new directory to house the implementations. Call the directory: "Implementations".
 
-We need a new class here: "TodoHttpClient". It should implement the interface from above. Initially the class looks like this:
+We need a new class here: "UserHttpClient". It should implement the interface from above. Initially the class looks like this:
 
 ```csharp
 public class UserHttpClient : IUserService
