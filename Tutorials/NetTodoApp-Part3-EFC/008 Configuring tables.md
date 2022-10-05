@@ -107,9 +107,18 @@ Now, whatever constraints we apply, they should obviously match the validation r
 
 And because we already validate things in the logic layer, we could just neglect them in the database.
 
+If we have the rules two places (or three if you do them in the client), then you will also have to update multiple places, if you need to change something.
 
+We could then consider just having the constraints in the database, and not in logic layer. But then the logic layer needs to trust those rules are enforced elsewhere, which is probably not a good idea.
 
 ## Discussion
+So which approach do you use? Attributes or the OnModelCreating method.
+
+Many C# EFC examples will gladly put the attributes in the model classes. This is also true for their Web API examples, and Blazor examples. And this can be just fine.
+
+However, remember the Clean Architecture, general diagram on the left, our own system on the right:
+
+
 
 snak om fordele, ulemper. Ved attributes også web api og blazor.
 

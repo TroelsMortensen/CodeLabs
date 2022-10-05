@@ -101,8 +101,20 @@ builder.Services.AddScoped<ITodoLogic, TodoLogic>();
 
 Notice the 2nd type parameter is changed from e.g. `UserFileDao` to `UserEfcDao`.
 
-## Test
+## Test Dependencies
+Now, the above code in the WebAPI/Program.cs was the only place, where anything _outside_ the FileData component referenced code _inside_ the FileData component. We have now completely detached this component from the system.
+
+You can verify this, by deleting the FileData component, and you should see that your code still compiles.
+
+So, a minor change to two lines of code, and we have swapped a large chunk of functionality. This is where the Dependency Inversion Principle shines.
+
+![img.png](Resources/ThatsPrettyCool.png)
+
+We can now proceed with implementation of the functionality in EfcDataAccess component, without causing changes to the rest of the code base. 
+
+## Test of the System
 
 We can't test much, since we just broke all our functionality. But you should be able to run the Web API, and interact with the endpoints through the Swagger page. You will just get an error every time.
 
 Before we can start fixing that, we need to set up the database.
+
