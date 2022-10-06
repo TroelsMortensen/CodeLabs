@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div id="steps-list">
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 Architecture</li>
+<li class="step" onclick="setTab(2)">3 New Component</li>
+<li class="step" onclick="setTab(3)">4 DAO Implementations</li>
+<li class="step" onclick="setTab(4)">5 Add EFC</li>
+<li class="step" onclick="setTab(5)">6 Installing db tools</li>
+<li class="step" onclick="setTab(6)">7 Create DbContext</li>
+<li class="step" onclick="setTab(7)">8 Configuring tables</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right; margin:10px">
+                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="introduction">Introduction</h1><hr/>
+<p>This is the <em>third</em> part of a 3 part tutorial series.</p>
+<p>You should already have the Todo Web API in place from the first part, and the Blazor-WASM app from the second tutorial.
+We will continue working in the same Solution.</p>
+<p>This tutorial will cover swapping out the current JSON-data layer with a layer using Entity Framework Core and SQLite.</p>
+<p>We will make modifications to the server side. The client will not be touched, as it does not care how the data is saved/loaded.</p>
+<h2 id="features">Features</h2>
+<p>We still have the same features, i.e. user stories as in the previous two tutorials, however, they are less interesting in this part.</p>
+<p>Instead, we must make substitute classes for <code>TodoFileDao</code> and <code>UserFileDao</code>. The new classes will implement the same interfaces,
+which will make it easy ot let the Web API use the new layer instead of the old. It requires only a few modifications to WebAPI/Program.cs, where we register new implementations of the interfaces.<br />
+The new EFC implementations will then be injected into the Logic layer.</p>
+<p>We will still implement the methods in the same order as the user stories, so that we can test along the way.</p>
+<h2 id="branches">Branches</h2>
+<p>The data layer methods implemented for each user story is planned to be in its own branch, similar to what you have seen so far.<br />
+I might merge some features, if there is no change to existing code.</p>
+<h2 id="lets-go">Let's go</h2>
+<p>That should be all, let us get started.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="architecture">Architecture</h1><hr/>
+<p>We are going to add a component to house the functionality of using Entity Framework Core for data management.</p>
+<p>Below is a low detailed class diagram, you saw it back in part 1:</p>
+<p><img src="Resources/LowDetailedClassDiagram.svg" alt="" /></p>
+<p>You don't currently have the EfcDataAccess component, but we will make it shortly.</p>
+<p>We put the I*Dao interfaces into the Application component to make it easier to swap out the implementations, and we will see this in a minute.<br />
+This is where <a href="https://en.wikipedia.org/wiki/Dependency_inversion_principle">Dependency Inversion Principle</a> and <a href="https://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> comes into play.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="new-component">New Component</h1><hr/>
+<p>Let us go ahead and create a new component/project in your solution.</p>
+<p>It is a class library, call it &quot;EfcDataAccess&quot;.</p>
+<p><img src="Resources/NewLibraryComponent.png" alt="img.png" /></p>
+<p>Which will result in a solution structure like this:</p>
+<p><img src="Resources/ComponentCreated.png" alt="img.png" /></p>
+<p>Your new library contains a dummy <code>Class1</code>, delete it.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>The below is a component-diagram, and the dotted arrows shows the inter-component dependencies. Most of them was setup in the first tutorial:</p>
+<p><img src="Resources/IntercomponentDependencies.svg" alt="" /></p>
+<p>Remember how the dependencies were supposed to flow according to Clean Architecture. The ones from WebAPI to Data components is unfortunate but necessary.</p>
+<h3 id="who-knows-about-who">Who knows about who?</h3>
+<p>Application depends on Domain.</p>
+<p>The WebAPI depends on Application, because the Controller classes need to call the methods in the Logic interfaces.</p>
+<p>The FileData depends on Application, because the DAO classes in FileData must implement interfaces located in Application.</p>
+<p>The WebAPI also knows about FileData and EfcDataAccess, only because it is in WebAPI/Program.cs we register services, including the implementations of the IUserDao and ITodoDao interfaces.</p>
+<p>Because of transitive dependency both WebAPI, FileData, and EfcDataAccess knows about Domain.</p>
+<p>We need to set up two new dependencies:</p>
+<ul>
+<li>WebAPI -&gt; EfcDataAccess</li>
+<li>EfcDataAccess -&gt; Application</li>
+</ul>
+<p>Go ahead and do that.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="efc-dao-implementations">EFC DAO Implementations</h1><hr/>
+<p>Inside EfcDataAccess create a folder (similar to what we have in FileDate): &quot;DAOs&quot;.</p>
+<p>We start by creating the two implementations, just so they are in place. Then we implement the methods one by one.</p>
+<p>Create the two following classes:</p>
+<h2 id="todoefcdao-class">TodoEfcDao class</h2>
+<p>Create this class in EfcDataAccess/DAOs.</p>
+<p>Implement the interface &quot;ITodoDao&quot;, then include the inherited methods. Your class now looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class TodoEfcDao : ITodoDao
+{
+    public Task&lt;Todo&gt; CreateAsync(Todo todo)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;IEnumerable&lt;Todo&gt;&gt; GetAsync(SearchTodoParametersDto searchParameters)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(Todo todo)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;Todo?&gt; GetByIdAsync(int todoId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+}
+</code></pre>
+<h3 id="userefcdao-class">UserEfcDao class</h3>
+<p>Then create this class, implement interface and methods:</p>
+<pre><code class="line-numbers language-csharp">public class UserEfcDao : IUserDao
+{
+    public Task&lt;User&gt; CreateAsync(User user)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;User?&gt; GetByUsernameAsync(string userName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;IEnumerable&lt;User&gt;&gt; GetAsync(SearchUserParametersDto searchParameters)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task&lt;User?&gt; GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+}
+</code></pre>
+<h2 id="register-services">Register services</h2>
+<p>Let's now swap out the DAO implementations, so that the server uses our new classes here. Obviously nothing will work, but we can then test along the way.</p>
+<p>Open WebAPI/Program.cs</p>
+<p>Find these lines:</p>
+<pre data-line="2,5"><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;FileContext&gt;();
+builder.Services.AddScoped&lt;IUserDao, UserFileDao&gt;();
+builder.Services.AddScoped&lt;IUserLogic, UserLogic&gt;();
+
+builder.Services.AddScoped&lt;ITodoDao, TodoFileDao&gt;();
+builder.Services.AddScoped&lt;ITodoLogic, TodoLogic&gt;();
+</code></pre>
+<p>Lines 2 and 5 is where we specify that whenever a class requests a IUserDao or ITodoDao, that class wil actually get a UserFileDao or TodoFileDao, respectively.</p>
+<p>Swap out the implementations, so it looks like this:</p>
+<pre data-line="2,5"><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;FileContext&gt;();
+builder.Services.AddScoped&lt;IUserDao, UserEfcDao&gt;();
+builder.Services.AddScoped&lt;IUserLogic, UserLogic&gt;();
+
+builder.Services.AddScoped&lt;ITodoDao, TodoEfcDao&gt;();
+builder.Services.AddScoped&lt;ITodoLogic, TodoLogic&gt;();
+</code></pre>
+<p>Notice the 2nd type parameter is changed from e.g. <code>UserFileDao</code> to <code>UserEfcDao</code>.</p>
+<h2 id="test-dependencies">Test Dependencies</h2>
+<p>Now, the above code in the WebAPI/Program.cs was the only place, where anything <em>outside</em> the FileData component referenced code <em>inside</em> the FileData component. We have now completely detached this component from the system.</p>
+<p>You can verify this, by deleting the FileData component, and you should see that your code still compiles.</p>
+<p>So, a minor change to two lines of code, and we have swapped a large chunk of functionality. This is where the Dependency Inversion Principle shines.</p>
+<p><img src="Resources/ThatsPrettyCool.png" alt="img.png" /></p>
+<p>We can now proceed with implementation of the functionality in EfcDataAccess component, without causing changes to the rest of the code base.</p>
+<h2 id="test-of-the-system">Test of the System</h2>
+<p>We can't test much, since we just broke all our functionality. But you should be able to run the Web API, and interact with the endpoints through the Swagger page. You will just get an error every time.</p>
+<p>Before we can start fixing that, we need to set up the Entity Framework Core and the database.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-efc-packages">Add EFC Packages</h1><hr/>
+<p>Entity Framework Core (EFC) is an &quot;<strong>O</strong>bject <strong>R</strong>elational <strong>M</strong>apper&quot;.
+That means it can generate a <strong>relational</strong> database, with tables, attributes, relationships (foreign keys), etc, based on your domain classes, and their associations.</p>
+<p>In our case we have a <code>Todo</code> and a <code>User</code> object, with an association from Todo to User, as the assignee.</p>
+<p>If we use these model classes as the basis for EFC, it will generate two tables: Todos, Users. And there will be a foreign key from a Todo to a User.</p>
+<p>We don't have to use SQL at all.</p>
+<h2 id="add-nuget-packages">Add NuGet Packages</h2>
+<p>First, we need to include some packages in our EfcDataAccess project, so that we get access to the EFC functionality.</p>
+<p>Open the NuGet manager, in Rider it's found here:</p>
+<p><img src="Resources/NuGetManagerWindow.png" alt="img.png" /></p>
+<p>Or you can find a tab in the bottom bar in Rider.</p>
+<p>You need to add three packages to EfcDataAccess:</p>
+<ul>
+<li>Microsoft.EntityFrameworkCore</li>
+<li>Microsoft.EntityFrameworkCore.Design</li>
+<li>Microsoft.EntityFrameworkCore.Sqlite</li>
+</ul>
+<p>It is done like this:</p>
+<p><img src="Resources/AddNuGetPackage.gif" alt="" /></p>
+<ol>
+<li>You search for the package.</li>
+<li>You select the correct package from the search results.</li>
+<li>You select the correct version. And which is that? All three packages should be the same version. At the time of writing the latest is 6.0.9. Pick the latest version, <strong>which is not marked <em>preview</em> or <em>rc</em></strong> (whatever rc means), these are &quot;beta&quot; versions.</li>
+<li>Then you click the plus icon for the project to which you want to add this package.</li>
+<li>You click <kbd>Install</kbd> in the popup</li>
+</ol>
+<p>Do this for all three packages.</p>
+<p><code>Microsoft.EntityFrameworkCore</code> and <code>Microsoft.EntityFrameworkCore.Design</code> is always needed, together they let you generate a database based on your domain classes.</p>
+<p><code>Microsoft.EntityFrameworkCore.Sqlite</code> is needed because we are going to use SQLite as our database. If you wish to use to use another database, e.g. MySQL or MSSQL or PostgreSQL, you'll have to import a specific NuGet package for that.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="installing-db-tools">Installing Db Tools</h1><hr/>
+<p>You will need to install a command line interface (CLI) tool, which is used when creating/updating the database. This should be needed only once.</p>
+<p>Open the terminal in Rider:</p>
+<p><img src="Resources/OpenTerminal.png" alt="img.png" /></p>
+<p>The terminal can also be found in the bottom menu bar of Rider, next to the NuGet package manager tab.</p>
+<p>In the terminal type (it shouldn't matter which directory, you're in):</p>
+<p><code>dotnet tool install -g dotnet-ef</code></p>
+<p>The <code>-g</code> means the tool is installed globally, and so you shouldn't have to install it again, if you create a new solution, e.g. for your SEP3.</p>
+<p><img src="Resources/InstallInTerminal.png" alt="img.png" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="create-dbcontext">Create DbContext</h1><hr/>
+<p>You currently have a FileContext class, in FileData component, which is responsible for providing collections of Todo and User. It also loads data, and saves changes.</p>
+<p>The DbContext has a similar responsibility. Furthermore, it is here we define how the database should look like. Sort of.</p>
+<p>Create a new class, &quot;TodoContext&quot; (or whatever), inside EfcDataAccess component. It must inherit from <code>DbContext</code>, which is available after the installation of the NuGet packages, slide 5.</p>
+<h2 id="specifying-the-database">Specifying the Database</h2>
+<p>We need to specify which database to use. That's done in the inherited method <code>OnConfiguring(...)</code>.</p>
+<p>The class currently looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class TodoContext : DbContext
+{
+    public DbSet&lt;User&gt; Users { get; set; }
+    public DbSet&lt;Todo&gt; Todos { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite(&quot;Data Source = Todo.db&quot;);
+    }
+}
+</code></pre>
+<p>We have defined two <code>DbSets</code>. When the database is generated, it will result in a table per DbSet, so we get a Todos table and a Users table.</p>
+<p>We an interact with the DbSet in a similar way to how we used the Collection of the FileContext.</p>
+<p>We interact with this DbSet to add, get, update, remove Todos from the database.</p>
+<p>The <code>OnConfiguring(...)</code> method is here used to specify the database to be used. This is done with the method <code>UseSqlite(...)</code>. This method is available because we added a NuGet package for SQLite.
+If we were using Postgres, we would have a different method here, probably <code>UsePostgres(..)</code>.</p>
+<p>The argument is the name of the SQLite database file: Todo.db. For SQLite it is simple, there is no authentication, there is no actual database server running, so no ip or port. The &quot;connection string&quot; here is just a reference to the file.
+For other databases, you will have to provide a more elaborate connection string.</p>
+<p><a href="https://github.com/TroelsMortensen/EFCpostgres">I have an example on GitHub, where I connect to a local Postgres database, and a cloud-hosted Postgres database.</a></p>
+<p>SQLite is just a single file, so that makes it easier to work with, instead of having to use Postgres or MySql or similar. And the argument of <code>UseSqlite(..)</code> is just pointing to this file.</p>
+<p>You may sometimes need to specify the absolute path to the file, e.g.:</p>
+<pre><code class="line-numbers language-jsonpath">C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess\Todo.db
+</code></pre>
+<p>This is because your main method is in one project, and the file is in another.</p>
+<p>Alternatively a relative path should be possible too, something like:</p>
+<pre><code class="line-numbers language-jsonpath">..\EfcDataAccess\Todo.db
+</code></pre>
+<h3 id="note">Note</h3>
+<p>The above method is a simple approach, however we have now hardcoded the database info,
+and it may not be easy to modify.</p>
+<p>Usually the connection info will go into a configurations file, and the program will read from that. This provides the option of being able to change the connection string after the program is compiled and deployed.</p>
+<p>Furthermore the <code>optionsBuilder.UseSqlite</code> can be done in Program.cs, so that it is easier to modify which database is used, without having to tough the <code>TodoContext</code> class. This increases flexibility, if you ever wish to change database. We don't, so we keep it simple.</p>
+<p><img src="Resources/KISS.png" alt="img.png" /></p>
+<p>It is left to the reader to google how to do that, if they're interested.</p>
+<h2 id="other-database-providers">Other Database Providers</h2>
+<p>If you wanted to use a different DBMS, e.g. Postgres, you would add a NuGet package for a Postgres driver.</p>
+<p>That would then include a method <code>UsePostgres(...)</code>, in which you would provide connection arguments.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="configuring-the-tables">Configuring the Tables</h1><hr/>
+<p>Now, we need to add some information to be used when the database is generated. This includes:</p>
+<ul>
+<li>The attribute to use as Primary Key for each domain class</li>
+<li>Various constraints on the attributes, e.g. length, range, optional/required</li>
+</ul>
+<p>There are two approaches:</p>
+<ol>
+<li>data annotation attributes in domain classes</li>
+<li>define it in DbContext subclass, i.e. the TodoContext</li>
+</ol>
+<p>I will show both approaches here, and provide some discussion, so that you may prefer one approach over the other.</p>
+<h2 id="data-annotation-attributes">Data Annotation Attributes</h2>
+<p>You have seen various attributes before, e.g. on the endpoints in your REST controllers, we would put <code>[HttpGet]</code>. And on the Controller itself we put <code>[ApiController]</code>.</p>
+<p>We can also put attributes in our domain classes to define the above mentioned configuration.</p>
+<h5 id="primary-key">Primary Key</h5>
+<p>We have the attribute <code>Todo::Id</code>, it already acts as a primary key, it is a unique identifier for a Todo.</p>
+<p>If the property is called &quot;Id&quot;, EFC will usually infer that this is the primary key.</p>
+<p>If the property is called &quot;<class-name>Id&quot;, i.e. &quot;TodoId&quot;, or &quot;UserId&quot;, EFC will usually infer that this is the primary key.</p>
+<p>In both cases, I believe the property must be of type <code>int</code> (not entirely sure, though).</p>
+<p>You can also manually define a primary key property, by adding the <code>[Key]</code> attribute to a property:</p>
+<pre data-line="3,4"><code class="line-numbers language-csharp">public class Todo
+{
+    [Key]
+    public int Id { get; set; }
+    public User Owner { get; }
+    public string Title { get; }
+
+    public bool IsCompleted { get; set; }
+
+    public Todo(User owner, string title)
+    {
+        Owner = owner;
+        Title = title;
+    }
+}
+</code></pre>
+<p>I prefer to be explicit. It minimizes confusion, I believe.</p>
+<h5 id="constraints">Constraints</h5>
+<p>We can also define various constraints, as mentioned above. This can be done with attributes too.</p>
+<p>If we make a property <em>nullable</em>, i.e. append a &quot;?&quot; on the type, like <code>int?</code>, we make that attribute in the database nullable: it is allowed to not be set. If we don't make a property nullable, then it is by default required in the database.</p>
+<p>We can set a max length on e.g. Title like this:</p>
+<pre><code class="line-numbers language-csharp">[MaxLength(50)]
+public string Title { get; }
+</code></pre>
+<p>We can define an allowed range on number types with e.g. <code>[Range(0,250)]</code>.</p>
+<p><a href="https://learn.microsoft.com/en-us/ef/ef6/modeling/code-first/data-annotations">You can find more attributes here</a></p>
+<h5 id="web-api-and-blazor">Web API and Blazor</h5>
+<p>If we apply these data attributes, they are actually also used by the Web API. Before an endpoint with a Todo argument is called, the data from the client is validated using the attributes. If the incoming data violates your attribute constraints, the request will just be denied, and not reach your endpoint.</p>
+<p>Similarly, Blazor has a built in input-form with various components. These will also use the attribute to validate the data.</p>
+<h2 id="onmodelcreating.method">OnModelCreating(..) Method</h2>
+<p>This way does not require modification to the domain classes. We can set similar information by overwriting this method in the DbContext sub-class.</p>
+<h5 id="primary-key-1">Primary Key</h5>
+<p>As above, the Key can be inferred by the naming of the property.</p>
+<p>Alternatively, we can define primary keys on User and Todo like this:</p>
+<pre><code class="line-numbers language-csharp">protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity&lt;Todo&gt;().HasKey(todo =&gt; todo.Id);
+    modelBuilder.Entity&lt;User&gt;().HasKey(user =&gt; user.Id);
+}
+</code></pre>
+<p>In this way, we say that the entity &quot;Todo&quot; has a key, and the lambda expression defines which property to use as the key.</p>
+<h5 id="constraints-1">Constraints.</h5>
+<p>You can also some the constraints in <code>OnModelCreating(..)</code>. Here is an example of limiting the Todo::Title to 50 characters:</p>
+<pre><code class="line-numbers language-csharp">modelBuilder.Entity&lt;Todo&gt;().Property(todo =&gt; todo.Title).HasMaxLength(50);
+</code></pre>
+<p>It seems you can not do exactly the same constraints as with the attributes. E.g. I have found no Range, or MinLength.</p>
+<p>So, if you really need those constraints, you may have to use attributes.</p>
+<h3 id="do-we-need-constraints">Do We Need Constraints?</h3>
+<p>Now, whatever constraints we apply, they should obviously match the validation rules we implemented in the logic layer.</p>
+<p>And because we already validate things in the logic layer, we could just neglect them in the database.</p>
+<p>If we have the rules two places (or three if you do them in the client), then you will also have to update multiple places, if you need to change something.</p>
+<p>We could then consider just having the constraints in the database, and not in logic layer. But then the logic layer needs to trust those rules are enforced elsewhere, which is probably not a good idea.</p>
+<h2 id="discussion">Discussion</h2>
+<p>So which approach do you use? Attributes or the OnModelCreating method.</p>
+<p>Many C# EFC examples will gladly put the attributes in the model classes. This is also true for their Web API examples, and Blazor examples. And this can be just fine.</p>
+<h4 id="clean-architecture">Clean Architecture</h4>
+<p>However, remember the Clean Architecture. General diagram on the left, our own system on the right:</p>
+<p><img src="Resources/CleanGeneralVsTodoApp.png" alt="img.png" /></p>
+<p>On the right side is the structure for the Todo App. The general diagram also considers things like using some third party api (external interfaces), and the web, and various devices (keyboard, mouse, hard drives, etc).
+So, the right hand diagram shows only what is relevant for our app.</p>
+<p>We have three layers: Web API, logic, data access. And we have a domain component with the domain classes. These things are contained in the green, red, and yellow rings. The blue is everything outside of that, outside the code of our server app: The client app (Blazor), the file/database where the data is stored.</p>
+<p>Dependencies go inward: A ring knows about the ring inside it. A ring knows nothing about the ring outside it. Compare this to the component diagram and inter-component dependencies shown on slide 2.<br />
+An outer ring may not cause changes to an inner ring. What does that mean?</p>
+<ul>
+<li>The database is in an outer most ring. If we initially use a relational database like Postgres, and later want to change to something else, it should not cause change anywhere else than the Gateways (our DAOs).</li>
+<li>If we swap out the REST Web API with a gRPC server, it should not cause changes to the red or yellow rings, i.e. logic or domain.</li>
+<li>If we introduce new logic rules, it shall not cause modifications to the Domain.</li>
+</ul>
+<p>This is at least the ideal, when doing a Clean-architecture approach, as we have attempted.</p>
+<h4 id="attributes-approach">Attributes approach</h4>
+<p>If we use this approach, we need to modify the domain classes, i.e. the yellow ring. Because of something in the blue ring. We use EFC (or Web API) and therefore, we modify the Domain.<br />
+If we change to not use EFC (or the Web API), these attributes are no longer relevant, and shouldn't be there.<br />
+This means that a change to the outer blue ring, will cause a change to the inner yellow ring, and it goes against what is dictated by clean architecture.</p>
+<h4 id="onmodelcreating-appraoch">OnModelCreating appraoch</h4>
+<p>If we use this approach, all setup is done in the green ring, in the DAOs/Gateways area. We need not touch the Domain. If we later remove EFC, and introduce a file storage again, or just manually typing the SQL as in SEP2, it will not cause changes to the Domain (inner yellow ring).<br />
+So with this approach, we adhere to the Clean principles.</p>
+<h4 id="conclusion">Conclusion</h4>
+<p>Based on the above, you may conclude that you shall not use the attributes. That is not strictly true. As mentioned, many .NET examples will gladly use these attributes, and often together with the OnModelCreating method. The point is just that you make an informed choice.\</p>
+<p>It is not that often, a database is swapped out. And if you use EFC and swap out one relational database for another, it is minimal work.<br />
+If you swap out a relational database for a document based, you will no longer need the attributes, but on the other hand, in this case they do nothing. So you may not need to remove them.</p>
+<p><del>TODO SNAK OM at man også kan lave subclasses. Fx hvis man vil have two-way navigation properties.</del></p>
+
+</div>
+
+
+
+        
+        <div style="overflow:auto; padding-bottom: 10px">
+            <hr/>
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>

@@ -114,12 +114,46 @@ We could then consider just having the constraints in the database, and not in l
 ## Discussion
 So which approach do you use? Attributes or the OnModelCreating method.
 
-Many C# EFC examples will gladly put the attributes in the model classes. This is also true for their Web API examples, and Blazor examples. And this can be just fine.
-
-However, remember the Clean Architecture, general diagram on the left, our own system on the right:
+Many .NET EFC examples will gladly put the attributes in the model classes. This is also true for their Web API examples, and Blazor examples. And this can be just fine. 
 
 
+#### Clean Architecture
+However, remember the Clean Architecture. General diagram on the left, our own system on the right:
 
-snak om fordele, ulemper. Ved attributes også web api og blazor.
+![img.png](Resources/CleanGeneralVsTodoApp.png)
 
-ulempe, snak clean, vis diagram. ydre rings kan depend på indre. Men de kan ikke forårsage ændringe i indre. Det ser vi her.
+On the right side is the structure for the Todo App. The general diagram also considers things like using some third party api (external interfaces), and the web, and various devices (keyboard, mouse, hard drives, etc).
+The right hand diagram shows only what is relevant for our app.
+
+We have three layers: Web API, logic, data access. And we have a domain component with the domain classes. These things are located in the green, red, and yellow rings.
+The blue is everything outside of that, outside the code of our server app: The client app (Blazor), the file/database where the data is stored, 3rd party stuff.
+
+Dependencies go inward: A ring knows about the ring _inside_ it. A ring knows nothing about the ring _outside_ it. 
+Compare this to the component diagram and inter-component dependencies shown on slide 3.\
+An outer ring may not cause changes to an inner ring. What does that mean?
+
+* The database is in an outer most ring (blue). If we initially use a relational database like Postgres, and later want to change to something else, it should not cause change anywhere else than the Gateways (our DAOs).
+* If we swap out the REST Web API with a gRPC server, it should not cause changes to the red or yellow rings, i.e. logic or domain.
+* If we introduce new logic rules, it should not cause modifications to the Domain.
+
+This is at least the ideal, when doing a Clean-architecture approach, as we have attempted.
+
+#### Attributes approach
+If we use this approach, we need to modify the domain classes, i.e. the yellow ring. Because of something in the green ring (DAOs). We use EFC (or Web API) and therefore, we modify the Domain.\
+If we change to not use EFC (or the Web API), these attributes are no longer relevant, and shouldn't be there.\
+This means that a change to the outer green ring, will cause a change to the inner yellow ring, and it goes against what is dictated by Clean architecture.
+
+#### OnModelCreating appraoch
+If we use this approach, all setup is done in the green ring, in the DAOs/Gateways area. We need not touch the Domain. If we later remove EFC, and introduce a file storage again, or just manually typing the SQL as in SEP2, it will not cause changes to the Domain (inner yellow ring).\
+So with this approach, we adhere to the Clean principles.
+
+#### Conclusion
+Based on the above, you may conclude that you shall not use the attributes. That is not strictly true. As mentioned, many .NET examples will gladly use these attributes, and often together with the OnModelCreating method. The point is just that you make an informed choice.
+
+It is not that often a database is swapped out. And if you use EFC and swap out one relational database for another, it is minimal work.\
+If you swap out a relational database for a document based, you will no longer need the attributes in Domain classes, but on the other hand, in this case they do nothing. So you may not need to remove them.
+
+
+
+
+~~TODO SNAK OM at man også kan lave subclasses. Fx hvis man vil have two-way navigation properties.~~

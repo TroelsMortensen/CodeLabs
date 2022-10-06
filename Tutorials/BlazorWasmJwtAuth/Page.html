@@ -55,21 +55,21 @@
 
         <div class="tab">
 <hr/><h1 id="welcome">Welcome</h1><hr/>
-<p>This is a first draft. If you have comments, input, feedback, whatever, send me an email: trmo@via.dk.</p>
 <p>This tutorial will take you through how to set up a simple login system for Blazor-WASM in combination with a Web API.</p>
-<p>This approach will use your own User/Profile/Account type, or whatever you call it. You will manage storage of the users.
-We will use the built in <code>AuthenticationStateProvider</code> class, extend it to provide the necessary authorization information.</p>
+<p>This approach will use your own User/Profile/Account type, or whatever you call it.</p>
 <p>We will not be using the Identity framework. That's a different approach.</p>
-<p>We will go through how to set it up from a new default Blazor-WASM project.
-Later, you can then reuse the steps to add login/authorization functionality to other Blazor-WASM apps.</p>
+<p>We will go through how to set it up from a new default Blazor-WASM project and default Web API.
+Later, you can then reuse the steps to add login/authorization functionality to other (existing) Blazor-WASM apps or Web APIs.
+The intention is, that this approach can be applied to an existing system without too much trouble.</p>
 <h2 id="overview">Overview</h2>
 <p>We are going to use an approach called JWT authentication.</p>
 <p>This means that when logging in through the front end, the request is sent to the Web API, and (if the credentials are valid) a JSON Web Token (JWT) is sent back again, containing various information, including information about the User profile.</p>
-<p>So, we are going to use a Web API for the back-end and Blazor-WASM for the front end.<br />
+<p>We are going to use a Web API for the back-end and Blazor-WASM for the front end.<br />
 We will use various built-in tools in Blazor to manage authentication and authorization of various sites of the app.<br />
 We will secure our Web API endpoints with authentication and authorization too, so that other programmers don't just create their own app and abuse our endpoints.</p>
 <h3 id="disclaimer">Disclaimer</h3>
 <p>The purpose of this tutorial is to get a login-system up and running, but not necessarily understand every detail. There will be black box magic moments, where the interested reader can do further research.</p>
+<p>The actual security of this approach is somewhat uncertain. There are more considerations to take, if this is to be used on production. It is left to the reader.</p>
 <h3 id="result">Result</h3>
 <p>The final project can be found on GitHub <a href="https://github.com/TroelsMortensen/JwtAuth">here</a></p>
 
@@ -77,22 +77,24 @@ We will secure our Web API endpoints with authentication and authorization too, 
 <div class="tab">
 <hr/><h1 id="overview">Overview</h1><hr/>
 <p>First, an overview of the resulting system is presented.</p>
-<p>We are going to need 3 libraries,</p>
+<p>We are going to need 3 projects/components,</p>
 <ol>
 <li>The Web API</li>
 <li>Blazor WASM</li>
-<li>A shared library for classes/functionality needed by both projects.</li>
+<li>A shared library for classes/functionality needed by both projects (not strictly necessary).</li>
 </ol>
-<p>The various endpoints on the Web API will be secured by policies and whether the endpoint, when called, is given a valid JWT.
+<p>The various endpoints of the Web API will be secured by policies and whether the endpoint, when called, is given a valid JWT.
 So, un-authorized/un-authenticated requests to the Web API will automatically be refused.</p>
 <p>For the Blazor app, the authentication/authorization will be used to show/hide various parts of the UI, i.e. you can only see certain pages, tabs, buttons, etc, if your logged in user has the correct privileges.</p>
+<p>The same policies will be used for both Web API and Blazor app. These will therefore be defined in a shared library.</p>
 <h3 id="component-diagram">Component diagram</h3>
 <p>The below diagram shows the dependencies between our three projects.</p>
 <p><img src="Resources/ComponentDiagram.png" alt="img.png" /></p>
 <p>You could put an arrow from BlazorWASM to WebAPI, as HTTP requests are made from Blazor to the endpoints in the Web API.
-But as that dependency is not explicit in the solution, it is left out.</p>
+But that dependency is not explicit in the code, it is left out.</p>
 <h3 id="class-diagram">Class diagram</h3>
-<p>The below class diagram shows the end result. It may not be an exact match, as the last part of this tutorial will contain some optimizations, resulting in changes to the system.</p>
+<p>The below class diagram shows the end result. It may not be an exact match, as the last part of this tutorial will contain some optimizations,
+resulting in changes to the system. Probably. According to the plan. At some point.</p>
 <p>First the overview is provided. Below, various parts of the diagram will be explained in detail.</p>
 <p><img src="Resources/ClassDiagram.svg" alt="dia" /></p>
 <p>The grey boxes are projects (components). Below, each project is discussed.</p>
@@ -101,19 +103,24 @@ But as that dependency is not explicit in the solution, it is left out.</p>
 <p><img src="Resources/BlazorAppClassDiagram.png" alt="dia" /></p>
 <p>Notice how Blazor pages are marked as the stereotype <code>&lt;&lt;page&gt;&gt;</code>. Similarly, components are marked <code>&lt;&lt;comp&gt;&gt;</code>.</p>
 <p>Most of the pages don't do much in themselves, they are just there to demonstrate how to show/hide parts of the UI based on the authorization state. These &quot;dumb&quot; pages include: BlockPageWithPolicy, MustBeLoggedInToView, PolicyExampleManual, PolicyExampleWithComponent, ShowCredentialsAuthState, ShowCredentialsContext.</p>
-<p>The <code>Login</code> page is used by the user to log in. The credentials are forwarded to the <code>IAuthService</code>, and the implementation, <code>JwtAuthService</code> will make a request to the Web API. Once the response is received, a notification is sent to the CustomAuthProvider, which will cause a reaction in the UI according to the new authorization state. I.e., the dotted arrow from JwtAuthService to CustomAuthProvider does not in this case mean a &quot;dependency&quot;, I have abused notation a little. It just means a notification is sent. Think observer design pattern.</p>
+<p>The <code>Login</code> page is used by the user to log in. The credentials are forwarded to the <code>IAuthService</code>, and the implementation, <code>JwtAuthService</code> will
+make a request to the Web API.<br />
+Once the response is received, a notification is sent to the CustomAuthProvider (through a delegate), which will cause an update in the UI according to the new
+authorization state. I.e., the dotted arrow from <code>JwtAuthService</code> to <code>CustomAuthProvider</code> does not in this case mean a &quot;dependency&quot;, I have abused notation a little.
+It just means a notification is sent. Think observer design pattern, using a delegate.</p>
 <p>The <code>FetchData</code> page is included in the Blazor template, i.e. it is there upon creation. We keep it to show how to get data from the Web API, by using the <code>IWeatherService</code>, and its implementation, <code>HttpWeatherService</code>.</p>
-<p>The <code>LoginButtons</code> is a component used by the MainLayout to give a little login-icon on the top-right of the app. This will be elaborated upon later.</p>
-<p>Finally, the <code>CustomAuthProvider</code> is the class responsible for providing the Blazor app auth functionality with the authorization state. You may notice the method <code>GetAuthenticationStateAsync()</code>.
+<p>The <code>LoginButtons</code> is a component used by the <code>MainLayout</code> to give a little login-icon on the top-right of the app. This will be elaborated upon later.</p>
+<p>Finally, the <code>CustomAuthProvider</code> is the class responsible for providing the Blazor app auth functionality with the authorization state (i.e. who is logged in, if any).<br />
+You may notice the method <code>GetAuthenticationStateAsync()</code>.
 This method is called by the Blazor framework, whenever there is something in the UI which needs to know about the authorization state. If you wish to show/hide a button, the Blazor framework will ask this class, through this method, about the currently logged in user, and based on that user's credentials, the button will be either shown or hidden.<br />
-CustomAuthProvider does not know about the user itself, but asks the IAuthService about the credentials every time.</p>
+<code>CustomAuthProvider</code> does not know about the user itself, but asks the <code>IAuthService</code> about the credentials every time.</p>
 <h4 id="shared">Shared</h4>
 <p>This component contains classes and features which both the Blazor app and the Web API needs to know about.</p>
 <p><img src="Resources/SharedClassDiagram.png" alt="dia" /></p>
 <p>All model classes are put here, so that we do not need to have copies of <code>User</code> in both Web API and Blazor projects.</p>
-<p>We have the Data Transfer Objects here. Whenever you need to log in, you just need to provide a username and a password. We could have used the User class to send this information from Blazor to Web API, and just leave most properties empty.
+<p>We have the Data Transfer Objects here (DTOs). Whenever you need to log in, you just need to provide a username and a password. We could have used the User class to send this information from Blazor to Web API, and just leave most properties empty.
 But it is common practice to create specialized Data Transfer Objects, which contains just the properties needed. It is up to you, which approach you will use.</p>
-<p>The <code>AuthorizationPolicies</code> is a class, where we define policies. The policies are the same on both Blazor and Web API, so they are defined here.</p>
+<p>The <code>AuthorizationPolicies</code> is a class, where we define policies. The policies are the same on both Blazor and Web API, so they are defined here, to be used by both programs.</p>
 <p>Policies are set of rules to be used to either provide or block access, based on a users credentials. For example:</p>
 <ul>
 <li>You can only view this image, if you are older than 18</li>
@@ -125,13 +132,13 @@ But it is common practice to create specialized Data Transfer Objects, which con
 <li>You can only call this endpoint, if you are older than 18</li>
 <li>You can only call this endpoint, if your email is from VIA</li>
 </ul>
-<p>So, we can use policies to control our UI, and we can use policies to control who can call our Web API endpoints, so they are not just open to the entire world. That is potentially very dangerous, as anyone can create and delete our data.</p>
+<p>So, we can use policies to control our UI, and we can use policies to guard our Web API endpoints, so they are not just open to the entire world. That is potentially very dangerous, as anyone can create and delete our data.</p>
 <h4 id="web-api">Web API</h4>
 <p>This is the Web API:</p>
 <p><img src="Resources/WebAPIClassDiagram.png" alt="dia" /></p>
-<p>The <code>AuthController</code> is used to login, and receive a JWT. You can also register a new <code>User</code> here, however, that is not really included in this tutorial, and instead left to the reader, to implement. If they wish.<br />
+<p>The <code>AuthController</code> is used to login, and return a JWT. You can also register a new <code>User</code> here, however, that is not really included in this tutorial, and instead left to the reader to implement. If they wish.<br />
 This class will use the <code>IUserService</code> to validate the login credentials, and if valid, will generate a JWT and return it to the caller, i.e. the Blazor app.</p>
-<p>The <code>TestController</code> has a few dummy endpoints to demonstrate how to use policies and other approaches, to block access if the caller is un-authorized.</p>
+<p>The <code>TestController</code> has a few dummy endpoints to demonstrate how to use policies, and other approaches, to block access if the caller is un-authorized.</p>
 <p>The <code>WeatherForecastController</code> just returns a set of random <code>WeatherForecast</code> objects to be displayed on the page <code>FetchData</code>.</p>
 <h3 id="now-lets-get-started-on-implementation">Now, let's get started on implementation.</h3>
 
@@ -144,7 +151,8 @@ This class will use the <code>IUserService</code> to validate the login credenti
 <p>Delete the <code>Class1.cs</code> file.</p>
 <h3 id="nuget-packages">NuGet packages</h3>
 <p>Next, we must add a package to this project, to get access to various functionality regarding authorization and policies.</p>
-<p>Add the package &quot;Microsoft.AspNetCore.Authorization&quot;. <strong>Pick the latest non-preview version!</strong>.</p>
+<p>Add the package &quot;Microsoft.AspNetCore.Authorization&quot;. <strong>Pick the latest non-preview version!</strong>. At the time of writing that is 6.0.8.<br />
+This package is needed to be able to add policies.</p>
 <p><img src="Resources/AddAuthPackage.gif" alt="createlib" /></p>
 <h3 id="directories">Directories</h3>
 <p>Create three directories inside the Shared project:</p>
@@ -155,7 +163,7 @@ This class will use the <code>IUserService</code> to validate the login credenti
 </ul>
 <p><img src="Resources/SharedDirs.png" alt="img.png" /></p>
 <h3 id="model-classes">Model classes</h3>
-<p>Inside the Models directory create a User class:</p>
+<p>Inside the Models directory create a User class. (This is where you may create your own specific class).</p>
 <pre><code class="line-numbers language-csharp">public class User
 {
     public string Username { get; set; }
@@ -168,7 +176,7 @@ This class will use the <code>IUserService</code> to validate the login credenti
     public int SecurityLevel { get; set; }
 }
 </code></pre>
-<p>These properties are just to demonstrate various ways to use auth policies. You may not need them for you own project, but in this tutorial they are useful.</p>
+<p>These properties are just to demonstrate various ways to use auth policies. You may not need them for your own project, but in this tutorial they are useful.</p>
 <p>Inside the Models directory create a WeatherForecast class:</p>
 <pre><code class="line-numbers language-csharp">public class WeatherForecast
 {
@@ -191,7 +199,7 @@ This class will use the <code>IUserService</code> to validate the login credenti
 }
 </code></pre>
 <p>Notice the <code>init;</code>. This is a specific kind of <code>set;</code>, meaning you can only set this values, when the object is created, but not later modify it. It is not strictly necessary, but in general it is good practice to only allow what is supposed to be available. We don't intend to change the values after creation, so we don't allow that.
-It is just a minor detail.</p>
+It is just a minor detail. You could just use a constructor instead. I was feeling fancy.</p>
 <h3 id="auth">Auth</h3>
 <p>Finally, the class which will define the policies.</p>
 <p>Inside the Auth directory create a class called <code>AuthorizationPolicies</code>:</p>
@@ -226,22 +234,24 @@ It is just a minor detail.</p>
 <li>using Microsoft.Extensions.DependencyInjection;</li>
 <li>using System.Security.Claims;</li>
 </ul>
-<p>to fix compiler errors.</p>
+<p>to fix compiler errors. Just do the usual auto-quick-fix.</p>
 <p>Now, what's going on here? This static method will be called from the <code>Program.cs</code> classes in both Web API and Blazor, and it will add authorization policies to the framework.</p>
 <p>Each line starting with <code>options.AddPolicy...</code> adds a new policy, which can then be used to guard UI elements or Web API endpoints.</p>
 <p><strong>The first policy</strong> is called &quot;MustBeVia&quot;, that's the name of it, and this name is used for reference. Then the lambda expression says:</p>
 <ul>
 <li><code>RequireAuthenticatedUser()</code>, meaning to fulfill this policy the user is logged in, and authenticated.</li>
-<li><code>RequireClaim(&quot;Domain&quot;, &quot;via&quot;)</code>, meaning the user must have a claim, where the type is &quot;Domain&quot;, and the value is &quot;via&quot;. So, the Domain property of that specific user object must have the value &quot;via&quot;.</li>
+<li><code>RequireClaim(&quot;Domain&quot;, &quot;via&quot;)</code>, meaning the user must have a claim, where the type is &quot;Domain&quot;,
+and the value is &quot;via&quot;. So, the Domain property of that specific User instance must have the value &quot;via&quot;.</li>
 </ul>
-<p><strong>The next policy</strong>, called &quot;SecurityLevel4&quot; also requires an authenticated user, and that the &quot;SecurityLevel&quot; is <em>either</em> &quot;4&quot; or &quot;5&quot;. This illustrates you can add any number of valid values. The RequireClaim method takes first the Claim name, and then any number of arguments.</p>
-<p><strong>The third policy</strong>, &quot;MustBeTeacher&quot; says that the &quot;Role&quot; of the user must be &quot;Teacher&quot;.</p>
-<p><strong>The fourth policy</strong> is an example of slightly more complicated logic. We use the method <code>RequireAssertion()</code>, and if the logic inside returns &quot;true&quot;, the user fulfills this policy.<br />
+<p><strong>The next policy</strong>, called &quot;SecurityLevel4&quot; also requires an authenticated user, and that the &quot;SecurityLevel&quot;
+is <em>either</em> &quot;4&quot; or &quot;5&quot;. This illustrates you can add any number of valid values. The <code>RequireClaim</code> method takes first the Claim name, and then any number of arguments.</p>
+<p><strong>The third policy</strong>, &quot;MustBeTeacher&quot; says that the &quot;Role&quot; of the User must be &quot;Teacher&quot;.</p>
+<p><strong>The fourth policy</strong>, &quot;SecurityLevel2OrAbove&quot;, is an example of slightly more complicated logic. We use the method <code>RequireAssertion()</code>, and if the logic inside returns &quot;true&quot;, the user fulfills this policy.<br />
 The <code>context</code> contains a User property, of the type <code>ClaimsPrincipal</code>. This is a type of object, which the Authentication framework understands, it contains information about the user.<br />
 We use <code>FindFirst()</code> to find the first Claim with the Type of &quot;SecurityLevel&quot;. If no such claim exists, the user has no security level, and we return &quot;false&quot;. If the claim is found, we check if the security level is above a certain value, in this case level 2.</p>
 <h3 id="what-is-a-claimsprincipal">What is a ClaimsPrincipal?</h3>
-<p>In your project, either this tutorial, or other projects like SEP3, you will probably define some kind of User object, maybe you call it User, Account, or something else. But it is a class you define to hold information about a user.<br />
-This is a custom object, and the Authentication functionality of Blazor and Web API obviously does not know about your specific user type.</p>
+<p>In your project, either this tutorial, or other projects like SEP3, you will probably define some kind of User object, maybe you call it User, Account, Profile, or something else. But it is a class you define to hold information about a user.<br />
+This is your own custom object, and the Authentication functionality of Blazor and Web API obviously does not know about your specific user type.</p>
 <p>Therefore we must convert our custom User into a class which the framework understands. That class is the ClaimsPrincipal. How it's done will be covered later.</p>
 
 </div>
@@ -265,24 +275,24 @@ This is a custom object, and the Authentication functionality of Blazor and Web 
 <ul>
 <li>Microsoft.AspNetCore.Authentication.JwtBearer</li>
 </ul>
-<p>At the time of writing, the version of the package is 6.0.8. Pick the latest non-preview package.</p>
+<p>At the time of writing, the version of the package is 6.0.8. Pick the latest <strong>non-preview</strong> package.</p>
 <p><img src="Resources/AddJwtPackage.png" alt="" /></p>
 <h2 id="modify-program.cs">Modify Program.cs</h2>
 <p>Open the Program.cs class.</p>
 <h3 id="tell-the-app-to-use-authentication">Tell the app to use authentication</h3>
-<p>Add the following line anywhere above <code>app.Run()</code>, and below <code>var app = builder.Build();</code>:</p>
+<p>Add the following line anywhere above <code>app.Run()</code>, and below <code>var app = builder.Build();</code>. I have put it just under <code>app.UseHttpsRedirection();</code>.</p>
 <pre><code class="line-numbers language-csharp">app.UseAuthentication();
 </code></pre>
-<p>This adds authentication middleware, i.e. somewhere between the Web API server recieves the request, and our controller endpoint is called, a class will now handle authentication checks, and if the caller is not authenticated or authorized as required, a &quot;401 - Unauthorized&quot; error will be returned to the caller.</p>
+<p>This adds authentication middleware, i.e. somewhere between the Web API server receives the request, and our controller endpoint is called, a class will now handle authentication checks, and if the caller is not authenticated or authorized as required, a &quot;401 - Unauthorized&quot; error will be returned to the caller.</p>
 <h3 id="tell-the-app-to-accept-requests-from-the-browser">Tell the app to accept requests from the browser</h3>
-<p>Next, add the following code anywhere above <code>app.Run()</code> and below <code>var app = builder.Build();</code>:</p>
+<p>Next, add the following code anywhere above <code>app.Run()</code> and below <code>var app = builder.Build();</code>. I have put it just under the code you inserted before.</p>
 <pre><code class="line-numbers language-csharp">app.UseCors(x =&gt; x
     .AllowAnyMethod()
     .AllowAnyHeader()
     .SetIsOriginAllowed(origin =&gt; true) // allow any origin
     .AllowCredentials());
 </code></pre>
-<p>This is needed later when our Blazor app, running in the browser, needs to contact localhost. For security reasons (I believe) this is not allowed by default.</p>
+<p>This is needed later when our Blazor app, running in the browser, needs to contact a URL different from it's own home URL. For security reasons (I believe) this is not allowed by default.</p>
 <h3 id="add-authentication-with-info-about-jwt">Add authentication with info about JWT</h3>
 <p>Finally, add the following piece of code anywhere above <code>var app = builder.Build();</code>:</p>
 <pre><code class="line-numbers language-csharp">builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =&gt;
@@ -309,12 +319,12 @@ A bunch of stuff is happening here. I stole this from an example, so I don't kno
 <pre><code class="line-numbers language-csharp">AuthorizationPolicies.AddPolicies(builder.Services);
 </code></pre>
 <p>Quick fix import compile errors.</p>
-<p>This is our class from the Shared project, so here we tell the Web API to add authorization policies.</p>
+<p>This is our class from the Shared project, so here we tell the Web API to add authorization policies, which will be used when checking if a client can call an endpoint.</p>
 <h2 id="appsettings.json">appsettings.json</h2>
 <p>Open the WebApi/appsettings.json file. This contains various settings for our program.</p>
 <p>We need to add information about the JWT to generate.</p>
 <p>Add a &quot;Jwt&quot; section, so your file content looks like this:</p>
-<pre><code class="line-numbers language-json">{
+<pre data-line="9-14"><code class="line-numbers language-json">{
   &quot;Logging&quot;: {
     &quot;LogLevel&quot;: {
       &quot;Default&quot;: &quot;Information&quot;,
@@ -332,11 +342,12 @@ A bunch of stuff is happening here. I stole this from an example, so I don't kno
 </code></pre>
 <p>Here we have specified various settings to be used when generating the JWT.</p>
 <ul>
-<li>The &quot;Key&quot; is a secret key used when encrypting. It must be at least 16 characters, and can just be anything random.</li>
+<li>The &quot;Key&quot; is a secret key used when signing the token. It must be at least 16 characters, and can just be anything random.</li>
 <li>The Issuer is who generated the JWT</li>
 <li>The Audience is who the JWT is intended for</li>
 <li>The Subject... I'm not sure</li>
 </ul>
+<p>I'm not entirely sure what the purpose is of Issuer, Audience, Subject.</p>
 
 </div>
 <div class="tab">
@@ -352,7 +363,7 @@ A bunch of stuff is happening here. I stole this from an example, so I don't kno
 <h3 id="the-service">The Service</h3>
 <p>Create a new directory: Services.</p>
 <h4 id="interface">Interface</h4>
-<p>In here, create a new interface: <code>IAuthService</code>.</p>
+<p>In here, create a new interface: &quot;IAuthService&quot; (or &quot;IAuthLogic&quot; or whatever).</p>
 <p>It looks like this:</p>
 <pre><code class="line-numbers language-csharp">public interface IAuthService
 {
@@ -487,7 +498,7 @@ public AuthController(IConfiguration config, IAuthService authService)
     this.authService = authService;
 }
 </code></pre>
-<p>Import what is necessary.</p>
+<p>Import what is needed.</p>
 <p>Now, when this Controller is created (which happens whenever a request is made), the controller receives an instance of <code>IConfiguration</code>, which is used to read the &quot;appsettings.json&quot;, we modified earlier.</p>
 <p>We also get an IAuthService injected, i.e. here we just depend on the interface, applying the Dependency Inversion Principle.</p>
 <h3 id="claims-generation">Claims generation</h3>
@@ -513,9 +524,9 @@ public AuthController(IConfiguration config, IAuthService authService)
 <p>Notice the <code>JwtRegisteredClaimNames</code> class is from</p>
 <p><code>using System.IdentityModel.Tokens.Jwt;</code></p>
 <p>Then import the other necessary things with quick fix.</p>
-<p>The method takes a User, and creates an Array of Claims.<br />
+<p>The method takes a User, and creates an array of Claims.<br />
 The first three are JWT stuff, recommended to be included. They may not be strictly necessary.<br />
-Then follows a Claim for each of the properties of our User object.</p>
+Then follows a Claim for each of the properties of our User object. If we add another property to the User, we must remember to update this method.</p>
 <p>In your own projects your User object may look different, have different properties, and so you need to modify the above method accordingly, so that all relevant properties are turned into claims.</p>
 <h3 id="jwt-generation">JWT generation</h3>
 <p>This method will generate a JWT to be returned to the caller trying to log in.</p>
@@ -552,7 +563,7 @@ Then follows a Claim for each of the properties of our User object.</p>
 <li>null, whatever that is</li>
 <li>An expiration date/time, meaning this JWT is only valid for a certain time, in this case 60 minutes. You can put whatever you wish here</li>
 </ul>
-<p>In the end the JWT is serialized into a string of seemingly random characters.</p>
+<p>In the end the JWT is serialized with the signature into a string of seemingly random characters.</p>
 <h3 id="login-endpoint">Login endpoint</h3>
 <p>We need a last method, the endpoint to be accessed when making a login request.</p>
 <p>It looks like this:</p>
@@ -586,9 +597,9 @@ We could create various types of exceptions, and catch these specific exceptions
 <p>It's time to test whether we can log in.</p>
 <p>Normally, when you run your Web API, it opens a Swagger page. You can test the Login endpoint from here, and if you provide valid credentials, you should get a JWT back.</p>
 <p>However, future calls which requires the JWT attached are more complicated to create with Swagger. We would have to add stuff in the Program.cs, and complicate things.</p>
-<p>So, we'll do something else. We could use Postman, that would be easy enough, and if you prefer that, go for it.</p>
+<p>So, we'll do something else. We could use Postman, that would be easy enough, and if you prefer that, go for it (Postman is a widely used HTTP client).</p>
 <h3 id="the.http-test-file">The .http test file</h3>
-<p>Rider has a built in Http Client. It's pretty simple.</p>
+<p>Rider has a built-in Http Client. It's pretty simple.</p>
 <p>In the WebApi project folder, create a new file. Call it &quot;WebApiTests.http&quot;, or whatever, but the file type is &quot;.http&quot;:</p>
 <p><img src="Resources/AddHttpFile.png" alt="img.png" /></p>
 <p>And here's the file:</p>
@@ -601,7 +612,7 @@ Content-Type: application/json
 
 { &quot;Username&quot; : &quot;trmo&quot;, &quot;Password&quot; : &quot;onetwo3FOUR&quot; }
 </code></pre>
-<p>The // marks a comment.</p>
+<p>The <code>//</code> marks a comment.</p>
 <p>Then we define a &quot;POST&quot; request to &quot;https://localhost:7130/auth/login&quot;.</p>
 <p>We define the Content-Type to be &quot;application/json&quot;, i.e. saying the request contains content in the format of JSON.</p>
 <p>Finally a JSON object matching the format of our <code>UserLoginDto</code>.</p>

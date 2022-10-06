@@ -28,7 +28,7 @@ Similarly to how you added a package to the Shared project, add the following pa
 
 * Microsoft.AspNetCore.Authentication.JwtBearer
 
-At the time of writing, the version of the package is 6.0.8. Pick the latest non-preview package.
+At the time of writing, the version of the package is 6.0.8. Pick the latest **non-preview** package.
 
 ![](Resources/AddJwtPackage.png)
 
@@ -37,17 +37,17 @@ Open the Program.cs class.
 
 ### Tell the app to use authentication
 
-Add the following line anywhere above `app.Run()`, and below `var app = builder.Build();`:
+Add the following line anywhere above `app.Run()`, and below `var app = builder.Build();`. I have put it just under `app.UseHttpsRedirection();`.
 
 ```csharp
 app.UseAuthentication();
 ```
 
-This adds authentication middleware, i.e. somewhere between the Web API server recieves the request, and our controller endpoint is called, a class will now handle authentication checks, and if the caller is not authenticated or authorized as required, a "401 - Unauthorized" error will be returned to the caller.
+This adds authentication middleware, i.e. somewhere between the Web API server receives the request, and our controller endpoint is called, a class will now handle authentication checks, and if the caller is not authenticated or authorized as required, a "401 - Unauthorized" error will be returned to the caller.
 
 ### Tell the app to accept requests from the browser
 
-Next, add the following code anywhere above `app.Run()` and below `var app = builder.Build();`:
+Next, add the following code anywhere above `app.Run()` and below `var app = builder.Build();`. I have put it just under the code you inserted before.
 
 ```csharp
 app.UseCors(x => x
@@ -57,7 +57,7 @@ app.UseCors(x => x
     .AllowCredentials());
 ```
 
-This is needed later when our Blazor app, running in the browser, needs to contact localhost. For security reasons (I believe) this is not allowed by default. 
+This is needed later when our Blazor app, running in the browser, needs to contact a URL different from it's own home URL. For security reasons (I believe) this is not allowed by default. 
 
 ### Add authentication with info about JWT
 Finally, add the following piece of code anywhere above `var app = builder.Build();`:
@@ -95,7 +95,7 @@ AuthorizationPolicies.AddPolicies(builder.Services);
 
 Quick fix import compile errors.
 
-This is our class from the Shared project, so here we tell the Web API to add authorization policies.
+This is our class from the Shared project, so here we tell the Web API to add authorization policies, which will be used when checking if a client can call an endpoint.
 
 ## appsettings.json
 Open the WebApi/appsettings.json file. This contains various settings for our program.
@@ -104,7 +104,7 @@ We need to add information about the JWT to generate.
 
 Add a "Jwt" section, so your file content looks like this:
 
-```json
+```json{9-14}
 {
   "Logging": {
     "LogLevel": {
@@ -123,8 +123,10 @@ Add a "Jwt" section, so your file content looks like this:
 ```
 
 Here we have specified various settings to be used when generating the JWT. 
-* The "Key" is a secret key used when encrypting. It must be at least 16 characters, and can just be anything random.
+* The "Key" is a secret key used when signing the token. It must be at least 16 characters, and can just be anything random.
 * The Issuer is who generated the JWT
 * The Audience is who the JWT is intended for
 * The Subject... I'm not sure
+
+I'm not entirely sure what the purpose is of Issuer, Audience, Subject. 
 

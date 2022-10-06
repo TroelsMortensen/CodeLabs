@@ -16,7 +16,7 @@ Create a new directory: Services.
 
 #### Interface
 
-In here, create a new interface: `IAuthService`.
+In here, create a new interface: "IAuthService" (or "IAuthLogic" or whatever).
 
 It looks like this:
 

@@ -1,5 +1,5 @@
 # Installing Db Tools
-You will need to install a command line interface tool, which is used when creating/updating the database. This should be needed only once.
+You will need to install a command line interface (CLI) tool, which is used when creating/updating the database. This should be needed only once.
 
 Open the terminal in Rider:
 

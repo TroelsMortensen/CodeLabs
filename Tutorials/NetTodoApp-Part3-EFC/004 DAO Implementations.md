@@ -116,5 +116,5 @@ We can now proceed with implementation of the functionality in EfcDataAccess com
 
 We can't test much, since we just broke all our functionality. But you should be able to run the Web API, and interact with the endpoints through the Swagger page. You will just get an error every time.
 
-Before we can start fixing that, we need to set up the database.
+Before we can start fixing that, we need to set up the Entity Framework Core and the database.
 

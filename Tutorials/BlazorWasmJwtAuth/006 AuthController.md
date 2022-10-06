@@ -27,7 +27,7 @@ public AuthController(IConfiguration config, IAuthService authService)
 }
 ```
 
-Import what is necessary.
+Import what is needed.
 
 Now, when this Controller is created (which happens whenever a request is made), the controller receives an instance of `IConfiguration`, which is used to read the "appsettings.json", we modified earlier.
 
@@ -61,9 +61,9 @@ Notice the `JwtRegisteredClaimNames` class is from
 
 Then import the other necessary things with quick fix.
 
-The method takes a User, and creates an Array of Claims.\
+The method takes a User, and creates an array of Claims.\
 The first three are JWT stuff, recommended to be included. They may not be strictly necessary.\
-Then follows a Claim for each of the properties of our User object. 
+Then follows a Claim for each of the properties of our User object. If we add another property to the User, we must remember to update this method.
 
 In your own projects your User object may look different, have different properties, and so you need to modify the above method accordingly, so that all relevant properties are turned into claims.
 
@@ -107,7 +107,7 @@ We create a JwtPayload containing the relevant information:
 * null, whatever that is
 * An expiration date/time, meaning this JWT is only valid for a certain time, in this case 60 minutes. You can put whatever you wish here
 
-In the end the JWT is serialized into a string of seemingly random characters.
+In the end the JWT is serialized with the signature into a string of seemingly random characters.
 
 ### Login endpoint
 We need a last method, the endpoint to be accessed when making a login request.

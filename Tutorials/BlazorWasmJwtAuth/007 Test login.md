@@ -5,10 +5,10 @@ Normally, when you run your Web API, it opens a Swagger page. You can test the L
 
 However, future calls which requires the JWT attached are more complicated to create with Swagger. We would have to add stuff in the Program.cs, and complicate things.
 
-So, we'll do something else. We could use Postman, that would be easy enough, and if you prefer that, go for it.
+So, we'll do something else. We could use Postman, that would be easy enough, and if you prefer that, go for it (Postman is a widely used HTTP client).
 
 ### The .http test file
-Rider has a built in Http Client. It's pretty simple.
+Rider has a built-in Http Client. It's pretty simple.
 
 In the WebApi project folder, create a new file. Call it "WebApiTests.http", or whatever, but the file type is ".http":
 
@@ -30,7 +30,7 @@ Content-Type: application/json
 { "Username" : "trmo", "Password" : "onetwo3FOUR" }
 ```
 
-The // marks a comment.
+The `//` marks a comment.
 
 Then we define a "POST" request to "https://localhost:7130/auth/login".
 
