@@ -1,5 +1,6 @@
 # Blocking access to a page
-If there are pages you don't want anonymous users to access, you can block them similarly to how we blocked an entire Web API Controller: with the Authorize attribute.
+If there are pages you don't want anonymous users to access, 
+you can block them similarly to how we blocked an entire Web API Controller: with the Authorize attribute.
 
 Let's try.
 
@@ -69,7 +70,7 @@ It's done with this line instead:
 
 `@attribute [Authorize("MustBeVia")]`
 
-Now, the user must fulfill the MustBeVia policy. 
+Now, the user must fulfill the "MustBeVia" policy. 
 
 Test this by rerunning Web API and Blazor. First log in as Jakob:\
 jknr/password

@@ -1316,7 +1316,8 @@ Password: onetwo3FOUR</p>
 </div>
 <div class="tab">
 <hr/><h1 id="blocking-access-to-a-page">Blocking access to a page</h1><hr/>
-<p>If there are pages you don't want anonymous users to access, you can block them similarly to how we blocked an entire Web API Controller: with the Authorize attribute.</p>
+<p>If there are pages you don't want anonymous users to access,
+you can block them similarly to how we blocked an entire Web API Controller: with the Authorize attribute.</p>
 <p>Let's try.</p>
 <p>Create a new Blazor page, you can call it &quot;MustBeLoggedInToView.razor&quot;, or whatever.</p>
 <p>The content of the page looks like this:</p>
@@ -1366,7 +1367,7 @@ Password: onetwo3FOUR</p>
 <p>Currently you can view the page if you are logged in. But you can also apply a policy, only granting access if the logged in user fulfills that policy.</p>
 <p>It's done with this line instead:</p>
 <p><code>@attribute [Authorize(&quot;MustBeVia&quot;)]</code></p>
-<p>Now, the user must fulfill the MustBeVia policy.</p>
+<p>Now, the user must fulfill the &quot;MustBeVia&quot; policy.</p>
 <p>Test this by rerunning Web API and Blazor. First log in as Jakob:<br />
 jknr/password</p>
 <p>Try to access the page. You should be blocked by Gandalf.</p>
@@ -1378,7 +1379,7 @@ trmo/onetwo3FOUR</p>
 <div class="tab">
 <hr/><h1 id="the-authentication-context">The Authentication Context</h1><hr/>
 <p>Sometimes you wish to display things to the user about their credentials, or based on their credentials.</p>
-<p>When inside a <AuthorizeView> in the view part of a page, we get access to the <code>context</code>, a variable containing this information about the logged in user. It was mentioned before.</p>
+<p>When inside an <code>&lt;AuthorizeView&gt;</code> in the view part of a page, we get access to the <code>context</code>, a variable containing this information about the logged in user. It was mentioned before.</p>
 <p>Let's create a page, which displays a user's Claims.</p>
 <p>Create a new page, you could call it &quot;ShowCredentialsFromContext&quot;.</p>
 <p>It looks like this:</p>
@@ -1412,7 +1413,7 @@ trmo/onetwo3FOUR</p>
     &lt;p&gt;You are VIA&lt;/p&gt;
 &lt;/AuthorizeView&gt;
 </code></pre>
-<p>Similar to the Login page, we have the <AuthorizeView> and inside we have two sub-tags: <Authorized> and <NotAuthorized>.</p>
+<p>Similar to the Login page, we have the <AuthorizeView> and inside we have two sub-tags: <code>&lt;Authorized&gt;</code> and <code>&lt;NotAuthorized&gt;</code>.</p>
 <p>The content of each is shown based on your logged in states, as mentioned before.</p>
 <p>In line 8, we have this:</p>
 <p><code>&lt;h3&gt;Hello @context.User.Identity.Name&lt;/h3&gt;</code></p>
@@ -1422,19 +1423,20 @@ This then contains the <code>Identity</code>, and here we can get the <code>Name
 <p><code>new Claim(ClaimTypes.Name, user.Username)</code></p>
 <p>Now look at line 9, here we access the Claims to find the Role of the user.</p>
 <p>And further down we display all the Claims through the foreach-loop.</p>
-<p>Remember to add it to the nav menu.</p>
+<p>Remember to add it to the nav menu for easy testing. Or manually type in the URL.</p>
 <h3 id="block-view-with-policy">Block view with policy</h3>
-<p>You can block an entire page, but you can also block just part of a page, based on a policy. You can see that at the bottom of the code block above.</p>
+<p>You can block an entire page, but you can also block just part of a page, based on a policy.
+You can see that at the bottom of the code block above, lines 27-29.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="the-authentication-state">The Authentication State</h1><hr/>
 <p>The previous slide showed how to get user information in the view part.</p>
 <p>What if you need it in the code block?<br />
-Maybe you are about to create a Product, and you wish to extract the user name to set as owner.<br />
+Maybe you are about to create a Product, and you wish to extract the user name or user id to set as owner.<br />
 Maybe one method does different things based on your Claims.</p>
 <p>Whatever your reason or need, you can get access to the information.</p>
-<p>Let's try an example. We will redo the previous page, it will look the same to the user, but the programming is different.</p>
+<p>Let's try an example. We will do the same as the previous page, it will look the same to the user, but the programming is different.</p>
 <p>Create a new page, you can call it &quot;ShowCredentialsFromAuthState&quot;, or something else.</p>
 <p>It looks like this:</p>
 <pre><code class="line-numbers language-razor">@page &quot;/ShowCredentialsFromAuthState&quot;
@@ -1490,22 +1492,25 @@ else
 <p>We have a boolean <code>isLoggedIn</code> and if it is true, we display the <code>name</code>and also all the claims of the user.</p>
 <p>Otherwise we just display &quot;You are not logged in&quot;.</p>
 <p>So, no Authorize components or other stuff in the view to block/hide/show things.</p>
-<h5 id="lets-take-a-look-at-the-code">Let's take a look at the code.</h5>
-<p>The first property is the <code>AuthenticationState</code>, i.e. logged in information. It is marked with <code>[CascadingParameter]</code>. This is because it is set from a parent component far away. Remember how we modified the App.razor to wrap everything in <CascadingAuthenticationState>? This component will set the AuthenticationState on all components/pages in your app, if they request it, like we do with this property.</p>
+<h3 id="lets-take-a-look-at-the-code">Let's take a look at the code.</h3>
+<p>The first property is the <code>AuthenticationState</code>, i.e. logged in information.
+It is marked with <code>[CascadingParameter]</code>. This is because it is set from a parent component far away.
+Remember how we modified the App.razor to wrap everything in <code>&lt;CascadingAuthenticationState&gt;</code>?
+This component will set the <code>AuthenticationState</code> on all components/pages in your app, if they request it, like we do with this property.</p>
 <p>We also have the property to contain the <code>name</code> of the user, and a collection of claims, and then the boolean to see if the user is logged in.</p>
-<h5 id="now-the-method-oninitializedasync">Now, the method <code>OnInitializedAsync()</code>.</h5>
+<h3 id="now-the-method-oninitializedasync">Now, the method <code>OnInitializedAsync()</code>.</h3>
 <p>Remember, this is automatically called whenever the page is loaded.<br />
-First line, we await the AuthState, to receive the AuthenticationState. From that we pull out the ClaimsPrincipal in the next line.<br />
+First line, we await the <code>AuthState</code>, to receive the AuthenticationState. From that we pull out the ClaimsPrincipal in line 39.<br />
 Then, if there is an Identity, it means the user is logged in.<br />
 We can pull out the claims and name of the user.</p>
-<p>In the previous slide we saw how to show something if the user fulfilled the MustBeVia policy.<br />
+<p>In the previous slide we saw how to show something if the user fulfilled the &quot;MustBeVia&quot; policy.<br />
 Now, we can in the code just pull out the Domain claim, and check if the value is &quot;via&quot;, and then use a boolean to show/hide something in the UI.</p>
 <p>So, we don't strictly need to define policies, but they make things a lot easier if the same rules apply to several parts of your app.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="the-end-almost">The End (almost)</h1><hr/>
-<p>This concludes the basic tutorial. A few more slides will follow, to talk about some minor optimizations.</p>
+<p>This concludes the basic tutorial. A few more slides may eventually follow, to talk about some minor optimizations.</p>
 <p>But for now, you should have a working login system, and you should have an understanding of how you can guard various parts of both Web API and Blazor app.</p>
 
 </div>
