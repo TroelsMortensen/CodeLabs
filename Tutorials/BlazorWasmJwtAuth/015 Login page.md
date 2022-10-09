@@ -20,7 +20,7 @@ At the top of the file, you should have these four lines:
 ```
 
 We declare the page directive, i.e. the sub-uri to get to the Login page.\
-There is a using statement, and then two @inject statements. This gives us an instance of IAuthService (i.e. the JwtAuthService) and an instance of the NavigationManager.
+There is a using statement, and then two @inject statements. This gives us an instance of IAuthService (i.e. the `JwtAuthService`) and an instance of the `NavigationManager`.
 
 The code block is here:
 
@@ -49,7 +49,7 @@ The code block is here:
 
 We have private fields to hold the username, the password, and any error message we might need to show to the user.
 
-The `LoginAsync()` method will delegate to the IAuthService, attempting to log in. If succesful we use the NavigationManager to navigate to the home page.\
+The `LoginAsync()` method will delegate to the `IAuthService`, attempting to log in. If successful, we use the `NavigationManager` to navigate to the home page.\
 In the case of any exceptions, we catch them and display the error message through the `errorLabel`.
 
 ### The view
@@ -91,21 +91,26 @@ The below is the html/razor syntax for the view of the Login page:
 
 So, what's going on here?
 
-We wrap everything in the <AuthorizeView> component. Inside this we have access to information about the ClaimsPrincipal representing the currently logged in user.
+We wrap everything in the `<AuthorizeView>` component. 
+Inside this tag (Blazor component) we have access to information about the `ClaimsPrincipal` representing the currently logged in user.
 
-Notice the two sub-tags: `<NotAuthorized>` and `<Authorized>`.\
+Notice the two sub-tags: `<NotAuthorized>` and `<Authorized>`.
+
 * The first is "active" if no one is logged in, i.e. all the html inside this tag is displayed.
 * The second contains html shown if the user _is_ logged in.
 
+##### NotAuthorized
 In the NotAuthorized part we have two input fields for the username and password.
 
 If the errorLabel contains something, we display that text. 
 
 At the bottom we have the button, which when pressed calls the `LoginAsync()` method.
 
-Inside the Authorized part we have access to the `context`, a variable of type `AuthenticationState`, so we can access the contained ClaimsPrincipal, and get the Name. Or any Claim we might want.
+##### Authorized
+Inside the Authorized part we have access to the `context`, a variable of type `AuthenticationState`, 
+so we can access the contained `ClaimsPrincipal`, and get the Name. Or any Claim we might want.
 
-The Name property is set specifically, when you add a Claim to the ClaimsPrincipal with the `ClaimsType` of `ClaimsType.Name`. We did this in the Web API's AuthController:
+The Name property is set specifically, when you add a Claim to the `ClaimsPrincipal` with the `ClaimsType` of `ClaimsType.Name`. We did this in the Web API's AuthController:
 
 `new Claim(ClaimTypes.Name, user.Username)`
 
@@ -151,4 +156,4 @@ You can check by running your Blazor app, and manually put in
 
 `https://localhost:7105/login`
 
-in the browser bar. Maybe with another port.
+in the browser address bar. Maybe with another port.

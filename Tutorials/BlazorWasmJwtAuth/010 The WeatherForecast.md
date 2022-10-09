@@ -4,7 +4,7 @@ This class came with the Web API project template. We haven't touched it much, b
 
 Open the class.
 
-Put the [Authorized] attribute above the class definition, i.e. line 9 or so. Now, we can only access the GET endpoint with a valid token.
+Put the `[Authorize]` attribute above the class definition, i.e. line 9 or so. Now, we can only access the GET endpoint with a valid token.
 
 This concludes the Web API part of the tutorial.
 

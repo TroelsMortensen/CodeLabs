@@ -54,7 +54,7 @@ Here's the view:
 </AuthorizeView>
 ```
 
-Everything is wrapped in the AuthorizeView component, so that we inside get access to the authentication state, i.e. is someone logged in or not?
+Everything is wrapped in the `AuthorizeView` component, so that we inside get access to the authentication state, i.e. is someone logged in or not?
 
 If the user is Authorized, i.e. logged in, we show the Logout icon, and attach the Logout() method to the on-click event.
 

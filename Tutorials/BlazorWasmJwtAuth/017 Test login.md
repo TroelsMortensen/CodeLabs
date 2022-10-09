@@ -7,6 +7,8 @@ Start the Blazor app.
 
 In the top right corner of the app, in the grey bar, you should see the Login icon.
 
+![img.png](Resources/LoginIconInAction.png)
+
 Click it.
 
 Type in:\

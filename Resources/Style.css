@@ -187,7 +187,7 @@ img {
 code:not([class]) {
     display: inline-block;
     border-radius: 5px;
-    line-height: 0.6;
+    line-height: 1.2;
 }
 
 .homelink {

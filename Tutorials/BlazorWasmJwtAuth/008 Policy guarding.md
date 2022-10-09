@@ -20,8 +20,10 @@ public class TestController : ControllerBase
 It's similar to the AuthController, but now notice the extra attribute `[Authorize]`.
 
 This means this Controller can only be interacted with, if the caller provides a valid JWT.\
-It means by default all endpoints can only be called with a valid token.\
-If we leave out the attribute, all endpoints can by default be called by anonymous callers, i.e. no valid token is needed. It's up to you to decide whether to use it or not. For this test, we include the attribute.
+By default all endpoints within this class can only be called with a valid token.\
+If we leave out the attribute, all endpoints can by default be called by anonymous callers, i.e. no valid token is needed.
+It's up to you to decide whether to use it or not. Is your default "all access" or "limited access".\
+For this test, we include the attribute.
 
 We will create a couple of dummy methods, which just returns "OK", but the point is we will guard these endpoints with policies and authentication.
 
@@ -42,9 +44,11 @@ The HttpGet("authorized") just indicates the sub-route to this specific endpoint
 
 `https://localhost:7271/test/authorized`
 
+Right? It's the sub-route. It does not mean this endpoint requires authorized. We fix that later.
+
 Let's test this.
 
-##### Blocked access
+### Blocked access
 
 Run your Web API.
 
@@ -86,19 +90,19 @@ Response code: 401 (Unauthorized); Time: 76ms; Content length: 0 bytes
 
 The bottom line says, we were not authorized to call this endpoint. That's because we did not provide a valid JWT.
 
-##### Now with token
-In your .http test file add a new request, remember to separate it with "###":
-
+### Now with token
 Now, first, execute the first login request, resulting in a JWT.
 
-Copy that JWT, and modify your latest GET request to something like this:
+In your .http test file add a new request, remember to separate it with "###":
+
+Copy the JWT, and modify your latest GET request to something like this:
 
 ```http request
 GET https://localhost:7271/test/authorized
 Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKV1RTZXJ2aWNlQWNjZXNzVG9rZW4iLCJqdGkiOiJmODhhMDJiMS0wMTdjLTQzOTktYTc3Zi1kMTVlNTk5MDA1ZGYiLCJpYXQiOiIxNC8wOC8yMDIyIDEyOjExOjE2IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InRybW8iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJUZWFjaGVyIiwiRGlzcGxheU5hbWUiOiJUcm9lbHMgTW9ydGVuc2VuIiwiRW1haWwiOiJ0cm1vQHZpYS5kayIsIkFnZSI6IjM2IiwiRG9tYWluIjoidmlhIiwiU2VjdXJpdHlMZXZlbCI6IjQiLCJleHAiOjE2NjA0ODI2NzYsImlzcyI6IkpXVEF1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiSldUU2VydmljZUJsYXpvcldhc21DbGllbnQifQ.w3qJXGPEYi6MMKH-t03KzryBmT7b7OqGJ6iEePDJuE06SI5hH27PS36Bo6QDrq1b_ykX5S0qxAfyJheSw-EDUA
 ```
 
-This is how we provide a JWT along with our request. Notice the token above will not work with you. You will have to log in, and use that token.
+This is how we provide a JWT along with our request. Notice the token above will not work with you. You will have to log in, and use the token returned. Also remember a new token is required every hour.
 
 Run the last GET request again, with the token. You should get back:
 

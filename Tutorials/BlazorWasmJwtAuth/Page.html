@@ -658,8 +658,10 @@ public class TestController : ControllerBase
 </code></pre>
 <p>It's similar to the AuthController, but now notice the extra attribute <code>[Authorize]</code>.</p>
 <p>This means this Controller can only be interacted with, if the caller provides a valid JWT.<br />
-It means by default all endpoints can only be called with a valid token.<br />
-If we leave out the attribute, all endpoints can by default be called by anonymous callers, i.e. no valid token is needed. It's up to you to decide whether to use it or not. For this test, we include the attribute.</p>
+By default all endpoints within this class can only be called with a valid token.<br />
+If we leave out the attribute, all endpoints can by default be called by anonymous callers, i.e. no valid token is needed.
+It's up to you to decide whether to use it or not. Is your default &quot;all access&quot; or &quot;limited access&quot;.<br />
+For this test, we include the attribute.</p>
 <p>We will create a couple of dummy methods, which just returns &quot;OK&quot;, but the point is we will guard these endpoints with policies and authentication.</p>
 <h2 id="authorized-guard">Authorized guard</h2>
 <p>The below method has nothing extra attached to it. Add it to the TestController:</p>
@@ -672,8 +674,9 @@ public ActionResult GetAsAuthorized()
 <p>This looks like a normal, very simple endpoint. We just return status code 200 - OK. With a message.</p>
 <p>The HttpGet(&quot;authorized&quot;) just indicates the sub-route to this specific endpoint, e.g.:</p>
 <p><code>https://localhost:7271/test/authorized</code></p>
+<p>Right? It's the sub-route. It does not mean this endpoint requires authorized. We fix that later.</p>
 <p>Let's test this.</p>
-<h5 id="blocked-access">Blocked access</h5>
+<h3 id="blocked-access">Blocked access</h3>
 <p>Run your Web API.</p>
 <p>Open the WebApiTests.http file.</p>
 <p>We can separate multiple requests with ###, so, expand the content of your file to be:</p>
@@ -704,14 +707,14 @@ WWW-Authenticate: Bearer
 Response code: 401 (Unauthorized); Time: 76ms; Content length: 0 bytes
 </code></pre>
 <p>The bottom line says, we were not authorized to call this endpoint. That's because we did not provide a valid JWT.</p>
-<h5 id="now-with-token">Now with token</h5>
-<p>In your .http test file add a new request, remember to separate it with &quot;###&quot;:</p>
+<h3 id="now-with-token">Now with token</h3>
 <p>Now, first, execute the first login request, resulting in a JWT.</p>
-<p>Copy that JWT, and modify your latest GET request to something like this:</p>
+<p>In your .http test file add a new request, remember to separate it with &quot;###&quot;:</p>
+<p>Copy the JWT, and modify your latest GET request to something like this:</p>
 <pre><code class="line-numbers language-http">GET https://localhost:7271/test/authorized
 Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKV1RTZXJ2aWNlQWNjZXNzVG9rZW4iLCJqdGkiOiJmODhhMDJiMS0wMTdjLTQzOTktYTc3Zi1kMTVlNTk5MDA1ZGYiLCJpYXQiOiIxNC8wOC8yMDIyIDEyOjExOjE2IiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6InRybW8iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJUZWFjaGVyIiwiRGlzcGxheU5hbWUiOiJUcm9lbHMgTW9ydGVuc2VuIiwiRW1haWwiOiJ0cm1vQHZpYS5kayIsIkFnZSI6IjM2IiwiRG9tYWluIjoidmlhIiwiU2VjdXJpdHlMZXZlbCI6IjQiLCJleHAiOjE2NjA0ODI2NzYsImlzcyI6IkpXVEF1dGhlbnRpY2F0aW9uU2VydmVyIiwiYXVkIjoiSldUU2VydmljZUJsYXpvcldhc21DbGllbnQifQ.w3qJXGPEYi6MMKH-t03KzryBmT7b7OqGJ6iEePDJuE06SI5hH27PS36Bo6QDrq1b_ykX5S0qxAfyJheSw-EDUA
 </code></pre>
-<p>This is how we provide a JWT along with our request. Notice the token above will not work with you. You will have to log in, and use that token.</p>
+<p>This is how we provide a JWT along with our request. Notice the token above will not work with you. You will have to log in, and use the token returned. Also remember a new token is required every hour.</p>
 <p>Run the last GET request again, with the token. You should get back:</p>
 <pre><code>https://localhost:7271/test/authorized
 
@@ -731,7 +734,7 @@ Response code: 200 (OK); Time: 72ms; Content length: 31 bytes
 <div class="tab">
 <hr/><h1 id="more-policy-guarding-examples">More policy guarding examples</h1><hr/>
 <p>Currently, we have blocked our controller so that you need a valid JWT to call the endpoints.</p>
-<h4 id="allow-anonymous">Allow anonymous</h4>
+<h2 id="allow-anonymous">Allow anonymous</h2>
 <p>Maybe we wish to open some of the endpoints to everyone, we can do that with the &quot;AllowAnonymous&quot; attribute:</p>
 <pre><code class="line-numbers language-csharp">[HttpGet(&quot;allowanon&quot;), AllowAnonymous]
 public ActionResult GetAsAnon()
@@ -741,8 +744,9 @@ public ActionResult GetAsAnon()
 </code></pre>
 <p>Create another test request in your .http file to the endpoint <code>https://localhost:7271/test/allowanon</code> .<br />
 Notice your port may be different.</p>
-<h4 id="guard-with-policy">Guard with policy</h4>
-<p>Now we can have open endpoints and endpoints requiring a valid token, i.e. you are logged in. But what about applying a specific policy, i.e. you must be <em>x</em> or have <em>y</em> or whatever.</p>
+<p>Test that you can reach this endpoint without including the JWT.</p>
+<h2 id="guard-with-policy">Guard with policy</h2>
+<p>Now, we can have open endpoints and endpoints requiring a valid token, i.e. you are logged in. But what about applying a specific policy, i.e. you must be <em>x</em> or have <em>y</em> or whatever.</p>
 <p>Try the following endpoint in your TestController:</p>
 <pre><code class="line-numbers language-csharp">[HttpGet(&quot;mustbevia&quot;), Authorize(&quot;MustBeVia&quot;)]
 public ActionResult GetAsVia()
@@ -750,12 +754,12 @@ public ActionResult GetAsVia()
     return Ok(&quot;This was accepted as via domain&quot;);
 }
 </code></pre>
-<p>Here we use the <code>Authorized(&quot;MustBeVia&quot;)</code> attribute. Remember, in the Shared/Auth/AuthorizationPolicies.cs class we defined a policy named &quot;MustBeVia&quot;.</p>
-<p>You have two users hardcoded: trmo, and jknr. Only trmo is has the domain &quot;via&quot;.<br />
-So, first log in with trmo, receive the token, and use that token with a GET request to <code>https://localhost:7271/test/mustbevia</code> .</p>
+<p>Here we use the <code>Authorize(&quot;MustBeVia&quot;)</code> attribute. Remember, in the Shared/Auth/AuthorizationPolicies.cs class we defined a policy named &quot;MustBeVia&quot;.</p>
+<p>You have two users hardcoded: &quot;trmo&quot;, and &quot;jknr&quot;. Only &quot;trmo&quot; is has the domain &quot;via&quot;.<br />
+So, first log in with &quot;trmo&quot;, receive the token, and use that token with a GET request to <code>https://localhost:7271/test/mustbevia</code> .</p>
 <p>It should be okay.</p>
 <p>Then try to modify the login credentials to &quot;jknr&quot; and &quot;password&quot;, to log in as Jakob. Copy the received token into your request above, and try again. You should get an Unauthorized response back.</p>
-<h4 id="manual-checking">Manual checking</h4>
+<h2 id="manual-checking">Manual checking</h2>
 <p>Finally, maybe you don't like to rely on policies. You can leave them out entirely if you wish to do so, and just do the authorization validation manually, i.e. writing that code yourself.</p>
 <p>Here's an example endpoint:</p>
 <pre><code class="line-numbers language-csharp">[HttpGet(&quot;manualcheck&quot;)]
@@ -777,15 +781,25 @@ public ActionResult GetWithManualCheck()
 </code></pre>
 <p>Notice there is no Authorize attribute above the method signature.</p>
 <p>In the method body, the first line:<br />
-We access the <code>User</code> property. This has little to do with your specific User object. This property comes from the superclass, ControllerBase, and is the same type of ClaimsPrincipal we used in the AuthorizationPolicies.cs class. I.e. it contains information about the user stored in the provided JWT from the request.</p>
+We access the <code>User</code> property. This has little to do with your specific User object.
+This property comes from the superclass, <code>ControllerBase</code>, and is the same type of ClaimsPrincipal we used in the AuthorizationPolicies.cs class. I.e. it contains information about the user stored in the provided JWT from the request.</p>
 <p>You can extract various information from this <code>User</code>, e.g. the claims.</p>
+<h2 id="auth-layer-responsibility">Auth Layer Responsibility</h2>
+<p>You may spend a little while considering which layer should be responsible for authentication and authorization.</p>
+<p>When we apply the attributes, we let the Web API layer be responsible for auth/auth. But what if we swap out this layer, with something else, where auth is not built in? E.g. basic sockets, or maybe a gRPC server (don't know if it has built in auth).
+You will have to manually implement auth then. And if you swap out once again, you must redo all the auth.<br />
+We have a layer, the Web API, which has two different responsibilities: receiving requests, and auth. This implies we should extract auth-related responsibilities to somewhere else.<br />
+Assuming we have the usual three layers of network, logic, and data access, is auth then part of the logic layer? Well, maybe. It could be, but it still feels like something else than business logic.<br />
+We could introduce a new layer between network and logic, with the only responsibility of protecting the logic layer. We would still have to extract the user information from the Request, and should then pass that along to the lower layers.</p>
+<p>It does potentially get a little elaborate, and we probably are not going to swap out the networking all the time.</p>
+<p>This discussion is just to get you thinking.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="weatherforecastcontroller">WeatherForecastController</h1><hr/>
 <p>This class came with the Web API project template. We haven't touched it much, but let's use this as a slightly closer real life example.</p>
 <p>Open the class.</p>
-<p>Put the [Authorized] attribute above the class definition, i.e. line 9 or so. Now, we can only access the GET endpoint with a valid token.</p>
+<p>Put the <code>[Authorize]</code> attribute above the class definition, i.e. line 9 or so. Now, we can only access the GET endpoint with a valid token.</p>
 <p>This concludes the Web API part of the tutorial.</p>
 <p>Next up, we take a look at the Blazor side of things.</p>
 
@@ -794,11 +808,12 @@ We access the <code>User</code> property. This has little to do with your specif
 <hr/><h1 id="blazor">Blazor</h1><hr/>
 <p>Now we start on the front end of things.</p>
 <p>We will see how to make a login request to our web api, receive a JWT and use that to guard various parts of the app.</p>
+<p>We will also include the JWT in requests to the server.</p>
 <h3 id="create-project">Create project</h3>
-<p>We start by adding a new project, of type Blazor-wasm.</p>
+<p>We start by adding a new project, of type Blazor-WASM.</p>
 <p><img src="Resources/CreateBlazor.png" alt="img.png" /></p>
 <h3 id="add-packages">Add packages</h3>
-<p>Again, we need to add a package:</p>
+<p>Again, we need to add a package to your new Blazor-WASM project:</p>
 <ul>
 <li>Microsoft.AspNetCore.Components.Authorization</li>
 </ul>
@@ -838,28 +853,30 @@ We access the <code>User</code> property. This has little to do with your specif
     &lt;/Router&gt;
 &lt;/CascadingAuthenticationState&gt;
 </code></pre>
-<p>The yellow highlighted lines contains the changes. We wrap everything in <CascadingAuthenticationState>. And the <RouteView> is changed to <AuthorizeRouteView>.</p>
-<p>Everything inside the <NotAuthorized> tags is html to be shown, if the user tries to access something, they are not authorized to access.</p>
-<h3 id="imports">Imports</h3>
-<p>You should now see that the tag <CascadingAuthenticationState> is a different color than e.g. &lt;Router...&gt;.</p>
-<p>That's because C# recognizes the second tag as a razor component, and the first tag is not currently recognized, so it's just colored as html.</p>
+<p>The yellow highlighted lines contains the changes. We wrap everything in <code>&lt;CascadingAuthenticationState&gt;</code>. And the <code>&lt;RouteView&gt;</code> is changed to <code>&lt;AuthorizeRouteView&gt;</code>.</p>
+<p>Everything inside the <code>&lt;NotAuthorized&gt;</code> tags (lines 5 and 8) is HTML to be shown, if the user tries to access something, they are not authorized to access.</p>
+<h2 id="imports">Imports</h2>
+<p>You should now see that the tag <code>&lt;CascadingAuthenticationState&gt;</code> is a different color than e.g. <code>&lt;Router...&gt;</code>.</p>
+<p>That's because Blazor recognizes the second tag as a Blazor component, and the first tag is not currently recognized, so it's just colored as HTML.</p>
 <p>We need an import statement.</p>
 <p>Open the file BlazorWasm/_imports.razor. At the end, add the following two using statements:</p>
 <pre><code class="line-numbers language-csharp">@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Authorization
 </code></pre>
-<p>Go back to App.razor, and verify the color change, indicating <CascadingAuthenticationState> is now recognized as a component. The result is that in every page or component, we can request information about the logged in user. That is convenient.</p>
+<p>Go back to App.razor, and verify the color change, indicating <code>&lt;CascadingAuthenticationState&gt;</code> is now recognized as a component. The result is that in every page or component, we can request information about the logged in user. That is convenient.</p>
+<p>The &quot;_imports.razor&quot; file is used to make <em>global</em> imports, i.e. if we put a @using statement in this file, all pages implicitly have that @using statement. It can be very convenient, instead of having specific imports in each file.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="authservice-class">AuthService class</h1><hr/>
 <p>This class handles login requests, user-registration requests (not covered in tutorial), and logging out.</p>
-<h3 id="directories">Directories</h3>
+<h2 id="directories">Directories</h2>
 <p>Inside the project folder create a new directory: Services.
-Inside that create a directory: Http.</p>
+Inside that create a directory: HTTP.</p>
 <p><img src="Resources/ServiceHttpDir.png" alt="img.png" /></p>
-<p>We don't strictly need the Http directory, it's just to organize things. In this folder we put service implementations related to Http, i.e. REST and our Web API. If we later wanted other services using e.g. gRPC or other, we could create another directory for that. It's just a detail.</p>
-<h3 id="iauthservice-interface">IAuthService interface</h3>
+<p>We don't strictly need the HTTP directory, it's just to organize things. In this folder we put service implementations related to HTTP, i.e. REST and our Web API. If we later wanted other services using e.g. gRPC or other, we could create another directory for that. It's just a detail.<br />
+These classes should actually be in a separate component, as you saw in the Blazor tutorial. But we keep it simple here.</p>
+<h2 id="iauthservice-interface">IAuthService interface</h2>
 <p>In the Service directory create an interface, IAuthService.</p>
 <p>It looks like this:</p>
 <pre><code class="line-numbers language-csharp">using System.Security.Claims;
@@ -882,12 +899,12 @@ public interface IAuthService
 <p>The first method is used to log in, from a log in page.<br />
 The second is to log out, i.e. clear your authentication state and become anonymous.<br />
 Then a method to register a new user, though not covered in this tutorial.<br />
-The GetAuthAsync() method is used to provide authentication state details to the blazor framework, whenever the app needs to know about who is logged in.<br />
+The GetAuthAsync() method is used to provide authentication state details to the Blazor auth framework, whenever the app needs to know about who is logged in.<br />
 The last is an Action, which will fire an event whenever the authentication state changes, i.e. upon log in or log out.</p>
-<h3 id="jwtauthservice">JwtAuthService</h3>
-<p>In the Http directory create a class &quot;JwtAuthService.cs&quot;.</p>
+<h2 id="jwtauthservice">JwtAuthService</h2>
+<p>In the HTTP directory create a class &quot;JwtAuthService.cs&quot;.</p>
 <p>It's a long class, we'll cut it up. The end result <a href="https://github.com/TroelsMortensen/JwtAuth/blob/master/BlazorWasm/Services/Http/JwtAuthService.cs">is found on GitHub here</a>.</p>
-<h4 id="fields">Fields</h4>
+<h3 id="fields">Fields</h3>
 <p>This is the start of the class:</p>
 <pre><code class="line-numbers language-csharp">public class JwtAuthService : IAuthService
 {
@@ -899,10 +916,13 @@ The last is an Action, which will fire an event whenever the authentication stat
     public Action&lt;ClaimsPrincipal&gt; OnAuthStateChanged { get; set; } = null!;
 </code></pre>
 <p>It implements the interface IAuthService, so we must provide implementations for the methods defined in the interface.</p>
-<p>We have a static public field variable called <code>Jwt</code>. This will hold the token received from the Web API when logged in. It is static because other services need this token when making requests to the Web API, we will see that later. The variable being static provides easier access to it.</p>
+<p>The HttpClient is created, but should be injected instead as shown in the Blazor tutorial.</p>
+<p>We have a static public field variable called <code>Jwt</code>. This will hold the token received from the Web API when logged in.
+It is static because other services need this token when making requests to the Web API, we will see that later.
+The variable being static provides easier access to it. There are other ways to achieve easy access as well, e.g. keep it in another class, registered as a service, injected where needed.</p>
 <p>Normally static references results in tight couplings, i.e. something to avoid. But the coupling is only within the same layer, so we allow it here. The coupling can be loosened, but that is not relevant for this tutorial.</p>
 <p>The last line is the implementation of the Action. Now, other classes can subscribe and listen for events being fired about the authentication state changing. We will need that later.</p>
-<h4 id="parsing-the-jwt">Parsing the JWT</h4>
+<h3 id="parsing-the-jwt">Parsing the JWT</h3>
 <p>We will need functionality to convert the JWT received from the Web API into Claims with information about the user logged in.</p>
 <p>Paste in the below two methods:</p>
 <pre><code class="line-numbers language-csharp">// Below methods stolen from https://github.com/SteveSandersonMS/presentation-2019-06-NDCOslo/blob/master/demos/MissionControl/MissionControl.Client/Util/ServiceExtensions.cs
@@ -931,7 +951,7 @@ private static byte[] ParseBase64WithoutPadding(string base64)
 </code></pre>
 <p>How they work is irrelevant. Consider it black magic. The argument is the JWT, the result is a collection of Claims about the user.</p>
 <h3 id="creating-the-claimsprincipal">Creating the ClaimsPrincipal</h3>
-<p>We need a method to create a ClaimsPrincipal. Remember, this is the type of User object the auth-framework understands. So the JWT is converted into a ClaimsPrincipal with the following method:</p>
+<p>We need a method to create a ClaimsPrincipal. Remember, this is the type of &quot;User&quot; object the Blazor auth-framework understands. So the JWT is converted into a ClaimsPrincipal with the following method:</p>
 <pre><code class="line-numbers language-csharp">private static ClaimsPrincipal CreateClaimsPrincipal()
 {
     if (string.IsNullOrEmpty(Jwt))
@@ -948,7 +968,7 @@ private static byte[] ParseBase64WithoutPadding(string base64)
 }
 </code></pre>
 <p>If there is no JWT, i.e. no user is logged in, we return an &quot;empty&quot; ClaimsPrincipal. This is then anonymous.</p>
-<p>Otherwise, we get the Claims from the JTW. We put those claims into a ClaimsIdentity, a kind of sub-user. We state the auth-type is &quot;jwt&quot;.<br />
+<p>Otherwise, we get the Claims from the JWT. We put those claims into a ClaimsIdentity, a kind of sub-user. We state the auth-type is &quot;jwt&quot;.<br />
 This ClaimsIdentity is then provided to a ClaimsPrincipal. I believe a ClaimsPrincipal may contain multiple Identities, though that's beyond this tutorial.</p>
 <p>That's enough of helper methods. You may notice they are all private and <em>static</em>. They don't need to be static, but as they are just helper methods, making them static is in some cases a small optimization. It's just a detail, you don't need to do it.</p>
 <h3 id="login-method">Login method</h3>
@@ -980,34 +1000,21 @@ This ClaimsIdentity is then provided to a ClaimsPrincipal. I believe a ClaimsPri
     OnAuthStateChanged.Invoke(principal);
 }
 </code></pre>
-<p>First a UserLoginDto object is created with username and password. Remember, this is what the Web API needed to validate a user.</p>
-<p>The object is serialized into JSON. That JSON is put into a <code>StringContent</code> object, using Encoding UTF8, and specifying the content is on JSON-format.</p>
+<h6 id="we-could-have-used-the-postasjsonasync-method">We could have used the <code>PostAsJsonAsync()</code> method.</h6>
+<p>First a UserLoginDto object is created with username and password. Remember, this is what the Web API needs to validate a user.</p>
+<p>The object is serialized into JSON. That JSON is put into a <code>StringContent</code> object,
+using Encoding UTF8, and specifying the content is in JSON-format.</p>
 <p>We make a Post request in line 12, and in line 13 we read the response content, which should be our JWT.</p>
-<p><strong>Remember to change the port to match your Web API's!</strong></p>
+<p><strong>Remember to change the port to match your Web API's! Or if you are injecting the HttpClient, remove some of the URI.</strong></p>
 <p>If there is a problem with the request, i.e. we get an error code back, we throw an Exception. This exception is caught in a page, and an error message is shown to the user. It is always <em>very</em> important to give feedback to the user, both upon success and failure.</p>
-<p>We assign the received jwt to the property <code>Jwt</code>. This property is a form of <a href="https://en.wikipedia.org/wiki/Cache_(computing)">cache</a>. From wiki:</p>
+<p>We assign the received JWT to the property <code>Jwt</code>. This property is a form of <a href="https://en.wikipedia.org/wiki/Cache_(computing)">cache</a>. From wiki:</p>
+<p>A cache...</p>
 <blockquote>
 <p>... is a hardware or software component that stores data so that future requests for that data can be served faster</p>
 </blockquote>
 <p>It's just a temporary storage to hold data which is needed in the future. If we didn't store the JWT we would need to log in all the time. It wouldn't work. This cache is simple, and the last part of this tutorial will cover small improvements. But we start out simple.</p>
 <p>We get the ClaimsPrincipal and finally invoke the Action to notify whoever is interested about the change in authentication state.</p>
-<h3 id="register-user">Register User</h3>
-<p>We include a method to register a user. You may later create a page for registering users if you wish.</p>
-<pre><code class="line-numbers language-csharp">public async Task RegisterAsync(User user)
-{
-    string userAsJson = JsonSerializer.Serialize(user);
-    StringContent content = new(userAsJson, Encoding.UTF8, &quot;application/json&quot;);
-    HttpResponseMessage response = await client.PostAsync(&quot;https://localhost:7130/auth/register&quot;, content);
-    string responseContent = await response.Content.ReadAsStringAsync();
-
-    if (!response.IsSuccessStatusCode)
-    {
-        throw new Exception(responseContent);
-    }
-}
-</code></pre>
-<p>Remember to change the port number!</p>
-<h3 id="register-service">Register service</h3>
+<h2 id="register-service">Register service</h2>
 <p>Finally, we need to register the interface and implementation as a service, so the app can use them for dependency injection.</p>
 <p>Open BlazorWasm/Program.cs, add the line:</p>
 <pre><code class="line-numbers language-csharp">builder.Services.AddScoped&lt;IAuthService, JwtAuthService&gt;();
@@ -1016,8 +1023,9 @@ This ClaimsIdentity is then provided to a ClaimsPrincipal. I believe a ClaimsPri
 </div>
 <div class="tab">
 <hr/><h1 id="the-authentication-state-provider-class">The Authentication State Provider class</h1><hr/>
-<p>Your Blazor app constantly needs to evaluate what to show to the user based on their credentials.
-As mentioned in the beginning, you can show/hide parts of your UI based on the user being logged in or not, and based on their credentials, i.e. Claims.</p>
+<p>Your Blazor app often needs to evaluate what to show to the user based on their credentials.
+As mentioned in the beginning, you can show/hide parts of your UI based on the user being logged in or not,
+and based on their data, i.e. Claims.</p>
 <p>The app need to get access to this authentication state, and that happens through a class, which we extend.</p>
 <p>Create a new directory in BlazorWasm, call it &quot;Auth&quot;.</p>
 <p>In here create the class CustomAuthProvider:</p>
@@ -1056,11 +1064,12 @@ public class CustomAuthProvider: AuthenticationStateProvider
 </code></pre>
 <p>The Blazor framework knows about the abstract superclass, <code>AuthenticationStateProvider</code>. We then provide a subclass, which can give the app the authentication state it requires, in the form of a ClaimsPrincipal.
 So, whenever the app needs to know whether it should show or hide some piece of UI, it will ask our class here about the user credentials, i.e. a ClaimsPrincipal, and then evaluate accordingly.</p>
-<p>The field variable is a reference to the IAuthService interface we just created. Notice that we don't know anything about the implementation, or whether JWT is used or whatever. Again, Dependency Inversion Principle. If we wish to change authentication strategy, we can do that isolated.</p>
-<p>The constructor receives the instance of IAuthService, i.e. we use dependency injection. And then we subscribe to the <code>OnAuthStateChanged</code> event from the IAuthService. I.e. whenever the authentication state changes through logging in or out, this class wants to know about it, and react to it.<br />
-What this class then does is call the method NotifyAuthenticationStateChanged, which is located in the AuthenticationStateProvider, i.e. the superclass. This will cause the app to update.</p>
+<p>The field variable is a reference to the <code>IAuthService</code> interface we just created on the previous slide. Notice that we don't know anything about the implementation, or whether JWT is used or whatever. Again, Dependency Inversion Principle. If we wish to change authentication strategy, we can do that isolated.</p>
+<p>The constructor receives the instance of <code>IAuthService</code>, i.e. we use dependency injection.
+And then we subscribe to the <code>OnAuthStateChanged</code> event from the IAuthService, line 14. I.e. whenever the authentication state changes through logging in or out, this class wants to know about it, and react to it.<br />
+What this class then does is call the method <code>NotifyAuthenticationStateChanged()</code>, which is located in the AuthenticationStateProvider, i.e. the superclass. This will cause the app to update.</p>
 <p>The method <code>GetAuthenticationStateAsync()</code> is called whenever the blazor app needs to know whether to block or show some UI piece.<br />
-Here we just retrieve the ClaimsPrincipal from the IAuthService and return it.</p>
+Here we just retrieve the <code>ClaimsPrincipal</code> from the <code>IAuthService</code> and return it.</p>
 <h3 id="register-service">Register service</h3>
 <p>We must tell the blazor app to use our implementation. Open Program.cs, and include the line:</p>
 <p><code>builder.Services.AddScoped&lt;AuthenticationStateProvider, CustomAuthProvider&gt;();</code></p>
@@ -1086,7 +1095,7 @@ Here we just retrieve the ClaimsPrincipal from the IAuthService and return it.</
 @inject NavigationManager navMgr
 </code></pre>
 <p>We declare the page directive, i.e. the sub-uri to get to the Login page.<br />
-There is a using statement, and then two @inject statements. This gives us an instance of IAuthService (i.e. the JwtAuthService) and an instance of the NavigationManager.</p>
+There is a using statement, and then two @inject statements. This gives us an instance of IAuthService (i.e. the <code>JwtAuthService</code>) and an instance of the <code>NavigationManager</code>.</p>
 <p>The code block is here:</p>
 <pre><code class="line-numbers language-csharp">@code {
     private string userName;
@@ -1110,7 +1119,7 @@ There is a using statement, and then two @inject statements. This gives us an in
 }
 </code></pre>
 <p>We have private fields to hold the username, the password, and any error message we might need to show to the user.</p>
-<p>The <code>LoginAsync()</code> method will delegate to the IAuthService, attempting to log in. If succesful we use the NavigationManager to navigate to the home page.<br />
+<p>The <code>LoginAsync()</code> method will delegate to the <code>IAuthService</code>, attempting to log in. If successful, we use the <code>NavigationManager</code> to navigate to the home page.<br />
 In the case of any exceptions, we catch them and display the error message through the <code>errorLabel</code>.</p>
 <h3 id="the-view">The view</h3>
 <p>The below is the html/razor syntax for the view of the Login page:</p>
@@ -1147,17 +1156,21 @@ In the case of any exceptions, we catch them and display the error message throu
 &lt;/AuthorizeView&gt;
 </code></pre>
 <p>So, what's going on here?</p>
-<p>We wrap everything in the <AuthorizeView> component. Inside this we have access to information about the ClaimsPrincipal representing the currently logged in user.</p>
-<p>Notice the two sub-tags: <code>&lt;NotAuthorized&gt;</code> and <code>&lt;Authorized&gt;</code>.\</p>
+<p>We wrap everything in the <code>&lt;AuthorizeView&gt;</code> component.
+Inside this tag (Blazor component) we have access to information about the <code>ClaimsPrincipal</code> representing the currently logged in user.</p>
+<p>Notice the two sub-tags: <code>&lt;NotAuthorized&gt;</code> and <code>&lt;Authorized&gt;</code>.</p>
 <ul>
 <li>The first is &quot;active&quot; if no one is logged in, i.e. all the html inside this tag is displayed.</li>
 <li>The second contains html shown if the user <em>is</em> logged in.</li>
 </ul>
+<h5 id="notauthorized">NotAuthorized</h5>
 <p>In the NotAuthorized part we have two input fields for the username and password.</p>
 <p>If the errorLabel contains something, we display that text.</p>
 <p>At the bottom we have the button, which when pressed calls the <code>LoginAsync()</code> method.</p>
-<p>Inside the Authorized part we have access to the <code>context</code>, a variable of type <code>AuthenticationState</code>, so we can access the contained ClaimsPrincipal, and get the Name. Or any Claim we might want.</p>
-<p>The Name property is set specifically, when you add a Claim to the ClaimsPrincipal with the <code>ClaimsType</code> of <code>ClaimsType.Name</code>. We did this in the Web API's AuthController:</p>
+<h5 id="authorized">Authorized</h5>
+<p>Inside the Authorized part we have access to the <code>context</code>, a variable of type <code>AuthenticationState</code>,
+so we can access the contained <code>ClaimsPrincipal</code>, and get the Name. Or any Claim we might want.</p>
+<p>The Name property is set specifically, when you add a Claim to the <code>ClaimsPrincipal</code> with the <code>ClaimsType</code> of <code>ClaimsType.Name</code>. We did this in the Web API's AuthController:</p>
 <p><code>new Claim(ClaimTypes.Name, user.Username)</code></p>
 <p>``</p>
 <h3 id="styling">Styling</h3>
@@ -1193,7 +1206,7 @@ In the case of any exceptions, we catch them and display the error message throu
 <p><img src="Resources/LoginCard.png" alt="img.png" /></p>
 <p>You can check by running your Blazor app, and manually put in</p>
 <p><code>https://localhost:7105/login</code></p>
-<p>in the browser bar. Maybe with another port.</p>
+<p>in the browser address bar. Maybe with another port.</p>
 
 </div>
 <div class="tab">
@@ -1240,7 +1253,7 @@ In the case of any exceptions, we catch them and display the error message throu
     &lt;/NotAuthorized&gt;
 &lt;/AuthorizeView&gt;
 </code></pre>
-<p>Everything is wrapped in the AuthorizeView component, so that we inside get access to the authentication state, i.e. is someone logged in or not?</p>
+<p>Everything is wrapped in the <code>AuthorizeView</code> component, so that we inside get access to the authentication state, i.e. is someone logged in or not?</p>
 <p>If the user is Authorized, i.e. logged in, we show the Logout icon, and attach the Logout() method to the on-click event.</p>
 <p>If the user is not Authorized, i.e. not logged in, we display the Login icon.</p>
 <h3 id="styling">Styling</h3>
@@ -1281,6 +1294,7 @@ In the case of any exceptions, we catch them and display the error message throu
 <p>Start the Web API.</p>
 <p>Start the Blazor app.</p>
 <p>In the top right corner of the app, in the grey bar, you should see the Login icon.</p>
+<p><img src="Resources/LoginIconInAction.png" alt="img.png" /></p>
 <p>Click it.</p>
 <p>Type in:<br />
 User name: trmo<br />

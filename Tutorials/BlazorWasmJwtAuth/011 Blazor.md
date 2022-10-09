@@ -3,14 +3,16 @@ Now we start on the front end of things.
 
 We will see how to make a login request to our web api, receive a JWT and use that to guard various parts of the app.
 
+We will also include the JWT in requests to the server.
+
 ### Create project
 
-We start by adding a new project, of type Blazor-wasm.
+We start by adding a new project, of type Blazor-WASM.
 
 ![img.png](Resources/CreateBlazor.png)
 
 ### Add packages
-Again, we need to add a package:
+Again, we need to add a package to your new Blazor-WASM project:
 
 * Microsoft.AspNetCore.Components.Authorization
 

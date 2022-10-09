@@ -25,14 +25,14 @@ Open BlazorWasm/App.razor. Modify it to look as follows:
 </CascadingAuthenticationState>
 ```
 
-The yellow highlighted lines contains the changes. We wrap everything in <CascadingAuthenticationState>. And the <RouteView> is changed to <AuthorizeRouteView>.
+The yellow highlighted lines contains the changes. We wrap everything in `<CascadingAuthenticationState>`. And the `<RouteView>` is changed to `<AuthorizeRouteView>`.
 
-Everything inside the <NotAuthorized> tags is html to be shown, if the user tries to access something, they are not authorized to access.
+Everything inside the `<NotAuthorized>` tags (lines 5 and 8) is HTML to be shown, if the user tries to access something, they are not authorized to access.
 
-### Imports
-You should now see that the tag <CascadingAuthenticationState> is a different color than e.g. <Router...>.
+## Imports
+You should now see that the tag `<CascadingAuthenticationState>` is a different color than e.g. `<Router...>`.
 
-That's because C# recognizes the second tag as a razor component, and the first tag is not currently recognized, so it's just colored as html.
+That's because Blazor recognizes the second tag as a Blazor component, and the first tag is not currently recognized, so it's just colored as HTML.
 
 We need an import statement.
 
@@ -43,4 +43,6 @@ Open the file BlazorWasm/_imports.razor. At the end, add the following two using
 @using Microsoft.AspNetCore.Authorization
 ```
 
-Go back to App.razor, and verify the color change, indicating <CascadingAuthenticationState> is now recognized as a component. The result is that in every page or component, we can request information about the logged in user. That is convenient.
+Go back to App.razor, and verify the color change, indicating `<CascadingAuthenticationState>` is now recognized as a component. The result is that in every page or component, we can request information about the logged in user. That is convenient.
+
+The "_imports.razor" file is used to make _global_ imports, i.e. if we put a @using statement in this file, all pages implicitly have that @using statement. It can be very convenient, instead of having specific imports in each file. 
