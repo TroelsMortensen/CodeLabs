@@ -20,10 +20,19 @@
 <li class="step" onclick="setTab(1)">2 Architecture</li>
 <li class="step" onclick="setTab(2)">3 New Component</li>
 <li class="step" onclick="setTab(3)">4 DAO Implementations</li>
-<li class="step" onclick="setTab(4)">5 Add EFC</li>
-<li class="step" onclick="setTab(5)">6 Installing db tools</li>
-<li class="step" onclick="setTab(6)">7 Create DbContext</li>
+<li class="step" onclick="setTab(4)">5 +Add EFC</li>
+<li class="step" onclick="setTab(5)">6 +Installing db tools</li>
+<li class="step" onclick="setTab(6)">7 +Create DbContext</li>
 <li class="step" onclick="setTab(7)">8 Configuring tables</li>
+<li class="step" onclick="setTab(8)">9 Configuring Relationships</li>
+<li class="step" onclick="setTab(9)">10 +Create Database</li>
+<li class="step" onclick="setTab(10)">11 Add User</li>
+<li class="step" onclick="setTab(11)">12 Get Users</li>
+<li class="step" onclick="setTab(12)">13 Add Todo</li>
+<li class="step" onclick="setTab(13)">14 Get Todos</li>
+<li class="step" onclick="setTab(14)">15 Complete Todo</li>
+<li class="step" onclick="setTab(15)">16 Delete Todo</li>
+<li class="step" onclick="setTab(16)">17 The End</li>
 
         </ol>
     </div>
@@ -45,6 +54,10 @@
 We will continue working in the same Solution.</p>
 <p>This tutorial will cover swapping out the current JSON-data layer with a layer using Entity Framework Core and SQLite.</p>
 <p>We will make modifications to the server side. The client will not be touched, as it does not care how the data is saved/loaded.</p>
+<h2 id="didnt-do-parts-1-and-2">Didn't do Parts 1 and 2?</h2>
+<p>If you don't have a working app based on part 1 and 2, you can just clone a branch from GitHub, which will give the code from 1 and 2.</p>
+<p>This is the branch:  <a href="https://github.com/TroelsMortensen/WasmTodo/tree/018_PopupSuccessMessage">https://github.com/TroelsMortensen/WasmTodo/tree/018_PopupSuccessMessage</a></p>
+<p>It is the last of part 2. If you clone this, you will have the code, which is the starting point of this tutorial.</p>
 <h2 id="features">Features</h2>
 <p>We still have the same features, i.e. user stories as in the previous two tutorials, however, they are less interesting in this part.</p>
 <p>Instead, we must make substitute classes for <code>TodoFileDao</code> and <code>UserFileDao</code>. The new classes will implement the same interfaces,
@@ -52,8 +65,15 @@ which will make it easy ot let the Web API use the new layer instead of the old.
 The new EFC implementations will then be injected into the Logic layer.</p>
 <p>We will still implement the methods in the same order as the user stories, so that we can test along the way.</p>
 <h2 id="branches">Branches</h2>
-<p>The data layer methods implemented for each user story is planned to be in its own branch, similar to what you have seen so far.<br />
-I might merge some features, if there is no change to existing code.</p>
+<p>There will be only two branches:</p>
+<ol>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/019_EfcSetup">One for setting up the initial EFC stuff</a></li>
+<li><a href="https://github.com/TroelsMortensen/WasmTodo/tree/020_EfcAddUser">One for doing the most of the actual implementation</a></li>
+</ol>
+<h2 id="comment">Comment</h2>
+<p>Notice how some steps are prefixed with a &quot;+&quot;. This is because these are the main steps of setting up a database.</p>
+<p>This tutorial will contain much information besides the basic setup, e.g. related to Todos and Users and general design discussion, etc.</p>
+<p>So, when you need to set up EFC for your project or other, the +-marked steps are the relevant ones.</p>
 <h2 id="lets-go">Let's go</h2>
 <p>That should be all, let us get started.</p>
 
@@ -290,12 +310,12 @@ and it may not be easy to modify.</p>
 <li>data annotation attributes in domain classes</li>
 <li>define it in DbContext subclass, i.e. the TodoContext</li>
 </ol>
-<p>I will show both approaches here, and provide some discussion, so that you may prefer one approach over the other.</p>
-<h2 id="data-annotation-attributes">Data Annotation Attributes</h2>
+<p>I will show both approaches here, and provide some discussion, so that you may prefer one approach over the other. Or a mix of the two.</p>
+<h2 id="data-annotation-attributes">1. Data Annotation Attributes</h2>
 <p>You have seen various attributes before, e.g. on the endpoints in your REST controllers, we would put <code>[HttpGet]</code>. And on the Controller itself we put <code>[ApiController]</code>.</p>
 <p>We can also put attributes in our domain classes to define the above mentioned configuration.</p>
 <h5 id="primary-key">Primary Key</h5>
-<p>We have the attribute <code>Todo::Id</code>, it already acts as a primary key, it is a unique identifier for a Todo.</p>
+<p>We have the property <code>Todo::Id</code>, it already acts as a &quot;primary key&quot;, it is a unique identifier for a Todo.</p>
 <p>If the property is called &quot;Id&quot;, EFC will usually infer that this is the primary key.</p>
 <p>If the property is called &quot;<class-name>Id&quot;, i.e. &quot;TodoId&quot;, or &quot;UserId&quot;, EFC will usually infer that this is the primary key.</p>
 <p>In both cases, I believe the property must be of type <code>int</code> (not entirely sure, though).</p>
@@ -317,23 +337,26 @@ and it may not be easy to modify.</p>
 }
 </code></pre>
 <p>I prefer to be explicit. It minimizes confusion, I believe.</p>
+<p>If you do it like this, have an <code>int</code> Id, it will become <code>SERIAL</code>, i.e. if you don't provide a value other than <code>0</code>, the database will generate the value of the Id based on the next available number.</p>
 <h5 id="constraints">Constraints</h5>
 <p>We can also define various constraints, as mentioned above. This can be done with attributes too.</p>
 <p>If we make a property <em>nullable</em>, i.e. append a &quot;?&quot; on the type, like <code>int?</code>, we make that attribute in the database nullable: it is allowed to not be set. If we don't make a property nullable, then it is by default required in the database.</p>
-<p>We can set a max length on e.g. Title like this:</p>
+<p>We can set a max length on e.g. <code>Title</code> like this:</p>
 <pre><code class="line-numbers language-csharp">[MaxLength(50)]
 public string Title { get; }
 </code></pre>
 <p>We can define an allowed range on number types with e.g. <code>[Range(0,250)]</code>.</p>
 <p><a href="https://learn.microsoft.com/en-us/ef/ef6/modeling/code-first/data-annotations">You can find more attributes here</a></p>
 <h5 id="web-api-and-blazor">Web API and Blazor</h5>
-<p>If we apply these data attributes, they are actually also used by the Web API. Before an endpoint with a Todo argument is called, the data from the client is validated using the attributes. If the incoming data violates your attribute constraints, the request will just be denied, and not reach your endpoint.</p>
-<p>Similarly, Blazor has a built in input-form with various components. These will also use the attribute to validate the data.</p>
-<h2 id="onmodelcreating.method">OnModelCreating(..) Method</h2>
-<p>This way does not require modification to the domain classes. We can set similar information by overwriting this method in the DbContext sub-class.</p>
+<p>If we apply these data attributes, they are actually also used by the Web API. Before an endpoint with a Todo argument is called, the data from the client is validated using the attributes. If the incoming data violates your attribute constraints, the request will just be denied, and not reach your endpoint.
+<a href="https://learn.microsoft.com/en-us/aspnet/web-api/overview/formats-and-model-binding/model-validation-in-aspnet-web-api">Read about Web API model validation here</a></p>
+<p>Similarly, Blazor has a built in input-form with various components. These will also use the attribute to validate the data.
+<a href="https://learn.microsoft.com/en-us/aspnet/core/blazor/forms-and-input-components?view=aspnetcore-6.0">Read about the Blazor input forms here</a>. You were specifically not taught these, because making things from scratch gives you freedom. But now you know the basics, you are welcome to use various built in functionality or 3rd party libraries.</p>
+<h2 id="onmodelcreating.method">2. OnModelCreating(..) Method</h2>
+<p>This way does not require modification to the domain classes. We can set similar configuration by overwriting this method in the DbContext sub-class.</p>
 <h5 id="primary-key-1">Primary Key</h5>
 <p>As above, the Key can be inferred by the naming of the property.</p>
-<p>Alternatively, we can define primary keys on User and Todo like this:</p>
+<p>Alternatively, we can define primary keys on User and Todo like this (in <code>TodoContext</code>):</p>
 <pre><code class="line-numbers language-csharp">protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     modelBuilder.Entity&lt;Todo&gt;().HasKey(todo =&gt; todo.Id);
@@ -342,45 +365,573 @@ public string Title { get; }
 </code></pre>
 <p>In this way, we say that the entity &quot;Todo&quot; has a key, and the lambda expression defines which property to use as the key.</p>
 <h5 id="constraints-1">Constraints.</h5>
-<p>You can also some the constraints in <code>OnModelCreating(..)</code>. Here is an example of limiting the Todo::Title to 50 characters:</p>
+<p>You can also do some the constraints in <code>OnModelCreating(..)</code>. Here is an example of limiting the <code>Todo::Title</code> to 50 characters:</p>
 <pre><code class="line-numbers language-csharp">modelBuilder.Entity&lt;Todo&gt;().Property(todo =&gt; todo.Title).HasMaxLength(50);
 </code></pre>
 <p>It seems you can not do exactly the same constraints as with the attributes. E.g. I have found no Range, or MinLength.</p>
-<p>So, if you really need those constraints, you may have to use attributes.</p>
+<p>So, if you really need those constraints, you may have to use attributes as well.</p>
 <h3 id="do-we-need-constraints">Do We Need Constraints?</h3>
 <p>Now, whatever constraints we apply, they should obviously match the validation rules we implemented in the logic layer.</p>
 <p>And because we already validate things in the logic layer, we could just neglect them in the database.</p>
-<p>If we have the rules two places (or three if you do them in the client), then you will also have to update multiple places, if you need to change something.</p>
-<p>We could then consider just having the constraints in the database, and not in logic layer. But then the logic layer needs to trust those rules are enforced elsewhere, which is probably not a good idea.</p>
+<p>If we have the rules two places (or three if you do them in the client as well), then you will also have to update multiple places, if you need to change something.</p>
+<p>We could then consider just having the constraints in the database, and not in logic layer. But then the logic layer needs to trust those rules are enforced elsewhere, which is probably not a good idea.<br />
+What if you change database and either forget some constraints, or your new database simply does not support that kind of constraint? You must then implement the constraint in the logic layer.<br />
+You will have to evaluate options and make a qualified choice.</p>
 <h2 id="discussion">Discussion</h2>
 <p>So which approach do you use? Attributes or the OnModelCreating method.</p>
-<p>Many C# EFC examples will gladly put the attributes in the model classes. This is also true for their Web API examples, and Blazor examples. And this can be just fine.</p>
+<p>Many .NET EFC examples will gladly put the attributes in the model classes, and also use the <code>OnModelCreating()</code> method. This is also true for their Web API examples, and Blazor examples. And this can be just fine.</p>
+<p>However..</p>
 <h4 id="clean-architecture">Clean Architecture</h4>
-<p>However, remember the Clean Architecture. General diagram on the left, our own system on the right:</p>
+<p>Remember the Clean Architecture. General diagram on the left, our own system on the right:</p>
 <p><img src="Resources/CleanGeneralVsTodoApp.png" alt="img.png" /></p>
-<p>On the right side is the structure for the Todo App. The general diagram also considers things like using some third party api (external interfaces), and the web, and various devices (keyboard, mouse, hard drives, etc).
-So, the right hand diagram shows only what is relevant for our app.</p>
-<p>We have three layers: Web API, logic, data access. And we have a domain component with the domain classes. These things are contained in the green, red, and yellow rings. The blue is everything outside of that, outside the code of our server app: The client app (Blazor), the file/database where the data is stored.</p>
-<p>Dependencies go inward: A ring knows about the ring inside it. A ring knows nothing about the ring outside it. Compare this to the component diagram and inter-component dependencies shown on slide 2.<br />
-An outer ring may not cause changes to an inner ring. What does that mean?</p>
+<p>On the right side is the structure for the Todo App. The general diagram (left) also considers things like using some third party api (external interfaces), and the web, and various devices (keyboard, mouse, hard drives, etc).
+The right hand diagram shows only what is relevant for our app.</p>
+<p>We have three layers: Web API, logic, data access. And we have a domain component with the domain classes (and other stuff). These things are located in the green, red, and yellow rings.
+The blue is everything outside of that, outside the code of our server app: The client app (Blazor), the file/database where the data is stored, 3rd party stuff.</p>
+<p>Dependencies go inward: A ring knows about the ring <em>inside</em> it. A ring knows nothing about the ring <em>outside</em> it.
+Compare this to the component diagram and inter-component dependencies shown on slide 3.<br />
+Here's the important part: <strong>An outer ring may not cause changes to an inner ring</strong>.<br />
+What does that mean?</p>
 <ul>
-<li>The database is in an outer most ring. If we initially use a relational database like Postgres, and later want to change to something else, it should not cause change anywhere else than the Gateways (our DAOs).</li>
+<li>The database is in an outer most ring (blue). If we initially use a relational database like Postgres, and later want to change to something else, it should not cause change anywhere else than the Gateways (our DAOs).</li>
 <li>If we swap out the REST Web API with a gRPC server, it should not cause changes to the red or yellow rings, i.e. logic or domain.</li>
-<li>If we introduce new logic rules, it shall not cause modifications to the Domain.</li>
+<li>If we introduce new logic rules, it should not cause modifications to the Domain.</li>
 </ul>
 <p>This is at least the ideal, when doing a Clean-architecture approach, as we have attempted.</p>
 <h4 id="attributes-approach">Attributes approach</h4>
-<p>If we use this approach, we need to modify the domain classes, i.e. the yellow ring. Because of something in the blue ring. We use EFC (or Web API) and therefore, we modify the Domain.<br />
+<p>If we use this approach, we need to modify the domain classes, i.e. the yellow ring.
+Because of something in the green ring (DAOs). We use EFC (or Web API) and therefore, we modify the <em>Domain</em>.<br />
 If we change to not use EFC (or the Web API), these attributes are no longer relevant, and shouldn't be there.<br />
-This means that a change to the outer blue ring, will cause a change to the inner yellow ring, and it goes against what is dictated by clean architecture.</p>
+This means that a change to the outer green ring, will cause a change to the inner yellow ring, and it goes against what is dictated by Clean architecture.</p>
 <h4 id="onmodelcreating-appraoch">OnModelCreating appraoch</h4>
-<p>If we use this approach, all setup is done in the green ring, in the DAOs/Gateways area. We need not touch the Domain. If we later remove EFC, and introduce a file storage again, or just manually typing the SQL as in SEP2, it will not cause changes to the Domain (inner yellow ring).<br />
+<p>If we use this approach, all setup is done in the green ring, in the DAOs/Gateways area.
+We need not touch the Domain. If we later remove EFC, and introduce a file storage again, or
+just manually typing the SQL as in SEP2, or use a document based database, or whatever else, it will not cause changes to the Domain (inner yellow ring).<br />
 So with this approach, we adhere to the Clean principles.</p>
 <h4 id="conclusion">Conclusion</h4>
-<p>Based on the above, you may conclude that you shall not use the attributes. That is not strictly true. As mentioned, many .NET examples will gladly use these attributes, and often together with the OnModelCreating method. The point is just that you make an informed choice.\</p>
-<p>It is not that often, a database is swapped out. And if you use EFC and swap out one relational database for another, it is minimal work.<br />
-If you swap out a relational database for a document based, you will no longer need the attributes, but on the other hand, in this case they do nothing. So you may not need to remove them.</p>
-<p><del>TODO SNAK OM at man også kan lave subclasses. Fx hvis man vil have two-way navigation properties.</del></p>
+<p>Based on the above, you may conclude that you shall not use the attributes. That is not strictly true. As mentioned, many .NET examples will gladly use these attributes, and often together with the OnModelCreating method. The point is just that you make an informed choice.</p>
+<p>It is not that often a database is swapped out. And if you use EFC and swap out one relational database for another, it is minimal work.<br />
+If you swap out a relational database for a document based, you will no longer need the attributes in Domain classes, but on the other hand, in this case they do nothing. So you may not need to remove them.</p>
+<h2 id="configuring-the-tables-1">Configuring the tables</h2>
+<p>For now, the approach of this tutorial will be the OnModelCreating, without constraints.<br />
+In TodoContext, we then have the following method:</p>
+<pre><code class="line-numbers language-csharp">protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity&lt;Todo&gt;().HasKey(todo =&gt; todo.Id);
+    modelBuilder.Entity&lt;User&gt;().HasKey(user =&gt; user.Id);
+}
+</code></pre>
+<p>Now, we have configured each table, with keys and constraints. What about relationships, i.e. foreign keys? This is how we bind the data together.<br />
+We will discuss that next, because there are again some considerations, and different approaches.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="configuring-relationships">Configuring Relationships</h1><hr/>
+<p>An object oriented model have relationships between model classes, usually in the form of associations. Our domain classes are like this:</p>
+<p><img src="Resources/DomainClasses.png" alt="img.png" /></p>
+<p>This means, the Todo has a reference to its owner, a User. The Todo knows about the User, but the User does not know about the Todo.</p>
+<p>We could have flipped the association, and said the User includes a list of all their Todos.</p>
+<p>The intention is that <strong>&quot;a user can be assigned to many todos&quot;</strong>.</p>
+<p>Usually in the object oriented domain, the relationships between classes are one-way, as above.</p>
+<h2 id="generating-tables">Generating Tables</h2>
+<p>If we generate the database now, we will get a table per domain class, i.e. Todo and User.
+We will get a relationship between them as shown in this EER-diagram:</p>
+<p><img src="Resources/EER.png" alt="img.png" /></p>
+<p>Notice there is no &quot;Owner&quot; on Todo, because that is implied by the relationship.</p>
+<p>And if you know your databases, you know this is implemented in the database as these tables:</p>
+<hr />
+<h3 id="relational-schema">Relational schema</h3>
+<p><strong>Todo</strong>(Id, Title, IsCompleted, Owner)<br />
+<strong>Primary key</strong>: Id
+<strong>Foreign key</strong>: Owner <strong>references</strong> User(Id)</p>
+<p><strong>User</strong>(Id, UserName)<br />
+<strong>Primary key</strong>: Id</p>
+<hr />
+<p>So, the Todo gets a foreign key to the User.</p>
+<p>This is what EFC will generate for us, whether we use the object oriented association of &quot;Todo -&gt; User&quot; or &quot;Todo &lt;- User&quot;. Either way, it is a 1:* relationship, which results in the above relational schema.</p>
+<h2 id="what-is-a-navigation-property">What is a Navigation Property?</h2>
+<p>The relationship is implemented in the database as a foreign key, and in the domain classes, we use an association, i.e.:</p>
+<ul>
+<li>Todo has an association (Owner) to User, or</li>
+<li>User could have a list of Todos</li>
+</ul>
+<p>This association is called a &quot;Navigation Property&quot;, it is used to navigate around between objects.
+Essentially it is an object oriented implementation of a foreign key.</p>
+<h2 id="two-way-navigation-properties">Two-Way Navigation Properties</h2>
+<p>Currently, our domain classes have a one-way navigation property, i.e. Todo -&gt; User.</p>
+<p>Sometimes, you may want to make a two-way relationship, i.e. add Navigation Properties on both sides. This can vastly simplify some queries against the database, depending on what side of the data you start from. Example:</p>
+<ul>
+<li>If you want to load a Todo with the User, it is easy because the Todo includes the User.</li>
+<li>If you want to load a User with all its Todos, it is much more complicated, because Users do not know about their Todos.</li>
+</ul>
+<p>In the latter example, you would have to go through all Todos, and check if their User is the one, you wish to load.</p>
+<p>If we add a Navigation Property, User -&gt; Todo (i.e. the list in User), it is easily loaded: Find a User, also load the associated Todos.</p>
+<p>So, often it is a benefit to have two-way navigation properties, and this is commonly seen.</p>
+<p>The classes would then look like this:</p>
+<p><img src="Resources/TwoWayNavProp.png" alt="img.png" /></p>
+<p>Notice the User has a collection of all Todos assigned to it.</p>
+<p>However:</p>
+<h2 id="clean-like-approach">Clean-like approach</h2>
+<p>Remember the discussion on the previous slide. We are again about the modify domain classes, because of an outer ring.</p>
+<h3 id="consequences">Consequences</h3>
+<p>This circular dependency can have unforeseen consequences because object oriented classes don't always do too well with these. If we keep some data in memory and wish to update the assignee of a Todo, we would have to modify both the Todo<span>Owner and the User</span>Todos, i.e. double work, with the potential of forgetting some updates.\
+We might need this double work for both updates, deletes, creates. And with a larger domain, this can escalate.</p>
+<p>JSON cannot be serialized with circular dependencies, so if we did the two-way, we could no longer use our implementation of the File storage. Now, maybe that's not a big concern, because the File storage functionality is in an outer ring, and shouldn't affect the domain. But still.</p>
+<h3 id="the-fix">The Fix?</h3>
+<p>If we really want to keep things separated, stick to the clean approach, we must not touch our domain classes.<br />
+An alternative would then be do define a set of classes for the EFC layer only. The DAO interfaces would still work with Todo and User, but the EFC layer would convert these to TodoEFC and UserEFC as needed.<br />
+These new classes would be sub-classes of the domain classes. And in these we specify the EFC-related stuff, e.g. attributes and relationships.</p>
+<p>It could look like this:</p>
+<p><img src="Resources/EfcDomainClasses.png" alt="img.png" /></p>
+<p>The TodoContext would then contain DbSets of the Efc classes.
+We don't need a sub-class of Todo for now, but it might still be a good idea to creat one,
+in case of future changes to the system, which shouldn't affect Todo.</p>
+<p>The TodoContext would then look like this:</p>
+<pre><code class="line-numbers language-csharp">public class TodoContext : DbContext
+{
+    public DbSet&lt;UserEfc&gt; Users { get; set; }
+    public DbSet&lt;TodoEfc&gt; Todos { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite(&quot;Data Source = Todo.db&quot;);
+    }
+...
+</code></pre>
+<p>This would potentially create some translation work between logic and dao layer. E.g. you get a UserEfc from the database, but should return a User. On the other hand, if UserEfc extends User, that might not be a problem. The logic layer gets a User, and doesn't know it is actually a UserEfc.</p>
+<p>I have seen a few semester projects use this approach with some success. However, I don't think this is a common approach, but instead people resort to modifying the domain classes.</p>
+<p>We will just update the domain classes.</p>
+<p><a href="https://www.reddit.com/r/dotnet/comments/yd1h0f/keeping_efc_navigation_properties_out_of_the/">I have asked this question on reddit</a>, maybe someone has given input, when you read this. Eventually this paragraph may get updated.</p>
+<h2 id="update-to-domain-classes">Update to Domain Classes</h2>
+<p>This means an update to the User class, it looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class User
+{
+    public int Id { get; set; }
+    public string UserName { get; set; }
+
+    public ICollection&lt;Todo&gt; Todos { get; set; }
+}
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="create-the-database">Create the Database</h1><hr/>
+<p>We have done the configuring and we are ready to let EFC generate the database for us.</p>
+<p>First, we must generate a Migration. This is a file containing information about how to create/update the database.</p>
+<p>Every time the domain classes change or a new class is added, we need to create a new migration, and apply it to the database.</p>
+<p>In this way the database can be regularly updated.</p>
+<h2 id="modify-todo">Modify Todo</h2>
+<p>First, we need to modify the Todo class. It currently looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class Todo
+{
+    public int Id { get; set; }
+    public User Owner { get; }
+    public string Title { get; }
+
+    public bool IsCompleted { get; set; }
+
+    public Todo(User owner, string title)
+    {
+        Owner = owner;
+        Title = title;
+    }
+}
+</code></pre>
+<p>We have set properties for Id and IsCompleted, but not the other two. The are read-only. They are instead set through the constructor.\</p>
+<p>The current setup with a constructor and some read-only properties is because of various code in the logic layer.<br />
+EFC needs public set-properties. And apparently EFC cannot set navigation properties through the constructor, it must be through a public set-property.</p>
+<p>So, this is a bit annoying, but I have not found a good way around it.<br />
+We need to make changes to domain and logic.</p>
+<p>The Todo class should be changed to:</p>
+<pre><code class="line-numbers language-csharp">public class Todo
+{
+    public int Id { get; set; }
+    public User Owner { get; set; }
+    public string Title { get; set; }
+
+    public bool IsCompleted { get; set; }
+}
+</code></pre>
+<p>This results in compile errors in <code>TodoLogic</code>, because we removed the constructor. Let's fix those.</p>
+<p>First, line 27 in method <code>CreateAsync()</code>, where a new Todo is created. Change the instantiation to:</p>
+<pre><code class="line-numbers language-csharp">Todo todo = new Todo()
+{
+    Owner = user,
+    Title = dto.Title
+};
+</code></pre>
+<p>Second, what is now line 72, in method <code>UpdateAsync()</code>, where a Todo is created. Change this instantiation to:</p>
+<pre><code class="line-numbers language-csharp">Todo updated = new()
+{
+    Id = existing.Id,
+    Owner = userToUse,
+    Title = titleToUse,
+    IsCompleted = completedToUse
+};
+</code></pre>
+<h5 id="comment">Comment</h5>
+<p>The tutorial was written on the fly, and I did not originally know about this problem with EFC. Otherwise, we would have made the model classes originally without constructors. It is unfortunate.</p>
+<h2 id="generate-a-migration">Generate a Migration</h2>
+<p>A migration is created through the terminal (or command line interface).</p>
+<p>Open the terminal.</p>
+<p>Navigate to the EfcData project. Most likely when you open the terminal, it is located in the solution directory. You want to enter the EfcDataAccess directory:</p>
+<pre><code>cd EfcDataAccessc
+</code></pre>
+<p><img src="Resources/NavigateToEfc.gif" alt="" /></p>
+<p>Once there, type in the following:</p>
+<pre><code>dotnet ef migrations add InitialCreate
+</code></pre>
+<p>The last part, <code>InitialCreate</code>, is the name for the migration we are about to create.
+You should generally call it something, which indicates what this migration does,
+e.g. &quot;UserEntityAdded&quot;, &quot;TodoEntityUpdated&quot;, &quot;EmailAddedToUser&quot;, or something similar. These names can be compared to Git commit message.<br />
+Migrations are sort of a form of version control, similar to how you use Git.</p>
+<p>Execute the above command. You should get:</p>
+<pre><code>PS C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess&gt; dotnet ef migrations add InitialCreate
+Build started...
+Build succeeded.
+Done. To undo this action, use 'ef migrations remove'
+PS C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess&gt;
+</code></pre>
+<p>Now, look in the EfcDataAccess component, you should see a new folder, Migrations.</p>
+<p><img src="Resources/MigrationsFolder.png" alt="img.png" /></p>
+<p>Here is the &quot;version control&quot; of your database. These files keep track of the modifications to your code, which should eventually be applied to the database. And the files keep track of which of the migrations are actually applied. Maybe you have a few migrations, which have not yet been applied to the database.<br />
+When you then update the database, EFC will figure out the difference, and apply the necessary migration(s).</p>
+<p>This folder should probably also be under version control for your projects, so that when one group changes the database, the others can get the update.</p>
+<h4 id="deleting-the-migrations">Deleting the Migrations</h4>
+<p>Sometimes, you may want a &quot;hard reset&quot;, if you somehow mess up. You can delete the Migrations folder, along with the database file generated on the next slide, and start over.</p>
+<p>This can best be done with SQLite. When using other databases, go google how to revert a migration.</p>
+<h2 id="apply-a-migration">Apply a Migration</h2>
+<p>The next step is to apply the migration to your database. Currently we have no database, so it will be created the first we apply an update.</p>
+<p>Again, in the terminal, and in the EfcDataAccess directory, we use the following command:</p>
+<pre><code>dotnet ef database update
+</code></pre>
+<p>Like so:</p>
+<pre><code>PS C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess&gt; dotnet ef database update
+Build started...
+Build succeeded.
+Applying migration '20221025111855_InitialCreate'.
+Done.
+PS C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess&gt;
+</code></pre>
+<p>Whenever a new migration is created (or multiple), you can do the above to apply them.</p>
+<p>Again, in the EfcDataAccess component, you should now see your database file:</p>
+<p><img src="Resources/DatabaseFileAdded.png" alt="img.png" /></p>
+<h2 id="update-path">Update path</h2>
+<p>Finally, in the TodoContext, we have the piece of code, which points to the db file:</p>
+<pre><code class="line-numbers language-csharp">protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    optionsBuilder.UseSqlite(&quot;Data Source = Todo.db&quot;);
+}
+</code></pre>
+<p>This is a relative path, from the EfcDataAccess component root. However, the program is started from WebAPI component.
+So, the path to the file should be relative to this component. Modify the above code to:</p>
+<pre><code class="line-numbers language-csharp">protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    optionsBuilder.UseSqlite(&quot;Data Source = ../EfcDataAccess/Todo.db&quot;);
+}
+</code></pre>
+<p>The <code>..</code> means to navigate to a parent folder, which is TodoAppWasm solution folder. Then into the EfcDataAccess folder (component), and the the Todo.db file.</p>
+<p>Alternatively, you can provide the absolute path, something like:</p>
+<pre><code>C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess\Todo.db
+</code></pre>
+<p>However, that path will be different between group members, so you would have to modify it. Alternatively this can be put into a local configuration file, which is not under version control. You'll have to google how to do this.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-user-functionality">Add User Functionality</h1><hr/>
+<p>We are ready to update the first user story, adding a new user.</p>
+<p>The code for the rest of the tutorial can be found in <a href="https://github.com/TroelsMortensen/WasmTodo/tree/020_EfcAddUser">this branch</a></p>
+<h2 id="add-todocontext-as-a-service">Add TodoContext as a Service</h2>
+<p>In WebAPI/Program.cs we already added UserEfcDao and TodoEfcDao as services.</p>
+<p>We now need the TodoContext, so that it can be injected when needed.</p>
+<p>Add the following:</p>
+<pre><code class="line-numbers language-csharp">builder.Services.AddDbContext&lt;TodoContext&gt;();
+</code></pre>
+<p>This method has an overload which takes an argument, where you can specify the database connection string. We did that in the TodoContext, where we said &quot;Data source = Todo.db&quot;, but it can also be done here.<br />
+This latter approach seems to be the usual, though it doesn't change much for us. It does however make it easier to change database, if we provided the connection info in Program.cs instead. You may google how to, if you wish.</p>
+<h2 id="inject-todocontext">Inject TodoContext</h2>
+<p>First, we must inject a TodoContext into the *EfcDao classes, similar to how we injected a FileContext in the *FileDao classes.</p>
+<p>Add the following code to UserEfcDao:</p>
+<pre><code class="line-numbers language-csharp">private readonly TodoContext context;
+
+public UserEfcDao(TodoContext context)
+{
+    this.context = context;
+}
+</code></pre>
+<p>And do similar for the TodoEfcDao, now that your at it (obviously the constructor is named differently in that class).</p>
+<h2 id="add-user-method">Add User Method</h2>
+<p>Open the class UserEfcDao. We need to implement the method bodies now.</p>
+<p>We start with the <code>CreateAsync()</code> method.</p>
+<p>The interaction with the TodoContext will be pretty similar to how we used the FileContext. However, we don't need to manually calculate and set the Id. This is done by the database, when the Id is an <code>int</code>, and we provide the value <code>0</code>.</p>
+<p>The code looks like this:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;User&gt; CreateAsync(User user)
+{
+    EntityEntry&lt;User&gt; newUser = await context.Users.AddAsync(user);
+    await context.SaveChangesAsync();
+    return newUser.Entity;
+}
+</code></pre>
+<p>The database sets the Id of the User, which is why it may be relevant to return the created User, now with the correct Id.</p>
+<p>We can now also use the asynchronous functionality of the DbContext class.</p>
+<h2 id="getbyusername-method">GetByUsername Method</h2>
+<p>This method is used, because before adding a new User, the logic layer will ask whether the selected user name is taken.<br />
+So, we need to implement this method as well.</p>
+<p>It should behave similarly to the same method in UserFileDao.</p>
+<p>Give it a go yourself first. You cannot use <code>Equals(userName, StringComparison.OrdinalIgnoreCase)</code>, as this cannot be translated to SQL.<br />
+Instead you can do <code>u.UserName.ToLower().Equals(userName.ToLower())</code>, i.e. make both user names lower case and compare.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task&lt;User?&gt; GetByUsernameAsync(string userName)
+{
+    User? existing = await context.Users.FirstOrDefaultAsync(u =&gt;
+        u.UserName.ToLower().Equals(userName.ToLower())
+    );
+    return existing;
+}
+</code></pre>
+</details>
+<h2 id="test">Test</h2>
+<p>Run your Web API, and have it open Swagger.</p>
+<p>Use the POST /Users end point to create a new user.</p>
+<h2 id="open-in-ide-database-manager">Open in-IDE Database Manager</h2>
+<p>How do we verify the user was created? You should have gotten a 201 response code, but is the User in the database?</p>
+<p>You can open a database tool here:</p>
+<p><img src="Resources/DatabaseTool.png" alt="img.png" /></p>
+<p>Or, on the right side of Rider, there is a menu bar with vertical tabs, on of them called &quot;Database&quot;.</p>
+<p>We are going to add the Todo.db SQLite file here.</p>
+<p>We need a &quot;new data source wizard&quot;. You should be able to just drag the Todo.db into the Database view. Alternatively:</p>
+<p><img src="Resources/OpenDbSourceWizard.png" alt="img.png" /></p>
+<p>You should get this window:</p>
+<p><img src="Resources/AddDbSourceWizard.png" alt="img.png" /></p>
+<ol>
+<li>Give the source a name, it can be anything.</li>
+<li>Mine says &quot;Update&quot;, yours probably says install driver. Do so.</li>
+<li>Skipped step three, apparently</li>
+<li>Locate the .db file, which should then update the URL</li>
+<li>Test the connection</li>
+<li>Click <kbd>OK</kbd></li>
+</ol>
+<p>You should then see a view, similar to DataGrip (if you're familiar):</p>
+<p><img src="Resources/TodoSourceOpened.png" alt="img.png" /></p>
+<p>Here you can see all the tables, e.g. Todos and Users. Double click them, or expand them to inspect.<br />
+This is usually a good idea after each applied migration, to make sure the database looks as you expect.</p>
+<p>If you double click on Users, you will open the table, and should see the newly created User from the test above.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="get-users">Get Users</h1><hr/>
+<p>Next, we implement the functionality of retrieving a collection of Users. The method is already there in UserEfcDao. It just needs a body.</p>
+<p>We don't convert the Users to IEnumerable, like we did in UserFileDao. This time we use IQueryable.</p>
+<p>Otherwise, the method is very similar:</p>
+<pre><code class="line-numbers language-csharp">public async Task&lt;IEnumerable&lt;User&gt;&gt; GetAsync(SearchUserParametersDto searchParameters)
+{
+    IQueryable&lt;User&gt; usersQuery = context.Users.AsQueryable();
+    if (searchParameters.UsernameContains != null)
+    {
+        usersQuery = usersQuery.Where(u =&gt; u.UserName.ToLower().Contains(searchParameters.UsernameContains.ToLower()));
+    }
+
+    IEnumerable&lt;User&gt; result = await usersQuery.ToListAsync();
+    return result;
+}
+</code></pre>
+<p>The <code>IQueryable</code> is a <em>representation</em> of a query, not yet loaded, but in the process of being constructed.<br />
+In the if-statement we expand on the query, i.e. the SQL expression, we are building.</p>
+<p>Only when we use the result, i.e. by converting to list, do we actually execute the query against the database.<br />
+This is an important point. If you initially convert to list or similar, you'll load the entire table. This is not efficient.</p>
+<h2 id="test-setup">Test Setup</h2>
+<p>Before testing, let's add a few more users. You can do this through the Swagger UI.<br />
+Or, open the Database tool again, double click on the Users table. You can add more rows here.</p>
+<p><img src="Resources/AddUsers.gif" alt="" /></p>
+<p>Notice how the Id is generated automatically.</p>
+<p>Now run the Web API, and test the GET /Users endpoint. Remember you can include filtering, by the user name containing some string.<br />
+Test that it works with both upper case and lower case letters.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-todo">Add Todo</h1><hr/>
+<p>For this we first need the method <code>UserEfcDao::GetByIdAsync</code>. Then the method <code>TodoEfcDao::CreateAsync</code>.</p>
+<h2 id="get-user-by-id">Get User by Id</h2>
+<p>It should retrieve a User by its Id. You have previously used the method <code>FirstOrDefault</code>. You can do that again.<br />
+Or you can use <code>Find()</code>, it takes an id of type int.</p>
+<p>Give it a go.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task&lt;User?&gt; GetByIdAsync(int id)
+{
+    User? user = await context.Users.FindAsync(id);
+    return user;
+}
+</code></pre>
+</details>
+<h2 id="create-todo">Create Todo</h2>
+<p>Then we go to <code>TodoEfcDao::CreateAsync</code>, implement this.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task&lt;Todo&gt; CreateAsync(Todo todo)
+{
+    EntityEntry&lt;Todo&gt; added = await context.Todos.AddAsync(todo);
+    await context.SaveChangesAsync();
+    return added.Entity;
+}
+</code></pre>
+</details>
+<h2 id="next-problem">Next problem</h2>
+<p>We have added two-way navigation properties to the domain classes, i.e. Todo associates User, and User associates Todo.<br />
+The Web API will return JSON. We cannot serialize objects to JSON if there are circular dependencies, which is what we have.</p>
+<p>So, two approaches to fixing this:</p>
+<ol>
+<li>We return a customized DTO instead of the Todo from the Create endpoint.</li>
+<li>We add the <code>[JsonIgnore]</code> attribute to User::Todos property</li>
+</ol>
+<p>We will go with the second approach, because this will sort of take us back to the original setup, before adding navigation properties.<br />
+And it causes fewer changes, than having to return a DTO.</p>
+<p>So, make this modification:</p>
+<pre data-line="5"><code class="line-numbers language-csharp">public class User
+{
+    public int Id { get; set; }
+    public string UserName { get; set; }
+    [JsonIgnore]
+    public ICollection&lt;Todo&gt; Todos { get; set; }
+}
+</code></pre>
+<p>Again, we have to modify the domain because of some outer ring.</p>
+<p>We could conclude, that domain classes should only exist in Domain, Logic, and DataAccess layers. Layers above logic, i.e. Web API, should only work with DTOs. This is probably the better approach.<br />
+But that would require too many changes.</p>
+<h2 id="test">Test</h2>
+<p>.. this functionality through Swagger. It's the POST /Todos endpoint.</p>
+<p>You can verify the success through the Database tool, by opening the Todos table. Notice the foreign key is set, because the Todo object had a reference to a User object.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="get-todos">Get Todos</h1><hr/>
+<p>This is the method <code>TodoEfcDao::GetAsync()</code>.</p>
+<p>It is going to look similar to the <code>TodoFileDao.GetAsync()</code>, but similar to the Get User method, we will use an IQueryable instead of IEnumerable.</p>
+<p>Give it a go yourself. Remember we want to also load the Users, i.e. <code>Todo::Owner</code>, with the <code>Include()</code> method.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task&lt;IEnumerable&lt;Todo&gt;&gt; GetAsync(SearchTodoParametersDto searchParams)
+{
+    IQueryable&lt;Todo&gt; query = context.Todos.Include(todo =&gt; todo.Owner).AsQueryable();
+    
+    if (!string.IsNullOrEmpty(searchParams.Username))
+    {
+        // we know username is unique, so just fetch the first
+        query = query.Where(todo =&gt;
+            todo.Owner.UserName.ToLower().Equals(searchParams.Username.ToLower()));
+    }
+    
+    if (searchParams.UserId != null)
+    {
+        query = query.Where(t =&gt; t.Owner.Id == searchParams.UserId);
+    }
+    
+    if (searchParams.CompletedStatus != null)
+    {
+        query = query.Where(t =&gt; t.IsCompleted == searchParams.CompletedStatus);
+    }
+    
+    if (!string.IsNullOrEmpty(searchParams.TitleContains))
+    {
+        query = query.Where(t =&gt;
+            t.Title.ToLower().Contains(searchParams.TitleContains.ToLower()));
+    }
+
+    List&lt;Todo&gt; result = await query.ToListAsync();
+    return result;
+}
+</code></pre>
+<p>The method is structured in the same way as the previous version in TodoFileDao.\</p>
+<p>Notice, we again use the IQueryable, which <em>just represents an SQL statement being constructed</em>.<br />
+We are not executing anything against the database until the second last statement <code>query.ToListAsync()</code>.<br />
+This is where the SQL is sent to the database, executed, and a result is returned.</p>
+</details>
+<h2 id="test">Test</h2>
+<p>Create a few more Todos, maybe through the Database tool. The IsCompleted is represented by 0 or 1, i.e. false or true.</p>
+<p>Then use Swagger to test. Try various filter parameters.</p>
+<p>You will notice the Owner objects are also loaded in the result:</p>
+<p><img src="Resources/GetTodosTest.png" alt="img.png" /></p>
+<p>The &quot;owner&quot; field is included here, because of the <code>Include(todo =&gt; todo.Owner)</code> call at the start of the method.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="complete-todo">Complete Todo</h1><hr/>
+<p>This was actually &quot;update todo&quot;. I.e. we could update more properties than just the IsCompleted. That part was handled by the Logic layer.</p>
+<p>We need two methods in TodoEfcDao: UpdateAsync and GetByIdAsync.</p>
+<h2 id="getbyidasync">GetByIdAsync()</h2>
+<p>This should be straight forward.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task&lt;Todo?&gt; GetByIdAsync(int todoId)
+{
+    Todo? found = await context.Todos.FindAsync(todoId);
+    return found;
+}
+</code></pre>
+</details>
+<h2 id="updateasync">UpdateAsync()</h2>
+<p>In the FileContext, we would remove, then add a Todo.<br />
+The DbSet has an Update method, which will search for an existing object with the same Id, and just overwrite the data.</p>
+<p>There is a detail to discuss, here's the method:</p>
+<pre><code class="line-numbers language-csharp">public async Task UpdateAsync(Todo todo)
+{
+    context.ChangeTracker.Clear();
+    context.Todos.Update(todo);
+    await context.SaveChangesAsync();
+}
+</code></pre>
+<p>I assume the last two statements make sense, but what is the first about?</p>
+<h4 id="what-is-the-changetracker">What is the ChangeTracker?</h4>
+<p>Your DbContext subclass has a kind of <em>cache</em>, i.e. the ChangeTracker.
+It keeps previously loaded objects in memory. It keeps added objects, or tracks that objects are removed or updated. It tracks changes.<br />
+When the SaveChanges is called, everything in the ChangeTracker is submitted to the database in a transaction.<br />
+This is the &quot;Unit of Work&quot; design pattern.</p>
+<p>If you fetch an object from the database twice in a row, the first time it will be retrieved from the database. It is then held in memory, in the ChangeTracker.<br />
+But the second time, the object already exists in memory, so that is returned instead of contacting the database.</p>
+<p>When doing this update, the above <code>GetByIdAsync()</code> is called, fetching a Todo and caching it, i.e. keeping it in memory.<br />
+Then the <code>UpdateAsync()</code> is called, and the <code>Update()</code> call tries to retrieve a Todo by the argument <code>todo</code>'s Id. But this is the same Todo that we just fetched before.<br />
+It will result in an exception that we are trying to keep the same object twice in the ChangeTracker.</p>
+<p>The simple way around this is just to clear the cache, as is done above.<br />
+Alternatively we could fetch the Todo again (now from the cache), update the properties, indicate the Todo has been modified, and then save the changes.<br />
+This would, however, move the &quot;update logic&quot;, i.e. which properties to update, to the Data layer. Currently that is in the Logic layer.</p>
+<p>There may be a middle-ish way too, which I don't know about.</p>
+<h2 id="test">Test</h2>
+<p>.. this by running the Web API, and using the PATCH /Todos endpoint.</p>
+<p>See if you can complete a Todo. The &quot;try it out&quot; option in Swagger requires you to fill in all data, so find that through another endpoint or the Database tool in Rider.<br />
+Verify result either through Database tool, or another endpoint.</p>
+<p>See if you can update a Title.</p>
+<p>See if you can re-assign a Todo to a different User.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-todo">Delete Todo</h1><hr/>
+<p>There is just this one method left in the TodoEfcDao class.</p>
+<p>It works similarly to the File version: find existing todo, remove it, save changes.</p>
+<p>Give it a go.</p>
+<details>
+<summary>hint</summary>
+<pre><code class="line-numbers language-csharp">public async Task DeleteAsync(int id)
+{
+    Todo? existing = await GetByIdAsync(id);
+    if (existing == null)
+    {
+        throw new Exception($&quot;Todo with id {id} not found&quot;);
+    }
+
+    context.Todos.Remove(existing);
+    await context.SaveChangesAsync();
+}
+</code></pre>
+<p>We check if the Todo exists. Then remove it from the Todos set. Then we save the changes.</p>
+</details>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-end">The End</h1><hr/>
+<p>We have now finished swapping out the File data storage with a different component using EFC.</p>
+<p>Mostly, it was pretty painless, we didn't have to modify much in the existing code. There were some unforeseen, unfortunate necessary changes, but I hope you can still see the purpose of the Clean Architecture approach.</p>
+<p>So far we have done integration testing, just using the Web API. You should now expand the testing to scenario testing, i.e. use the Blazor app to test whether the swapped out functionality works.</p>
 
 </div>
 
