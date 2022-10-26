@@ -16,12 +16,12 @@ You have seen various attributes before, e.g. on the endpoints in your REST cont
 
 We can also put attributes in our domain classes to define the above mentioned configuration.
 
-##### Primary Key
+#### Primary Key
 We have the property `Todo::Id`, it already acts as a "primary key", it is a unique identifier for a Todo.
 
 If the property is called "Id", EFC will usually infer that this is the primary key. 
 
-If the property is called "<class-name>Id", i.e. "TodoId", or "UserId", EFC will usually infer that this is the primary key.
+If the property is called `<class-name>Id`, i.e. "TodoId", or "UserId", EFC will usually infer that this is the primary key.
 
 In both cases, I believe the property must be of type `int` (not entirely sure, though).
 
@@ -49,7 +49,7 @@ I prefer to be explicit. It minimizes confusion, I believe.
 
 If you do it like this, have an `int` Id, it will become `SERIAL`, i.e. if you don't provide a value other than `0`, the database will generate the value of the Id based on the next available number.
 
-##### Constraints
+#### Constraints
 
 We can also define various constraints, as mentioned above. This can be done with attributes too.
 
@@ -66,7 +66,7 @@ We can define an allowed range on number types with e.g. `[Range(0,250)]`.
 
 [You can find more attributes here](https://learn.microsoft.com/en-us/ef/ef6/modeling/code-first/data-annotations)
 
-##### Web API and Blazor
+#### Web API and Blazor
 If we apply these data attributes, they are actually also used by the Web API. Before an endpoint with a Todo argument is called, the data from the client is validated using the attributes. If the incoming data violates your attribute constraints, the request will just be denied, and not reach your endpoint.
 [Read about Web API model validation here](https://learn.microsoft.com/en-us/aspnet/web-api/overview/formats-and-model-binding/model-validation-in-aspnet-web-api)
 
@@ -77,7 +77,7 @@ Similarly, Blazor has a built in input-form with various components. These will 
 
 This way does not require modification to the domain classes. We can set similar configuration by overwriting this method in the DbContext sub-class.
 
-##### Primary Key
+#### Primary Key
 
 As above, the Key can be inferred by the naming of the property.
 
@@ -93,9 +93,9 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 
 In this way, we say that the entity "Todo" has a key, and the lambda expression defines which property to use as the key.
 
-##### Constraints.
+#### Constraints.
 
-You can also do some the constraints in `OnModelCreating(..)`. Here is an example of limiting the `Todo::Title` to 50 characters:
+You can also do some of the constraints in `OnModelCreating(..)`. Here is an example of limiting the `Todo::Title` to 50 characters:
 
 ```csharp
 modelBuilder.Entity<Todo>().Property(todo => todo.Title).HasMaxLength(50);
@@ -105,7 +105,7 @@ It seems you can not do exactly the same constraints as with the attributes. E.g
 
 So, if you really need those constraints, you may have to use attributes as well.
 
-### Do We Need Constraints?
+#### Do We Need Constraints?
 
 Now, whatever constraints we apply, they should obviously match the validation rules we implemented in the logic layer.
 

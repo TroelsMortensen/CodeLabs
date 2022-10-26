@@ -15,5 +15,7 @@
 
 [Todo App Part 2 - Blazor](./Tutorials/NetTodoApp-Part2-Blazor/Page.html)
 
+[Todo App Part 3 - EFC](./Tutorials/NetTodoApp-Part3-EFC/Page.html)
+
 ### Videos
 ...

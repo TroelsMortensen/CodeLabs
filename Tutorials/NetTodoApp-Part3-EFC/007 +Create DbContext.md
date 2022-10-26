@@ -10,7 +10,7 @@ Create a new class, "TodoContext" (or whatever), inside EfcDataAccess component.
 
 We need to specify which database to use. That's done in the inherited method `OnConfiguring(...)`.
 
-The class currently looks like this:
+The class then currently looks like this:
 
 ```csharp
 public class TodoContext : DbContext
@@ -27,9 +27,9 @@ public class TodoContext : DbContext
 
 We have defined two `DbSets`. When the database is generated, it will result in a table per DbSet, so we get a Todos table and a Users table.
 
-We an interact with the DbSet in a similar way to how we used the Collection of the FileContext. 
+We interact with the DbSet in a similar way to how we used the Collection of the FileContext. 
 
-We interact with this DbSet to add, get, update, remove Todos from the database.
+We interact with this DbSet to add, get, update, remove Todos/Users from the database.
 
 The `OnConfiguring(...)` method is here used to specify the database to be used. This is done with the method `UseSqlite(...)`. This method is available because we added a NuGet package for SQLite.
 If we were using Postgres, we would have a different method here, probably `UsePostgres(..)`.

@@ -23,7 +23,7 @@ We still have the same features, i.e. user stories as in the previous two tutori
 
 Instead, we must make substitute classes for `TodoFileDao` and `UserFileDao`. The new classes will implement the same interfaces,
 which will make it easy ot let the Web API use the new layer instead of the old. It requires only a few modifications to WebAPI/Program.cs, where we register new implementations of the interfaces.\
-The new EFC implementations will then be injected into the Logic layer.
+The new EFC DAO implementations will then be injected into the Logic layer.
 
 We will still implement the methods in the same order as the user stories, so that we can test along the way.
 
@@ -38,7 +38,7 @@ Notice how some steps are prefixed with a "+". This is because these are the mai
 
 This tutorial will contain much information besides the basic setup, e.g. related to Todos and Users and general design discussion, etc.
 
-So, when you need to set up EFC for your project or other, the +-marked steps are the relevant ones.
+So, when you need to set up EFC for your project or other, the +-marked steps are the relevant ones (I hope).
 
 ## Let's go
 

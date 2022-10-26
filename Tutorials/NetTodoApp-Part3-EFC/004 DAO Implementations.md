@@ -86,7 +86,7 @@ builder.Services.AddScoped<ITodoDao, TodoFileDao>();
 builder.Services.AddScoped<ITodoLogic, TodoLogic>();
 ```
 
-Lines 2 and 5 is where we specify that whenever a class requests a IUserDao or ITodoDao, that class wil actually get a UserFileDao or TodoFileDao, respectively.
+Lines 2 and 5 is where we specify that whenever a class requests an IUserDao or ITodoDao, that class wil actually get a UserFileDao or TodoFileDao, respectively.
 
 Swap out the implementations, so it looks like this:
 
@@ -101,6 +101,8 @@ builder.Services.AddScoped<ITodoLogic, TodoLogic>();
 
 Notice the 2nd type parameter is changed from e.g. `UserFileDao` to `UserEfcDao`.
 
+That's it. We have now "removed" the FileData component, and we are using EfcDataAccess instead.
+
 ## Test Dependencies
 Now, the above code in the WebAPI/Program.cs was the only place, where anything _outside_ the FileData component referenced code _inside_ the FileData component. We have now completely detached this component from the system.
 
@@ -110,7 +112,7 @@ So, a minor change to two lines of code, and we have swapped a large chunk of fu
 
 ![img.png](Resources/ThatsPrettyCool.png)
 
-We can now proceed with implementation of the functionality in EfcDataAccess component, without causing changes to the rest of the code base. 
+We can now proceed with implementation of the functionality in EfcDataAccess component, without causing changes to the rest of the code base. (I thought, but we will see there are a few, minor problems..) 
 
 ## Test of the System
 

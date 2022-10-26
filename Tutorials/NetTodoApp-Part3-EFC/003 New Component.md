@@ -18,9 +18,10 @@ The below is a component-diagram, and the dotted arrows shows the inter-componen
 
 ![](Resources/IntercomponentDependencies.svg)
 
-Remember how the dependencies were supposed to flow according to Clean Architecture. The ones from WebAPI to Data components is unfortunate but necessary.
+Remember how the dependencies were supposed to flow according to Clean Architecture. 
+The ones from WebAPI to Data components is unfortunate but necessary. And do not cause too much trouble, anyway.
 
-### Who knows about who?
+#### Who knows about who?
 
 Application depends on Domain.
 

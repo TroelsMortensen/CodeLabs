@@ -3,7 +3,7 @@
 Entity Framework Core (EFC) is an "**O**bject **R**elational **M**apper". 
 That means it can generate a **relational** database, with tables, attributes, relationships (foreign keys), etc, based on your domain classes, and their associations.
 
-In our case we have a `Todo` and a `User` object, with an association from Todo to User, as the assignee.
+In our case we have a `Todo` and a `User` object, with an association from Todo to User, as the Owner.
 
 If we use these model classes as the basis for EFC, it will generate two tables: Todos, Users. And there will be a foreign key from a Todo to a User.
 
