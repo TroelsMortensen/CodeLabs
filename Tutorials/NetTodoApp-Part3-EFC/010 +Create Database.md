@@ -28,14 +28,16 @@ public class Todo
 }
 ```
 
-We have set properties for Id and IsCompleted, but not the other two. The are read-only. They are instead set through the constructor.\
+We have set properties for Id and IsCompleted, but not the other two. They are read-only. They are instead set through the constructor.
 
 The current setup with a constructor and some read-only properties is because of various code in the logic layer.\
-EFC needs public set-properties. And apparently EFC cannot set navigation properties through the constructor, it must be through a public set-property.
+
+EFC needs a little more:
+* There must be set properties for all fields. They may be private.
+* There must be a no-arguments constructor for EFC to call when creating objects.
 
 
-So, this is a bit annoying, but I have not found a good way around it.\
-We need to make changes to domain and logic.
+So, this is a bit annoying, but it will not cause must of a ripple effect.
 
 The Todo class should be changed to:
 
@@ -43,40 +45,35 @@ The Todo class should be changed to:
 public class Todo
 {
     public int Id { get; set; }
-    public User Owner { get; set; }
-    public string Title { get; set; }
+    public User Owner { get; private set; }
+    public string Title { get; private set; }
 
     public bool IsCompleted { get; set; }
+
+    public Todo(User owner, string title)
+    {
+        Owner = owner;
+        Title = title;
+    }
+    
+    private Todo(){}
 }
 ```
 
-This results in compile errors in `TodoLogic`, because we removed the constructor. Let's fix those.
+Notice the `private set;` properties on `Owner` and `Title`.
 
-First, line 27 in method `CreateAsync()`, where a new Todo is created. Change the instantiation to:
+Notice the private constructor.
 
-```csharp
-Todo todo = new Todo()
-{
-    Owner = user,
-    Title = dto.Title
-};
-```
-
-Second, what is now line 72, in method `UpdateAsync()`, where a Todo is created. Change this instantiation to:
-
-```csharp
-Todo updated = new()
-{
-    Id = existing.Id,
-    Owner = userToUse,
-    Title = titleToUse,
-    IsCompleted = completedToUse
-};
-```
+These two additions are for EFC, but it has no effect on the rest of the system. We have not exposed anything, we shouldn't. We have not cause relevant changes.\
+So, this is acceptable, albeit a little unfortunate.
 
 ##### Comment
 
-The tutorial was written on the fly, and I did not originally know about this problem with EFC. Otherwise, we would have made the model classes originally without constructors. It is unfortunate.
+The tutorial was written on the fly, and I did not originally know about this problem with EFC. 
+
+##### Comment 2
+
+I originally made a different kind of modification to the Todo, which caused changes in Logic. I believe this has been removed from the tutorial.
 
 ## Generate a Migration
 
@@ -86,8 +83,10 @@ Open the terminal.
 
 Navigate to the EfcData project. Most likely when you open the terminal, it is located in the solution directory. You want to enter the EfcDataAccess directory:
 ```
-cd EfcDataAccessc
+cd EfcDataAccess
 ```
+
+Or like this:
 
 ![](Resources/NavigateToEfc.gif)
 
@@ -112,22 +111,28 @@ Done. To undo this action, use 'ef migrations remove'
 PS C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess>
 ```
 
-Now, look in the EfcDataAccess component, you should see a new folder, Migrations. 
+Now, look in the EfcDataAccess component, you should see a new folder, Migrations (it may take a second or two to update the UI. You may need to collapse EfcDataAccess and open it again). 
 
 ![img.png](Resources/MigrationsFolder.png)
 
-Here is the "version control" of your database. These files keep track of the modifications to your code, which should eventually be applied to the database. And the files keep track of which of the migrations are actually applied. Maybe you have a few migrations, which have not yet been applied to the database.\
+Here is the "version control" of your database. 
+These files keep track of the modifications to your code, which should eventually be applied to the database. 
+And the files keep track of which of the migrations are actually applied, and which are not. 
+Maybe you have a few migrations, which have not yet been applied to the database.\
 When you then update the database, EFC will figure out the difference, and apply the necessary migration(s).
 
-This folder should probably also be under version control for your projects, so that when one group changes the database, the others can get the update.
+This folder should probably also be under version control for your projects, so that when one group-member changes the database, the others can get the update.
 
 #### Deleting the Migrations
 Sometimes, you may want a "hard reset", if you somehow mess up. You can delete the Migrations folder, along with the database file generated on the next slide, and start over.
 
-This can best be done with SQLite. When using other databases, go google how to revert a migration.
+This can best be done with SQLite. When using other databases, go google how to revert a migration instead.
+
+Applied migrations can be reverted to a previous migration. Un-applied migrations can just be removed.
 
 ## Apply a Migration
-The next step is to apply the migration to your database. Currently we have no database, so it will be created the first we apply an update.
+The next step is to apply the migration to your database. Currently we have no database,
+so it will be created the first time we apply an update.
 
 Again, in the terminal, and in the EfcDataAccess directory, we use the following command:
 
@@ -146,11 +151,14 @@ Done.
 PS C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess>
 ```
 
-Whenever a new migration is created (or multiple), you can do the above to apply them.
+Whenever a new migration is created (or multiple), you can do the above to apply them all.
 
 Again, in the EfcDataAccess component, you should now see your database file:
 
 ![img.png](Resources/DatabaseFileAdded.png)
+
+SQLite is just a single file, which makes it very easy to work with. This file can actually also be put under version control, should you wish to.\
+This could ensure an easy way to let all group members have the same data set.
 
 ## Update path
 
@@ -164,7 +172,7 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 ```
 
 This is a relative path, from the EfcDataAccess component root. However, the program is started from WebAPI component. 
-So, the path to the file should be relative to this component. Modify the above code to:
+So, the path to the SQLite file should be relative to that component. Modify the above code to:
 
 ```csharp
 protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -181,4 +189,6 @@ Alternatively, you can provide the absolute path, something like:
 C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess\Todo.db
 ```
 
-However, that path will be different between group members, so you would have to modify it. Alternatively this can be put into a local configuration file, which is not under version control. You'll have to google how to do this.
+However, that path will be different between group members, so you would have to modify it. 
+Even more alternatively this can be put into a local configuration file, which is not under version control. 
+You'll have to google how to do this, if interested.
