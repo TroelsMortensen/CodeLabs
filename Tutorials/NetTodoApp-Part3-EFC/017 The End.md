@@ -120,7 +120,7 @@ If you want to show a list of just user names, this interface can return a DTO f
 
 We might even create a separate implementation for the `IUserProvider` interface, i.e. a `UserFileProvider`.
 
-In the end, the classes/interfaces who knows about domain objects, and are:
+In the end, the classes/interfaces who knows about domain objects or DTOs are:
 * Domain objects
   * UserLogic
   * IUserDao
@@ -131,9 +131,16 @@ In the end, the classes/interfaces who knows about domain objects, and are:
   * IUserProvider
   * UserFileDao (or a separate UserFileProvider)
 
+Or in a diagram, blue area is DTO territory, and red is Domain Class territory:
+
+
+![img.png](Resources/KnowDmOrDto.png)
+
 We are keeping things separate, and it is easier to avoid mixing things up, where sometimes the Web API returns domain objects, and other times it returns DTOs.
 
 I had some of these ideas from the beginning, some of them popped up along the way. I had to make a cut somewhere, what to include in the tutorial, and what not to.\
 It can be perfectly fine, to just have "stupid" domain classes, no constructors, all `{get;set;}` properties. That is probably the simple approach. You can even do without any DTOs at all. And that's fair.
 
 Some of the above thoughts, are thoughts only. I have not tried them out yet. Maybe when I do, I figure out something really does not work, as I wanted it to.
+
+Mostly, I just want you to think about things. Make informed, well-considered choices. Try different things.

@@ -1023,7 +1023,7 @@ If you want to display a specific User in the UI, this interface can return a DT
 If you want to show a User with all their Todos, this interface can return a DTO for that.<br />
 If you want to show a list of just user names, this interface can return a DTO for that.</p>
 <p>We might even create a separate implementation for the <code>IUserProvider</code> interface, i.e. a <code>UserFileProvider</code>.</p>
-<p>In the end, the classes/interfaces who knows about domain objects, and are:</p>
+<p>In the end, the classes/interfaces who knows about domain objects or DTOs are:</p>
 <ul>
 <li>Domain objects
 <ul>
@@ -1041,10 +1041,13 @@ If you want to show a list of just user names, this interface can return a DTO f
 </ul>
 </li>
 </ul>
+<p>Or in a diagram, blue area is DTO territory, and red is Domain Class territory:</p>
+<p><img src="Resources/KnowDmOrDto.png" alt="img.png" /></p>
 <p>We are keeping things separate, and it is easier to avoid mixing things up, where sometimes the Web API returns domain objects, and other times it returns DTOs.</p>
 <p>I had some of these ideas from the beginning, some of them popped up along the way. I had to make a cut somewhere, what to include in the tutorial, and what not to.<br />
 It can be perfectly fine, to just have &quot;stupid&quot; domain classes, no constructors, all <code>{get;set;}</code> properties. That is probably the simple approach. You can even do without any DTOs at all. And that's fair.</p>
 <p>Some of the above thoughts, are thoughts only. I have not tried them out yet. Maybe when I do, I figure out something really does not work, as I wanted it to.</p>
+<p>Mostly, I just want you to think about things. Make informed, well-considered choices. Try different things.</p>
 
 </div>
 
