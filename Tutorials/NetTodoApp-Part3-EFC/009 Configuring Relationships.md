@@ -128,3 +128,18 @@ public class User
     public ICollection<Todo> Todos { get; set; }
 }
 ```
+
+
+## Shadow Property
+There is another way, where we can still use the `User::Todos` of ICollection. Without actually having this in the User class.
+
+It is a sub-set of what is called a Shadow Property, i.e. a property that does not really exist, but EFC sneakily adds it.
+
+Basically:
+* In the DbContext subclass, OnModelCreating method, we can add a property to a Domain class, e.g. User.
+* This property does not exist outside of EFC territory.
+* This property can still be used in LINQ expressions
+
+So, we get what we want, without touching the Domain classes. That's neat. It's just a little extra work.
+
+[You can read about it here](https://learn.microsoft.com/en-us/ef/core/modeling/shadow-properties#configuring-shadow-properties)

@@ -514,6 +514,17 @@ in case of future changes to the system, which shouldn't affect Todo.</p>
     public ICollection&lt;Todo&gt; Todos { get; set; }
 }
 </code></pre>
+<h2 id="shadow-property">Shadow Property</h2>
+<p>There is another way, where we can still use the <code>User::Todos</code> of ICollection. Without actually having this in the User class.</p>
+<p>It is a sub-set of what is called a Shadow Property, i.e. a property that does not really exist, but EFC sneakily adds it.</p>
+<p>Basically:</p>
+<ul>
+<li>In the DbContext subclass, OnModelCreating method, we can add a property to a Domain class, e.g. User.</li>
+<li>This property does not exist outside of EFC territory.</li>
+<li>This property can still be used in LINQ expressions</li>
+</ul>
+<p>So, we get what we want, without touching the Domain classes. That's neat. It's just a little extra work.</p>
+<p><a href="https://learn.microsoft.com/en-us/ef/core/modeling/shadow-properties#configuring-shadow-properties">You can read about it here</a></p>
 
 </div>
 <div class="tab">
