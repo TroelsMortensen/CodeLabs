@@ -503,7 +503,8 @@ in case of future changes to the system, which shouldn't affect Todo.</p>
 <p>This would potentially create some translation work between logic and dao layer. E.g. you get a UserEfc from the database, but should return a User. On the other hand, if UserEfc extends User, that might not be a problem. The logic layer gets a User, and doesn't know it is actually a UserEfc.</p>
 <p>I have seen a few semester projects use this approach with some success. However, I don't think this is a common approach, but instead people resort to modifying the domain classes.</p>
 <p>We will just update the domain classes.</p>
-<p><a href="https://www.reddit.com/r/dotnet/comments/yd1h0f/keeping_efc_navigation_properties_out_of_the/">I have asked this question on reddit</a>, maybe someone has given input, when you read this. Eventually this paragraph may get updated.</p>
+<p><a href="https://www.reddit.com/r/dotnet/comments/yd1h0f/keeping_efc_navigation_properties_out_of_the/">I have asked this question on reddit</a>, maybe someone has given input, when you read this. Eventually this paragraph may get updated.<br />
+See last section on this slide for more information.</p>
 <h2 id="update-to-domain-classes">Update to Domain Classes</h2>
 <p>This means an update to the User class, it looks like this:</p>
 <pre><code class="line-numbers language-csharp">public class User
@@ -514,7 +515,7 @@ in case of future changes to the system, which shouldn't affect Todo.</p>
     public ICollection&lt;Todo&gt; Todos { get; set; }
 }
 </code></pre>
-<h2 id="shadow-property">Shadow Property</h2>
+<h2 id="shadow-properties-and-constructors">Shadow Properties and Constructors</h2>
 <p>There is another way, where we can still use the <code>User::Todos</code> of ICollection. Without actually having this in the User class.</p>
 <p>It is a sub-set of what is called a Shadow Property, i.e. a property that does not really exist, but EFC sneakily adds it.</p>
 <p>Basically:</p>
@@ -525,6 +526,7 @@ in case of future changes to the system, which shouldn't affect Todo.</p>
 </ul>
 <p>So, we get what we want, without touching the Domain classes. That's neat. It's just a little extra work.</p>
 <p><a href="https://learn.microsoft.com/en-us/ef/core/modeling/shadow-properties#configuring-shadow-properties">You can read about it here</a></p>
+<p><a href="https://learn.microsoft.com/en-us/ef/core/modeling/constructors">This link says something about how we can use constructors, it might also be relevant</a></p>
 
 </div>
 <div class="tab">

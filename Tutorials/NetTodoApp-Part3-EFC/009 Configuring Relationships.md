@@ -114,7 +114,8 @@ I have seen a few semester projects use this approach with some success. However
 
 We will just update the domain classes. 
 
-[I have asked this question on reddit](https://www.reddit.com/r/dotnet/comments/yd1h0f/keeping_efc_navigation_properties_out_of_the/), maybe someone has given input, when you read this. Eventually this paragraph may get updated.
+[I have asked this question on reddit](https://www.reddit.com/r/dotnet/comments/yd1h0f/keeping_efc_navigation_properties_out_of_the/), maybe someone has given input, when you read this. Eventually this paragraph may get updated.\
+See last section on this slide for more information.
 
 ## Update to Domain Classes
 This means an update to the User class, it looks like this:
@@ -130,7 +131,7 @@ public class User
 ```
 
 
-## Shadow Property
+## Shadow Properties and Constructors
 There is another way, where we can still use the `User::Todos` of ICollection. Without actually having this in the User class.
 
 It is a sub-set of what is called a Shadow Property, i.e. a property that does not really exist, but EFC sneakily adds it.
@@ -143,3 +144,5 @@ Basically:
 So, we get what we want, without touching the Domain classes. That's neat. It's just a little extra work.
 
 [You can read about it here](https://learn.microsoft.com/en-us/ef/core/modeling/shadow-properties#configuring-shadow-properties)
+
+[This link says something about how we can use constructors, it might also be relevant](https://learn.microsoft.com/en-us/ef/core/modeling/constructors) 
