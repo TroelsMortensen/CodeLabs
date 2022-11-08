@@ -61,6 +61,11 @@ This would, however, move the "update logic", i.e. which properties to update, t
 
 There may be a middle-ish way too, which I don't know about.
 
+###### Alternative to clear
+The problem above is because we first found a Todo by ID, and kept it in the ChangeTracker.\
+However, we can also specify that we want to fetch the Todo, without keeping it in the ChangeTracker. 
+Then we would not need to clear it. [This article explains how](https://learn.microsoft.com/en-us/ef/core/querying/tracking#no-tracking-queries).
+
 ## Test
 .. this by running the Web API, and using the PATCH /Todos endpoint.
 

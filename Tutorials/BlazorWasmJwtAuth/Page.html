@@ -284,6 +284,13 @@ This is your own custom object, and the Authentication functionality of Blazor a
 <pre><code class="line-numbers language-csharp">app.UseAuthentication();
 </code></pre>
 <p>This adds authentication middleware, i.e. somewhere between the Web API server receives the request, and our controller endpoint is called, a class will now handle authentication checks, and if the caller is not authenticated or authorized as required, a &quot;401 - Unauthorized&quot; error will be returned to the caller.</p>
+<h4 id="note">NOTE!!</h4>
+<p>Your Program.cs will now contain the following two lines, somewhere:</p>
+<pre><code class="line-numbers language-csharp">app.UseAuthentication();
+...
+app.UseAuthorization();
+</code></pre>
+<p>It is important that <code>UseAuthentication()</code> comes before <code>UseAuthorization()</code>!</p>
 <h3 id="tell-the-app-to-accept-requests-from-the-browser">Tell the app to accept requests from the browser</h3>
 <p>Next, add the following code anywhere above <code>app.Run()</code> and below <code>var app = builder.Build();</code>. I have put it just under the code you inserted before.</p>
 <pre><code class="line-numbers language-csharp">app.UseCors(x =&gt; x

@@ -45,6 +45,18 @@ app.UseAuthentication();
 
 This adds authentication middleware, i.e. somewhere between the Web API server receives the request, and our controller endpoint is called, a class will now handle authentication checks, and if the caller is not authenticated or authorized as required, a "401 - Unauthorized" error will be returned to the caller.
 
+#### NOTE!!
+
+Your Program.cs will now contain the following two lines, somewhere:
+
+```csharp
+app.UseAuthentication();
+...
+app.UseAuthorization();
+```
+
+It is important that `UseAuthentication()` comes before `UseAuthorization()`!
+
 ### Tell the app to accept requests from the browser
 
 Next, add the following code anywhere above `app.Run()` and below `var app = builder.Build();`. I have put it just under the code you inserted before.
