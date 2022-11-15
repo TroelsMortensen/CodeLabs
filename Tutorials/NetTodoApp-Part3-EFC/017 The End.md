@@ -6,10 +6,6 @@ Mostly, it was pretty painless, we didn't have to modify much in the existing co
 
 So far we have done integration testing, just using the Web API. You should now expand the testing to scenario testing, i.e. use the Blazor app to test whether the swapped out functionality works.
 
-# Below is under construction..
-
-![img.png](Resources/UnderConstruction.png)
-
 # What did I learn?
 I too have learned something along the way. I have actually created this tutorial at least three times now, each time applying knowledge from the previous.
 And each learning something I would include in the next version, if I ever get to that. It's comprehensive work.

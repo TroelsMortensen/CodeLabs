@@ -885,12 +885,14 @@ This is where the SQL is sent to the database, executed, and a result is returne
 <p>This was actually &quot;update todo&quot;. I.e. we could update more properties than just the IsCompleted. That part was handled by the Logic layer.</p>
 <p>We need two methods in TodoEfcDao: UpdateAsync and GetByIdAsync.</p>
 <h2 id="getbyidasync">GetByIdAsync()</h2>
-<p>This should be straight forward.</p>
+<p>This should be straight forward. Remember to load the Owner as well.</p>
 <details>
 <summary>hint</summary>
 <pre><code class="line-numbers language-csharp">public async Task&lt;Todo?&gt; GetByIdAsync(int todoId)
 {
-    Todo? found = await context.Todos.FindAsync(todoId);
+    Todo? found = await context.Todos
+        .Include(todo =&gt; todo.Owner)
+        .SingleOrDefaultAsync(todo =&gt; todo.Id == todoId);
     return found;
 }
 </code></pre>
@@ -921,6 +923,42 @@ It will result in an exception that we are trying to keep the same object twice 
 Alternatively we could fetch the Todo again (now from the cache), update the properties, indicate the Todo has been modified, and then save the changes.<br />
 This would, however, move the &quot;update logic&quot;, i.e. which properties to update, to the Data layer. Currently that is in the Logic layer.</p>
 <p>There may be a middle-ish way too, which I don't know about.</p>
+<h6 id="alternative-to-clear">Alternative to clear</h6>
+<p>The problem above is because we first found a Todo by ID, and kept it in the ChangeTracker.<br />
+However, we can also specify that we want to fetch the Todo, without keeping it in the ChangeTracker.
+Then we would not need to clear it. <a href="https://learn.microsoft.com/en-us/ef/core/querying/tracking#no-tracking-queries">This article explains how</a>.</p>
+<h6 id="a-subtle-bug">A subtle bug</h6>
+<p>With the above <code>UpdateAsync()</code> method, there is a bug, discovered by an unlucky student:
+You cannot update a Todo where you re-assign it the its current Owner.<br />
+If a Todo is currently assigned to Owner with ID 1, you cannot make an update request, where you assign the Todo to Owner with ID 1.</p>
+<p>This is again the ChangeTracker playing tricks on us. The problem is in the <code>TodoLogic::UpdateAsync()</code> method. We interact with the database as follows:</p>
+<ol>
+<li>Get the existing Todo from the DataBase. It is kept in the ChangeTracker</li>
+<li>Get the new User (which is the currently assigned Owner). The User has a collection of Todos, and because of step 1) there is already a Todo in the ChangeTracker.
+This Todo is then added to the Users collection of Todos, to which the User is assigned.</li>
+<li>We then attempt to update the Todo. This will:
+Attempt to fetch from the DataBase the Todo, but this Todo is also in the ChangeTracker because of the User containing it. We then get a conflict, because the same object cannot exist twice in the ChangeTracker.</li>
+</ol>
+<p>The <code>Clear()</code> does not fix this particular case, because of step 2, the User contains the Todo. So when we update a Todo, that Todo contains an Owner.
+And that Owner (User) has a list of one Todo, the one were updating, so there's a circular reference going on here, and the two Todos are the same: The one being updated, and the one being referenced from the User.</p>
+<p>It's probably a bit confusing. I include below a screenshot of the debug information about the Todo we are about to attempt to update.<br />
+You can see that we are working here with Todo with ID 1 and a User with ID 1. And because of the circular reference, the Todo has a User which has a Todo which has a User which...., the DbContext will attempt to load all of them.</p>
+<p><img src="Resources/CircularDebugInfo.png" alt="img.png" /></p>
+<p>I can keep on expanding the tree forever.</p>
+<p><strong>How do we fix it?</strong></p>
+<p>We don't want the Todo to be kept in the ChangeTracker, when we fetch it the first time. We modify the <code>TodoEfcDao::GetByIdAsync()</code> as follows:</p>
+<pre data-line="4"><code class="line-numbers language-csharp">public async Task&lt;Todo?&gt; GetByIdAsync(int todoId)
+{
+    Todo? found = await context.Todos
+        .AsNoTracking()
+        .Include(todo =&gt; todo.Owner)
+        .SingleOrDefaultAsync(todo =&gt; todo.Id == todoId);
+    return found;
+}
+</code></pre>
+<p>Notice line 4, here we indicate that this entity should not be tracked, i.e. it will not be kept in the ChangeTracker.</p>
+<p>It seems to generally be recommended to not keep objects in the ChangeTracker if you are not going to do something with them, e.g. Delete or Update.<br />
+So, when we are just retrieving them like this, it seems fair to not cache them in the ChangeTracker.</p>
 <h2 id="test">Test</h2>
 <p>.. this by running the Web API, and using the PATCH /Todos endpoint.</p>
 <p>See if you can complete a Todo. The &quot;try it out&quot; option in Swagger requires you to fill in all data, so find that through another endpoint or the Database tool in Rider.<br />
@@ -957,8 +995,6 @@ Verify result either through Database tool, or another endpoint.</p>
 <p>We have now finished swapping out the File data storage with a different component using EFC.</p>
 <p>Mostly, it was pretty painless, we didn't have to modify much in the existing code. There were some unforeseen, unfortunate necessary changes, but I hope you can still see the purpose of the Clean Architecture approach.</p>
 <p>So far we have done integration testing, just using the Web API. You should now expand the testing to scenario testing, i.e. use the Blazor app to test whether the swapped out functionality works.</p>
-<hr/><h1 id="below-is-under-construction">Below is under construction..</h1><hr/>
-<p><img src="Resources/UnderConstruction.png" alt="img.png" /></p>
 <hr/><h1 id="what-did-i-learn">What did I learn?</h1><hr/>
 <p>I too have learned something along the way. I have actually created this tutorial at least three times now, each time applying knowledge from the previous.
 And each learning something I would include in the next version, if I ever get to that. It's comprehensive work.</p>
