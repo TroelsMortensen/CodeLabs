@@ -92,7 +92,8 @@ I can keep on expanding the tree forever.
 
 **How do we fix it?**
 
-We don't want the Todo to be kept in the ChangeTracker, when we fetch it the first time. We modify the `TodoEfcDao::GetByIdAsync()` as follows:
+We don't want the Todo to be kept in the ChangeTracker, when we fetch it the first time. 
+We modify both the `TodoEfcDao::GetByIdAsync()` and `TodoEfcDao::UpdateAsync()` as follows:
 
 
 ```csharp{4}
@@ -104,8 +105,16 @@ public async Task<Todo?> GetByIdAsync(int todoId)
         .SingleOrDefaultAsync(todo => todo.Id == todoId);
     return found;
 }
+
+public async Task UpdateAsync(Todo todo)
+{
+    context.Todos.Update(todo);
+    await context.SaveChangesAsync();
+}
 ```
 Notice line 4, here we indicate that this entity should not be tracked, i.e. it will not be kept in the ChangeTracker.
+
+Notice in the `UpdateAsync()` that the Clear() call has been removed, we don't need it.
 
 It seems to generally be recommended to not keep objects in the ChangeTracker if you are not going to do something with them, e.g. Delete or Update.\
 So, when we are just retrieving them like this, it seems fair to not cache them in the ChangeTracker.

@@ -946,7 +946,8 @@ You can see that we are working here with Todo with ID 1 and a User with ID 1. A
 <p><img src="Resources/CircularDebugInfo.png" alt="img.png" /></p>
 <p>I can keep on expanding the tree forever.</p>
 <p><strong>How do we fix it?</strong></p>
-<p>We don't want the Todo to be kept in the ChangeTracker, when we fetch it the first time. We modify the <code>TodoEfcDao::GetByIdAsync()</code> as follows:</p>
+<p>We don't want the Todo to be kept in the ChangeTracker, when we fetch it the first time.
+We modify both the <code>TodoEfcDao::GetByIdAsync()</code> and <code>TodoEfcDao::UpdateAsync()</code> as follows:</p>
 <pre data-line="4"><code class="line-numbers language-csharp">public async Task&lt;Todo?&gt; GetByIdAsync(int todoId)
 {
     Todo? found = await context.Todos
@@ -955,8 +956,15 @@ You can see that we are working here with Todo with ID 1 and a User with ID 1. A
         .SingleOrDefaultAsync(todo =&gt; todo.Id == todoId);
     return found;
 }
+
+public async Task UpdateAsync(Todo todo)
+{
+    context.Todos.Update(todo);
+    await context.SaveChangesAsync();
+}
 </code></pre>
 <p>Notice line 4, here we indicate that this entity should not be tracked, i.e. it will not be kept in the ChangeTracker.</p>
+<p>Notice in the <code>UpdateAsync()</code> that the Clear() call has been removed, we don't need it.</p>
 <p>It seems to generally be recommended to not keep objects in the ChangeTracker if you are not going to do something with them, e.g. Delete or Update.<br />
 So, when we are just retrieving them like this, it seems fair to not cache them in the ChangeTracker.</p>
 <h2 id="test">Test</h2>
