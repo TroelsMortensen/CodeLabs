@@ -966,7 +966,8 @@ public async Task UpdateAsync(Todo todo)
 <p>Notice line 4, here we indicate that this entity should not be tracked, i.e. it will not be kept in the ChangeTracker.</p>
 <p>Notice in the <code>UpdateAsync()</code> that the Clear() call has been removed, we don't need it.</p>
 <p>It seems to generally be recommended to not keep objects in the ChangeTracker if you are not going to do something with them, e.g. Delete or Update.<br />
-So, when we are just retrieving them like this, it seems fair to not cache them in the ChangeTracker.</p>
+So, when we are just retrieving them like this, it seems fair to not cache them in the ChangeTracker.<br />
+You may apply this to other methods, which just retrieves objects.</p>
 <h2 id="test">Test</h2>
 <p>.. this by running the Web API, and using the PATCH /Todos endpoint.</p>
 <p>See if you can complete a Todo. The &quot;try it out&quot; option in Swagger requires you to fill in all data, so find that through another endpoint or the Database tool in Rider.<br />

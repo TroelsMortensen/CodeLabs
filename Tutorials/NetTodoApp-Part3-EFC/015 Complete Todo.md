@@ -117,7 +117,8 @@ Notice line 4, here we indicate that this entity should not be tracked, i.e. it 
 Notice in the `UpdateAsync()` that the Clear() call has been removed, we don't need it.
 
 It seems to generally be recommended to not keep objects in the ChangeTracker if you are not going to do something with them, e.g. Delete or Update.\
-So, when we are just retrieving them like this, it seems fair to not cache them in the ChangeTracker.
+So, when we are just retrieving them like this, it seems fair to not cache them in the ChangeTracker.\
+You may apply this to other methods, which just retrieves objects.
 
 ## Test
 .. this by running the Web API, and using the PATCH /Todos endpoint.
