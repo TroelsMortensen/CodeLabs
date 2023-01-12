@@ -6,8 +6,8 @@ There are 4 versions when dealing with inheritance.
 
 First, it is important to note that the four versions are _suggestions_. However, there may be cases where a suggestions does not fit well.\
 This usually happens if the various entities involved in the hierarchy have various relationships to entities outside the hierarchy.\
-Some versions of mapping cannot easily include such relationships. Usually the "optional,or" version is well suited for these special cases, if the sub-entities have relationships.\
-If only the super-entity have relationships, you are less limited.
+Some versions of mapping cannot easily include such relationships. Usually the "{optional,or}" or "{mandatory, or}" versions are well suited for these special cases, if the sub-entities have relationships.\
+If only the super-entity have relationships, you are less limited, and can usually follow the suggestion.
 
 Which to pick is determined (suggested) by the inheritance-constraints (participation and disjoint), as there are four combinations:
 
@@ -17,11 +17,13 @@ Which to pick is determined (suggested) by the inheritance-constraints (particip
 * {optional, or}
 
 Each combination above has a recommended approach to mapping.\
-However, sometimes you may have good reason to use an approach other than the recommended.
+However, sometimes you may have good reason to use an approach other than the recommended, as mentioned above.
 
-Also note that sometimes the entities have primary keys defined, sometimes not. I believe it is unusual to find sub-entities with primary keys. But it may happen.
+Also note that sometimes the entities have primary keys defined, sometimes not. 
+I believe it is unusual to find sub-entities with primary keys. 
 
-In the below, I have shown only with the super-entity having a primary key. This is probably the most common case.
+In the below, I have shown only with the super-entity having a primary key. This is probably the most common case.\
+If no primary key is marked, you most likely will have to introduce a surrogate key in the relational schema.
 
 ## {mandatory, and}
 

@@ -268,8 +268,8 @@ The result is a relation for <code>EntityA</code>, and another one for each Enti
 <h2 id="general-commment">General commment</h2>
 <p>First, it is important to note that the four versions are <em>suggestions</em>. However, there may be cases where a suggestions does not fit well.<br />
 This usually happens if the various entities involved in the hierarchy have various relationships to entities outside the hierarchy.<br />
-Some versions of mapping cannot easily include such relationships. Usually the &quot;optional,or&quot; version is well suited for these special cases, if the sub-entities have relationships.<br />
-If only the super-entity have relationships, you are less limited.</p>
+Some versions of mapping cannot easily include such relationships. Usually the &quot;{optional,or}&quot; or &quot;{mandatory, or}&quot; versions are well suited for these special cases, if the sub-entities have relationships.<br />
+If only the super-entity have relationships, you are less limited, and can usually follow the suggestion.</p>
 <p>Which to pick is determined (suggested) by the inheritance-constraints (participation and disjoint), as there are four combinations:</p>
 <ul>
 <li>{mandatory, and}</li>
@@ -278,9 +278,11 @@ If only the super-entity have relationships, you are less limited.</p>
 <li>{optional, or}</li>
 </ul>
 <p>Each combination above has a recommended approach to mapping.<br />
-However, sometimes you may have good reason to use an approach other than the recommended.</p>
-<p>Also note that sometimes the entities have primary keys defined, sometimes not. I believe it is unusual to find sub-entities with primary keys. But it may happen.</p>
-<p>In the below, I have shown only with the super-entity having a primary key. This is probably the most common case.</p>
+However, sometimes you may have good reason to use an approach other than the recommended, as mentioned above.</p>
+<p>Also note that sometimes the entities have primary keys defined, sometimes not.
+I believe it is unusual to find sub-entities with primary keys.</p>
+<p>In the below, I have shown only with the super-entity having a primary key. This is probably the most common case.<br />
+If no primary key is marked, you most likely will have to introduce a surrogate key in the relational schema.</p>
 <h2 id="mandatory-and">{mandatory, and}</h2>
 <p>It could look like this.</p>
 <p><img src="MandatoryAndEER.png" alt="" /></p>
