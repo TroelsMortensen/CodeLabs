@@ -2,9 +2,12 @@
 
 There are 4 versions when dealing with inheritance. 
 
+## General commment
+
 First, it is important to note that the four versions are _suggestions_. However, there may be cases where a suggestions does not fit well.\
 This usually happens if the various entities involved in the hierarchy have various relationships to entities outside the hierarchy.\
-Some versions of mapping cannot easily include such relationships. Usually the "optional,or" versions is well suited for these special cases. 
+Some versions of mapping cannot easily include such relationships. Usually the "optional,or" version is well suited for these special cases, if the sub-entities have relationships.\
+If only the super-entity have relationships, you are less limited.
 
 Which to pick is determined (suggested) by the inheritance-constraints (participation and disjoint), as there are four combinations:
 
@@ -15,6 +18,10 @@ Which to pick is determined (suggested) by the inheritance-constraints (particip
 
 Each combination above has a recommended approach to mapping.\
 However, sometimes you may have good reason to use an approach other than the recommended.
+
+Also note that sometimes the entities have primary keys defined, sometimes not. I believe it is unusual to find sub-entities with primary keys. But it may happen.
+
+In the below, I have shown only with the super-entity having a primary key. This is probably the most common case.
 
 ## {mandatory, and}
 

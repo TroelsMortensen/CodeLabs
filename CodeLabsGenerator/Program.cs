@@ -14,10 +14,10 @@ namespace CodeLabsGenerator
             
             
             // GenerateOne("NetTodoApp-Part1-WebAPI");
-            // GenerateOne("EerToLogical");
+            GenerateOne("EerToLogical");
             // GenerateOne("NetTodoApp-Part2-Blazor");
             // GenerateOne("BlazorWasmJwtAuth");
-            GenerateOne("NetTodoApp-Part3-EFC");
+            // GenerateOne("NetTodoApp-Part3-EFC");
             
             
             // GenerateMany();
