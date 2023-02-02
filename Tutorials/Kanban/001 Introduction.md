@@ -14,7 +14,7 @@ and improve continuously. Work is represented on Kanban boards,
 allowing you to optimize work delivery across multiple teams and handle even the most complex 
 projects in a single environment.
 
-The Japanese word “kanban”, meaning “visual board” or a “sign”, has been used in the sense of a process definition since the 1950s.
+The Japanese word "kanban", meaning "visual board" or a "sign", has been used in the sense of a process definition since the 1950s.
 
 Much of the information in this article is found here: [What Is Kanban? Explained in 10 Minutes | Kanbanize](https://kanbanize.com/kanban-resources/getting-started/what-is-kanban)
 
@@ -40,11 +40,11 @@ The tasks can be just about anything, but **you should still focus on completing
 
 Kanban says nothing about:
 * team roles
-* meetings
 * estimates
 * iterations
+* (meetings, rarely mentioned in introductory material)
 
 This makes the process simpler, less strict, but also harder to do well. 
 It may require a bit more discipline. And you may find you need to add some kind of extra structure, or elements from other known processes, .e.g Scrum.
 
-The following slides will first introduce the very basic idea. Then I will add extra ideas, you can include if you feel like it.
+The following slides will first introduce the very basic idea. Then I will add extra ideas and concepts, you can include if you feel like it.

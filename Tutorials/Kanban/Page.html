@@ -22,8 +22,8 @@
 <li class="step" onclick="setTab(3)">4 The Card</li>
 <li class="step" onclick="setTab(4)">5 Push vs Pull</li>
 <li class="step" onclick="setTab(5)">6 Swimlanes</li>
-<li class="step" onclick="setTab(6)">7 Commulative flow</li>
-<li class="step" onclick="setTab(7)">8 Meeting triggers</li>
+<li class="step" onclick="setTab(6)">7 Cumulative flow</li>
+<li class="step" onclick="setTab(7)">8 Meetings</li>
 <li class="step" onclick="setTab(8)">9 Scumban</li>
 <li class="step" onclick="setTab(9)">10 Sources</li>
 
@@ -53,7 +53,7 @@ and improving services that deliver knowledge work. It helps you visualize work,
 and improve continuously. Work is represented on Kanban boards,
 allowing you to optimize work delivery across multiple teams and handle even the most complex
 projects in a single environment.</p>
-<p>The Japanese word “kanban”, meaning “visual board” or a “sign”, has been used in the sense of a process definition since the 1950s.</p>
+<p>The Japanese word &quot;kanban&quot;, meaning &quot;visual board&quot; or a &quot;sign&quot;, has been used in the sense of a process definition since the 1950s.</p>
 <p>Much of the information in this article is found here: <a href="https://kanbanize.com/kanban-resources/getting-started/what-is-kanban">What Is Kanban? Explained in 10 Minutes | Kanbanize</a></p>
 <p>It is an agile project management process, similar to Scrum. It is focused on getting things done.</p>
 <p>Sometimes teams will combine Scrum and Kanban into variations of &quot;Scrumban&quot;. This is discussed later.</p>
@@ -70,55 +70,203 @@ Most images in this article is made with Miro's Kanban board template.</p>
 <p>Kanban says nothing about:</p>
 <ul>
 <li>team roles</li>
-<li>meetings</li>
 <li>estimates</li>
 <li>iterations</li>
+<li>(meetings, rarely mentioned in introductory material)</li>
 </ul>
 <p>This makes the process simpler, less strict, but also harder to do well.
 It may require a bit more discipline. And you may find you need to add some kind of extra structure, or elements from other known processes, .e.g Scrum.</p>
-<p>The following slides will first introduce the very basic idea. Then I will add extra ideas, you can include if you feel like it.</p>
+<p>The following slides will first introduce the very basic idea. Then I will add extra ideas and concepts, you can include if you feel like it.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="the-team">The Team</h1><hr/>
 <p><img src="TheTeam.png" alt="" /></p>
 <p>Kanban says nothing about team roles. All are equal, all are developers.</p>
-<p>However, Kanban just describes the basics, and you may add on top of it as needed.<br />
-You can assign someone to be product owner, or Kanban Master, or project manager, if you like.<br />
-You can assign people to specialties, e.g. back-end or front-end developer.</p>
-<p>This is all free</p>
+<p>However, Kanban just describes the essential, and you may add on top of it as needed.<br />
+You can assign someone to be product owner, or &quot;Kanban Master&quot;, or project manager, if you like.<br />
+You can assign people to specialties, e.g. back-end or front-end developer (though in SEP this is not recommended).</p>
+<p>This is all free for you to setup as you like.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="the-kanban-board">The Kanban Board</h1><hr/>
 <h2 id="what-is-the-board">What is the Board</h2>
-<p>The board is the center of Kanban, everything revolves around it. The board consists of column,</p>
+<p>The board is the center of Kanban, everything revolves around it. The board consists of columns, containing tasks of what to do.
+Depending on the state of the task, it will be located in a specific column. As the state of the task progresses, the task moves to other columns</p>
 <h2 id="a-basic-board-setup">A Basic Board Setup</h2>
+<p>The basic board has three columns. The names may differ, but the intention is the same:</p>
+<ol>
+<li>Backlog / todo / requested</li>
+<li>In Progress / doing</li>
+<li>Done</li>
+</ol>
+<p>Below is a figure displaying this setup.</p>
 <p><img src="BasicKanbanSetup.png" alt="BasicKanbanSetup.png" /></p>
+<p>All your tasks start in the Backlog column. Once you start working on something, you move that task to the In progress column.
+When you are done with your task, you move it to the Done column. And then you pick the next task.</p>
+<p>I recommend ordering the Backlog by priority, similar to Scrum. The you can (almost) always just pick the top task, when you need to start working on something new.</p>
 <h2 id="limiting-work-in-progress">Limiting Work in Progress</h2>
+<p>Kanban recommends limiting work in progres (WIP). This is to prevent having too many tasks In progress. You may get stuck on a task, and just think &quot;I'll just start on something else, until I can complete the other&quot;.
+This way you may end up with a lot of started stuff, but not really finishing anything. And Kanban is focussed on getting things done.</p>
+<p>The WIP is then a limit of how many tasks can be in the In progress column. Or other columns (besides backlog and done) if you have more columns.
+Some Kanban apps (Trello, Meistertask, etc) may support adding a WIP limit to columns, otherwise you must manually be vigilant about it.</p>
+<p>When the WIP is reached, it's a sign to the team to combine their efforts on moving the tasks forward.</p>
+<p>What specific number to pick for WIP? It should probably match your team size, maybe 150% of that. But keep the limit small, this will encourage you to get things done.</p>
+<p>The WIP limit lets you identify bottlenecks, i.e. why is your project stuck? If a column is full, the team needs to focus its efforts on the tasks in that column.</p>
 <h2 id="other-board-setups">Other Board Setups</h2>
+<p>Often I find the three basic columns are not enough. E.g. for SEP, the user stories moves through various phases or disciplines:</p>
+<ul>
+<li>analysis</li>
+<li>design</li>
+<li>implementation</li>
+<li>test</li>
+<li>documentation</li>
+</ul>
+<p>You may even have a &quot;define tests&quot; before the implementation. So, consider at least having these columns. Each user story will then move through these phases.</p>
+<p>You might also include a &quot;next up&quot; column, which will act a bit like a sprint. At certain times (read about meetings), you select a couple of user story tasks from the backlog, and move the to the &quot;next up&quot;.
+This gives a clearer overview of what to start on next.</p>
+<p>The board could look like this:</p>
+<p><img src="LargerBoard.png" alt="LargerBoard.png" /></p>
 
 </div>
 <div class="tab">
+<hr/><h1 id="the-cardtask">The Card/Task</h1><hr/>
+<p>What is this? Kanban says little about what the task is. Often, it's just a short piece of text on a sticky note, placed on a physical board on a wall.
+Something, which must be done. A work item. Translated from Japanese, it literally means a visual (kan) card (ban) <a href="https://kanbanize.com/kanban-resources/getting-started/what-is-kanban-card">[2]</a>.</p>
+<p>It is usually a good idea if you can clearly mark which member of a group to whom a specific task is assigned. Some Kanban apps supports this.</p>
+<p>You can approach your tasks in various ways.</p>
+<p>Generally, tasks move from left to right through the columns. Though you might find a problem when implementing, which causes the task to go back to design.<br />
+Or maybe you'll need to create a new task to support your problem.</p>
+<h3 id="user-stories">User stories</h3>
+<p>Your tasks can be user stories. Then your Backlog column will initially hold all your user stories, preferably ordered by importance. Similar to the Scrum Product Backlog.</p>
+<p>This approach, however, may pose a challenge. To complete a user story you may potentially have to do a lot of things, sub-tasks.
+And it can be difficult to keep track of these sub-tasks, if all you see on the board is the user story.</p>
+<p>Some Kanban apps allows you to add more details to a task, e.g. a longer description, links, resources, and a todo-list.</p>
+<p>The below is a screenshot from Trello.</p>
+<p><img src="TrelloChecklist.png" alt="" /></p>
+<p>This approach, by having user stories as the tasks, and adding sub-tasks, could be okay. I do find it lacking in at least one aspect: Each of these subtasks may need to go through analysis, design, implementation, test.
+We don't have the option to mark the sub-tasks with any kind of tag in Trello. Maybe other apps allow this.<br />
+But if each sub-task must go through the phases, which column does the user story task belong to? Analysis? Implementation?</p>
+<p>Meistertask can generate a new &quot;sub-kanban board&quot; from such checklists. If you create a task, and click on it. You can add items to your checklist.
+And then convert to project. See below</p>
+<p><img src="MeisterTaskSubBoard.png" alt="" /></p>
+<p>This will create a new kanban board from the checklist. But there does not seem to be a link back to the original task with sub-tasks. So, I'm not convinced this is amazing.</p>
+<p>Note, you might need other types of tasks than just user stories. Maybe you need to do some refactoring, or rework the UI or something. Those could be independent tasks, as they may not belong to a specific user story.</p>
+<h3 id="sub-tasks">Sub-tasks</h3>
+<p>Alternatively, the sub-tasks mentioned above will be our real tasks. You could introduce a new column, just right of the Backlog, called sub-tasks. Whenever a user story is moved from
+the backlog, it is instead replaced with sub-tasks put into the sub-task column. All these subtask can then move across the board to finish the entire user story.<br />
+But, if you are working on more user stories, it may not be clear which sub-tasks belong to which user story.</p>
+<p>Some Kanban apps allow tags, labels, or colors. So you might be able to group sub-tasks of a user story together.</p>
+<h3 id="separate-boards">Separate boards</h3>
+<p>You could create a Kanban board per user story. Though this may decrease your overview, and make it difficult to adhere to the WIP limit.
+This is essentially what Meistertask could do, as I described above.</p>
+<h3 id="your-own-style">Your own style</h3>
+<p>You can of course experiment and see what works best for you. You could have your Backlog column, and a Sprint column, to imitate Scrum.
+You move <em>X</em> tasks from Backlog to Sprint, and cannot take in anything else from Backlog until everything from Sprint is finished. This does not really align with the spirit of Kanban, though.</p>
 
 </div>
 <div class="tab">
+<hr/><h1 id="push-vs-pull">Push vs Pull</h1><hr/>
+<p>The boards shown so far have been push systems.
+Whenever a task is done in one column, it is moved to the next column. But sometimes this may cause inconveniences. What if the next column has met the WIP limit?<br />
+Your task is then stuck in a sort of limbo. And it may not be entirely obvious that it is actually ready to be moved.</p>
+<p>If one person does the task from analysis through implementation, but another tests it, it may not be clear if the task is ready to be tested.
+If the Test column is full, the task is stuck in the previous column. Simple communication might enlighten this, but you may not always be able to get a hold of your team member.
+So, is the task ready to be tested, or...?</p>
+<p>The pull system doubles (almost) the columns. After each column is a &quot;parking area&quot;, where you can put tasks, which are ready to be <em>pulled</em> into the next column.
+For example:</p>
+<p><img src="PullSystem.png" alt="" /></p>
+<p>This way, if a person is not taking a task through all columns, but at some point need to hand over to some other team member, it is now clear which tasks are ready to be worked on.</p>
 
 </div>
 <div class="tab">
+<hr/><h1 id="swimlanes">Swimlanes</h1><hr/>
+<p>For various reasons you might want to divide your Kanban board horizontally. This give you swimlanes, like so:</p>
+<p><img src="Swimlanes.png" alt="" /></p>
+<p>Notice on the left side, we now have <strong>Team A</strong> and <strong>Team B</strong>. This is a way to divide the tasks between two teams. Maybe you do pair programming.
+Or maybe you want a swimlane per user story, so each swimlane contains the sub-tasks for a specific user story.</p>
+<p>The screenshot is from Miro. I haven't seen this feature in other Kanban apps. You could just have two boards. But this does create a combined overview.</p>
 
 </div>
 <div class="tab">
+<hr/><h1 id="the-cumulative-flow-diagram">The Cumulative Flow Diagram</h1><hr/>
+<p>In Scrum you have the Burndown Chart, which will give a quick overview of the progress of the project. For every item finished (usually user stories), you burn points, and the chart line will descent.</p>
+<p>Kanban has something similar, but with a bit more information. It is called the cumulative flow diagram <a href="https://ardalis.com/excel-cumulative-flow-diagram/">[4]</a> <a href="https://getnave.com/blog/how-to-read-the-cumulative-flow-diagram-infographic/">[5]</a>.</p>
+<p>On the X-axis you have the time, e.g. usually day. Perhaps week. On the Y-axis you have the tasks, in each column.</p>
+<p>At a specific point in time (i.e. day), you can see how many tasks are in each column.</p>
+<p>Here is an example with columns &quot;next up&quot;, &quot;doing&quot;, and &quot;done&quot;.</p>
+<p><img src="CumulativeFlowDiagram.png" alt="" /></p>
+<p>The Done grows steadily over time. The other two grows or shrinks depending on how many tasks are in the respective columns on the board.
+The source above explains how to create the diagram in Excel. I don't think this is common feature in the Kanban apps, though personally, I find the diagram very informative.</p>
+<p>Any flat areas indicates that tasks are not moving. In that respect the diagram tells some of the same information as the Burndown Chart.</p>
 
 </div>
 <div class="tab">
+<hr/><h1 id="meetings">Meetings</h1><hr/>
+<p><img src="kanbancadences.png" alt="" /></p>
+<p><a href="https://djaa.com/kanban-cadences/">[3]</a></p>
+<p>Kanban does mention various types of meetings, called cadences. There are seven:</p>
+<ul>
+<li>Kanban Meeting</li>
+<li>Replenishment Meeting</li>
+<li>Operations Review</li>
+<li>Delivery Planning Meeting</li>
+<li>Service Delivery Review</li>
+<li>Risk Review</li>
+<li>Strategy Review</li>
+</ul>
+<p>Most of them are not particularly interesting for you in a SEP group, they are oriented towards an organization, so the meetings may include many people other than the development team.</p>
+<p>I will mention the most relevant meetings. The rest can be read about <a href="https://www.zentao.pm/blog/seven-cadences-of-kanban-766.html">here</a> or <a href="https://getnave.com/blog/kanban-meetings/">here</a>.</p>
+<h2 id="kanban-meeting">Kanban Meeting</h2>
+<p>This is essentially your Daily Standup Meeting in Scrum. It's a daily meeting, with a duration of 15 minutes.
+The purpose is to observe and track the task status and to keep the team on the same page.
+The difference is that a Kanban meeting is focusing on the flow.
+The team read from the right of the board to the left, finding the blockage, and ensuring the work moved out of the system</p>
+<h2 id="replenishment-meeting">Replenishment Meeting</h2>
+<p>Sort of like the Sprint Planning meeting of Scrum.
+The purpose is to pull the next few items into the queue of tasks, which should be worked on. It may be that you just order/re-order the backlog column. Or you add new tasks to the backlog column, if you don't include all user stories/tasks from the beginning.<br />
+Essentially, if you are out of tasks to work on, the team needs to figure out which tasks to pull in.<br />
+The meeting is held weekly, or on-demand.</p>
+<h2 id="delivery-planning">Delivery Planning</h2>
+<p>Like the Sprint Review of Scrum.
+The purpose is to review the work completed, and decide which items to deliver.</p>
+<h2 id="triggers">Triggers</h2>
+<p>You might define certain events, which can trigger a meeting. E.g.:
+*</p>
+<ul>
+<li>a column is empty</li>
+<li>a column is full</li>
+<li><em>x</em> items have been completed</li>
+<li>the &quot;next up&quot;/&quot;sprint&quot; column is empty</li>
+<li>a task entered the analysis/design column (it's often a good idea for the entire group to do the analysis/design together, so they agree on a common understanding)</li>
+</ul>
+<p>When a trigger event occurs, you hold an appropriate meeting.</p>
+<p>The potential issue is that these triggers can happen at any time, and you may not be able to do a meeting. So, pre-planned meetings have their benefits. But you can mix the two.</p>
 
 </div>
 <div class="tab">
+<hr/><h1 id="scrumban">Scrumban</h1><hr/>
+<p>This name is just a common name for any kind of combination of Scrum and Kanban.</p>
+<p>The most obvious approach is to do Scrum, and within each sprint, you use Kanban.</p>
+<p>You do the sprint planning meeting at the beginning of a sprint, and you create your sprint backlog with all tasks you want to get done this sprint.<br />
+Those tasks go on the Kanban, and you use the board to manage your sprint.</p>
+<p>For the next sprint, you then start a new board.</p>
+<h3 id="other-variations">Other variations</h3>
+<p>You can of course combine Scrum and Kanban by taking whichever elements you like from each methodology.</p>
+<p>Maybe you like sprints, because it gives you a &quot;short project&quot;, which may be easier to comprehend, and there's a fixed &quot;deadline&quot;. Some people like this.
+So, you do Kanban and just add sprints.</p>
+<p>Maybe you like the roles of Scrum. So, you transfer those to Kanban.</p>
+<p>Or maybe you do Kanban, and with regular retrospective meetings.</p>
 
 </div>
 <div class="tab">
 <p><a href="https://kanbanize.com/kanban-resources/getting-started/what-is-kanban">https://kanbanize.com/kanban-resources/getting-started/what-is-kanban</a></p>
+<p><a href="https://djaa.com/kanban-cadences/">https://djaa.com/kanban-cadences/</a></p>
+<p><a href="https://getnave.com/blog/how-to-read-the-cumulative-flow-diagram-infographic/">https://getnave.com/blog/how-to-read-the-cumulative-flow-diagram-infographic/</a></p>
+<p><a href="https://getnave.com/blog/kanban-meetings/">https://getnave.com/blog/kanban-meetings/</a></p>
+<p><a href="https://ardalis.com/excel-cumulative-flow-diagram/">https://ardalis.com/excel-cumulative-flow-diagram/</a></p>
+<p><a href="https://www.zentao.pm/blog/seven-cadences-of-kanban-766.html">https://www.zentao.pm/blog/seven-cadences-of-kanban-766.html</a></p>
 
 </div>
 

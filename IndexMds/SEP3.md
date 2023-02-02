@@ -4,6 +4,8 @@
 
 [How to structure your appendix](./Tutorials/SepAppendix/Page.html)
 
+[Introduction to Kanban](./Tutorials/Kanban/Page.html)
+
 ### Videos
 
 **[SEP3 and Git](https://youtu.be/BZgLcOj2Z14)**
