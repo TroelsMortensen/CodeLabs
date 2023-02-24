@@ -1,4 +1,9 @@
-﻿Who published 'Tricked (The Iron Druid Chronicles,  #4)' 
+﻿Who published 
+```
+Tricked (The Iron Druid Chronicles,  #4) 
+```
+
+###### Please note there are two spaces in front of "#"
 
 <details>
 <summary>Show answer</summary>

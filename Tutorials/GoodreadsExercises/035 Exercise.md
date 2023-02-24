@@ -1,4 +1,9 @@
-﻿Show all the genres of the book 'Hand of Mars (Starship's Mage,  #2)'.
+﻿Show all the genres of the book 
+```
+Hand of Mars (Starship's Mage,  #2)
+```
+
+###### Please note there are two spaces in front of "#"
 
 <details>
 <summary>Show answer</summary>

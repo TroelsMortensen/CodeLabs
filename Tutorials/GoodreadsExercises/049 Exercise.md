@@ -1,6 +1,13 @@
-﻿What's the lowest number of days to read 'Oathbringer (The Stormlight Archive,  #3)', and who did that?
+﻿What's the lowest number of days to read 
+
+```
+Oathbringer (The Stormlight Archive,  #3)
+```
+and who did that?
 
 Subtracting one `DATE` from another will give the difference in days.
+
+###### Please note there are two spaces in front of "#"
 
 <details>
 <summary>Show answer</summary>

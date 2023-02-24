@@ -14,7 +14,7 @@
     <a href="./../../index.html" class="homelink">HOME</a>
 </div>
 <div style="display:flex;width:100%;height:100%;padding-top:64px">
-    <div>
+    <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Exercise</li>
 <li class="step" onclick="setTab(1)">2 Exercise</li>
@@ -63,9 +63,9 @@
     <div id="container" action="/action_page.php">
         <div style="overflow:auto;">
 
-            <div style="float:right;">
-                <button type="button" id="prevBtn" onclick="nextPrev(-1)">&lt; Previous</button>
-                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next &gt;</button>
+            <div style="float:right; margin:10px">
+                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
             </div>
         </div>
 
@@ -231,7 +231,10 @@ WHERE year_published = 2017;
 
 </div>
 <div class="tab">
-<p>Who published 'Tricked (The Iron Druid Chronicles,  #4)'</p>
+<p>Who published</p>
+<pre><code>Tricked (The Iron Druid Chronicles,  #4) 
+</code></pre>
+<h6 id="please-note-there-are-two-spaces-in-front-of">Please note there are two spaces in front of &quot;#&quot;</h6>
 <details>
 <summary>Show answer</summary>
 <p>Random House Publishing Group,169</p>
@@ -459,6 +462,7 @@ WHERE book.author_id = author.id
 <pre><code>Dead Iron (Age of Steam,  #1)
 </code></pre>
 <p>have?</p>
+<h6 id="please-note-there-are-two-spaces-in-front-of">Please note there are two spaces in front of &quot;#&quot;</h6>
 <details>
 <summary>Show answer</summary>
 <p>Paperback</p>
@@ -512,7 +516,10 @@ ORDER BY count DESC;
 
 </div>
 <div class="tab">
-<p>Show all the genres of the book 'Hand of Mars (Starship's Mage,  #2)'.</p>
+<p>Show all the genres of the book</p>
+<pre><code>Hand of Mars (Starship's Mage,  #2)
+</code></pre>
+<h6 id="please-note-there-are-two-spaces-in-front-of">Please note there are two spaces in front of &quot;#&quot;</h6>
 <details>
 <summary>Show answer</summary>
 <p>science-fiction<br />
@@ -996,8 +1003,12 @@ ORDER BY total DESC
 
 </div>
 <div class="tab">
-<p>What's the lowest number of days to read 'Oathbringer (The Stormlight Archive,  #3)', and who did that?</p>
+<p>What's the lowest number of days to read</p>
+<pre><code>Oathbringer (The Stormlight Archive,  #3)
+</code></pre>
+<p>and who did that?</p>
 <p>Subtracting one <code>DATE</code> from another will give the difference in days.</p>
+<h6 id="please-note-there-are-two-spaces-in-front-of">Please note there are two spaces in front of &quot;#&quot;</h6>
 <details>
 <summary>Show answer</summary>
 <p>tachophobia,4
@@ -1039,11 +1050,12 @@ ORDER BY quickest ASC;
 
 
 
-        <div style="overflow:auto;">
-
+        
+        <div style="overflow:auto; padding-bottom: 10px">
+            <hr/>
             <div style="float:right;">
-                <button type="button" id="prevBtn1" onclick="nextPrev(-1)">&lt; Previous</button>
-                <button type="button" id="nextBtn1" onclick="nextPrev(1)">Next &gt;</button>
+                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
             </div>
         </div>
         
