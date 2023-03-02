@@ -58,7 +58,7 @@ We will apply the Dependency Inversion Principle, and hide the Data Access layer
 
 ### Component diagram
 
-The following diagram shows the components (grey boxes) of our project. The green box contains everything client side, and the blue box is the server side.
+The following diagram shows the components (grey boxes) of our project. The blue box contains everything client side, and the green box is the server side.
 
 ![img](Resources/ComponentDiagram.svg)
 

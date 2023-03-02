@@ -9,11 +9,11 @@ namespace CodeLabsGenerator
 
         static void Main(string[] args)
         {
-            GenerateOne("GoodreadsExercises");
+            // GenerateOne("GoodreadsExercises");
             // GenerateOne("DvdRentalExercises");
             
             
-            // GenerateOne("NetTodoApp-Part1-WebAPI");
+            GenerateOne("NetTodoApp-Part1-WebAPI");
             // GenerateOne("Kanban");
             // GenerateOne("NetTodoApp-Part2-Blazor");
             // GenerateOne("BlazorWasmJwtAuth");
