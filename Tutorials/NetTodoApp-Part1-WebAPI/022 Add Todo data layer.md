@@ -3,7 +3,7 @@ We need to fix two things in this layer, the method for finding a user by id and
 
 ### Find User
 
-You should currently have a compile error in TodoFileDao, because the interface defines a method not yet implemented in the class.\
+You should currently have a compile error in UserFileDao, because the interface defines a method not yet implemented in the class.\
 Let's go ahead and implement that method.
 
 Given an Id we want to return the associated User, or null if none is found. Give it a go yourself first, and then look at the hint below:
