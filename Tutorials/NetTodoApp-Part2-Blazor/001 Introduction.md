@@ -1,4 +1,13 @@
 # Introduction
+
+# Please notice!
+This guide was written with Blazor-WASM in mind. 
+However, I feel it is still easier to work with Blazor-Server.
+The debugging and error messaging is better.
+
+Therefore, I suggest you create a Blazor-Server project, instead of a Blazor-WASM. The difference will be tiny, and should have no effect in this tutorial.
+# Notice over
+
 This is the _second_ part of a 3 part tutorial series.
 
 You should already have the Todo Web API in place from the first part. We will continue working in the same Solution so as to reuse certain things.
