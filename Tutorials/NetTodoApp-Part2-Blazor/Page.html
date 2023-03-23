@@ -1061,7 +1061,9 @@ When doing style-behinds, those styles are available only to that specific page.
 <p>Alternatively we can create a new global style sheet, let's do that, so you see how it is done.</p>
 <p>At this location: BlazorWASM/wwwroot/css create a new file: &quot;styles.css&quot;. Or whatever you want to call it.<br />
 Copy the styles from your style-behind in here.</p>
-<p>We then need to tell the app to load this style sheet too. Open BlazorWASM/wwwroot/index.html.</p>
+<p>We then need to tell the app to load this style sheet too.
+Open BlazorWASM/wwwroot/index.html.
+(<em>in Blazor-server it is the file BlazorWASM/pages/_host.cshtml</em>)</p>
 <p>Inside the <code>&lt;head&gt;</code> tag add the highlighted line:</p>
 <pre data-line="8"><code class="line-numbers language-html">&lt;head&gt;
     &lt;meta charset=&quot;utf-8&quot; /&gt;

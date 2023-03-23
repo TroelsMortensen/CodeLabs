@@ -219,7 +219,9 @@ Alternatively we can create a new global style sheet, let's do that, so you see 
 At this location: BlazorWASM/wwwroot/css create a new file: "styles.css". Or whatever you want to call it.\
 Copy the styles from your style-behind in here.
 
-We then need to tell the app to load this style sheet too. Open BlazorWASM/wwwroot/index.html.
+We then need to tell the app to load this style sheet too. 
+Open BlazorWASM/wwwroot/index.html.
+(*in Blazor-server it is the file BlazorWASM/pages/_host.cshtml*)
 
 Inside the `<head>` tag add the highlighted line:
 
