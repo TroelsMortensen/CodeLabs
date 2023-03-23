@@ -559,7 +559,8 @@ Then follows a Claim for each of the properties of our User object. If we add an
     return serializedToken;
 }
 </code></pre>
-<p>This method is somewhat black magic, but it will generate the JWT, given a User object.</p>
+<p>It is not the purpose of this guide to teach in-depth knowledge about JWT or how it is craeted. The above method will generate the JWT, given a User object.
+The interested reader is encouraged to research more about JWT themselves.</p>
 <p>The first line calls the previous method to get a List of Claims, i.e. our User converted to a list of key-value pairs containing the same information.</p>
 <p>A JWT is signed by the server, so it cannot be tampered with. We do that in the next two lines.</p>
 <p>We create a JwtPayload containing the relevant information:</p>

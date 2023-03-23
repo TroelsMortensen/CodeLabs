@@ -94,7 +94,8 @@ private string GenerateJwt(User user)
 }
 ```
 
-This method is somewhat black magic, but it will generate the JWT, given a User object.
+It is not the purpose of this guide to teach in-depth knowledge about JWT or how it is craeted. The above method will generate the JWT, given a User object. 
+The interested reader is encouraged to research more about JWT themselves.
 
 The first line calls the previous method to get a List of Claims, i.e. our User converted to a list of key-value pairs containing the same information.
 
