@@ -477,6 +477,34 @@ Here we evaluate the state with <code>@(string.IsNullOrEmpty(username))</code>, 
 <div class="tab">
 <hr/><h1 id="test">Test</h1><hr/>
 <p>We should now have the functionality in place. We will add a bit of styling later, but let's test it first.</p>
+<h2 id="pre-flight-checks">Pre-flight Checks!</h2>
+<p><img src="Resources/pre-flight-check.jpg" alt="" /></p>
+<p>This is where a lot of students will realize, they have messed up something.
+You could skip below, and just test, but if stuff doesn't work, go through this list:</p>
+<h3 id="run-web-api-with-https">1 - Run Web API with https</h3>
+<p>When you run your Web API, Rider may allow you to run a version, which only uses http.
+You will see in the console output that the server only listens to one address: http://localhost:1234</p>
+<p>Sometimes the server attempts to redirect incoming requests to use http<em><strong>s</strong></em>.
+And if this is not set up correctly, things go iffy.<br />
+So, I suggest just running the Web API with https. When doing this, you should see in the console that the server now listens on two addresses, one with http, and one with https. And different ports.</p>
+<p>This may cause other problems, like that your developer environment is not trusted. You will have to set this up.<br />
+First: open a terminal, there's on in Rider, usually as a tab at the bottom/left. Or go &quot;View-&gt;Tool Windows-&gt;Terminal&quot;.<br />
+In here, type <code>dotnet dev-certs https --clean</code>. This may show a popup, where you click accept.<br />
+Then you type into the terminal <code>dotnet dev-certs https --trust</code>, again maybe with a popup, which you accept.</p>
+<p>When your server is not trusted, and you try to open swagger, your browser will tell you, it is fishy, and do you really want to continue.</p>
+<p>Use the https address, that's generally better.</p>
+<h3 id="verify-controller-names">2 Verify controller names</h3>
+<p>An often problem I see is that you have a class in your Web API call UserController.<br />
+Then on the Blazor side, you try to create a new User with:<br />
+POST https://localhost:1234/users</p>
+<p>Notice the last <em>s</em>. But your URI must match what the server expects, and we have generally defined our controllers to be reached based on their naming.<br />
+So, if your controller is named UserController, the URI to reach that controller will be <code>.../user</code> , i.e. with the s.</p>
+<p>Also notice, your Controller's file name may not match the class name, so you have to open the file and look at the code <code>public class UserController..</code>.</p>
+<h3 id="blazor-httpclient-baseurl">3 Blazor HttpClient BaseUrl</h3>
+<p>When doing Blazor-wasm, by default there is a registered HttpClient as a service. With Blazor-Server, you may have to register it yourself.<br />
+Either way, you must verify the BaseUrl is set to match that of your Web API, <em>not</em> your Blazor-WASM, which is the initial setting.<br />
+Use the https URI of your Web API, as mentioned above.</p>
+<h2 id="actual-test">Actual test</h2>
 <p>Run first your Web API. You can just close the Swagger page, which opens.</p>
 <p>Run then the BlazorWASM. It should open a new tab in your browser.</p>
 <p>In the address bar put &quot;https://localhost:7205/CreateUser&quot; to navigate to the page, we have just worked on (your port may be different).</p>
