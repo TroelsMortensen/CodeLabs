@@ -472,17 +472,29 @@ Essentially it is an object oriented implementation of a foreign key.</p>
 <p>The classes would then look like this:</p>
 <p><img src="Resources/TwoWayNavProp.png" alt="img.png" /></p>
 <p>Notice the User has a collection of all Todos assigned to it.</p>
-<p>However:</p>
-<h2 id="clean-like-approach">Clean-like approach</h2>
+<h2 id="update-to-domain-classes">Update to Domain Classes</h2>
+<p>This means an update to the User class, it looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class User
+{
+    public int Id { get; set; }
+    public string UserName { get; set; }
+
+    public ICollection&lt;Todo&gt; Todos { get; set; }
+}
+</code></pre>
+<p>Things should be good now.</p>
+<h2 id="clean-thoughts">Clean thoughts</h2>
+<h6 id="out-of-course-scope-just-food-for-thought">(out of course scope, just food for thought)</h6>
 <p>Remember the discussion on the previous slide. We are again about the modify domain classes, because of an outer ring.</p>
 <h3 id="consequences">Consequences</h3>
-<p>This circular dependency can have unforeseen consequences because object oriented classes don't always do too well with these. If we keep some data in memory and wish to update the assignee of a Todo, we would have to modify both the Todo<span>Owner and the User</span>Todos, i.e. double work, with the potential of forgetting some updates.\
+<p>This circular dependency can have unforeseen consequences because object oriented classes don't always do too well with these. If we keep some data in memory and wish to update the assignee of a Todo, we would have to modify both the Todo<span>Owner and the User</span>Todos, i.e. double work, with the potential of forgetting some updates.<br />
 We might need this double work for both updates, deletes, creates. And with a larger domain, this can escalate.</p>
-<p>JSON cannot be serialized with circular dependencies, so if we did the two-way, we could no longer use our implementation of the File storage. Now, maybe that's not a big concern, because the File storage functionality is in an outer ring, and shouldn't affect the domain. But still.</p>
+<p>JSON cannot be serialized with circular dependencies, so if we did the two-way, we could no longer use our implementation of the File storage.
+Now, maybe that's not a big concern, because the File storage functionality is in an outer ring, and shouldn't affect the domain, but it would require some work to fix.</p>
 <h3 id="the-fix">The Fix?</h3>
 <p>If we really want to keep things separated, stick to the clean approach, we must not touch our domain classes.<br />
 An alternative would then be do define a set of classes for the EFC layer only. The DAO interfaces would still work with Todo and User, but the EFC layer would convert these to TodoEFC and UserEFC as needed.<br />
-These new classes would be sub-classes of the domain classes. And in these we specify the EFC-related stuff, e.g. attributes and relationships.</p>
+These new classes could be sub-classes of the domain classes (or just very similar). And in these we specify the EFC-related stuff, e.g. attributes and relationships.</p>
 <p>It could look like this:</p>
 <p><img src="Resources/EfcDomainClasses.png" alt="img.png" /></p>
 <p>The TodoContext would then contain DbSets of the Efc classes.
@@ -505,16 +517,6 @@ in case of future changes to the system, which shouldn't affect Todo.</p>
 <p>We will just update the domain classes.</p>
 <p><a href="https://www.reddit.com/r/dotnet/comments/yd1h0f/keeping_efc_navigation_properties_out_of_the/">I have asked this question on reddit</a>, maybe someone has given input, when you read this. Eventually this paragraph may get updated.<br />
 See last section on this slide for more information.</p>
-<h2 id="update-to-domain-classes">Update to Domain Classes</h2>
-<p>This means an update to the User class, it looks like this:</p>
-<pre><code class="line-numbers language-csharp">public class User
-{
-    public int Id { get; set; }
-    public string UserName { get; set; }
-
-    public ICollection&lt;Todo&gt; Todos { get; set; }
-}
-</code></pre>
 <h2 id="shadow-properties-and-constructors">Shadow Properties and Constructors</h2>
 <p>There is another way, where we can still use the <code>User::Todos</code> of ICollection. Without actually having this in the User class.</p>
 <p>It is a sub-set of what is called a Shadow Property, i.e. a property that does not really exist, but EFC sneakily adds it.</p>
