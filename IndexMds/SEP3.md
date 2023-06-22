@@ -8,6 +8,8 @@
 
 [C4 Diagram Model, VIA style (not started)]()
 
+[Connect EFC to local or cloud hosted PostgreSQL db](https://github.com/TroelsMortensen/EFCpostgres)
+
 ### Videos
 
 **[SEP3 and Git](https://youtu.be/BZgLcOj2Z14)**
