@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div id="steps-list">
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 New project</li>
+<li class="step" onclick="setTab(2)">3 The classes</li>
+<li class="step" onclick="setTab(3)">4 Utils class</li>
+<li class="step" onclick="setTab(4)">5 Category enum</li>
+<li class="step" onclick="setTab(5)">6 Product class</li>
+<li class="step" onclick="setTab(6)">7 Main class again</li>
+<li class="step" onclick="setTab(7)">8 Your first breakpoint</li>
+<li class="step" onclick="setTab(8)">9 The debug window</li>
+<li class="step" onclick="setTab(9)">10 Advancing execution</li>
+
+        </ol>
+    </div>
+    <div id="container" action="/action_page.php">
+        <div style="overflow:auto;">
+
+            <div style="float:right; margin:10px">
+                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="welcome-to-debugging-in-java-with-intellij-idea">Welcome to debugging in Java with IntelliJ Idea</h1><hr/>
+<p>This tutorial will introduce the debugging tool in IntelliJ.
+The debugging tool is super powerful, and you will spend much of your professional career using it.<br />
+This tutorial is meant as a simple introduction, but should be enough to get you going.<br />
+You can't really break anything using the debugger, so I encourage you to play around with it quite often, so that you get intimately comfortable.</p>
+<h3 id="generalization">Generalization</h3>
+<p>The tutorial can be used for other IDEs as well,
+though some descriptions or images will not match, e.g. in Eclipse.<br />
+All modern IDEs have some built in debugging tool, so, conceptually, the ideas presented here should be transferable to your preferred IDE.</p>
+<p>The same code can be used. The Java version should not be relevant.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="new-project">New Project</h1><hr/>
+<p>First, you will need a new Java project. Or a folder in an existing, it's not all that important.<br />
+I assume you create a new project, set it up as usual, have a package with a class, containing a main method.</p>
+<p>For example like this:</p>
+<p><img src="InitialProject.java.png" alt="" /></p>
+<p>Notice project structure on the left, and the initial code on the right.</p>
+<p>You should be able to run the main method, and get a print out. Just to make sure things are set up correctly.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-example-classes">The Example Classes</h1><hr/>
+<p>The code introduced over the next few slides is what we will use for this example. There are four classes:</p>
+<ul>
+<li>Category</li>
+<li>Product</li>
+<li>Program</li>
+<li>Utils</li>
+</ul>
+<p>The application is about products and calculating prices, nothing too fancy.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="create-utils-class">Create <code>Utils</code> class</h1><hr/>
+<p>Inside your new project, create a class called <code>Utils</code>, it looks like this:</p>
+<pre><code class="line-numbers language-java">public class Utils
+{
+    private static final double vatGrocery = 0.07;
+    private static final double vatNormal = 0.19;
+
+    public static double calculateVat(double price, Category category)
+    {
+        double result;
+
+        if (category == Category.GROCERY)
+            result = price * vatGrocery;
+        else
+            result = price * vatNormal;
+
+        return result;
+    }
+
+    public static double calculatePriceWithVat(double price, Category category)
+    {
+        var priceVat = price + calculateVat(price, category);
+        return priceVat;
+    }
+}
+</code></pre>
+<p>It is not currently important what the code does, we will step through it and investigate, when we start the debugging.</p>
+<p>The class depends on a <code>Category</code>, and your code does not compile, so we will create that next.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="create-category">Create Category</h1><hr/>
+<p>The Category is just an enum (<a href="https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html">read more here</a>), i.e. a fixed list of values.</p>
+<p>Create a new class/enum, called <code>Category</code> in the same package as the other two classes (Main, Utils).</p>
+<p>The code looks like this:</p>
+<pre><code class="line-numbers language-java">public enum Category {
+    ELECTRONICS,
+    GROCERY,
+    CLOTHES
+}
+</code></pre>
+<p>Notice the <code>enum</code> type, instead of <code>class</code>, in the first line.<br />
+We now have a type called <code>Category</code>, with a set of possible values: [electronics, grocery, clothes].</p>
+<p>The convention is to all upper case enum value names.</p>
+<p>Your code should now compile again, now that the <code>Utils</code> knows about a <code>Category</code>.</p>
+<h3 id="notice">Notice</h3>
+<p>When creating a new class, you can actually select it to be an enum:</p>
+<p><img src="CreateEnum.png" alt="" /></p>
+<p>Or, you can just create a normal class, and change our <code>class</code> with <code>enum</code>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="product-class">Product Class</h1><hr/>
+<p>Now we need the <code>Product</code> class, so we can calculate some prices, and taxes, and stuff.</p>
+<p>Create a new class called <code>Product</code>, in the same package as the rest.</p>
+<p>The code looks like this:</p>
+<pre><code class="line-numbers language-java">public class Product
+{
+    private String name;
+    private Category category;
+    private double price;
+
+    public Product(String name, Category category, double price)
+    {
+        this.name = name;
+        this.category = category;
+        this.price = price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+}
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-program">The Program</h1><hr/>
+<p>Finally, we need to update the <code>Main</code> class, to contain a bit of functionality, we can run.</p>
+<p>You need to modify the code to look like this:</p>
+<pre><code class="line-numbers language-java">public class Main {
+
+    public static void main(String[] args) {
+        showPricesWithVat();
+    }
+
+    private static void showPricesWithVat() {
+        System.out.println(&quot;Product prices incl. VAT:&quot;);
+
+        for (Product product : products) {
+            double vat = Utils.calculateVat(product.getPrice(), product.getCategory());
+            double priceWithVat = Math.round(product.getPrice()+ vat);
+            System.out.println(product.getName() + &quot;: &quot; + priceWithVat + &quot; EUR&quot;);
+        }
+    }
+
+    private static final List&lt;Product&gt; products = new ArrayList&lt;&gt;(Arrays.asList(
+            new Product(&quot;Batteries&quot;, Category.ELECTRONICS, 2.50),
+            new Product(&quot;SD Card&quot;, Category.ELECTRONICS, 10),
+            new Product(&quot;T-shirt&quot;, Category.ELECTRONICS, 15),
+            new Product(&quot;Parmesan Cheese&quot;, Category.GROCERY, 7.50),
+            new Product(&quot;Tomatoes&quot;, Category.GROCERY, 2))
+    );
+}
+</code></pre>
+<p>Overall, we have three parts/sections in this code.</p>
+<p>First, lines 3-5, this is the <code>main</code> method, it just calls the <code>showPricesWithVat</code> method.<br />
+Then, lines 7-15, this is the method which will display products and their prices, the main functionality of our tiny program.<br />
+It loops through a list of 5 products, which is defined at the bottom of the class, lines 17-23.</p>
+<h3 id="test-run">Test run</h3>
+<p>Your program should compile, and you should be able to run it.<br />
+This should produce the following output to the console:</p>
+<pre><code>Product prices incl. VAT:
+Batteries: 3.0 EUR
+SD Card: 12.0 EUR
+T-shirt: 18.0 EUR
+Parmesan Cheese: 8.0 EUR
+Tomatoes: 2.0 EUR
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="breakpoints">Breakpoints</h1><hr/>
+<p>Breakpoints are placed next to lines of code.
+When running your program in debug mode (shown later),
+your program will pause execution at the break point,
+and you can inspect all kinds of information.</p>
+<p>Now, suppose we don't like the numbers being calculated, maybe we suspect an error,
+and we want to understand how the calculations are made by debugging our program.</p>
+<h2 id="setting-a-breakpoint">Setting a breakpoint</h2>
+<p>A <strong>breakpoint</strong> is placed in the <em><strong>gutter</strong></em>.
+This is the area just to the right of the line numbers in a class, see below.<br />
+A breakpoint is a small red dot (( )).<br />
+You can theoretically place as many breakpoints, as you wish, all over your program.<br />
+A breakpoint is removed by clicking it again.</p>
+<p>In our program, all calculation results are shown by
+the <code>ShowPricesWithVat</code> method, so, let's put a
+breakpoint on the first line of this method,
+and run the program in debug mode, like so:</p>
+<p>Notice the red dot in the <em>gutter</em> in the gif below.<br />
+Then see how the debugging is started by running the program using the little bug button, next to the play button.<br />
+Finally, when the code execution hits the line with the breakpoint, the execution is paused, and the line is highlighted.</p>
+<p>See this gif:</p>
+<p><img src="PlaceBreakpoint.gif" alt="" /></p>
+<p>Now, give it a go yourself.</p>
+<p>Let the program execution be paused here, and go to the next slide.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-debug-window">The Debug Window</h1><hr/>
+<p>After we start debugging, the program stops at the breakpoint.
+To examine the state of the paused program, we use the Debug window.</p>
+<p>This window contains all kinds of information:</p>
+<p><img src="DebugWindow.png" alt="" /></p>
+<p>The debug window should automatically appear at the bottom of IntelliJ, when you run the program in debug mode, and hit a breakpoint.</p>
+<ol>
+<li>Here we have a few buttons, the relevant are from the top:
+<ol>
+<li>Curved green arrow: restart program</li>
+<li>Green play arrow: resume program from where it is currently pause</li>
+<li>Grey pause icon: if your program is running, you can press this button to pause at the current execution point.</li>
+<li>Red square: terminate program</li>
+<li>At the bottom, the two red dots, this will show a list of all your breakpoints.</li>
+</ol>
+</li>
+<li>The call stack. I.e. which method has called which method, which has then called another method. Basically you can see the trace of methods called to arrive at the current location. In this case we can see the <code>main</code> has called <code>showPricesWithVat</code>.</li>
+<li>The debugging tools, used to navigate and control execution of your code. They will be introduced over the next few slides.</li>
+<li>The various variables and their values, known at the current breakpoint.</li>
+</ol>
+<p>While still paused, go to the next slide.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="advancing-code-execution">Advancing Code Execution</h1><hr/>
+<p>During debugging we often step through the program one line at a time to examine the program state at various execution points. This is the bread and butter of debuggin.<br />
+There are two main ways you can step through the code:</p>
+<ol>
+<li><code>Step Over</code> <kbd>F8</kbd> : if you're not interested in the method, the debugger will execute the call and stop at the next statement after the method call.</li>
+<li><code>Step Into</code> <kbd>F7</kbd> : if paused at a line of code which calls a method, you will step inside the method and stop at the beginning of this method.</li>
+</ol>
+<p><img src="StepButtons.png" alt="" /></p>
+<p>We'll take a look at both shortly.</p>
+
+</div>
+
+
+
+        
+        <div style="overflow:auto; padding-bottom: 10px">
+            <hr/>
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>

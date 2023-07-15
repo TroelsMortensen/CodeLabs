@@ -17,7 +17,7 @@ namespace CodeLabsGenerator
             // GenerateOne("Kanban");
             // GenerateOne("NetTodoApp-Part2-Blazor");
             // GenerateOne("BlazorWasmJwtAuth");
-            GenerateOne("NetTodoApp-Part3-EFC");
+            GenerateOne("DebuggingInIntelliJ");
             
             
             // GenerateMany();
