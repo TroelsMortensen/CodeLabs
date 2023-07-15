@@ -1,0 +1,10 @@
+﻿/CodeLabsGenerator/bin/
+/IndexGenerator/bin/
+/CodeLabsGenerator/obj/
+/IndexGenerator/obj/
+*.bak
+/.idea/.idea.CodeLabs/.idea/indexLayout.xml
+/.idea/.idea.CodeLabs/.idea/sqldialects.xml
+/.idea/.idea.CodeLabs/.idea/vcs.xml
+*.asta.lock
+CodeLabs.sln.DotSettings.user
