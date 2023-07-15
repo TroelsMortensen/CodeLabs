@@ -26,6 +26,13 @@
 <li class="step" onclick="setTab(7)">8 Your first breakpoint</li>
 <li class="step" onclick="setTab(8)">9 The debug window</li>
 <li class="step" onclick="setTab(9)">10 Advancing execution</li>
+<li class="step" onclick="setTab(10)">11 Stepping over code</li>
+<li class="step" onclick="setTab(11)">12 Stepping into code</li>
+<li class="step" onclick="setTab(12)">13 Resuming the program</li>
+<li class="step" onclick="setTab(13)">14 Evaluating expressions</li>
+<li class="step" onclick="setTab(14)">15 Adding watches</li>
+<li class="step" onclick="setTab(15)">16 Conditional break-point</li>
+<li class="step" onclick="setTab(16)">17 End note</li>
 
         </ol>
     </div>
@@ -266,6 +273,115 @@ There are two main ways you can step through the code:</p>
 </ol>
 <p><img src="StepButtons.png" alt="" /></p>
 <p>We'll take a look at both shortly.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="stepping-over-code">Stepping Over Code</h1><hr/>
+<p>Run your program again, with debugging, it should pause at the break-point here:</p>
+<p><img src="Line14breakpoint.png" alt="" /></p>
+<p>Let's begin with stepping over the <code>Utils.calculateVat(...)</code> method in the for-loop.<br />
+We will pause in line 19, i.e. the next print-out, and inspect the information.<br />
+It looks like this:</p>
+<p><img src="StepOverCode.gif" alt="" /></p>
+<p>These are the steps shown:</p>
+<ol>
+<li>Program started with debugging, i.e. the little bug-button</li>
+<li>Program stops execution at break-point</li>
+<li>The execution is advanced one line at a time with the <kbd>Step Over</kbd> button.</li>
+<li>After line 17, we can see the value of the <code>vat</code> variable: 0.475</li>
+<li>After line 18, we can see the value of the <code>priceWithVat</code> variable: 3.0</li>
+<li>Both the values are shown next to the line of code, and also in the inspector at the bottom.</li>
+<li>We can also inspect the specific <code>product</code> instance, we are currently working with. It is the &quot;Batteries&quot;</li>
+</ol>
+<p>Here is the information, when the program is paused at line 19:</p>
+<p><img src="InfoAtLine19.png" alt="" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="stepping-into-code">Stepping Into Code</h1><hr/>
+<p>Stepping into code is used when you want to enter the method at the current line of execution, and pause inside that method.</p>
+<p>E.g. if you are paused here, at line 17, and want to see what happens inside <code>Utils.calculateVat(..)</code>, you will use the <kbd>Step Into</kbd> button.</p>
+<p><img src="PauseAtLine17.png" alt="" /></p>
+<p>Let's try. Rerun the program, with debugging. It pauses at line 14 (or you can remove the current break-point, and create a new),
+step over until the execution is paused at line 17. As shown above.</p>
+<p>Now, we want to <kbd>Step Into</kbd>, which means we enter the method <code>calculateVat</code>, and continue from <em>its</em> beginning.</p>
+<p>When paused at line 17, press the button, or <kbd>F7</kbd>:</p>
+<p><img src="StepIntoButton.png" alt="" /></p>
+<p>I had to press it twice, first it highlighed the method, then at second press, it entered the method.<br />
+The execution is now paused here:</p>
+<p><img src="PauseInsideCalcVat.png" alt="" /></p>
+<p>Now, inspect the values in the inspector at the bottom, as you <kbd>Step Over</kbd> until execution exits the method again.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="resuming-the-program">Resuming the Program</h1><hr/>
+<p>At any time, you can resume program execution. The program will run till the next breakpoint, if any.</p>
+<p>E.g. if you have a loop with several lines of code,
+and your are looking for something specific after a couple of iterations,
+maybe you don't want to use step-over all the way.
+Put a break point at the beginning of the loop, and use <kbd>Resume Program</kbd> to iterate through loops.</p>
+<p><img src="ResumeProgramButton.png" alt="" /></p>
+<p>Let's try it out.</p>
+<p>Terminate your program.<br />
+Remove your break-points.<br />
+Create a new break-point inside <code>calculateVat()</code>, here:</p>
+<p><img src="BreakpointInCalcVat.png" alt="" /></p>
+<p>Run your program, it should pause the your break-point.<br />
+When you click <kbd>Resume Program</kbd>, execution stops here again, but this time it is for the second product.
+I.e. the second iteration of the for-loop. Pressing <kbd>Resume Program</kbd> again pauses at this line again, now for the third product.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="evaluating-expressions">Evaluating Expressions</h1><hr/>
+<p>During debugging, you can evaluate any expression in the context of the current execution point. By &quot;evaluate&quot;, I mean &quot;run code&quot;.<br />
+Say, we want to evaluate the insides of our <code>if</code>-block:</p>
+<p><img src="PauseAt12.png" alt="" /></p>
+<p>We can select parts of the code and use the <code>Evaluate expression</code> feature to execute that piece of code, like this:</p>
+<p><img src="EvaluateExpression.gif" alt="" /></p>
+<p>You can either use the pop-up window, or the input field in the inspector.</p>
+<p>Alternatively, you can hold down <kbd>alt</kbd> and click on parts of your code for evaluation. Below, <kbd>alt</kbd> is held down. Notice the underline indicating what code is executed, when clicking on it:</p>
+<p><img src="HoldDownAlt.gif" alt="" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="adding-watches">Adding Watches</h1><hr/>
+<p>If you're interested in how a particular expression changes during program execution, you can add it as a watch. Either a variable, or an expression.<br />
+By default, watches are shown together with local variables in the debugging inspector, and updated (if needed) at each step through the application.</p>
+<p>Let's add our expression to watches, we can then see how it changes through executions:</p>
+<ol>
+<li>Select the expression <code>category == Category.Grocery</code>.</li>
+<li>In the context menu (right click), select Add to Watches. Or create a watch manually, see below. Notice the glasses icon next to your watch.</li>
+<li>Press <kbd>F9</kbd> or click the <kbd>Resume Program</kbd> button in the Debug window.</li>
+<li>Notice how the watched value changes.</li>
+</ol>
+<p><img src="InspectWatch.gif" alt="" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="conditional-break-point">Conditional Break-Point</h1><hr/>
+<p>Sometimes, you have a problem with a specific element in a list, and the faulty code is in a for-loop.</p>
+<p>You go debugging, place a break-point in the for-loop, and press <kbd>Resume Program</kbd> until the correct element is active.</p>
+<p>If there are many elements in the list, it will take a long time to get to the correct element.\</p>
+<p>Example: In our case, we want to inspect the calculation for &quot;Parmesan Cheese&quot;, i.e. the fifth element in the list.<br />
+I could put a break-point at line 17 in the Main class, i.e. the first line inside the for-loop, and just <kbd>Resume Program</kbd> until &quot;Parmesan Cheese&quot; product is active.<br />
+But this could take time.</p>
+<p>I have previously hacked this by creating an if-statement, like this:</p>
+<p><img src="HackConditionalBreakPoint.png" alt="" /></p>
+<p>It does work, it will pause execution when <code>product</code> is the &quot;Parmesan Cheese&quot;.<br />
+But it is not particularly pretty, and you may forget to clean up.</p>
+<p>It is better to create a conditional break-point.<br />
+You do this by creating a normal break-point, and right-clicking it.<br />
+Now you can insert a condition:</p>
+<p><img src="InsertConditionalBP.gif" alt="" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-end">The End</h1><hr/>
+<p>That was the introduction to debugging.
+This guide is not extensive, but should be enough to get your started on your debugging-journey. This is a common tool available in all modern IDEs, across most programming languages.</p>
+<p>Whenever your code does not behave as expected, you should probably start debugging. Put break points before the affected area, and step through the code, inspecting values along the way, until you find something specific.</p>
+<p>You will probably often encounter null-pointer exceptions when doing exercises and projects. The exception stack trace should tell you which line of code in which class produce the exception. Put a breakpoint at that line or a few lines before, to inspect what happens up to the expcetion.</p>
+<p>Debugging is a powerful tool, and an entire skillset in itself. Mastering this tool is very important.</p>
 
 </div>
 
