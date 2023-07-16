@@ -6,7 +6,7 @@
 
 [Introduction to Kanban](./Tutorials/Kanban/Page.html)
 
-[C4 Diagram Model, VIA style (not started)]()
+[C4 Diagram Model, VIA style](./Tutorials/SystemDiagramLevels/Page.html)
 
 [Connect EFC to local or cloud hosted PostgreSQL db](https://github.com/TroelsMortensen/EFCpostgres)
 
