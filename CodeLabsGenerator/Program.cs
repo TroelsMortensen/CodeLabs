@@ -29,8 +29,12 @@ class Program
     {
         DateTime directoryWriteTime = Directory.GetLastWriteTime(directory);
         DateTime pageWriteTime = File.GetLastWriteTime(directory + "/Page.html");
+        DateTime basePageWriteTime = File.GetLastWriteTime(basePagePath);
+        
         bool directoryIsNewerThanPage = directoryWriteTime > pageWriteTime;
-        return directoryIsNewerThanPage;
+        bool basePageIsNewerThanPage = basePageWriteTime > pageWriteTime;
+        
+        return directoryIsNewerThanPage || basePageIsNewerThanPage;
     }
 
     private static string[] GetAllTutorialDirectories()
