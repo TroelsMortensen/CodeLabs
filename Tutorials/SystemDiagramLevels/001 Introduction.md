@@ -29,19 +29,21 @@ The C4 model is named so, because it contains four types of diagrams, at four le
 I realize you can't read the text, but the point remains: You have four levels, and can gradually zoom in, using different diagrams.
 
 ### 1 Context
+
 This is the highest abstraction, it is sort of like a domain model, or a rich picture.\
 It provides a starting point, showing how the software system in scope fits into the world around it.
 
 ### 2 Container
+
 This diagram zooms into the software system in scope, showing the high-level technical building blocks.\
 Here you will find the various applications and data stores. E.g. in a client-server system, this diagram would show client, server, and data, with connections between them.
 
 ### 3 Component
+
 Applications are often composed of multiple components. We don't practice this very much at VIA, but a component can be considered a module in Java (or a JAR file), and a project in C# (or exe or dll file).
 
 ### 4 Code
+
 This is your class diagram. Either one large, or by application (client, server, etc). Sometimes by component, but then you do risk the diagram becoming too fragmented to provide value.
 
 Often this diagram is the one, which changes most often, and will involve the most work to keep updated.
-
-hej

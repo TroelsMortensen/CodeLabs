@@ -17,10 +17,11 @@
     <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 VIA C4</li>
 
         </ol>
     </div>
-    <div id="container" action="/action_page.php">
+    <div id="top-buttons-container">
         <div style="overflow:auto;">
 
             <div style="float:right; margin:10px">
@@ -63,7 +64,30 @@ Here you will find the various applications and data stores. E.g. in a client-se
 <h3 id="code">4 Code</h3>
 <p>This is your class diagram. Either one large, or by application (client, server, etc). Sometimes by component, but then you do risk the diagram becoming too fragmented to provide value.</p>
 <p>Often this diagram is the one, which changes most often, and will involve the most work to keep updated.</p>
-<p>hej</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="via-c4-version">VIA C4 Version</h1><hr/>
+<p>The next few slides will explain a version of C4 adapted to your projects, with examples.</p>
+<p>I will introduce an extra level of abstraction.</p>
+<p>Also realize not all diagram-levels are always relevant for your particular system.
+This article will provide tools and guidelines, and you must then apply what you feel is relevant in your project.</p>
+<p>But, generally, you should remember to easy your reader into the system design.</p>
+<p>I will provide examples of the same four levels, and I have a suggestion for a level 3.5 and 3.8, i.e. two extra levels.<br />
+These are &quot;package diagram&quot; and &quot;low detailed class diagram&quot;.</p>
+<p>This results in 6 levels of abstractions, again, not all are always relevant. And not all need go into the project report.</p>
+<p>1 Context<br />
+2 Containers<br />
+3 Components<br />
+3.5 Packages<br />
+3.8 Low detailed class diagram<br />
+4 Code</p>
+<h2 id="example-system">Example system</h2>
+<p>To give examples of the diagrams, we need an example system. This will be a task management system, let's say it is to be used with some variation of Scrum. I will make it simpler for this example though.</p>
+<p>You would therefore have different user roles: Product Owner, Developer.<br />
+We need a Project, which has a Product Backlog, containing User Stories.<br />
+We need Sprints, which has User Stories, and Sub-Tasks.</p>
+<p>Let's give it a try, and go through each of the diagrams.</p>
 
 </div>
 
