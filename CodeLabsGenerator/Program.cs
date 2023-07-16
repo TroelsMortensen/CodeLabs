@@ -1,57 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 
-namespace CodeLabsGenerator
+namespace CodeLabsGenerator;
+
+class Program
 {
-    class Program
+    private static readonly string basePagePath = @"C:\TRMO\RiderProjects\CodeLabs\BasePageSource\extralevelfolder\BasePage.html";
+
+    static void Main(string[] args)
     {
-        private static readonly string basePagePath = @"C:\TRMO\RiderProjects\CodeLabs\BasePageSource\extralevelfolder\BasePage.html";
+        GenerateAllModifiedTutorials();
+    }
 
-        static void Main(string[] args)
+    private static void GenerateAllModifiedTutorials()
+    {
+        var tutorialDirectories = GetAllTutorialDirectories();
+        foreach (string directory in tutorialDirectories)
         {
-            // GenerateOne("GoodreadsExercises");
-            // GenerateOne("DvdRentalExercises");
-            
-            
-            // GenerateOne("NetTodoApp-Part1-WebAPI");
-            // GenerateOne("Kanban");
-            // GenerateOne("NetTodoApp-Part2-Blazor");
-            // GenerateOne("BlazorWasmJwtAuth");
-            GenerateOne("DebuggingInIntelliJ");
-            
-            
-            // GenerateMany();
-        }
-
-        private static void GenerateOne(string tutorial)
-        {
-            string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\" + tutorial;
-            Console.WriteLine("Generating \"" + folderPathToMdSteps.Split("\\")[^1] + "\" ...");
-            Generator.GenerateHtmlPageFromMdFiles(folderPathToMdSteps, basePagePath);
-            Console.WriteLine("Done!");
-        }
-
-        private static void GenerateMany()
-        {
-            List<string> tutes = new()
+            var shouldGenerate = ShouldGenerateTutorial(directory);
+            if (shouldGenerate)
             {
-                "BlazorLogin",
-                "CodelabsDoc",
-                "CsharpDebugging",
-                "CsharpSockets",
-                "CsharpThreads",
-                "DML",
-                "DvdRentalExercises",
-                "EERDiagramInAstah",
-                "EerToLogical",
-                "SepAppendix",
-                "SQLAdventure",
-                "TodoTutorialPart1_Blazor",
-                "TodoTutorialPart2_WebApi",
-                "TodoTutorialPart3_Client",
-                "WebShopExercises",
-            };
-            tutes.ForEach(t => GenerateOne(t));
+                GenerateOne(directory);
+            }
         }
+    }
+
+    private static bool ShouldGenerateTutorial(string directory)
+    {
+        DateTime directoryWriteTime = Directory.GetLastWriteTime(directory);
+        DateTime pageWriteTime = File.GetLastWriteTime(directory + "/Page.html");
+        bool directoryIsNewerThanPage = directoryWriteTime > pageWriteTime;
+        return directoryIsNewerThanPage;
+    }
+
+    private static string[] GetAllTutorialDirectories()
+    {
+        string tutorialsFolderPath = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\";
+        var tutorialDirectories = Directory.GetDirectories(tutorialsFolderPath);
+        return tutorialDirectories;
+    }
+
+    private static void GenerateOne(string tutorial)
+    {
+        // string folderPathToMdSteps = @"C:\TRMO\RiderProjects\CodeLabs\Tutorials\" + tutorial;
+        string folderPathToMdSteps = tutorial;
+        Console.WriteLine("Generating \"" + folderPathToMdSteps.Split("\\")[^1] + "\" ...");
+        Generator.GenerateHtmlPageFromMdFiles(folderPathToMdSteps, basePagePath);
+        Console.WriteLine("Done!");
     }
 }
