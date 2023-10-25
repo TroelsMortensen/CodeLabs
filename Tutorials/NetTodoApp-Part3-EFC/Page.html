@@ -269,6 +269,7 @@ That means it can generate a <strong>relational</strong> database, with tables, 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite(&quot;Data Source = Todo.db&quot;);
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);            
     }
 }
 </code></pre>
@@ -281,10 +282,10 @@ If we were using Postgres, we would have a different method here, probably <code
 For other databases, you will have to provide a more elaborate connection string.</p>
 <p><a href="https://github.com/TroelsMortensen/EFCpostgres">I have an example on GitHub, where I connect to a local Postgres database, and a cloud-hosted Postgres database.</a></p>
 <p>SQLite is just a single file, so that makes it easier to work with, instead of having to use Postgres or MySql or similar. And the argument of <code>UseSqlite(..)</code> is just pointing to this file.</p>
-<p>You may sometimes need to specify the absolute path to the file, e.g.:</p>
+<p>You may sometimes need to specify the absolute path to the db file, e.g.:</p>
 <pre><code class="line-numbers language-jsonpath">C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess\Todo.db
 </code></pre>
-<p>This is because your main method is in one project, and the file is in another.</p>
+<p>This is <em>probably</em> because your main method is in one project, and the file is in another.</p>
 <p>Alternatively a relative path should be possible too, something like:</p>
 <pre><code class="line-numbers language-jsonpath">..\EfcDataAccess\Todo.db
 </code></pre>
@@ -292,7 +293,7 @@ For other databases, you will have to provide a more elaborate connection string
 <p>The above method is a simple approach, however we have now hardcoded the database info,
 and it may not be easy to modify.</p>
 <p>Usually the connection info will go into a configurations file, and the program will read from that. This provides the option of being able to change the connection string after the program is compiled and deployed.</p>
-<p>Furthermore the <code>optionsBuilder.UseSqlite</code> can be done in Program.cs, so that it is easier to modify which database is used, without having to tough the <code>TodoContext</code> class. This increases flexibility, if you ever wish to change database. We don't, so we keep it simple.</p>
+<p>Furthermore the <code>optionsBuilder.UseSqlite</code> can be done in Program.cs, so that it is easier to modify which database is used, without having to touch the <code>TodoContext</code> class. This increases flexibility, if you ever wish to change database. We don't, so we keep it simple.</p>
 <p><img src="Resources/KISS.png" alt="img.png" /></p>
 <p>It is left to the reader to google how to do that, if they're interested.</p>
 <h2 id="other-database-providers">Other Database Providers</h2>
@@ -320,7 +321,7 @@ and it may not be easy to modify.</p>
 <p>We have the property <code>Todo::Id</code>, it already acts as a &quot;primary key&quot;, it is a unique identifier for a Todo.</p>
 <p>If the property is called &quot;Id&quot;, EFC will usually infer that this is the primary key.</p>
 <p>If the property is called <code>&lt;class-name&gt;Id</code>, i.e. &quot;TodoId&quot;, or &quot;UserId&quot;, EFC will usually infer that this is the primary key.</p>
-<p>In both cases, I believe the property must be of type <code>int</code> (not entirely sure, though).</p>
+<p>In both cases, I believe the property must be of type <code>int</code> (not entirely sure, though. Maybe Guid also works).</p>
 <p>You can also manually define a primary key property, by adding the <code>[Key]</code> attribute to a property:</p>
 <pre data-line="3,4"><code class="line-numbers language-csharp">public class Todo
 {
@@ -366,6 +367,7 @@ public string Title { get; }
 }
 </code></pre>
 <p>In this way, we say that the entity &quot;Todo&quot; has a key, and the lambda expression defines which property to use as the key.</p>
+<p>The benefit here is that we don't have to modify the entity classes.</p>
 <h4 id="constraints-1">Constraints.</h4>
 <p>You can also do some of the constraints in <code>OnModelCreating(..)</code>. Here is an example of limiting the <code>Todo::Title</code> to 50 characters:</p>
 <pre><code class="line-numbers language-csharp">modelBuilder.Entity&lt;Todo&gt;().Property(todo =&gt; todo.Title).HasMaxLength(50);
@@ -379,41 +381,6 @@ public string Title { get; }
 <p>We could then consider just having the constraints in the database, and not in logic layer. But then the logic layer needs to trust those rules are enforced elsewhere, which is probably not a good idea.<br />
 What if you change database and either forget some constraints, or your new database simply does not support that kind of constraint? You must then implement the constraint in the logic layer.<br />
 You will have to evaluate options and make a qualified choice.</p>
-<h2 id="discussion">Discussion</h2>
-<p>So which approach do you use? Attributes or the OnModelCreating method.</p>
-<p>Many .NET EFC examples will gladly put the attributes in the model classes, and also use the <code>OnModelCreating()</code> method. This is also true for their Web API examples, and Blazor examples. And this can be just fine.</p>
-<p>However..</p>
-<h4 id="clean-architecture">Clean Architecture</h4>
-<p>Remember the Clean Architecture. General diagram on the left, our own system on the right:</p>
-<p><img src="Resources/CleanGeneralVsTodoApp.png" alt="img.png" /></p>
-<p>On the right side is the structure for the Todo App. The general diagram (left) also considers things like using some third party api (external interfaces), and the web, and various devices (keyboard, mouse, hard drives, etc).
-The right hand diagram shows only what is relevant for our app.</p>
-<p>We have three layers: Web API, logic, data access. And we have a domain component with the domain classes (and other stuff). These things are located in the green, red, and yellow rings.
-The blue is everything outside of that, outside the code of our server app: The client app (Blazor), the file/database where the data is stored, 3rd party stuff.</p>
-<p>Dependencies go inward: A ring knows about the ring <em>inside</em> it. A ring knows nothing about the ring <em>outside</em> it.
-Compare this to the component diagram and inter-component dependencies shown on slide 3.<br />
-Here's the important part: <strong>An outer ring may not cause changes to an inner ring</strong>.<br />
-What does that mean?</p>
-<ul>
-<li>The database is in an outer most ring (blue). If we initially use a relational database like Postgres, and later want to change to something else, it should not cause change anywhere else than the Gateways (our DAOs).</li>
-<li>If we swap out the REST Web API with a gRPC server, it should not cause changes to the red or yellow rings, i.e. logic or domain.</li>
-<li>If we introduce new logic rules, it should not cause modifications to the Domain.</li>
-</ul>
-<p>This is at least the ideal, when doing a Clean-architecture approach, as we have attempted.</p>
-<h4 id="attributes-approach">Attributes approach</h4>
-<p>If we use this approach, we need to modify the domain classes, i.e. the yellow ring.
-Because of something in the green ring (DAOs). We use EFC (or Web API) and therefore, we modify the <em>Domain</em>.<br />
-If we change to not use EFC (or the Web API), these attributes are no longer relevant, and shouldn't be there.<br />
-This means that a change to the outer green ring, will cause a change to the inner yellow ring, and it goes against what is dictated by Clean architecture.</p>
-<h4 id="onmodelcreating-appraoch">OnModelCreating appraoch</h4>
-<p>If we use this approach, all setup is done in the green ring, in the DAOs/Gateways area.
-We need not touch the Domain. If we later remove EFC, and introduce a file storage again, or
-just manually typing the SQL as in SEP2, or use a document based database, or whatever else, it will not cause changes to the Domain (inner yellow ring).<br />
-So with this approach, we adhere to the Clean principles.</p>
-<h4 id="conclusion">Conclusion</h4>
-<p>Based on the above, you may conclude that you shall not use the attributes. That is not strictly true. As mentioned, many .NET examples will gladly use these attributes, and often together with the OnModelCreating method. The point is just that you make an informed choice.</p>
-<p>It is not that often a database is swapped out. And if you use EFC and swap out one relational database for another, it is minimal work.<br />
-If you swap out a relational database for a document based, you will no longer need the attributes in Domain classes, but on the other hand, in this case they do nothing. So you may not need to remove them.</p>
 <h2 id="configuring-the-tables-1">Configuring the tables</h2>
 <p>For now, the approach of this tutorial will be the OnModelCreating, without constraints.<br />
 In TodoContext, we then have the following method:</p>
@@ -444,7 +411,7 @@ We will get a relationship between them as shown in this EER-diagram:</p>
 <hr />
 <h3 id="relational-schema">Relational schema</h3>
 <p><strong>Todo</strong>(Id, Title, IsCompleted, Owner)<br />
-<strong>Primary key</strong>: Id
+<strong>Primary key</strong>: Id<br />
 <strong>Foreign key</strong>: Owner <strong>references</strong> User(Id)</p>
 <p><strong>User</strong>(Id, UserName)<br />
 <strong>Primary key</strong>: Id</p>
@@ -483,52 +450,6 @@ Essentially it is an object oriented implementation of a foreign key.</p>
 }
 </code></pre>
 <p>Things should be good now.</p>
-<h2 id="clean-thoughts">Clean thoughts</h2>
-<h6 id="out-of-course-scope-just-food-for-thought">(out of course scope, just food for thought)</h6>
-<p>Remember the discussion on the previous slide. We are again about the modify domain classes, because of an outer ring.</p>
-<h3 id="consequences">Consequences</h3>
-<p>This circular dependency can have unforeseen consequences because object oriented classes don't always do too well with these. If we keep some data in memory and wish to update the assignee of a Todo, we would have to modify both the Todo<span>Owner and the User</span>Todos, i.e. double work, with the potential of forgetting some updates.<br />
-We might need this double work for both updates, deletes, creates. And with a larger domain, this can escalate.</p>
-<p>JSON cannot be serialized with circular dependencies, so if we did the two-way, we could no longer use our implementation of the File storage.
-Now, maybe that's not a big concern, because the File storage functionality is in an outer ring, and shouldn't affect the domain, but it would require some work to fix.</p>
-<h3 id="the-fix">The Fix?</h3>
-<p>If we really want to keep things separated, stick to the clean approach, we must not touch our domain classes.<br />
-An alternative would then be do define a set of classes for the EFC layer only. The DAO interfaces would still work with Todo and User, but the EFC layer would convert these to TodoEFC and UserEFC as needed.<br />
-These new classes could be sub-classes of the domain classes (or just very similar). And in these we specify the EFC-related stuff, e.g. attributes and relationships.</p>
-<p>It could look like this:</p>
-<p><img src="Resources/EfcDomainClasses.png" alt="img.png" /></p>
-<p>The TodoContext would then contain DbSets of the Efc classes.
-We don't need a sub-class of Todo for now, but it might still be a good idea to creat one,
-in case of future changes to the system, which shouldn't affect Todo.</p>
-<p>The TodoContext would then look like this:</p>
-<pre><code class="line-numbers language-csharp">public class TodoContext : DbContext
-{
-    public DbSet&lt;UserEfc&gt; Users { get; set; }
-    public DbSet&lt;TodoEfc&gt; Todos { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite(&quot;Data Source = Todo.db&quot;);
-    }
-...
-</code></pre>
-<p>This would potentially create some translation work between logic and dao layer. E.g. you get a UserEfc from the database, but should return a User. On the other hand, if UserEfc extends User, that might not be a problem. The logic layer gets a User, and doesn't know it is actually a UserEfc.</p>
-<p>I have seen a few semester projects use this approach with some success. However, I don't think this is a common approach, but instead people resort to modifying the domain classes.</p>
-<p>We will just update the domain classes.</p>
-<p><a href="https://www.reddit.com/r/dotnet/comments/yd1h0f/keeping_efc_navigation_properties_out_of_the/">I have asked this question on reddit</a>, maybe someone has given input, when you read this. Eventually this paragraph may get updated.<br />
-See last section on this slide for more information.</p>
-<h2 id="shadow-properties-and-constructors">Shadow Properties and Constructors</h2>
-<p>There is another way, where we can still use the <code>User::Todos</code> of ICollection. Without actually having this in the User class.</p>
-<p>It is a sub-set of what is called a Shadow Property, i.e. a property that does not really exist, but EFC sneakily adds it.</p>
-<p>Basically:</p>
-<ul>
-<li>In the DbContext subclass, OnModelCreating method, we can add a property to a Domain class, e.g. User.</li>
-<li>This property does not exist outside of EFC territory.</li>
-<li>This property can still be used in LINQ expressions</li>
-</ul>
-<p>So, we get what we want, without touching the Domain classes. That's neat. It's just a little extra work.</p>
-<p><a href="https://learn.microsoft.com/en-us/ef/core/modeling/shadow-properties#configuring-shadow-properties">You can read about it here</a></p>
-<p><a href="https://learn.microsoft.com/en-us/ef/core/modeling/constructors">This link says something about how we can use constructors, it might also be relevant</a></p>
 
 </div>
 <div class="tab">
@@ -559,7 +480,7 @@ See last section on this slide for more information.</p>
 <p>EFC needs a little more:</p>
 <ul>
 <li>There must be set properties for all fields. They may be private.</li>
-<li>There must be a no-arguments constructor for EFC to call when creating objects.</li>
+<li>There must be a no-arguments constructor for EFC to call when creating objects. This constructor may be private.</li>
 </ul>
 <p>So, this is a bit annoying, but it will not cause must of a ripple effect.</p>
 <p>The Todo class should be changed to:</p>
@@ -584,10 +505,6 @@ See last section on this slide for more information.</p>
 <p>Notice the private constructor.</p>
 <p>These two additions are for EFC, but it has no effect on the rest of the system. We have not exposed anything, we shouldn't. We have not cause relevant changes.<br />
 So, this is acceptable, albeit a little unfortunate.</p>
-<h5 id="comment">Comment</h5>
-<p>The tutorial was written on the fly, and I did not originally know about this problem with EFC.</p>
-<h5 id="comment-2">Comment 2</h5>
-<p>I originally made a different kind of modification to the Todo, which caused changes in Logic. I believe this has been removed from the tutorial.</p>
 <h2 id="generate-a-migration">Generate a Migration</h2>
 <p>A migration is created through the terminal (or command line interface).</p>
 <p>Open the terminal.</p>
@@ -620,7 +537,9 @@ When you then update the database, EFC will figure out the difference, and apply
 <p>This folder should probably also be under version control for your projects, so that when one group-member changes the database, the others can get the update.</p>
 <h4 id="deleting-the-migrations">Deleting the Migrations</h4>
 <p>Sometimes, you may want a &quot;hard reset&quot;, if you somehow mess up. You can delete the Migrations folder, along with the database file generated on the next slide, and start over.</p>
-<p>This can best be done with SQLite. When using other databases, go google how to revert a migration instead.</p>
+<p>This can best be done with SQLite.
+When using other databases, go google how to revert a migration instead.
+Or you will have to drop cascade the schema manually.</p>
 <p>Applied migrations can be reverted to a previous migration. Un-applied migrations can just be removed.</p>
 <h2 id="apply-a-migration">Apply a Migration</h2>
 <p>The next step is to apply the migration to your database. Currently we have no database,
@@ -659,7 +578,7 @@ So, the path to the SQLite file should be relative to that component. Modify the
 <p>Alternatively, you can provide the absolute path, something like:</p>
 <pre><code>C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess\Todo.db
 </code></pre>
-<p>However, that path will be different between group members, so you would have to modify it.
+<p>However, that path will be different between group members, so you would have to modify it.<br />
 Even more alternatively this can be put into a local configuration file, which is not under version control.
 You'll have to google how to do this, if interested.</p>
 
@@ -826,6 +745,12 @@ And it causes fewer changes, than having to return a DTO.</p>
 <p>Again, we have to modify the domain because of some outer ring.</p>
 <p>We could conclude, that domain classes should only exist in Domain, Logic, and DataAccess layers. Layers above logic, i.e. Web API, should only work with DTOs. This is probably the better approach.<br />
 But that would require too many changes.</p>
+<p>Last option is to set the JsonSerializerOptions, and tell the serializer to ignore cycles:</p>
+<pre><code class="line-numbers language-csharp">JsonSerializer.Serialize(myObj, new JsonSerializerOptions
+{
+    ReferenceHandler = ReferenceHandler.IgnoreCycles
+});
+</code></pre>
 <h2 id="test">Test</h2>
 <p>.. this functionality through Swagger. It's the POST /Todos endpoint.</p>
 <p>You can verify the success through the Database tool, by opening the Todos table. Notice the foreign key is set, because the Todo object had a reference to a User object.</p>
@@ -911,6 +836,10 @@ The DbSet has an Update method, which will search for an existing object with th
 </code></pre>
 <h4 id="what-is-the-changetracker">What is the ChangeTracker?</h4>
 <p>We do have a potential problem though, which was found later, and happens in specific circumstances.</p>
+<p>The following applies if you did not tell your DbContext to ignore tracking, see step 7.<br />
+It caused problems in previous iterations of this tutorial. If you don't encounter problems, just ignore this following section.
+And skip to the Test section below.</p>
+<h5 id="the-problem">The problem</h5>
 <p>It's because of the ChangeTracker.</p>
 <p>Your DbContext subclass has a kind of <em>cache</em>, i.e. the ChangeTracker.
 It keeps previously loaded objects in memory. It keeps added objects, or tracks that objects are removed or updated.
@@ -973,105 +902,8 @@ Verify result either through Database tool, or another endpoint.</p>
 <hr/><h1 id="what-did-i-learn">What did I learn?</h1><hr/>
 <p>I too have learned something along the way. I have actually created this tutorial at least three times now, each time applying knowledge from the previous.
 And each learning something I would include in the next version, if I ever get to that. It's comprehensive work.</p>
-<p>The clean-architecture approach has taken a lot more focus in this latest version, so that took some focus.
-And there are things, which could be done differently</p>
-<h2 id="domain-classes-and-logic">Domain classes and logic</h2>
-<p>I would move away from the simple data containers, our domain classes currently are.
-Mostly just consisting of get/set properties.</p>
-<p>I would instead remove all set-properties, probably also most get-properties, and create a constructor.
-We already have that for the Todo, the intention was to make sure the Todo was
-not created in an invalid state, i.e. a Todo cannot be created without Title and Owner.<br />
-That's an okay start, but the data passed to the Todo can still be invalid.</p>
-<p>So, in the constructor I would include validation logic, which currently resides in the TodoLogic class.</p>
-<p>This way, we separate &quot;Domain logic&quot; from &quot;Use case logic&quot;. What's the difference?</p>
-<h3 id="domain-logic">Domain Logic</h3>
-<p>Domain logic would be to ensure that domain objects are always in a valid state.
-Whenever they are created or modified we need to validate the data.</p>
-<p>We would create specific methods to update the data, but not just the normal set-methods.<br />
-I don't want a <code>SetTitle(...)</code> method, which only assigns a parameter to the field variable.<br />
-I think <code>UpdateTitle(..)</code> is more telling, and the method would validate the argument, and in case of invalid data, e.g. the argument is null/empty, throw an exception.</p>
-<p>Or what about the &quot;cannot un-complete a completed Todo?&quot;. That logic fits just fine inside the Todo object.<br />
-We would have a <code>SetCompletedStatus(bool status)</code> method. We could, and then include a check as we currently have in TodoLogic.<br />
-But what about just making a method <code>Todo::Complete()</code>. No arguments. This way there is no way to even attempt to un-complete a completed Todo.</p>
-<p><em>Make sure a domain object is never in an invalid state after creation or update.</em> No matter where in the system this happens.</p>
-<p>It's similar for the User. We don't have any constructor for a User, meaning a User object can currently be created with no data. That does not make sense.<br />
-I know we only create users in the UserLogic, currently, where they are validated. But as the system grows, User objects might have a need for being created elsewhere.<br />
-We would then again have to include the same User data validation logic in that other place.</p>
-<p>Instead, let a domain class be responsible for ensuring its own data integrity.</p>
-<h4 id="problems">Problems?</h4>
-<p>Well, sometimes when we load data from the database, we need to be able to set all that data on a Todo (or User), and that is simplest with just set-properties.<br />
-A constructor might not take all the arguments that we need, e.g. currently a Todo accepts <code>Owner</code> and <code>Title</code>. But the data layer cannot set the <code>Id</code> and <code>IsCompleted</code> with direct access to those.<br />
-I'm not entirely sure how to get around that. I mean, with EFC we could include private set-properties and private constructor.<br />
-But if we used manual SQL to interact with the database, I'm not sure. This calls for further investigation. Maybe a question to reddit.</p>
-<h3 id="use-case-logic">Use case logic</h3>
-<p>Often Clean-architecture will call the application layer for &quot;use case&quot; layer.
-That means this is where the logic is for e.g. &quot;Creating a Todo&quot; happens. Or &quot;Update a Todo&quot;.
-Or &quot;Re-assign/update a Todo&quot;. I.e. our user stories start in this layer.
-Just like we first implemented the Logic layer, when we did each user story, i.e. Domain Driven Development. Then the other two layers, Web API and Data access.</p>
-<p>Some logic cannot be done inside the domain class.
-E.g. if I were to create a new User object, the User would be responsible for making sure the
-UserName was valid, in the sense of &quot;not null&quot; or &quot;not empty&quot;, or &quot;more than 3 characters long&quot;.</p>
-<p>But the User class cannot check whether the UserName is already taken. That must be the responsibility of the UserLogic class checking that, because it requires interaction with the data layer.</p>
-<p>If I create a new Todo, the Todo can check various internal data. But the Todo cannot verify that the intended Owner actually exists. That is then done in the Logic layer.</p>
-<p>If we need to update a Todo that method currently works like this:</p>
-<ol>
-<li>Fetch existing Todo from data layer</li>
-<li>Check it exists</li>
-<li>Fetch the new owner</li>
-<li>Check the owner exists</li>
-<li>Check we are not un-completing a completed Todo</li>
-<li>Update data in the fetched Todo</li>
-<li>Validate the updated Todo</li>
-<li>Save the updated Todo</li>
-</ol>
-<p>Some of these steps can be handled by the Todo class itself, e.g. steps 5, and 7.<br />
-And step 7 also happens in the method for create new Todo. So, there is some overlap.</p>
-<p>The other steps are then &quot;use case logic&quot;, executing things, binding things together, etc.</p>
-<p>So, let's separate use case logic from domain logic.</p>
-<h2 id="where-to-use-domain-classes-where-to-use-dtos">Where to use Domain classes, where to use DTOs</h2>
-<p>Previously I attempted a guide line for which layers should know about domain classes, and which should know about DTOs.
-Slide 11 in Part 1 of the series. I showed this image:</p>
-<p><img src="Resources/DtosAndDomains.png" alt="" /></p>
-<p>And I realize I didn't follow that exactly, fx the Web API for getting Todos would actually return the Domain object.<br />
-That caused problems because the Todo could not be JSON-Serialized due to a circular association between Todo and User.</p>
-<p>Instead, we should have returned a new kind of DTO, e.g. <code>TodoListDto</code>.</p>
-<p>I would attempt the suggestion of CQRS from part 1, separating reading actions from create, update, delete.</p>
-<p>It would look like this:</p>
-<p><img src="Resources/CQRS.svg" alt="" /></p>
-<p>Most use case logic would happen in the &quot;left lane&quot;, i.e. go through UserLogic. Notice the <code>IUserLogic</code> interface can create, delete, update. But not read.<br />
-These three methods would receive specialized DTOs, the <code>UserLogic</code> would figure out what to do, and use the <code>IUserDao</code> interface to interact with the data layer.<br />
-This interface, <code>IUserDao</code>, will receive and return domain objects. No DTOs here.<br />
-Notice the <code>IUserDao</code> interface has a read method. Sometimes we need to retrieve domain objects, e.g. when we set an owner on a Todo, we first retrieve the User domain object.</p>
-<p>Now, the <code>IUserProvider</code> interface only provides read methods, but potentially multiple of them, specialized.<br />
-If you want to display a specific User in the UI, this interface can return a DTO for that.<br />
-If you want to show a User with all their Todos, this interface can return a DTO for that.<br />
-If you want to show a list of just user names, this interface can return a DTO for that.</p>
-<p>We might even create a separate implementation for the <code>IUserProvider</code> interface, i.e. a <code>UserFileProvider</code>.</p>
-<p>In the end, the classes/interfaces who knows about domain objects or DTOs are:</p>
-<ul>
-<li>Domain objects
-<ul>
-<li>UserLogic</li>
-<li>IUserDao</li>
-<li>UserFileDao</li>
-</ul>
-</li>
-<li>DTOs
-<ul>
-<li>IUserLogic</li>
-<li>UserLogic</li>
-<li>IUserProvider</li>
-<li>UserFileDao (or a separate UserFileProvider)</li>
-</ul>
-</li>
-</ul>
-<p>Or in a diagram, blue area is DTO territory, and red is Domain Class territory:</p>
-<p><img src="Resources/KnowDmOrDto.png" alt="img.png" /></p>
-<p>We are keeping things separate, and it is easier to avoid mixing things up, where sometimes the Web API returns domain objects, and other times it returns DTOs.</p>
-<p>I had some of these ideas from the beginning, some of them popped up along the way. I had to make a cut somewhere, what to include in the tutorial, and what not to.<br />
-It can be perfectly fine, to just have &quot;stupid&quot; domain classes, no constructors, all <code>{get;set;}</code> properties. That is probably the simple approach. You can even do without any DTOs at all. And that's fair.</p>
-<p>Some of the above thoughts, are thoughts only. I have not tried them out yet. Maybe when I do, I figure out something really does not work, as I wanted it to.</p>
-<p>Mostly, I just want you to think about things. Make informed, well-considered choices. Try different things.</p>
+<p>The clean-architecture approach has taken a lot more focus in this latest version.
+And there are things, which could be done differently. But... I removed the discussion, it was out of scope.</p>
 
 </div>
 

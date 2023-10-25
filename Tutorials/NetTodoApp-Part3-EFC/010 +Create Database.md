@@ -34,7 +34,7 @@ The current setup with a constructor and some read-only properties is because of
 
 EFC needs a little more:
 * There must be set properties for all fields. They may be private.
-* There must be a no-arguments constructor for EFC to call when creating objects.
+* There must be a no-arguments constructor for EFC to call when creating objects. This constructor may be private.
 
 
 So, this is a bit annoying, but it will not cause must of a ripple effect.
@@ -66,14 +66,6 @@ Notice the private constructor.
 
 These two additions are for EFC, but it has no effect on the rest of the system. We have not exposed anything, we shouldn't. We have not cause relevant changes.\
 So, this is acceptable, albeit a little unfortunate.
-
-##### Comment
-
-The tutorial was written on the fly, and I did not originally know about this problem with EFC. 
-
-##### Comment 2
-
-I originally made a different kind of modification to the Todo, which caused changes in Logic. I believe this has been removed from the tutorial.
 
 ## Generate a Migration
 
@@ -126,7 +118,9 @@ This folder should probably also be under version control for your projects, so 
 #### Deleting the Migrations
 Sometimes, you may want a "hard reset", if you somehow mess up. You can delete the Migrations folder, along with the database file generated on the next slide, and start over.
 
-This can best be done with SQLite. When using other databases, go google how to revert a migration instead.
+This can best be done with SQLite. 
+When using other databases, go google how to revert a migration instead. 
+Or you will have to drop cascade the schema manually.
 
 Applied migrations can be reverted to a previous migration. Un-applied migrations can just be removed.
 
@@ -189,6 +183,6 @@ Alternatively, you can provide the absolute path, something like:
 C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess\Todo.db
 ```
 
-However, that path will be different between group members, so you would have to modify it. 
+However, that path will be different between group members, so you would have to modify it.\
 Even more alternatively this can be put into a local configuration file, which is not under version control. 
 You'll have to google how to do this, if interested.

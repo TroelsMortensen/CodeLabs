@@ -68,6 +68,13 @@ Again, we have to modify the domain because of some outer ring.
 We could conclude, that domain classes should only exist in Domain, Logic, and DataAccess layers. Layers above logic, i.e. Web API, should only work with DTOs. This is probably the better approach.\
 But that would require too many changes.
 
+Last option is to set the JsonSerializerOptions, and tell the serializer to ignore cycles:
+```csharp
+JsonSerializer.Serialize(myObj, new JsonSerializerOptions
+{
+    ReferenceHandler = ReferenceHandler.IgnoreCycles
+});
+```
 
 ## Test 
 .. this functionality through Swagger. It's the POST /Todos endpoint.

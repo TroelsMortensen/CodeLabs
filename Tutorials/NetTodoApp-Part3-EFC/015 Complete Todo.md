@@ -44,6 +44,11 @@ public async Task UpdateAsync(Todo todo)
 
 We do have a potential problem though, which was found later, and happens in specific circumstances.
 
+The following applies if you did not tell your DbContext to ignore tracking, see step 7.\
+It caused problems in previous iterations of this tutorial. If you don't encounter problems, just ignore this following section.
+And skip to the Test section below.
+
+##### The problem
 It's because of the ChangeTracker.
 
 Your DbContext subclass has a kind of _cache_, i.e. the ChangeTracker. 

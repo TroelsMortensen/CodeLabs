@@ -21,6 +21,7 @@ public class TodoContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite("Data Source = Todo.db");
+        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);            
     }
 }
 ```
@@ -41,13 +42,13 @@ For other databases, you will have to provide a more elaborate connection string
 
 SQLite is just a single file, so that makes it easier to work with, instead of having to use Postgres or MySql or similar. And the argument of `UseSqlite(..)` is just pointing to this file.
 
-You may sometimes need to specify the absolute path to the file, e.g.:
+You may sometimes need to specify the absolute path to the db file, e.g.:
 
 ```jsonpath
 C:\TRMO\RiderProjects\TodoAppWasm\EfcDataAccess\Todo.db
 ```
 
-This is because your main method is in one project, and the file is in another.
+This is _probably_ because your main method is in one project, and the file is in another.
 
 Alternatively a relative path should be possible too, something like:
 
@@ -62,7 +63,7 @@ and it may not be easy to modify.
 
 Usually the connection info will go into a configurations file, and the program will read from that. This provides the option of being able to change the connection string after the program is compiled and deployed. 
 
-Furthermore the `optionsBuilder.UseSqlite` can be done in Program.cs, so that it is easier to modify which database is used, without having to tough the `TodoContext` class. This increases flexibility, if you ever wish to change database. We don't, so we keep it simple.
+Furthermore the `optionsBuilder.UseSqlite` can be done in Program.cs, so that it is easier to modify which database is used, without having to touch the `TodoContext` class. This increases flexibility, if you ever wish to change database. We don't, so we keep it simple.
 
 ![img.png](Resources/KISS.png)
 
