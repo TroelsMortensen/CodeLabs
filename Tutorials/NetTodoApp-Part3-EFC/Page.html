@@ -723,7 +723,7 @@ Or you can use <code>Find()</code>, it takes an id of type int.</p>
 }
 </code></pre>
 </details>
-<h2 id="next-problem">Next problem</h2>
+<h2 id="a-problem">A problem</h2>
 <p>We have added two-way navigation properties to the domain classes, i.e. Todo associates User, and User associates Todo.<br />
 The Web API will return JSON. We cannot serialize objects to JSON if there are circular dependencies, which is what we have.</p>
 <p>So, two approaches to fixing this:</p>
@@ -742,15 +742,42 @@ And it causes fewer changes, than having to return a DTO.</p>
     public ICollection&lt;Todo&gt; Todos { get; set; }
 }
 </code></pre>
-<p>Again, we have to modify the domain because of some outer ring.</p>
-<p>We could conclude, that domain classes should only exist in Domain, Logic, and DataAccess layers. Layers above logic, i.e. Web API, should only work with DTOs. This is probably the better approach.<br />
-But that would require too many changes.</p>
 <p>Last option is to set the JsonSerializerOptions, and tell the serializer to ignore cycles:</p>
 <pre><code class="line-numbers language-csharp">JsonSerializer.Serialize(myObj, new JsonSerializerOptions
 {
     ReferenceHandler = ReferenceHandler.IgnoreCycles
 });
 </code></pre>
+<h2 id="another-problem">Another problem</h2>
+<p>Because we are using no tracking for EF Core, the logic part of creating a Todo will fail.</p>
+<p>If we disable the no-tracking, it will still work.</p>
+<p>I prefer, instead, to change things a little bit.</p>
+<p><strong>First</strong>, you must change the Todo class:</p>
+<pre><code class="line-numbers language-csharp{5,">public class Todo
+{
+    public int Id { get; set; }
+    public User Owner { get; private set; }
+    public int OwnerId { get; set; }
+    public string Title { get; private set; }
+
+    public bool IsCompleted { get; set; }
+
+    public Todo(int ownerId, string title)
+    {
+        OwnerId = ownerId;
+        Title = title;
+    }
+    ...
+</code></pre>
+<p>We add an explicit foreign key, the OwnerId. EFC will identify this as an FK because of naming conventions.<br />
+It matches the name of the Owner property, + &quot;Id&quot;.</p>
+<p>Second, the constructor takes a value for the foreign key, rather than an association to a user.</p>
+<p><strong>Second</strong>, now the TodoLogic complains. In the Create() method, where you instantiate a new Todo, you must now pass the <code>user.Id</code> instead:</p>
+<pre><code class="line-numbers language-csharp">Todo todo = new Todo(user.Id, dto.Title);
+</code></pre>
+<p>It is around line 27.</p>
+<p>And the Update(), you must do the same. Around line 68, pass the userToUse.Id` instead.</p>
+<p>That should be all.</p>
 <h2 id="test">Test</h2>
 <p>.. this functionality through Swagger. It's the POST /Todos endpoint.</p>
 <p>You can verify the success through the Database tool, by opening the Todos table. Notice the foreign key is set, because the Todo object had a reference to a User object.</p>

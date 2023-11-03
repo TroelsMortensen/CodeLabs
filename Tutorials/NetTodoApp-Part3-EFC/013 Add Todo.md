@@ -39,7 +39,7 @@ public async Task<Todo> CreateAsync(Todo todo)
 
 </details>
 
-## Next problem
+## A problem
 We have added two-way navigation properties to the domain classes, i.e. Todo associates User, and User associates Todo.\
 The Web API will return JSON. We cannot serialize objects to JSON if there are circular dependencies, which is what we have.
 
@@ -63,11 +63,6 @@ public class User
 }
 ```
 
-Again, we have to modify the domain because of some outer ring.
-
-We could conclude, that domain classes should only exist in Domain, Logic, and DataAccess layers. Layers above logic, i.e. Web API, should only work with DTOs. This is probably the better approach.\
-But that would require too many changes.
-
 Last option is to set the JsonSerializerOptions, and tell the serializer to ignore cycles:
 ```csharp
 JsonSerializer.Serialize(myObj, new JsonSerializerOptions
@@ -75,6 +70,49 @@ JsonSerializer.Serialize(myObj, new JsonSerializerOptions
     ReferenceHandler = ReferenceHandler.IgnoreCycles
 });
 ```
+
+## Another problem
+Because we are using no tracking for EF Core, the logic part of creating a Todo will fail.
+
+If we disable the no-tracking, it will still work.
+
+I prefer, instead, to change things a little bit.
+
+**First**, you must change the Todo class:
+
+```csharp{5, 10}
+public class Todo
+{
+    public int Id { get; set; }
+    public User Owner { get; private set; }
+    public int OwnerId { get; set; }
+    public string Title { get; private set; }
+
+    public bool IsCompleted { get; set; }
+
+    public Todo(int ownerId, string title)
+    {
+        OwnerId = ownerId;
+        Title = title;
+    }
+    ...
+```
+We add an explicit foreign key, the OwnerId. EFC will identify this as an FK because of naming conventions.\
+It matches the name of the Owner property, + "Id".
+
+Second, the constructor takes a value for the foreign key, rather than an association to a user.
+
+**Second**, now the TodoLogic complains. In the Create() method, where you instantiate a new Todo, you must now pass the `user.Id` instead:
+
+```csharp
+Todo todo = new Todo(user.Id, dto.Title);
+```
+
+It is around line 27.
+
+And the Update(), you must do the same. Around line 68, pass the userToUse.Id` instead.
+
+That should be all.
 
 ## Test 
 .. this functionality through Swagger. It's the POST /Todos endpoint.
