@@ -257,9 +257,9 @@ That means it can generate a <strong>relational</strong> database, with tables, 
 <hr/><h1 id="create-dbcontext">Create DbContext</h1><hr/>
 <p>You currently have a FileContext class, in FileData component, which is responsible for providing collections of Todo and User. It also loads data, and saves changes.</p>
 <p>The DbContext has a similar responsibility. Furthermore, it is here we define how the database should look like. Sort of.</p>
-<p>Create a new class, &quot;TodoContext&quot; (or whatever), inside EfcDataAccess component. It must inherit from <code>DbContext</code>, which is available after the installation of the NuGet packages, slide 5.</p>
+<p>Create a new class, &quot;TodoContext&quot; (or AppContext, or whatever), inside EfcDataAccess component. It must inherit from <code>DbContext</code>, which is available after the installation of the NuGet packages, slide 5.</p>
 <h2 id="specifying-the-database">Specifying the Database</h2>
-<p>We need to specify which database to use. That's done in the inherited method <code>OnConfiguring(...)</code>.</p>
+<p>We need to specify which database to use. That's done in the inherited method <code>OnConfiguring(...)</code> (there are other approaches, we keep it simple, here).</p>
 <p>The class then currently looks like this:</p>
 <pre><code class="line-numbers language-csharp">public class TodoContext : DbContext
 {
@@ -268,8 +268,7 @@ That means it can generate a <strong>relational</strong> database, with tables, 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite(&quot;Data Source = Todo.db&quot;);
-        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);            
+        optionsBuilder.UseSqlite(&quot;Data Source = Todo.db&quot;);            
     }
 }
 </code></pre>
@@ -278,7 +277,8 @@ That means it can generate a <strong>relational</strong> database, with tables, 
 <p>We interact with this DbSet to add, get, update, remove Todos/Users from the database.</p>
 <p>The <code>OnConfiguring(...)</code> method is here used to specify the database to be used. This is done with the method <code>UseSqlite(...)</code>. This method is available because we added a NuGet package for SQLite.
 If we were using Postgres, we would have a different method here, probably <code>UsePostgres(..)</code>.</p>
-<p>The argument is the name of the SQLite database file: Todo.db. For SQLite it is simple, there is no authentication, there is no actual database server running, so no ip or port. The &quot;connection string&quot; here is just a reference to the file.
+<p>The argument is the name of the SQLite database file: Todo.db.<br />
+For SQLite it is simple, there is no authentication, there is no actual database server running, so no IP or port. The &quot;connection string&quot; here is just a reference to the file.
 For other databases, you will have to provide a more elaborate connection string.</p>
 <p><a href="https://github.com/TroelsMortensen/EFCpostgres">I have an example on GitHub, where I connect to a local Postgres database, and a cloud-hosted Postgres database.</a></p>
 <p>SQLite is just a single file, so that makes it easier to work with, instead of having to use Postgres or MySql or similar. And the argument of <code>UseSqlite(..)</code> is just pointing to this file.</p>
@@ -863,12 +863,9 @@ The DbSet has an Update method, which will search for an existing object with th
 </code></pre>
 <h4 id="what-is-the-changetracker">What is the ChangeTracker?</h4>
 <p>We do have a potential problem though, which was found later, and happens in specific circumstances.</p>
-<p>The following applies if you did not tell your DbContext to ignore tracking, see step 7.<br />
-It caused problems in previous iterations of this tutorial. If you don't encounter problems, just ignore this following section.
-And skip to the Test section below.</p>
 <h5 id="the-problem">The problem</h5>
 <p>It's because of the ChangeTracker.</p>
-<p>Your DbContext subclass has a kind of <em>cache</em>, i.e. the ChangeTracker.
+<p>Your DbContext subclass has a kind of <em>cache</em>, i.e. the ChangeTracker.<br />
 It keeps previously loaded objects in memory. It keeps added objects, or tracks that objects are removed or updated.
 When you load something from the database, those objects are kept in the ChangeTracker as well. It tracks changes.<br />
 When the SaveChanges is called, everything in the ChangeTracker is submitted to the database in a transaction.\</p>

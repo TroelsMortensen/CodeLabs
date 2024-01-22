@@ -4,11 +4,11 @@ You currently have a FileContext class, in FileData component, which is responsi
 
 The DbContext has a similar responsibility. Furthermore, it is here we define how the database should look like. Sort of.
 
-Create a new class, "TodoContext" (or whatever), inside EfcDataAccess component. It must inherit from `DbContext`, which is available after the installation of the NuGet packages, slide 5.
+Create a new class, "TodoContext" (or AppContext, or whatever), inside EfcDataAccess component. It must inherit from `DbContext`, which is available after the installation of the NuGet packages, slide 5.
 
 ## Specifying the Database
 
-We need to specify which database to use. That's done in the inherited method `OnConfiguring(...)`.
+We need to specify which database to use. That's done in the inherited method `OnConfiguring(...)` (there are other approaches, we keep it simple, here).
 
 The class then currently looks like this:
 
@@ -20,8 +20,7 @@ public class TodoContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source = Todo.db");
-        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);            
+        optionsBuilder.UseSqlite("Data Source = Todo.db");            
     }
 }
 ```
@@ -35,7 +34,8 @@ We interact with this DbSet to add, get, update, remove Todos/Users from the dat
 The `OnConfiguring(...)` method is here used to specify the database to be used. This is done with the method `UseSqlite(...)`. This method is available because we added a NuGet package for SQLite.
 If we were using Postgres, we would have a different method here, probably `UsePostgres(..)`.
 
-The argument is the name of the SQLite database file: Todo.db. For SQLite it is simple, there is no authentication, there is no actual database server running, so no ip or port. The "connection string" here is just a reference to the file. 
+The argument is the name of the SQLite database file: Todo.db.\
+For SQLite it is simple, there is no authentication, there is no actual database server running, so no IP or port. The "connection string" here is just a reference to the file. 
 For other databases, you will have to provide a more elaborate connection string.
 
 [I have an example on GitHub, where I connect to a local Postgres database, and a cloud-hosted Postgres database.](https://github.com/TroelsMortensen/EFCpostgres)
