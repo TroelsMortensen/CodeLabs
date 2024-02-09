@@ -1,5 +1,7 @@
 # Configuring Guid Primary Key
 
+This case covers the usage of Guids as primary key for an entity.
+
 EFC uses convention to discover primary keys, so if you follow these, it's easy.\
 But we don't, and shouldn't, when doing a DDD domain model.
 

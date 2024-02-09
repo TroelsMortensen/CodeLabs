@@ -66,4 +66,22 @@ modelBuilder.Entity<Guest>()
 This seems to be a common approach, with the aim to increase readability.
 
 I will also use this approach, mainly because it is easier to explain what each line does.
-E.g. "line 2 accesses the Username property on Guest". 
+E.g. "line 2 accesses the Username property on Guest".
+
+## Table of content
+
+6. Constructor
+7. Test helper methods
+8. Guid primary key
+9. Strongly typed primary key
+10. Value object overview
+11. Non-nullable single-valued value object
+12. Nullable single-valued value object
+13. Non-nullable multi-valued value object
+14. Nullable multi-valued value object
+15. List of Value objects
+16. Single foreign key with Guid
+17. Single foreign key with strong type
+18. List of Guid foreign keys (wrapper med conversion, complex type?)
+19. List of strong type ids (med wrapper og conversion, complex type?)
+20. 
