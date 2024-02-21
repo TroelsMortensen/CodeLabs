@@ -132,3 +132,22 @@ public async Task NonNullableSinglePrimitiveValuedValueObject()
 * Retrieve entity
 * Verify the property is correctly loaded, i.e. not null
 * Verify the value of the value object is correct
+
+The following test shows that the entity cannot be saved, if the value object property is not set.\
+We get an InvalidOperationException thrown from the DbContext, and it provides this message:
+
+> The complex type property 'EntityN.someValue' is configured as required (non-nullable) but has a null value when saving changes. Only non-null complex properties are supported by EF Core 8.
+ 
+Here's the test:
+
+```csharp
+[Fact]
+public async Task NonNullableSinglePrimitiveValuedValueObject_FailWhenNull()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityN entity = new(Guid.NewGuid());
+    await ctx.EntityNs.AddAsync(entity);
+    
+    Assert.Throws<InvalidOperationException>(() => ctx.SaveChanges());
+}
+```
