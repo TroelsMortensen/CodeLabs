@@ -75,22 +75,25 @@ private void ConfigureNonNullableSinglePrimitiveValuedValueObject(EntityTypeBuil
         "someValue",
         propBuilder =>
         {
-            propBuilder.Property(vo => vo.Value);
+            propBuilder.Property(vo => vo.Value)
+                    .HasColumnName("value");
         }
     );
 }
 ```
 
 This method receives an `EntityTypeBuilder` for `EntityN`, i.e. a class used to configure EntityN.
-Just like previous.
+Just like previous examples.
 
 First, we must define the primary key, as always.
 
 Then the interesting part:\
 Line 5: We say EntityN has a "Complex Property", of type `<ValueObjectN>`. This method takes two arguments.\
 Line 6: The first argument, is the name of the field variable.\
-Line 7-9: this is a PropertyBuilder, i.e. a class used to configure a property. We say here the complex type of type ValueObjectN has a property called `Value`.
-We have to be explicit because the property Value on ValueObjectN does not have a `set;`. Therefore we must explicitly point EFC to this property.
+Line 7-10: The second argument is a function. Here is a PropertyBuilder, i.e. a class used to configure a property. We say here the complex type of type ValueObjectN has a property called `Value`.
+We have to be explicit because the property Value on ValueObjectN does not have a `set;`. Therefore we must explicitly point EFC to this property.\
+Line 10: The name of the column in the database is a combination of the property name on EntityN and the property name on ValueObjectN: "someValue_Value".
+This line here renames the column name to something more meaningful. Pick a name which makes sense, when you just look at the database table. Is it a PhoneNumber? FirstName? Email?
 
 What happens when we use complex type? The value object is "flattened" onto the entity. 
 Instead of the entity having a reference to a value in a separate table, which would be the case if the value object was treated like an entity,
@@ -127,4 +130,5 @@ public async Task NonNullableSinglePrimitiveValuedValueObject()
 * The value object is added to the entity.
 * Save and clear
 * Retrieve entity
-* Verify the property is correctly loaded.
+* Verify the property is correctly loaded, i.e. not null
+* Verify the value of the value object is correct
