@@ -79,9 +79,10 @@ Slides:
 12. Nullable single-valued value object
 13. Non-nullable multi-valued value object
 14. Nullable multi-valued value object
-15. Nested value objects
-16. List of Value objects
-17. Single foreign key with Guid
-18. Single foreign key with strongly typed id
-19. List of Guid foreign keys (wrapper med conversion)
-20. List of strongly typed ids (med wrapper og conversion)
+15. Non-nullable nested value objects
+16. Nullable nested value objects
+17. List of Value objects
+18. Single foreign key with Guid
+19. Single foreign key with strongly typed id
+20. List of Guid foreign keys (wrapper med conversion)
+21. List of strongly typed ids (med wrapper og conversion)

@@ -1,4 +1,4 @@
-# Nullable multi-valued valueObject
+# Nullable Multi-valued Value Object
 This case covers how to configure a _nullable_ property value object, containing more than one value.
 
 In this case the property/field on the entity can be null, or any property on the value object can be null.

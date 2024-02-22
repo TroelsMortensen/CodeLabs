@@ -15,6 +15,8 @@ I should remember to update this guide accordingly.
 
 The next couple of slides cover the various cases of value objects. 
 
+**In general, if you _don't_ require nullability, then go with the complex type approach!**
+
 ### How to read
 The following slides will show different ways to configure value objects. 
 The first slides are more elaborate in detail regarding what the code does.
