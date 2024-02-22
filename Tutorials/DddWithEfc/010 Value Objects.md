@@ -15,6 +15,11 @@ I should remember to update this guide accordingly.
 
 The next couple of slides cover the various cases of value objects. 
 
+### How to read
+The following slides will show different ways to configure value objects. 
+The first slides are more elaborate in detail regarding what the code does.
+Then, because the configuration is pretty similar, the later slides will be more brief.
+
 ### Note
 For each field variable or property on an entity, we have to add specific configuration.\
 You can access this field or property in two ways: 
