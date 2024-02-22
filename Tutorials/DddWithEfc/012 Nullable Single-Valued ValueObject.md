@@ -5,7 +5,7 @@ This case covers how to configure a _nullable_ property value object, containing
 Now, the "complex type" feature used on the previous slide does not support nullability. Hopefully in EFC9.
 
 Instead, we have to say the value object is an entity, 
-and configure it like that. It looks pretty similar. But feels like a nasty hack.
+and configure it like that. It looks pretty similar. But feels like a nasty hack, because the value object will actually become an entity, with an id, in the database.
 
 ### Value Object
 First, the value object. Basically the same as the previous case.\
@@ -28,7 +28,7 @@ Notice, the `Value` here is non-nullable. It's in the entity, the nullable part 
 
 ### Entity
 
-Here's the entity, notice the property, it is marked with "?" to indicate the reference may be null: 
+Here's the entity, notice the field, it is marked with `?` to indicate the reference may be null: 
 
 ```csharp
 public class EntityO
@@ -47,7 +47,7 @@ public class EntityO
 ```
 
 ### Configuration
-As mentioned above, we currently need to take a different approach to configure this case.
+As mentioned above, we need to take a different approach to configure this case.
 
 Here we go:
 
@@ -118,3 +118,8 @@ public async Task NullableSinglePrimitiveValuedValueObject_SaveWhenNulled()
     Assert.Null(retrieved.someValue);
 }
 ```
+
+### Sources:
+
+https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/implement-value-objects
+https://learn.microsoft.com/en-us/ef/core/modeling/owned-entities

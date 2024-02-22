@@ -133,6 +133,8 @@ public async Task NonNullableSinglePrimitiveValuedValueObject()
 * Verify the property is correctly loaded, i.e. not null
 * Verify the value of the value object is correct
 
+
+#### Rainy test
 The following test shows that the entity cannot be saved, if the value object property is not set.\
 We get an InvalidOperationException thrown from the DbContext, and it provides this message:
 
@@ -151,3 +153,7 @@ public async Task NonNullableSinglePrimitiveValuedValueObject_FailWhenNull()
     Assert.Throws<InvalidOperationException>(() => ctx.SaveChanges());
 }
 ```
+
+
+### Sources
+https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/whatsnew#value-objects-using-complex-types

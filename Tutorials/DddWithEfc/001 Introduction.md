@@ -69,7 +69,7 @@ I will also use this approach, mainly because it is easier to explain what each 
 E.g. "line 2 accesses the Username property on Guest".
 
 ## Table of content
-
+Slides:
 6. Constructor
 7. Test helper methods
 8. Guid primary key
@@ -79,9 +79,9 @@ E.g. "line 2 accesses the Username property on Guest".
 12. Nullable single-valued value object
 13. Non-nullable multi-valued value object
 14. Nullable multi-valued value object
-15. List of Value objects
-16. Single foreign key with Guid
-17. Single foreign key with strong type
-18. List of Guid foreign keys (wrapper med conversion, complex type?)
-19. List of strong type ids (med wrapper og conversion, complex type?)
-20. 
+15. Nested value objects
+16. List of Value objects
+17. Single foreign key with Guid
+18. Single foreign key with strongly typed id
+19. List of Guid foreign keys (wrapper med conversion)
+20. List of strongly typed ids (med wrapper og conversion)

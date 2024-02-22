@@ -106,3 +106,7 @@ public async Task NonNullableMultiPrimitiveValuedValueObject()
 * Assert stuff about the field variable.
 
 I leave it to the reader to create a test proving you cannot save an entity without a value for the field variable, see slide 11.
+
+
+### Sources
+https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/whatsnew#value-objects-using-complex-types
