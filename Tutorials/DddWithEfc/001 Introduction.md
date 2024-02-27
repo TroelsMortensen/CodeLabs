@@ -68,6 +68,12 @@ This seems to be a common approach, with the aim to increase readability.
 I will also use this approach, mainly because it is easier to explain what each line does.
 E.g. "line 2 accesses the Username property on Guest".
 
+## How to read
+A lot of the configurations are very similar, or we are doing part of the same thing over and over. 
+This means, it is better described the first time, it is encountered.\
+I realize this is unfortunate, if you use this guide as a reference, and you are looking for a specific case. Then that case may not actually contain all the details, you hoped for.\
+Eventually I may rework this guide, so that each case is self-contained. But for now, I will just refer to the first time, and then be brief the next times.
+
 ## Table of content
 Slides:
 6. Constructor
