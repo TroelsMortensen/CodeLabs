@@ -93,7 +93,8 @@ public async Task GuidAsFk_ValidTarget()
     EntityU retrievedU = ctx.EntityUs
         .Single(x => x.Id == entityU.Id);
 
-    EntityV? retrievedV = ctx.EntityVs.SingleOrDefault(x => x.Id == retrievedU.entityVId);
+    EntityV? retrievedV = ctx.EntityVs
+                        .SingleOrDefault(x => x.Id == retrievedU.entityVId);
     Assert.NotNull(retrievedV);
 }
 ```
