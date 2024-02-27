@@ -60,11 +60,11 @@ private void ConfigureListValueObjects(EntityTypeBuilder<EntityT> entityBuilder)
 {
     entityBuilder.HasKey(x => x.Id);
 
-    entityBuilder.OwnsMany<ValueObjectT>("someValues", vob =>
+    entityBuilder.OwnsMany<ValueObjectT>("someValues", valueBuilder =>
     {
-        vob.Property<int>("Id").ValueGeneratedOnAdd();
-        vob.HasKey("Id");
-        vob.Property(x => x.Value);
+        valueBuilder.Property<int>("Id").ValueGeneratedOnAdd();
+        valueBuilder.HasKey("Id");
+        valueBuilder.Property(x => x.Value);
     });
 }
 ```
