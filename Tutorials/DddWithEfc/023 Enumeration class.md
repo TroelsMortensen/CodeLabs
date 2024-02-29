@@ -66,28 +66,26 @@ The usual Id, and then a field of type MyStatusEnum.
 You should probably add a mutator method for this status field.
 
 ### Configuration
-You should be able to configure this with the complex type approach, see slide 11. 
-That is probably preferable, and I will eventually update this case.\
-But, I initially used the owned entity type approach.\
+We apply the complex property type approach. See slide 11.
 The configuration looks like this:
 
 ```csharp
 private void ConfigureEnumAsClass(EntityTypeBuilder<EntityH> entityBuilder)
 {
     entityBuilder.HasKey(x => x.Id);
-    entityBuilder.OwnsOne<MyStatusEnum>("status",
-        e =>
+    entityBuilder.ComplexProperty<MyStatusEnum>("status",
+        propBuilder =>
         {
-            e.Property("backingValue")
+            propBuilder.Property("backingValue")
                 .HasColumnName("status");
         }
     );
 }
 ```
 Define PK.\
-Then access the property called "status", of type `MyStatusEnum`. It is an owned entity type.\
+Then access the property called "status", of type `MyStatusEnum`. Say it is a complex type.\
 We say that MyStatusEnum has a field variable called "backingValue", but in the database the column should just be called "status". 
-Rename this as needed. It is to avoid the column name status_backingValue, which is not very meaningful.
+Rename this as needed. It is to avoid the column name "status_backingValue", which is not very meaningful.
 
 ### Test
 
