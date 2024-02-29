@@ -93,3 +93,4 @@ Slides:
 20. List of Guid foreign keys (wrapper med conversion)
 21. List of strongly typed ids (wrapper og conversion)
 22. Enums
+23. Enumeration classes
