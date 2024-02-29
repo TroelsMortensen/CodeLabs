@@ -92,3 +92,4 @@ Slides:
 19. Single foreign key with strongly typed id
 20. List of Guid foreign keys (wrapper med conversion)
 21. List of strongly typed ids (wrapper og conversion)
+22. Enums
