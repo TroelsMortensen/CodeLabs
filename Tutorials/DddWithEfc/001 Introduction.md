@@ -80,6 +80,7 @@ Slides:
 7. Test helper methods
 8. Guid primary key
 9. Strongly typed primary key
+10. Primitive field variables
 10. Value object overview
 11. Non-nullable single-valued value object
 12. Nullable single-valued value object
