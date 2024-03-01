@@ -1,0 +1,2630 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div id="steps-list">
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 Adding EFC Packages</li>
+<li class="step" onclick="setTab(2)">3 Init DbContext</li>
+<li class="step" onclick="setTab(3)">4 Design Time Factory Class</li>
+<li class="step" onclick="setTab(4)">5 Test strategies</li>
+<li class="step" onclick="setTab(5)">6 Primary keys and constructors</li>
+<li class="step" onclick="setTab(6)">7 Private Constructor</li>
+<li class="step" onclick="setTab(7)">8 Test helper methods</li>
+<li class="step" onclick="setTab(8)">9 Configuring Guid Primary Key</li>
+<li class="step" onclick="setTab(9)">10 Configuring Strongly Typed PK</li>
+<li class="step" onclick="setTab(10)">11 Primitive Field Variables</li>
+<li class="step" onclick="setTab(11)">12 Value Objects</li>
+<li class="step" onclick="setTab(12)">13 Non-nullable Single-Valued ValueObject</li>
+<li class="step" onclick="setTab(13)">14 Nullable Single-Valued ValueObject</li>
+<li class="step" onclick="setTab(14)">15 Non-nullable multi-valued ValueObject</li>
+<li class="step" onclick="setTab(15)">16 Nullable multi-valued ValueObject</li>
+<li class="step" onclick="setTab(16)">17 Non-Nullable Nested ValueObjects</li>
+<li class="step" onclick="setTab(17)">18 Nullable Nested ValueObjects</li>
+<li class="step" onclick="setTab(18)">19 List of Value Objects</li>
+<li class="step" onclick="setTab(19)">20 Guid as Foreign Key</li>
+<li class="step" onclick="setTab(20)">21 Strongly Typed Foreign Key</li>
+<li class="step" onclick="setTab(21)">22 List of Guid Foreign Keys</li>
+<li class="step" onclick="setTab(22)">23 List of Strongly Typed Fks</li>
+<li class="step" onclick="setTab(23)">24 Enums</li>
+<li class="step" onclick="setTab(24)">25 Enumeration class</li>
+<li class="step" onclick="setTab(25)">26 Single nested Entity</li>
+<li class="step" onclick="setTab(26)">27 List of Entities</li>
+<li class="step" onclick="setTab(27)">28 List of primitives</li>
+
+        </ol>
+    </div>
+    <div id="top-buttons-container">
+        <div style="overflow:auto;">
+
+            <div style="float:right; margin:10px">
+                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+            </div>
+        </div>
+
+        <!-- One "tab" for each step in the form: -->
+
+        <div class="tab">
+<hr/><h1 id="ddd-with-efc">DDD With EFC</h1><hr/>
+<p>This guide aims to explain how to configure Entity Framework core to work with your DDD inspired Domain Model.<br />
+Such a domain model looks vastly different from what EFC conventionally uses,
+which are just simple classes (data containers),
+with public properties.</p>
+<p>Your domain model uses value objects, entities, aggregates, strongly typed ids, and much more.<br />
+The patterns used to construct this domain model differs from the conventional EFC approach,
+and therefore we need to do a lot of manual configuration so that EFC can persist your data.</p>
+<p>For the most cases, we can do this configuration without interfering with the DM.<br />
+There will, however, be some cases,
+where you may have to rework your domain model a little bit. Mainly internal parts, so this should hopefully be acceptable.<br />
+This is a trade-off we must accept, if we wish to use EFC. It does seem like they continuously improve support, though. Lucky us.</p>
+<p>The next couple of slides does the initial setup in a step-by-step.<br />
+And then follows slides, which deal with the various specific cases.</p>
+<p>So, go through the first slides on setting up. Then find the slides relevant to your case.</p>
+<p>Each specific configuration case is explained with an isolated, generic example,
+along with one or more unit tests proving correctness. Hopefully you can convert this to your own specific needs.</p>
+<h2 id="fluent-api">Fluent API</h2>
+<p>EFC uses 3 kinds of configuration:</p>
+<ul>
+<li>By convention: Here you create &quot;property bags&quot;, i.e. a class with public properties. You follow naming conventions. EFC will then discover most things.</li>
+<li>By annotations: Here you put attributes on your properties, e.g. [Key] and [Required].</li>
+<li>Here you write code in your DbContext class, to configure the entities.</li>
+</ul>
+<p>We will go with the last option. Why? Our domain model class are <em>not</em> property bags. They are carefully designed.<br />
+Option two is &quot;invasive&quot;, meaning we need to put all kinds of EFC specific attributes into the domain model. But remember,
+we aim to keep technologies out of the domain.</p>
+<p>The third approach means we can configure everything from the &quot;outside&quot;. It is also the most powerful, and it takes precedence over the other two approaches.</p>
+<p>It is called the &quot;Fluent API&quot;, because you will often chain multiple methods together, using the Fluent technique.</p>
+<p>For example:</p>
+<pre><code class="line-numbers language-csharp">modelBuilder.Entity&lt;Guest&gt;().Property(guest =&gt; guest.Username).IsRequired();
+</code></pre>
+<p>The <code>modelBuilder</code> is the class used to get started with any configuration.<br />
+We then want to configure something for the <code>Guest</code> entity.<br />
+And we grab the property on the <code>Guest</code> called <code>Username</code>.<br />
+Finally we say that this property must have a value, it is required.</p>
+<p>So, this chain of method calls is &quot;fluent&quot;.</p>
+<p>There are different &quot;builders&quot; in EFC, we will use different ones, for different purposes.<br />
+If we wish to configure an entity, we use a ModelBuilder.<br />
+If we wish to configure a property, we use a PropertyBuilder.<br />
+And so on. This is somewhat &quot;automatic&quot;. You will see.</p>
+<p>Often configuration code (or generally fluent code, like LINQ) will be formatted so that each dot &quot;.&quot; starts on a new line,
+like this:</p>
+<pre><code class="line-numbers language-csharp">modelBuilder.Entity&lt;Guest&gt;()
+    .Property(guest =&gt; guest.Username)
+    .IsRequired();
+</code></pre>
+<p>This seems to be a common approach, with the aim to increase readability.</p>
+<p>I will also use this approach, mainly because it is easier to explain what each line does.
+E.g. &quot;line 2 accesses the Username property on Guest&quot;.</p>
+<h2 id="how-to-read">How to read</h2>
+<p>A lot of the configurations are very similar, or we are doing part of the same thing over and over.
+This means, it is better described the first time, it is encountered.<br />
+I realize this is unfortunate, if you use this guide as a reference, and you are looking for a specific case. Then that case may not actually contain all the details, you hoped for.<br />
+Eventually I may rework this guide, so that each case is self-contained. But for now, I will just refer to the first time, and then be brief the next times.</p>
+<h2 id="table-of-content">Table of content</h2>
+<p>Slides:
+6. Constructor
+7. Test helper methods
+8. Guid primary key
+9. Strongly typed primary key
+10. Primitive field variables
+10. Value object overview
+11. Non-nullable single-valued value object
+12. Nullable single-valued value object
+13. Non-nullable multi-valued value object
+14. Nullable multi-valued value object
+15. Non-nullable nested value objects
+16. Nullable nested value objects
+17. List of Value objects
+18. Single foreign key with Guid
+19. Single foreign key with strongly typed id
+20. List of Guid foreign keys (wrapper med conversion)
+21. List of strongly typed ids (wrapper og conversion)
+22. Enums
+23. Enumeration classes
+24. Single nested entity
+24. List of entities.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="adding-efc-packages">Adding EFC Packages</h1><hr/>
+<p>In order to use EFC, we must add it to the relevant project.</p>
+<p>The first step is therefore to add the following NuGet packages to the project, where you wish to use EFC, i.e. the project responsible for data persistence.</p>
+<p>At the time of writing, we are using EFC8. You should use the version, which matches your .NET version.<br />
+And you should use a stable version of EFC, i.e. no &quot;beta&quot;-version. These are suffixed with &quot;RC&quot;, I think.</p>
+<p>Add the following three packages:</p>
+<ol>
+<li>Microsoft.EntityFrameworkCore</li>
+<li>Microsoft.EntityFrameworkCore.Design</li>
+<li>Microsoft.EntityFrameworkCore.Sqlite</li>
+</ol>
+<p><img src="Resources/Packages.png" alt="img.png" /></p>
+<p>We are going to use SQLite in the course, that is just easier.<br />
+You may go for another relational database, if you like, but there is really no benefit,
+as we will not be doing much more than just testing out stuff.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="setup-dbcontext">Setup DbContext</h1><hr/>
+<p>Now, we create the DbContext. The entry point whenever we wish to interact with the database.</p>
+<p>Start out something like this:</p>
+<pre><code class="line-numbers language-csharp">public class SqliteWriteDbContext(DbContextOptions options) : DbContext(options)
+{
+    public DbSet&lt;VeaEvent&gt; Events =&gt; Set&lt;VeaEvent&gt;();
+    public DbSet&lt;Guest&gt; Guests =&gt; Set&lt;Guest&gt;();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+
+    }
+}
+</code></pre>
+<p>Explanation for lines:</p>
+<p>Line 1</p>
+<ul>
+<li>I have called the class SqliteWriteDbContext. You will later have a similar &quot;Read&quot; context.</li>
+<li>We get <code>DbContextOptions</code> through the <a href="https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/primary-constructors">Primary Constructor</a></li>
+<li>The <code>options</code> argument is passed to the base class. This argument contains information about which database to use.<br />
+It must be injected from the outside because of testing reasons. You will see later.</li>
+</ul>
+<p>Lines 3-4</p>
+<ul>
+<li>I define a DbSet <em>per aggregate <strong>root</strong></em> entity. There should be no need to define sets for entities, other than the root.</li>
+<li>Obviously, if you do a different project case, or have different aggregate root entities, adjust the code accordingly.</li>
+<li>The <code>=&gt;</code> part is just the general recommendation, it means we retrieve the specific generic Set, which contains a certain entity.</li>
+</ul>
+<p>Lines 6-9: <code>OnModelCreating()</code>: This is left empty for now, but here we will add all configuration code.</p>
+<p>This should be enough for now.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="design-time-context-factory">Design Time Context Factory</h1><hr/>
+<p><a href="https://learn.microsoft.com/en-us/ef/core/cli/dbcontext-creation?tabs=dotnet-core-cli">Design time</a>
+refers to the time where e.g. a migrations is created.<br />
+Here, an instance of our DbContext will be created.</p>
+<p>We do have a problem though, because our DbContext requires an argument for its constructor.<br />
+Usually this is provided in the Program.cs class, upon start up, so generally not a problem.<br />
+But when just generating the database or verifying a configuration, or testing whether a DbContext can actually be created,
+we need some way to provide this argument.</p>
+<p>We do this with a DesignTimeContextFactory.</p>
+<p>At the same location as your DbContext, create the following class:</p>
+<pre><code class="line-numbers language-csharp">public class DesignTimeContextFactory : IDesignTimeDbContextFactory&lt;SqliteWriteDbContext&gt;
+{
+    public SqliteWriteDbContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder&lt;SqliteWriteDbContext&gt;();
+        optionsBuilder.UseSqlite(@&quot;Data Source = VEADatabaseProduction.db&quot;);
+        return new SqliteWriteDbContext(optionsBuilder.Options);
+    }
+}
+</code></pre>
+<p>Modify code as needed, e.g. if you have named your DbContext differently, you must fix the generic type argument in the inheritance in line 1.
+And in the first line inside the method.<br />
+You may also change the data source variable, if you want to call your database something else. Or if you use a different database provider, e.g. PostgreSQL.</p>
+<p>When trying to e.g. create a migration, or verifying a configuration, EFC will look for this class, and use it to instantiate a DbContext with the correct parameters.</p>
+<h2 id="test">Test</h2>
+<p>To test this, open the terminal, navigate into the project, and type:</p>
+<pre><code>dotnet ef dbcontext script
+</code></pre>
+<p>Like this:</p>
+<p><img src="Resources/RunTerminalCommand.png" alt="img.png" /></p>
+<p>We will use this command over and over, to verify our configurations.</p>
+<p>The point of that command is to see what SQL script is generated, based on your current DbContext, if we were to create a migration, e.g. build the database.</p>
+<p>It will fail. That's fine, this is what we currently hope for.<br />
+It should fail with an error message about one of your entities needing a primary key:</p>
+<p>&quot;... The exception 'The entity type 'VeaEvent' requires a primary key to be defined ...&quot;</p>
+<p>If you get this message, all is good for now.</p>
+<h4 id="wrong-failure">Wrong failure</h4>
+<p>If you get a message about not being able to instantiate/activate the DbContext, you have failed incorrectly:</p>
+<p>&quot;Unable to resolve service for type 'Microsoft.EntityFrameworkCore.DbContextOptions' while attempting to activate 'SqliteDataWrite.SqliteWriteDbContext'&quot;</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="testing-strategies">Testing Strategies</h1><hr/>
+<p>I will for each case provide one or two test cases, to show how to test the configuration.</p>
+<p>This is generally not as thorough as one might wish. You will need to define success and failure cases.</p>
+<ul>
+<li>How do you prove it works as expected?</li>
+<li>What happens if some value is missing? What should happen? Is the database constraints correct?</li>
+<li>What happens if a list is empty?</li>
+<li>What happens if one entity is deleted? Are associated entities deleted as well? Should they be?</li>
+<li>Is the ON DELETE behaviour &quot;set null&quot; or &quot;cascade&quot; or &quot;restrict&quot; or &quot;no action&quot;? And does this actually work?</li>
+</ul>
+
+</div>
+<div class="tab">
+<hr/><h1 id="define-primary-keys-and-constructors">Define Primary Keys and Constructors</h1><hr/>
+<p>As mentioned on the previous slide, you hopefully get an error about an entity missing a primary key.<br />
+All entities must have a primary key defined. And all entities must have a constructor, which EFC can use.<br />
+Initially you will just set this up on your aggregates, until EFC does not complain.</p>
+<p>So, this is the next step.</p>
+<p>You will have to work your way step by step through the entities, until you get a script printed in the console.<br />
+Then as you move through configurations, you may get back to this error over and over, for each entity.<br />
+Generally, I think EFC is decently good at outputting informative error messages. Get used to reading these.</p>
+<p>First, a bit of structure.</p>
+<h2 id="preparing-for-configuration">Preparing for configuration</h2>
+<p>We start with the first entity it is complaining about, in my case the <code>VeaEvent</code>, probably because it's the top DbSet defined.</p>
+<p>We configure everything from inside the <code>OnModelCreating()</code> method.
+We are going to have <em>a lot</em> of configuration, so we start out with an initial structure<br />
+You have (at least) two approaches:</p>
+<ul>
+<li>Configuration method per entity, it's simpler, we go with this.</li>
+<li>Auto-discoverable configuration class per entity. A bit more complex, generally better.
+You must create an EntityConfiguration class, <a href="https://www.entityframeworktutorial.net/code-first/move-configurations-to-seperate-class-in-code-first.aspx">see here</a>.</li>
+</ul>
+<p>You can pick either approach. I will go with the first.<br />
+Expand your code in the DbContext with a new method for configuring this first entity:</p>
+<pre><code class="line-numbers language-chsparp">protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    ConfigureVeaEvent(modelBuilder.Entity&lt;VeaEvent&gt;());
+}
+
+private static void ConfigureVeaEvent(EntityTypeBuilder&lt;VeaEvent&gt; entityBuilder)
+{
+    throw new NotImplementedException();
+}
+</code></pre>
+<p>You will create more helper configuration methods, all called from the <code>OnModelCreating()</code>.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="private-constructor">Private Constructor</h1><hr/>
+<p>Though, initially EFC will complain about a missing primary key, it will then complain about a missing constructor.\</p>
+<p>But the latter is easier to fix, so we start there.</p>
+<p>Every entity, which EFC must manage, must have a constructor it can use, when materializing entities from the database back to C#.</p>
+<p>Such a constructor must either match all relevant properties, which won't do for us, because DDD DM, <strong>or</strong>,
+it must be a no-argument constructor:</p>
+<pre><code class="line-numbers language-csharp">private MyEntity(){}
+</code></pre>
+<p>Like this. EFC uses a lot of reflection, so it is not a problem, that it is private. Now the object can be instantiated, and relevant properties are set through reflection.<br />
+We must add a private constructor to every EFC-entity, i.e. every kind of class EFC will manage, including value objects.<br />
+EFC deals only with &quot;entity&quot;, everything is an entity. DDD is more granular, with aggregate, entity, value object.<br />
+I hope I can keep this straight, and not confusing.</p>
+<p>The point is, when EFC complains about a missing constructor, you will add a boring, private, no-args constructor.</p>
+<p>We find this case of EFC seeping into our sacred DM acceptable, as we do not change the public API of the entity.
+We are not using anything EFC specific, like attributes [Required]. We are not changing behaviour, or anything of relevance.<br />
+It's just a tiny detail, we must remember, or be reminded by EFC.</p>
+<p>So, go ahead and add a private constructor to the first entity.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="test-helper-methods">Test Helper Methods</h1><hr/>
+<p>Each configuration case is demonstrated with an automated integration test.</p>
+<p>Each test needs to do similar things:</p>
+<ul>
+<li>Instantiate a DbContext</li>
+<li>Create a clean database</li>
+<li>Setup one or more entities with whatever values, matching the specific configuration we are testing</li>
+<li>Save entities to the database</li>
+<li>Clear the <a href="https://learn.microsoft.com/en-us/ef/core/change-tracking/">ChangeTracker</a> of DbContext. This is keeping track of every entity The DbContext has handled, like a cache. We must clear it, so that data is fetched from the database, <em>not</em> the cache.</li>
+<li>Retrieve the same entity</li>
+<li>Verify the relevant data is retrieved too, as expected.</li>
+</ul>
+<p>This must be done for every test. I therefore have two helper methods, to shrink the amount of copy/pasting needed.</p>
+<p>These two methods will be used in each of my tests going forward.</p>
+<h3 id="create-dbcontext-and-setup-database">Create DbContext and Setup Database</h3>
+<p>The first helper method creates a DbContext, and sets up a fresh database:</p>
+<pre><code class="line-numbers language-csharp">private static MyDbContext SetupContext()
+{
+    DbContextOptionsBuilder&lt;MyDbContext&gt; optionsBuilder = new();
+    optionsBuilder.UseSqlite(@&quot;Data Source = Test.db&quot;);
+    MyDbContext context = new(optionsBuilder.Options);
+    context.Database.EnsureDeleted();
+    context.Database.EnsureCreated();
+    return context;
+}
+</code></pre>
+<p>Line 1: It is static for performance reasons, not strictly necessary.<br />
+Line 3: Create options builder, here we can set various db configurations. In our case the specific test database.<br />
+In a real system, you often have different databases, like production, Q/A testing, local testing, etc. We need a database, we can reset for every test.<br />
+Line 4: We define the test database.<br />
+Line 5: Create new instance of DbContext.<br />
+Line 6: Delete any existing database.<br />
+Line 7: Create clean database.</p>
+<p>This method is called at the beginning of each test, like this:</p>
+<pre><code class="line-numbers language-chspar">await using MyDbContext ctx = SetupContext();
+</code></pre>
+<p>The we have a fresh DbContext, with a clean database.</p>
+<h3 id="save-and-clear">Save and Clear</h3>
+<p>The next helper method covers saving an entity, and clearing the ChangeTracker (the cache).</p>
+<pre><code class="line-numbers language-csharp">private static async Task SaveAndClearAsync&lt;T&gt;(T entity, MyDbContext context) 
+    where T : class
+{
+    await context.Set&lt;T&gt;().AddAsync(entity);
+    await context.SaveChangesAsync();
+    context.ChangeTracker.Clear();
+}
+</code></pre>
+<p>Line 1:</p>
+<ul>
+<li>Again, static, performance, not really necessary, but Rider gives warning.</li>
+<li>Method is generic <code>&lt;T&gt;</code>, so that it can save any type of entity. That's the first argument, <code>T entity</code>.</li>
+</ul>
+<p>Line 2: The last part is a constraint on the generic type argument <code>T</code>,
+saying the argument must be a class.
+Not a struct or record struct.
+We need this constraint, because this constraint is also on the <code>Set&lt;T&gt;()</code> method further down.</p>
+<p>Line 4: Access the DbSet containing whatever type of entity <code>entity</code> is.<br />
+Line 5: Save everything to database.<br />
+Line 6: Clear the ChangeTracker, i.e. cache.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="configuring-guid-primary-key">Configuring Guid Primary Key</h1><hr/>
+<p>This case covers the usage of Guids as primary key for an entity.</p>
+<p>EFC uses convention to discover primary keys, so if you follow these, it's easy.<br />
+But we don't, and shouldn't, when doing a DDD domain model.</p>
+<p>You are either using a Guid as primary key, or you have a strong type, e.g. <code>EventId</code>, or <code>GuestId</code>.<br />
+To be DDD compliant, I recommend the latter approach.<br />
+First, we deal with the Guid. Next slide is the strongly typed Id.</p>
+<h2 id="the-code">The Code</h2>
+<p>EFC can out of the box handle Guid types, they are generally just converted to text in the database.</p>
+<p>You probably have a public property for the Guid, but with either no setter, or at least it is private.<br />
+Like this:</p>
+<pre><code class="line-numbers language-csharp">public Guid Id { get; }
+</code></pre>
+<p>You should not have a <code>private set;</code> included, as the Id should never be changed after the entity has been instantiated.
+By leaving out a setter, the Id can only be set upon construction, i.e. from the constructor.</p>
+<p>This here is the generic looking entity, we will configure. It is minimal, stripped bare. You may have a factory method, that's irrelevant.</p>
+<pre><code class="line-numbers language-chsparp">public class EntityL
+{
+    public Guid Id { get; }
+
+    public EntityL(Guid id)
+    {
+        Id = id;
+    }
+    
+    ...
+}
+</code></pre>
+<p>We have the Guid Id property, to be used as primary key.<br />
+There is a constructor to set it. You may have a factory method, either works.</p>
+<p>EFC cannot automatically discover this property, because there is no setter. If there was a private setter, it would work.
+But we don't need that, and won't do that. We will aim to minimize the effect EFC has on our domain model.<br />
+Therefore, we have to explicitly tell EFC, that we have a property called Id, and it should be used as primary key.</p>
+<p>Here is the configuration method for EntityL (just a generic name, I have Entities A to L, at the time of writing this):</p>
+<pre><code class="line-numbers language-csharp">// ... other sets
+public DbSet&lt;EntityL&gt; EntityLs =&gt; Set&lt;EntityL&gt;();
+
+// ... other methods
+
+protected override void OnModelCreating(ModelBuilder mBuilder)
+{
+    ConfigureEntityL(mBuilder.Entity&lt;EntityL&gt;());
+}
+
+private void ConfigureEntityL(EntityTypeBuilder&lt;EntityL&gt; entityBuilder)
+{
+    entityBuilder.HasKey(entity =&gt; entity.Id);
+}
+</code></pre>
+<p>We have the DbSet defined.<br />
+The <code>OnModelCreating</code> calls our configure method with an argument <code>mBuilder.Entity&lt;EntityL&gt;()</code>.<br />
+This argument gives ss an EntityTypeBuilder, which is a class used to configure a specific entity.</p>
+<p>In our configure method, we just call <code>HasKey</code>, with a lambda expression pointing to the specific Id property.<br />
+This means, we are creating a configuration for the entity of type <code>EntityL</code>, saying it has a primary key,
+and that pk is the <code>Id</code> property on the class.</p>
+<h3 id="guid-pk-test">Guid Pk Test</h3>
+<p>The following test shows that we can:</p>
+<ol>
+<li>Create an entity with a Guid value</li>
+<li>Save the entity</li>
+<li>Retrieve it again</li>
+</ol>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task GuidAsPk()
+{
+    await using MyDbContext ctx = SetupContext();
+    Guid id = Guid.NewGuid();
+    EntityL entity = new(id);
+    
+    await SaveAndClearAsync(entity, ctx);
+
+    EntityL? retrieved = ctx.EntityLs.SingleOrDefault(x =&gt; x.Id == id);
+    Assert.NotNull(retrieved);
+}
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="configuring-strongly-typed-primary-key">Configuring Strongly Typed Primary Key</h1><hr/>
+<p>This case covers the use of strongly typed Ids for primary keys.</p>
+<p>Per DDD your IDs should be strongly typed, so they are not confused with each other, and making the code clearer.</p>
+<p>Again, my example is minimal, your own code is probably more elaborate.</p>
+<h3 id="strong-id">Strong Id</h3>
+<p>First, I show the class for my strong Id, for this example.</p>
+<pre><code class="line-numbers language-csharp">public class MId
+{
+    public Guid Value { get; }
+
+    public static MId Create() =&gt; new MId(Guid.NewGuid());
+
+    public static MId FromGuid(Guid guid) =&gt; new MId(guid);
+
+    private MId(Guid guid) =&gt; Value = guid;
+    
+    public override bool Equals(object? obj)
+    {
+        //...
+    }
+}
+</code></pre>
+<p>We have the get-only property.</p>
+<p>Then the static factory method to create a new MId.
+I'm using the lambda expression here, called <a href="https://www.geeksforgeeks.org/expression-bodied-members-in-c-sharp/">Expression Body</a> for more concise code. It's a personal preference.
+You can also just do <code>{return new MId(Guid.NewGuid());}</code> instead of the <code>=&gt;</code>.</p>
+<p>You are also going to need a method, which can convert a Guid into an MId, so that's the <code>FromGuid()</code> method.</p>
+<p>And then the private constructor.</p>
+<p>Finally, you must be able to compare two MId instances.
+Maybe your MId inherits from a ValueObjectBase, or an IdBase (I found this useful), or you have just implemented the equals method.
+Maybe you have overloaded <code>==</code> and <code>!=</code> too.</p>
+<p><strong>Alternatively</strong>, if you don't have the two static methods, two public constructors could probably also work:</p>
+<ol>
+<li>Takes no parameters, creates new Guid, and sets it.</li>
+<li>Takes a Guid, and sets it.</li>
+</ol>
+<p>The idea is the same. We must be able to create a new MId,
+and we must be able to reconstruct one from a Guid.</p>
+<p>Are you using Result? Should still be okay. Some code further down might change a bit.</p>
+<h3 id="the-entity">The Entity</h3>
+<p>Next up, the entity using this Id, i.e. EntityM. Here:</p>
+<pre><code class="line-numbers language-csharp">public class EntityM
+{
+    public MId Id { get; }
+    public EntityM(MId id) =&gt; Id = id;
+    private EntityM(){}
+}
+</code></pre>
+<p>We have the Id, as get-only property.<br />
+A constructor to set it. Are you using factory method? Result? Doesn't matter, this can be reworked.<br />
+A private constructor for EFC to use.</p>
+<h3 id="the-configuration">The Configuration</h3>
+<p>This is a little more complicated. This time, I only show the configuration method. You still need the DbSet, and to call this method, obviously.</p>
+<p>Here:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureEntityM(EntityTypeBuilder&lt;EntityM&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+
+    entityBuilder
+        .Property(m =&gt; m.Id)
+        .HasConversion(
+            mId =&gt; mId.Value,
+            dbValue =&gt; MId.FromGuid(dbValue)
+        );
+}
+</code></pre>
+<p>Line 3: We say EntityM has a PK, and it is the Id property of EntityM.</p>
+<p>But then, it is a strong type, which EFC cannot just save.
+What database type matches MId?<br />
+So, we must define how to convert MId to something the database can understand. And how to convert back again to MId.</p>
+<p>Line 6: We access the property <code>Id</code>,
+which gives us a <code>PropertyBuilder</code>, i.e. a class,
+which can configure specific properties, in this case <code>Id</code>.<br />
+Line 7: We say that this property has a conversion, as mentioned just above. C# uses <code>MId</code>, the database uses <code>TEXT</code>. We must define how to convert back and to.
+This is done with two lambda expressions:</p>
+<ul>
+<li>Line 8 is how to get the database value from <code>MId</code>, and here we just extract the Guid from the <code>MId</code>.</li>
+<li>Line 9 is how to convert db-value, i.e. <code>TEXT</code>, back to <code>MId</code>, and we do this from our static method, which takes a Guid, and wraps it into an <code>MId</code>.</li>
+</ul>
+<p>Yes, but what about the Guid -&gt; TEXT step? Luckily EFC can manage this for us, without explicit configuration.</p>
+<p>You have a Result on <code>FromGuid</code>? I guess the line is then something like <code>MId.FromGuid(dbValue).Value</code>.</p>
+<h3 id="the-test">The Test</h3>
+<p>The following test illustrates usage, and proves correctness:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task StrongIdAsPk()
+{
+    await using MyDbContext ctx = SetupContext();
+    
+    MId id = MId.Create();
+    EntityM entity = new(id);
+    
+    await SaveAndClearAsync(entity, ctx);
+
+    EntityM? retrieved = ctx.EntityMs.SingleOrDefault(x =&gt; x.Id.Equals(id));
+    Assert.NotNull(retrieved);
+}
+</code></pre>
+<ol>
+<li>Setup the DbContext and DB.</li>
+<li>Create MId</li>
+<li>Create entity</li>
+<li>Save and clear</li>
+<li>Retrieve entity</li>
+<li>Assert that it exists</li>
+</ol>
+
+</div>
+<div class="tab">
+<hr/><h1 id="primitive-field-variables">Primitive Field Variables</h1><hr/>
+<p>This case covers how to configure field variables, which are not public properties.<br />
+I.e. something like this:</p>
+<pre><code class="line-numbers language-csharp">private string myString;
+internal int myInt;
+</code></pre>
+<p>Whether the field is private or internal, it is the same approach.</p>
+<h3 id="entity">Entity</h3>
+<p>First, we look at the entity:</p>
+<pre><code class="line-numbers language-csharp">public class Entity0
+{
+    public Guid Id { get; }
+    internal string myString;
+    
+    public Entity0(Guid id)
+    {
+        Id = id;
+    }
+    
+    public void SetString(string newString)
+        =&gt; myString = newString;
+}
+</code></pre>
+<p>This entity has an Id of type Guid. And the field variable is of type string, called <code>myString</code>.<br />
+There is a set method, to set the field.</p>
+<h3 id="configuration">Configuration</h3>
+<p>EFC will auto-discover public properties, but not field variables.<br />
+So we have to configure this manually.<br />
+We must tell EFC that there is a field variable called &quot;myString&quot;.</p>
+<pre><code class="line-numbers language-csharp">private static void ConfigurePrivateFieldPrimitiveType(EntityTypeBuilder&lt;Entity0&gt; entityBuilder)
+{
+    entityBuilder
+        .Property&lt;string&gt;(&quot;myString&quot;);
+}
+</code></pre>
+<p>The EntityTypeBuilder class, i.e. the parameter, is a class used to configure a specific entity. In our case <code>Entity0</code>.
+In the method, we use the <code>entityBuilder</code> to configure a <em>property</em> of type <code>&lt;string&gt;</code>, called &quot;myString&quot;.</p>
+<p>This is enough, and EFC will now recognize this field, and can persist and load the entity and set the value of the field.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="value-objects">Value Objects</h1><hr/>
+<p>There are different ways to configure value objects, based on various factors:</p>
+<ul>
+<li>Is the property nullable or not?</li>
+<li>Does the value object contain one or more values?</li>
+<li>Does the value object consist of other value objects, i.e. nested?</li>
+<li>Is it a list of value objects?</li>
+</ul>
+<p>For a long time configuring value objects used a technique called Owned Entity Type. And we would generally do all above cases with this approach.
+It is basically a hack, but was the only available option.</p>
+<p>In EFC8, they introduced Complex Types, which is perfect for value objects.
+However, the feature is unfinished and limited. Hopefully EFC9 improves upon things, but that is currently no use to you, as EFC9 probably is released in the fall of 2024.<br />
+I should remember to update this guide accordingly.</p>
+<p>The next couple of slides cover the various cases of value objects.</p>
+<p><strong>In general, if you <em>don't</em> require nullability, then go with the complex type approach!</strong></p>
+<h3 id="how-to-read">How to read</h3>
+<p>The following slides will show different ways to configure value objects.
+The first slides are more elaborate in detail regarding what the code does.
+Then, because the configuration is pretty similar, the later slides will be more brief.</p>
+<h3 id="note">Note</h3>
+<p>For each field variable or property on an entity, we have to add specific configuration.<br />
+You can access this field or property in two ways:</p>
+<ul>
+<li>with a lambda expression pointing to the property, like we did for the IDs</li>
+<li>with a string, containing the name of the field variable.</li>
+</ul>
+<p>I will generally use the second approach, as your fields are <em>supposed</em> to be private.<br />
+However, if you make them internal, and let the Data Access project get access, you can still use lambdas.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">.property(entity =&gt; entity.someValue)...
+
+.property(&quot;someValue&quot;)...
+</code></pre>
+<p>They do the same thing. If you can do lambda, that is compiler safe, i.e. if you rename the property/field, the compiler will remind you to update the configuration. Or if you do rename by refactor, the configuration is also updated.</p>
+<p>If you do the string, you have to remember to update your configuration as well. Here it is nice to have unit tests covering such cases.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="non-nullable-single-value-value-object">Non-nullable Single Value Value Object</h1><hr/>
+<p>This case covers how to configure a non-nullable property value object, containing a single value.</p>
+<p>Here, we use the new feature of EFC8 called complex types.</p>
+<p>There are two parts to this: non-nullable, and single-valued.</p>
+<p>First the single-valued value object:</p>
+<h3 id="value-object">Value object</h3>
+<p>Now, your value object probably inherits from a base class, and overrides equality. That's great.<br />
+It's not relevant for this example, so my value object is simplified, to this:</p>
+<pre><code class="line-numbers language-csharp">public class ValueObjectN
+{
+    public string Value { get; }
+
+    public static ValueObjectN Create(string input) 
+        =&gt; new ValueObjectN(input);
+    
+    private ValueObjectN(string input) =&gt; Value = input;
+    private ValueObjectN(){}
+}
+</code></pre>
+<p>It contains a single value, i.e. a single property. That value is of a primitive type: string, bool, int, etc.</p>
+<h3 id="non-nullable">Non-nullable</h3>
+<p>In C# we indicate if a variable (local or field) or property can contain a <code>null</code>-value, but appending &quot;?&quot; after.<br />
+Like this:</p>
+<pre><code class="line-numbers language-csharp">public string? MyProperty { get; set; }
+</code></pre>
+<p>Here, we say that the value of this property <em>may</em> be null.</p>
+<p>Non-nullable is then without this question-mark, indicating the value must not be null.<br />
+This is the case, we are dealing with here.</p>
+<h3 id="entity">Entity</h3>
+<p>Here, then, is my entity:</p>
+<pre><code class="line-numbers language-csharp">public class EntityN
+{
+    public Guid Id { get; }
+
+    internal ValueObjectN someValue;
+    
+    public EntityN(Guid id)
+    {
+        Id = id;
+    }
+
+    public void SetValue(ValueObjectN v) =&gt; someValue = v;
+}
+</code></pre>
+<p>Yes, the value of <code>someValue</code> will initially be <code>null</code> upon object instantiation.<br />
+But it will not be <code>null</code> upon persistence.</p>
+<h3 id="configuration">Configuration</h3>
+<p>In this case, with non-nullability, we can use the complex type feature.</p>
+<p>Here's the configuration:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureNonNullableSinglePrimitiveValuedValueObject(EntityTypeBuilder&lt;EntityN&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+
+    entityBuilder.ComplexProperty&lt;ValueObjectN&gt;(
+        &quot;someValue&quot;,
+        propBuilder =&gt;
+        {
+            propBuilder.Property(vo =&gt; vo.Value)
+                    .HasColumnName(&quot;value&quot;);
+        }
+    );
+}
+</code></pre>
+<p>This method receives an <code>EntityTypeBuilder</code> for <code>EntityN</code>, i.e. a class used to configure EntityN.
+Just like previous examples.</p>
+<p>First, we must define the primary key, as always.</p>
+<p>Then the interesting part:<br />
+Line 5: We say EntityN has a &quot;Complex Property&quot;, of type <code>&lt;ValueObjectN&gt;</code>. This method takes two arguments.<br />
+Line 6: The first argument, is the name of the field variable.<br />
+Line 7-10: The second argument is a function. Here is a PropertyBuilder, i.e. a class used to configure a property. We say here the complex type of type ValueObjectN has a property called <code>Value</code>.
+We have to be explicit because the property Value on ValueObjectN does not have a <code>set;</code>. Therefore we must explicitly point EFC to this property.<br />
+Line 10: The name of the column in the database is a combination of the property name on EntityN and the property name on ValueObjectN: &quot;someValue_Value&quot;.
+This line here renames the column name to something more meaningful. Pick a name which makes sense, when you just look at the database table. Is it a PhoneNumber? FirstName? Email?</p>
+<p>What happens when we use complex type? The value object is &quot;flattened&quot; onto the entity.
+Instead of the entity having a reference to a value in a separate table, which would be the case if the value object was treated like an entity,
+we then take the value object's value, and put into the entity, in the table.</p>
+<p>We get a table called EntityNs, with two attributes: Id and someValue.</p>
+<p>You may verify this with the console command &quot;dotnet ef dbcontext script&quot;.</p>
+<p>The value object becomes part of the entity, which makes perfect sense.</p>
+<h3 id="test">Test</h3>
+<p>Here's the test:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NonNullableSinglePrimitiveValuedValueObject()
+{
+    await using MyDbContext ctx = SetupContext();
+    ValueObjectN value = ValueObjectN.Create(&quot;Hello world&quot;);
+    EntityN entity = new(Guid.NewGuid());
+    entity.SetValue(value);
+
+    await SaveAndClearAsync(entity, ctx);
+
+    EntityN retrieved = ctx.EntityNs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Equal(value.Value, retrieved.someValue.Value);
+}
+</code></pre>
+<ul>
+<li>The value object is instantiated.</li>
+<li>Then the entity.</li>
+<li>The value object is added to the entity.</li>
+<li>Save and clear</li>
+<li>Retrieve entity</li>
+<li>Verify the property is correctly loaded, i.e. not null</li>
+<li>Verify the value of the value object is correct</li>
+</ul>
+<h4 id="rainy-test">Rainy test</h4>
+<p>The following test shows that the entity cannot be saved, if the value object property is not set.<br />
+We get an InvalidOperationException thrown from the DbContext, and it provides this message:</p>
+<blockquote>
+<p>The complex type property 'EntityN.someValue' is configured as required (non-nullable) but has a null value when saving changes. Only non-null complex properties are supported by EF Core 8.</p>
+</blockquote>
+<p>Here's the test:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NonNullableSinglePrimitiveValuedValueObject_FailWhenNull()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityN entity = new(Guid.NewGuid());
+    await ctx.EntityNs.AddAsync(entity);
+    
+    Assert.Throws&lt;InvalidOperationException&gt;(() =&gt; ctx.SaveChanges());
+}
+</code></pre>
+<h3 id="sources">Sources</h3>
+<p><a href="https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/whatsnew#value-objects-using-complex-types">https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/whatsnew#value-objects-using-complex-types</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="nullable-single-valued-value-object">Nullable single-valued value object</h1><hr/>
+<p>This case covers how to configure a <em>nullable</em> property value object, containing a single value.</p>
+<p>Now, the &quot;complex type&quot; feature used on the previous slide does not support nullability. Hopefully in EFC9.</p>
+<p>Instead, we have to say the value object is an entity,
+and configure it like that. It looks pretty similar. But feels like a nasty hack, because the value object will actually become an entity, with an id, in the database.</p>
+<h3 id="value-object">Value Object</h3>
+<p>First, the value object. Basically the same as the previous case.<br />
+I'm just keeping cases cleanly separated, so I'm using a new letter suffix.</p>
+<pre><code class="line-numbers language-csharp">public class ValueObjectO
+{
+    public string Value { get; }
+
+    public static ValueObjectO Create(string input) =&gt; new ValueObjectO(input);
+    private ValueObjectO(string input) =&gt; Value = input;
+
+    private ValueObjectO()
+    {
+    }
+}
+</code></pre>
+<p>Notice, the <code>Value</code> here is non-nullable. It's in the entity, the nullable part happens.</p>
+<h3 id="entity">Entity</h3>
+<p>Here's the entity, notice the field, it is marked with <code>?</code> to indicate the reference may be null:</p>
+<pre><code class="line-numbers language-csharp">public class EntityO
+{
+    public Guid Id { get; }
+
+    internal ValueObjectO? someValue;
+    
+    public EntityO(Guid id)
+    {
+        Id = id;
+    }
+
+    public void SetValue(ValueObjectO v) =&gt; someValue = v;
+}
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<p>As mentioned above, we need to take a different approach to configure this case.</p>
+<p>Here we go:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureNullableSinglePrimitiveValuedValueObject(EntityTypeBuilder&lt;EntityO&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+
+    entityBuilder
+        .OwnsOne&lt;ValueObjectO&gt;(&quot;someValue&quot;)
+        .Property(vo =&gt; vo.Value);
+        .HasColumnName(&quot;value&quot;);
+}
+</code></pre>
+<p>The first line of code in the body, as usual, configures the ID of EntityO.</p>
+<p>Then...<br />
+Line 5: Use the entity type builder for EntityO.<br />
+Line 6: Say that EntityO <em>owns a single other entity</em>, of type ValueObjectO, and the property (field) on EntityO is called &quot;someValue&quot;.
+This basically says ValueObjectO should be an entity in itself. When it is a single value, it can still be flattened onto the EntityO.<br />
+If we look at the script generated, the table for EntityO is defined like this:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityOs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityOs&quot; PRIMARY KEY,
+    &quot;someValue_Value&quot; TEXT NULL
+);
+</code></pre>
+<p>Line 7: Here we extract the <code>Value</code> of the value object.<br />
+Line 8: Notice that the table gets a column named by combining the property/field name, with the property name on the value object: &quot;someValue_Value&quot;.
+The last line here is not strictly necessary, but we may want to rename the column to something more meaningful.</p>
+<p>Again, the value object becomes a part of the entity, i.e. the same table.</p>
+<h3 id="test">Test</h3>
+<p>The first test shows, that we can add the value object to the entity, save and retrieve it again.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NullableSinglePrimitiveValuedValueObject()
+{
+    await using MyDbContext ctx = SetupContext();
+    ValueObjectO value = ValueObjectO.Create(&quot;Hello world&quot;);
+    EntityO entity = new(Guid.NewGuid());
+    entity.SetValue(value);
+
+    await SaveAndClearAsync(entity, ctx);
+
+    EntityO retrieved = ctx.EntityOs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Equal(value.Value, retrieved.someValue.Value);
+}
+</code></pre>
+<p>The second test shows, that we can save an entity, without a value object.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NullableSinglePrimitiveValuedValueObject_SaveWhenNulled()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityO entity = new(Guid.NewGuid());
+
+    await SaveAndClearAsync(entity, ctx);
+
+    EntityO retrieved = ctx.EntityOs.Single(x =&gt; x.Id == entity.Id);
+    Assert.Null(retrieved.someValue);
+}
+</code></pre>
+<h3 id="sources">Sources:</h3>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/implement-value-objects">https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/implement-value-objects</a>
+<a href="https://learn.microsoft.com/en-us/ef/core/modeling/owned-entities">https://learn.microsoft.com/en-us/ef/core/modeling/owned-entities</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="non-nullable-multi-valued-value-object">Non-nullable Multi-valued Value Object</h1><hr/>
+<p>This case covers how to configure a non-nullable property value object, containing more than one value.</p>
+<p>It is assumed neither the property on the entity, nor the properties on the value object, can be null. Nothing can be null.</p>
+<p>We will again use the complex type, as all is non-nullable. Once even a single property becomes nullable, we must revert to using owned entity types, on the next slide.</p>
+<h3 id="value-object">Value object</h3>
+<p>This time, the value object has two properties (or more), each property based on a primitive type.<br />
+If you want to nest value objects, look for a later slide.</p>
+<pre><code class="line-numbers language-csharp">public class ValueObjectP
+{
+    public string First { get; }
+    public int Second { get; }
+
+    public static ValueObjectP Create(string first, int second) 
+        =&gt; new ValueObjectP(first, second);
+    
+    private ValueObjectP(string first, int second) 
+        =&gt; (First, Second) = (first, second);
+    
+    private ValueObjectP(){}
+}
+</code></pre>
+<p>Not much new. But now we have two properties. I have picked types of string and int, just to show two different types. As mentioned, any primitive type is valid here: string, bool, int, etc.</p>
+<p>(No, string is not really a &quot;primitive&quot; type, but in these cases, for our purposes, the behaviour is the same).</p>
+<h3 id="entity">Entity</h3>
+<pre><code class="line-numbers language-csharp">public class EntityP
+{
+    public Guid Id { get; }
+    internal ValueObjectP someValue;
+
+    public EntityP(Guid id)
+    {
+        Id = id;
+    }
+
+    public void SetValue(ValueObjectP v) =&gt; someValue = v;
+}
+</code></pre>
+<p>Same same.</p>
+<h3 id="configuration">Configuration</h3>
+<p>Again, we use the complex type to configure this. It looks like this:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureNonNullableMultiPrimitiveValuedValueObject(EntityTypeBuilder&lt;EntityP&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+
+    entityBuilder.ComplexProperty&lt;ValueObjectP&gt;(&quot;someValue&quot;, propBuilder =&gt;
+    {
+        propBuilder.Property(valueObject =&gt; valueObject.First)
+            .HasColumnName(&quot;First&quot;);
+
+        propBuilder.Property(valueObjectP =&gt; valueObjectP.Second)
+            .HasColumnName(&quot;Second&quot;);
+    });
+}
+</code></pre>
+<p>First, the Id. As usual.</p>
+<p>Then, we define there is a <code>ComplexProperty</code> of type <code>&lt;ValueObjectP&gt;</code> on EntityP.
+The field variable is called &quot;someValue&quot;, and the second parameter, the lambda expression,
+defines how to configure this value object.<br />
+We use the PropertyBuilder to first let EFC know about <code>valueObject.First</code>, and we rename the column for the database.<br />
+And then we do the same for the second property.</p>
+<p>You may see examples online, where they also define these properties as &quot;required&quot;, but that's redundant.</p>
+<h3 id="test">Test</h3>
+<p>Finally, the test:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NonNullableMultiPrimitiveValuedValueObject()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityP entity = new(Guid.NewGuid());
+    ValueObjectP valueObject = ValueObjectP.Create(&quot;Hello world&quot;, 42);
+    entity.SetValue(valueObject);
+
+    await SaveAndClearAsync(entity, ctx);
+
+    EntityP retrieved = ctx.EntityPs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Equal(valueObject.First, retrieved.someValue.First);
+    Assert.Equal(valueObject.Second, retrieved.someValue.Second);
+}
+</code></pre>
+<ul>
+<li>Create the DbContext</li>
+<li>Create the entity</li>
+<li>Create the value object</li>
+<li>Add the value object to the entity</li>
+<li>Save the entity, clear the change tracker</li>
+<li>Retrieve the entity</li>
+<li>Assert stuff about the field variable.</li>
+</ul>
+<p>I leave it to the reader to create a test proving you cannot save an entity without a value for the field variable, see slide 11.</p>
+<h3 id="sources">Sources</h3>
+<p><a href="https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/whatsnew#value-objects-using-complex-types">https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/whatsnew#value-objects-using-complex-types</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="nullable-multi-valued-value-object">Nullable Multi-valued Value Object</h1><hr/>
+<p>This case covers how to configure a <em>nullable</em> property value object, containing more than one value.</p>
+<p>In this case the property/field on the entity can be null, or any property on the value object can be null.</p>
+<h3 id="value-object">Value object</h3>
+<p>Here is the value object:</p>
+<pre><code class="line-numbers language-csharp">public class ValueObjectQ
+{
+    public string? First { get; }
+    public int? Second { get; }
+
+    public static ValueObjectQ Create(string? first, int? second) 
+        =&gt; new ValueObjectQ(first, second);
+    
+    private ValueObjectQ(string? first, int? second) 
+        =&gt; (First, Second) = (first, second);
+    
+    private ValueObjectQ(){}
+}
+</code></pre>
+<p>Notice now the types of the properties: <code>string?</code> and <code>int?</code>, meaning we allow either value to be null.<br />
+You may also <em>not</em> allow them to be null, or pick only one of them. But if you need any kind of nullability anywhere, this case covers that.</p>
+<h3 id="entity">Entity</h3>
+<p>Then the entity:</p>
+<pre><code class="line-numbers language-csharp">public class EntityQ
+{
+    public Guid Id { get; }
+    internal ValueObjectQ? someValue;
+
+    public EntityQ(Guid id)
+    {
+        Id = id;
+    }
+
+    public void SetValue(ValueObjectQ v) =&gt; someValue = v;
+}
+</code></pre>
+<p>Also here, the field is nullable: <code>ValueObjectQ?</code>. I am just making everything nullable for this example, but again, if you need any combination of nullable and not-nullable, then this case covers that.</p>
+<h3 id="configuration">Configuration</h3>
+<p>We must use the owned entity type approach. We will still get the values flattened onto EntityQ, as you will see below.</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureNullableMultiPrimitiveValuedValueObject(EntityTypeBuilder&lt;EntityQ&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+
+    entityBuilder.OwnsOne&lt;ValueObjectQ&gt;(&quot;someValue&quot;, ownedNavigationBuilder =&gt;
+    {
+        ownedNavigationBuilder.Property(valueObject =&gt; valueObject.First)
+            .HasColumnName(&quot;First&quot;);
+
+        ownedNavigationBuilder.Property(valueObjectP =&gt; valueObjectP.Second)
+            .HasColumnName(&quot;Second&quot;);
+    });
+}
+</code></pre>
+<p>This looks somewhat like the complex type approach, but we use <code>OwnsOne</code> instead of <code>ComplexProperty</code>.<br />
+We say EntityQ &quot;OwnsOne&quot; of type ValueObjectQ, and the property is called &quot;someValue&quot;.<br />
+The lambda expression then configures the properties of ValueObjectQ. Again, the columns are renamed.</p>
+<p>If we run the CLI command to generate the script, we see the following table:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityQs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityQs&quot; PRIMARY KEY,
+    &quot;First&quot; TEXT NULL,
+    &quot;Second&quot; INTEGER NULL
+);
+</code></pre>
+<p>Notice how &quot;someValue&quot; is not part of the table. But the two properties of the value object is.</p>
+<h4 id="note">Note</h4>
+<p>If you have two value objects with properties of the same name, you should not rename the columns.<br />
+This will probably cause a conflict in the database.\</p>
+<h3 id="test">Test</h3>
+<p>The testing should cover various combinations of null and not-null values. I will provide:</p>
+<ul>
+<li>All <em>not</em> null</li>
+<li>Property on entity is null</li>
+<li>One of the properties on the value is null</li>
+</ul>
+<h4 id="non-null">Non-null:</h4>
+<p>This test sets all values to non-null, and asserts that the values are retrieved correctly.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task MullableMultiValuedValueObject_NoneAreNull()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityQ entity = new(Guid.NewGuid());
+    ValueObjectQ valueObject = ValueObjectQ.Create(&quot;Hello world&quot;, 42);
+    entity.SetValue(valueObject);
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityQ retrieved = ctx.EntityQs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Equal(valueObject.First, retrieved.someValue.First);
+    Assert.Equal(valueObject.Second, retrieved.someValue.Second);
+}
+</code></pre>
+<h4 id="entity-property-is-null">Entity property is null:</h4>
+<p>This test sets the value object to null, and asserts that the value object is null when retrieved.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NullableMultiValuedValueObject_EntityPropertyIsNull()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityQ entity = new(Guid.NewGuid());
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityQ retrieved = ctx.EntityQs.Single(x =&gt; x.Id == entity.Id);
+    Assert.Null(retrieved.someValue);
+}
+</code></pre>
+<h4 id="value-object-one-property-is-null">Value object, one property is null</h4>
+<p>This test sets the value object to have one null-property,
+and asserts that the value object is retrieved correctly.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NullableMultiValuedValueObject_OneValueObjectPropertyIsNull()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityQ entity = new(Guid.NewGuid());
+    entity.SetValue(ValueObjectQ.Create(&quot;Hello world&quot;, null));
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityQ retrieved = ctx.EntityQs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Null(retrieved.someValue!.Second);
+    Assert.Equal(&quot;Hello world&quot;, retrieved.someValue!.First);
+}
+</code></pre>
+<h3 id="sources">Sources:</h3>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/implement-value-objects">https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/implement-value-objects</a>
+<a href="https://learn.microsoft.com/en-us/ef/core/modeling/owned-entities">https://learn.microsoft.com/en-us/ef/core/modeling/owned-entities</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="non-nullable-nested-value-objects">Non-Nullable Nested Value Objects</h1><hr/>
+<p>This case is about a value object containing one or more value objects.
+And, all are <strong>non-nullable</strong>.</p>
+<p>We can go with the complex type again.</p>
+<h3 id="value-objects">Value objects</h3>
+<p>This time, we need three value objects. One value object contains two other value objects.</p>
+<p>Here's the first, top-level value object:</p>
+<pre><code class="line-numbers language-csharp">public class ValueObjectR
+{
+    public NestedValueObjectR1 First { get; }
+    public NestedValueObjectR2 Second { get; }
+
+    public static ValueObjectR Create(NestedValueObjectR1 first, NestedValueObjectR2 second)
+        =&gt; new ValueObjectR(first, second);
+
+    private ValueObjectR(NestedValueObjectR1 first, NestedValueObjectR2 second)
+        =&gt; (First, Second) = (first, second);
+
+    private ValueObjectR()
+    {
+    }
+}
+</code></pre>
+<p>You will notice that the properties are of type <code>NestedValueObjectR1</code> and <code>NestedValueObjectR2</code>.
+These are the two nested value objects.</p>
+<p>Here is then the first nested value object:</p>
+<pre><code class="line-numbers language-csharp">public class NestedValueObjectR1
+{
+    public string Value { get; }
+
+    public static NestedValueObjectR1 Create(string input)
+        =&gt; new NestedValueObjectR1(input);
+
+    private NestedValueObjectR1(string input)
+        =&gt; Value = input;
+
+    private NestedValueObjectR1()
+    {
+    }
+}
+</code></pre>
+<p>It has a string property. The next nested value object is similar:</p>
+<pre><code class="line-numbers language-csharp">public class NestedValueObjectR2
+{
+    public int Value { get; }
+
+    public static NestedValueObjectR2 Create(int input)
+        =&gt; new NestedValueObjectR2(input);
+
+    private NestedValueObjectR2(int input)
+        =&gt; Value = input;
+
+    private NestedValueObjectR2()
+    {
+    }
+}
+</code></pre>
+<p>It just has an int property instead. Just to show different types.</p>
+<h3 id="entity">Entity</h3>
+<p>The entity looks familiar by now:</p>
+<pre><code class="line-numbers language-csharp">public class EntityR
+{
+    public Guid Id { get; }
+
+    internal ValueObjectR someValue;
+
+    public EntityR(Guid id)
+        =&gt; Id = id;
+
+    public void SetValue(ValueObjectR v) =&gt; someValue = v;
+}
+</code></pre>
+<p>It contains a non-nullable instance of the top level value object, <code>ValueObjectR</code>.</p>
+<h3 id="configuration">Configuration</h3>
+<p>Configuration is done with the complex type approach.</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureNonNullableNestedValueObjects(EntityTypeBuilder&lt;EntityR&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+
+    entityBuilder.ComplexProperty&lt;ValueObjectR&gt;(&quot;someValue&quot;, propBuilder =&gt;
+    {
+        propBuilder.ComplexProperty(x =&gt; x.First)
+            .Property(x =&gt; x.Value)
+            .HasColumnName(&quot;First&quot;);
+
+        propBuilder.ComplexProperty(x =&gt; x.Second)
+            .Property(x =&gt; x.Value)
+            .HasColumnName(&quot;Second&quot;);
+
+    });
+}
+</code></pre>
+<p>We define the key.</p>
+<p>Line 5: We use <code>ComplexProperty</code> to define the nested value object.
+Inside, we then configure the nested value objects, also as complex types.
+Again, we target the &quot;someValue&quot; field variable, of type &quot;<ValueObjectR>&quot;.</p>
+<p>We then define each of the nested value objects as a complex type, e.g. in line 7 and 11.</p>
+<p>The first says that ValueObjectR contains a complex type, i.e. the &quot;First&quot; property, which has a property called &quot;Value&quot;.<br />
+We redefine the column name to &quot;First&quot;. Otherwise this would be &quot;someValue_First_Value&quot;, which looks annoying.</p>
+<p>Then we do the same, for the second nested value object.</p>
+<p>The outputted sql looks like this:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityRs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityRs&quot; PRIMARY KEY,
+    &quot;First&quot; TEXT NOT NULL,
+    &quot;Second&quot; TEXT NOT NULL
+);
+</code></pre>
+<p>Here we can see that the entire value object hierarchy has been flattened. The top level value object is actually &quot;gone&quot;. Though, if it had a primitive type property, we would configure that (maybe in a later edition of this guide //TODO ).</p>
+<h3 id="test">Test</h3>
+<p>Man, I am getting tired of writing tests. But here we go again. I'll skip the &quot;value is null test&quot;. <em>You</em> shouldn't do that, obviously, <em>you</em> should be thorough!</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NonNullableNestedValueObject()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityR entity = new(Guid.NewGuid());
+    NestedValueObjectR2 nested1 = NestedValueObjectR2.Create(42);
+    NestedValueObjectR1 nested2 = NestedValueObjectR1.Create(&quot;Hello world&quot;);
+    ValueObjectR valueObject = ValueObjectR.Create(nested2, nested1);
+    entity.SetValue(valueObject);
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityR retrieved = ctx.EntityRs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Equal(valueObject.First.Value, retrieved.someValue.First.Value);
+    Assert.Equal(valueObject.Second.Value, retrieved.someValue.Second.Value);
+}
+</code></pre>
+<p>This test sets all values to non-null, and asserts that the values are retrieved correctly.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="nullable-nested-value-objects">Nullable Nested Value Objects</h1><hr/>
+<p>Again, because of nullability, we cannot use the complex type approach.</p>
+<p>We use the owned entity type approach. This time, it will result in a separate table, as you will see.</p>
+<h3 id="value-objects">Value objects</h3>
+<p>First, the top level value object. They will all look similar to the previous slide, but with nullable properties.</p>
+<pre><code class="line-numbers language-csharp">public class ValueObjectS
+{
+    public NestedValueObjectS1? First { get; }
+    public NestedValueObjectS2? Second { get; }
+
+    public static ValueObjectS Create(NestedValueObjectS1? first, NestedValueObjectS2? second)
+        =&gt; new ValueObjectS(first, second);
+
+    private ValueObjectS(NestedValueObjectS1? first, NestedValueObjectS2? second)
+        =&gt; (First, Second) = (first, second);
+
+    private ValueObjectS()
+    {
+    }
+}
+</code></pre>
+<p>Notice both properties are nullable.</p>
+<p>Next, the nested value objects. Also with nullable properties:</p>
+<pre><code class="line-numbers language-csharp">public class NestedValueObjectS1
+{
+    public string? Value { get; }
+
+    public static NestedValueObjectS1 Create(string? input)
+        =&gt; new NestedValueObjectS1(input);
+
+    private NestedValueObjectS1(string? input)
+        =&gt; Value = input;
+
+    private NestedValueObjectS1()
+    {
+    }
+}
+
+public class NestedValueObjectS2
+{
+    public int? Value { get; }
+
+    public static NestedValueObjectS2 Create(int? input)
+        =&gt; new NestedValueObjectS2(input);
+
+    private NestedValueObjectS2(int? input)
+        =&gt; Value = input;
+
+    private NestedValueObjectS2()
+    {
+    }
+}
+</code></pre>
+<h3 id="entity">Entity</h3>
+<p>Here a very familiar looking entity.</p>
+<pre><code class="line-numbers language-csharp">public class EntityS
+{
+    public Guid Id { get; }
+
+    internal ValueObjectS? someValue;
+
+    public EntityS(Guid id)
+        =&gt; Id = id;
+    
+    public void SetValue(ValueObjectS v) =&gt; someValue = v;
+    
+    private EntityS()
+    {
+    }
+}
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<p>And for the configuration. We use the owned entity type approach. And because of the nullability, we have to specify a separate table.<br />
+There is a good reason for this:</p>
+<p>Assume that we get the same flattened table: EntityS(Id, First, Second).<br />
+What if both First and Second are null?<br />
+Do we still have a non-null ValueObjectS? Just with null in both properties?<br />
+Or do we not have a ValueObjectS at all?<br />
+No-one knows<br />
+But if we move the properties to a separate table: ValueObjectS(First, Second, EntitySId),
+we can see that ValueObjectS is <em>null</em> in EntityS, if there is no row in ValueObjectS-table,
+and it is <em>not null</em> if there is a row, even if both First and Second are null. Then EntitySId is not null.<br />
+Confused?<br />
+It's not super important. Just remember to use the owned entity type approach in case of any nullability, and you will be fine.</p>
+<p>Now, if ValueObjectS is non-nullable, even though the nested values are, we might not need a separate table.</p>
+<p>If we do the separate table, we are safe in all cases, even though we may loose a tiny bit of performance.</p>
+<p>And so, bla bla, here's the configuration. Things are getting complicated.</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureNullableNestedValueObjects(EntityTypeBuilder&lt;EntityS&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+    
+    entityBuilder.OwnsOne&lt;ValueObjectS&gt;(&quot;someValue&quot;, ownedNavigationBuilder =&gt;
+    {
+        ownedNavigationBuilder.ToTable(&quot;ValueObjectS&quot;);
+        
+        ownedNavigationBuilder.OwnsOne&lt;NestedValueObjectS1&gt;(&quot;First&quot;, fvo =&gt;
+        {
+            fvo.Property(x =&gt; x.Value)
+                .HasColumnName(&quot;First&quot;);
+        });
+        ownedNavigationBuilder.OwnsOne&lt;NestedValueObjectS2&gt;(&quot;Second&quot;, svo =&gt;
+        {
+            svo.Property(x =&gt; x.Value)
+                .HasColumnName(&quot;Second&quot;);
+        });
+    });
+
+    entityBuilder.Navigation(&quot;someValue&quot;);
+}
+</code></pre>
+<p>Line 5: We use <code>OwnsOne</code> to define the nested value object, it is of type &quot;<ValueObjectS>&quot;, and the field on EntityS is called &quot;someValue&quot;.
+Then we dive in to configure the value object hierarchy.</p>
+<p>Line 7: We use <code>ToTable</code> to say the ValueObjectS should go to its own table, and specify the name of the table.<br />
+We shouldn't need this line, if ValueObjectS is non-nullable on EntityS.</p>
+<p>Line 9: We say ValueObjectS has a nested value object, of type &quot;<NestedValueObjectS1>&quot;, and the field on ValueObjectS is called &quot;First&quot;.<br />
+We specify the property of NestedValueObjectS1, and rename the column to &quot;First&quot;.</p>
+<p>Line 14: We do the same for the second nested value object.</p>
+<p>Line 21: We have to add a navigation property, because we have a separate table for ValueObjectS.<br />
+This is used by EFC, so when we retrieve an EntityS, it knows how to get the related ValueObjectS.</p>
+<p>We get the following SQL:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntitySs&quot;
+(
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntitySs&quot; PRIMARY KEY
+);
+
+CREATE TABLE &quot;ValueObjectS&quot;
+(
+    &quot;EntitySId&quot; TEXT NOT NULL CONSTRAINT &quot;PK_ValueObjectS&quot; PRIMARY KEY,
+    &quot;First&quot;     TEXT NULL,
+    &quot;Second&quot;    INTEGER NULL,
+    CONSTRAINT &quot;FK_ValueObjectS_EntitySs_EntitySId&quot; FOREIGN KEY (&quot;EntitySId&quot;) REFERENCES &quot;EntitySs&quot; (&quot;Id&quot;) ON DELETE CASCADE
+);
+</code></pre>
+<p>Now, EntityS contains no extra attributes, they are moved to the second table. There, we find First and Second. Along with a foreign key to EntityS.<br />
+Notice this foreign key is also a primary key. This is because of the one-to-one relationship between EntityS and ValueObjectS.<br />
+There are corner cases, where this causes a problem. I will not go into that here. You shouldn't encounter those, I hope.</p>
+<p>// TODO go into that here?</p>
+<h3 id="test">Test</h3>
+<p>Again, we should create various tests for combinations of null and not null values.<br />
+First, all non-null.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NullableNestedValueObject()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityS entity = new(Guid.NewGuid());
+    NestedValueObjectS1 nested1 = NestedValueObjectS1.Create(&quot;Hello world&quot;);
+    NestedValueObjectS2 nested2 = NestedValueObjectS2.Create(42);
+    ValueObjectS valueObject = ValueObjectS.Create(nested1, nested2);
+    
+    entity.SetValue(valueObject);
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityS retrieved = ctx.EntitySs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Equal(valueObject.First!.Value, retrieved.someValue.First!.Value);
+    Assert.Equal(valueObject.Second!.Value, retrieved.someValue.Second!.Value);
+}
+</code></pre>
+<p>Then null property on EntityS:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task NullableNestedValueObject_NullProp()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityS entity = new(Guid.NewGuid());
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityS retrieved = ctx.EntitySs.Single(x =&gt; x.Id == entity.Id);
+    Assert.Null(retrieved.someValue);
+}
+</code></pre>
+<p>Then one of the properties on ValueObjectS is null.</p>
+<pre data-line="6"><code class="line-numbers language-csharp">[Fact]
+public async Task NullableNestedValueObject_OneNestedPropIsNull()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityS entity = new(Guid.NewGuid());
+    NestedValueObjectS1 nested1 = NestedValueObjectS1.Create(&quot;Hello world&quot;);
+    NestedValueObjectS2 nested2 = null; 
+    ValueObjectS valueObject = ValueObjectS.Create(nested1, nested2);
+    
+    entity.SetValue(valueObject);
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityS retrieved = ctx.EntitySs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Equal(valueObject.First!.Value, retrieved.someValue.First!.Value);
+    Assert.Null(retrieved.someValue.Second);
+}
+</code></pre>
+<p>And then a value on a nested value object is null:</p>
+<pre data-line="6"><code class="line-numbers language-csharp">[Fact]
+public async Task NullableNestedValueObject_OnePropertyOnNestedValueIsNull()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityS entity = new(Guid.NewGuid());
+    NestedValueObjectS1 nested1 = NestedValueObjectS1.Create(&quot;Hello world&quot;);
+    NestedValueObjectS2 nested2 = NestedValueObjectS2.Create(null); 
+    ValueObjectS valueObject = ValueObjectS.Create(nested1, nested2);
+    
+    entity.SetValue(valueObject);
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityS retrieved = ctx.EntitySs.Single(x =&gt; x.Id == entity.Id);
+    Assert.NotNull(retrieved.someValue);
+    Assert.Equal(valueObject.First!.Value, retrieved.someValue.First!.Value);
+    Assert.Null(retrieved.someValue.Second);
+}
+</code></pre>
+<p>And so on. You get the idea. You can do the rest of the permutations yourself.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="list-of-value-objects">List of Value Objects</h1><hr/>
+<p>Sometimes, you need a list of value objects. Maybe you have multiple MiddleName(s), or multiple PhoneNumber(s).</p>
+<p>This case covers that.</p>
+<p>Now, if you remember you relational database theories, you know that you should not have a list in a column. You should have a separate table for the list.<br />
+That's what we will get. It will actually look a bit like the nullable nested value objects.</p>
+<p>Now, there's a difference between having a list of value objects, and having a list of entities.<br />
+The entities are handled on a later slide.</p>
+<p>The complex type approach cannot yet handle lists. So we go with the owned entity type approach.</p>
+<p>It does not matter whether the properties on the value object are nullable or not.</p>
+<h3 id="value-object">Value object</h3>
+<p>First, the usual value object:</p>
+<pre><code class="line-numbers language-csharp">public class ValueObjectT
+{
+    public string Value { get; }
+
+    public static ValueObjectT Create(string value) =&gt; new(value);
+
+    private ValueObjectT(string value)
+        =&gt; Value = value;
+
+    private ValueObjectT()
+    {
+    }
+}
+</code></pre>
+<h3 id="entity">Entity</h3>
+<p>This time with a twist. We have a <em>list</em> of value objects:</p>
+<pre><code class="line-numbers language-csharp">public class EntityT
+{
+    public Guid Id { get; }
+    internal List&lt;ValueObjectT&gt; someValues;
+    
+    public EntityT(Guid id)
+    {
+        Id = id;
+        someValues = new();
+    }
+    
+    public void AddValue(ValueObjectT v) =&gt; someValues.Add(v);
+}
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<p>And then the configuration. Again, this will be done with the owned entity type approach, and we move the value objects to their own table, similar to the previous slide with nested value objects.</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureListValueObjects(EntityTypeBuilder&lt;EntityT&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+
+    entityBuilder.OwnsMany&lt;ValueObjectT&gt;(&quot;someValues&quot;, valueBuilder =&gt;
+    {
+        valueBuilder.Property&lt;int&gt;(&quot;Id&quot;).ValueGeneratedOnAdd();
+        valueBuilder.HasKey(&quot;Id&quot;);
+        valueBuilder.Property(x =&gt; x.Value);
+    });
+}
+</code></pre>
+<p>As always, we define the primary key of the entity.</p>
+<p>This time, because there are many value objects, we use the <code>OwnsMany</code> method.<br />
+Again, we define the type, <code>ValueObjectT</code>, and the name of the navigation property, <code>someValues</code>, on the Entity.</p>
+<p>Line 7: This configuration creates a new table, 'ValueObjectT', and this table needs a primary key.
+We don't have an obvious candidate, so this line adds a new &quot;<a href="https://learn.microsoft.com/en-us/ef/core/modeling/shadow-properties">shadow property</a>&quot;, of type <code>int</code>, and we name it &quot;Id&quot;.</p>
+<p>Line 8: We then define this new property as the primary key.</p>
+<p>Line 9: And then we define the property of the value object, <code>Value</code>.</p>
+<p>If you have multi-valued value object, the mapping will just point to each of the properties.<br />
+If you have nested value object, you will define that similar to the single nested value object case.</p>
+<p>If we produce the sql script, we now get this:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityTs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityTs&quot; PRIMARY KEY
+);
+
+CREATE TABLE &quot;ValueObjectT&quot; (
+    &quot;Id&quot; INTEGER NOT NULL CONSTRAINT &quot;PK_ValueObjectT&quot; PRIMARY KEY AUTOINCREMENT,
+    &quot;Value&quot; TEXT NOT NULL,
+    &quot;EntityTId&quot; TEXT NOT NULL,
+    CONSTRAINT &quot;FK_ValueObjectT_EntityTs_EntityTId&quot; FOREIGN KEY (&quot;EntityTId&quot;) REFERENCES &quot;EntityTs&quot; (&quot;Id&quot;) ON DELETE CASCADE
+);
+</code></pre>
+<p>You may notice the ValueObjectT::Id property, which was added in the configuration. We also get a foreign key from ValueObjectT back to the owning entity, EntityT.</p>
+<h3 id="test">Test</h3>
+<p>The test looks like follows:</p>
+<pre><code class="line-numbers language-csharp">public async Task ListOfValueObjects()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityT entity = new(Guid.NewGuid());
+    ValueObjectT vo1 = ValueObjectT.Create(&quot;Hello world&quot;);
+    ValueObjectT vo2 = ValueObjectT.Create(&quot;Hello world2&quot;);
+    ValueObjectT vo3 = ValueObjectT.Create(&quot;Hello world3&quot;);
+    
+    entity.AddValue(vo1);
+    entity.AddValue(vo2);
+    entity.AddValue(vo3);
+    
+    await SaveAndClearAsync(entity, ctx);
+    
+    EntityT retrieved = ctx.EntityTs
+        .Single(x =&gt; x.Id == entity.Id);
+    
+    Assert.NotEmpty(retrieved.someValues);
+    Assert.Contains(retrieved.someValues, x =&gt; x.Value == vo1.Value);
+    Assert.Contains(retrieved.someValues, x =&gt; x.Value == vo2.Value);
+    Assert.Contains(retrieved.someValues, x =&gt; x.Value == vo3.Value);
+}
+</code></pre>
+<ul>
+<li>Create the DbContext</li>
+<li>Create the entity</li>
+<li>Create the value objects</li>
+<li>Add the value objects to the entity</li>
+<li>Save the entity, clear the change tracker</li>
+<li>Retrieve the entity</li>
+<li>Assert stuff about the list of values.</li>
+</ul>
+<p>You will notice, I do not have to use Include(&quot;someValues&quot;). This is because the owned entity type is always included when the owning entity is retrieved.\</p>
+<h3 id="sources">Sources</h3>
+<p><a href="https://thehonestcoder.com/ddd-ef-core-8/">https://thehonestcoder.com/ddd-ef-core-8/</a></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="guid-as-foreign-key">Guid as Foreign Key</h1><hr/>
+<p>This case is about one entity having a foreign key to another entity, where the primary key is a Guid.</p>
+<p>There is no value object this time around, instead we have two entities, which you can consider two aggregates.</p>
+<p>EntityU will have a foreign key to EntityV.</p>
+<p>It becomes a *:1 relationship, one-to-many.</p>
+<p>EntityU *-----1 EntityV</p>
+<h3 id="entities">Entities</h3>
+<p>They will look familiar.</p>
+<pre><code class="line-numbers language-csharp">public class EntityU
+{
+    public Guid Id { get; }
+
+    private Guid entityVId;
+    
+    public EntityU(Guid id)
+    {
+        Id = id;
+    }
+    
+    public void SetEntityVId(Guid id) =&gt; entityVId = id;
+}
+
+public class EntityV
+{
+    public Guid Id { get; }
+
+    public EntityV(Guid id)
+    {
+        Id = id;
+    }
+}
+</code></pre>
+<p>You will notice that EntityU has a private field, <code>entityVId</code>. This is the foreign key, it reference some instance of EntityV. That's the intension.</p>
+<p>Now, we <em>could</em> decide to not care at all about foreign key constraints in the database, or <a href="https://intelligent-ds.com/blog/what-is-referential-integrity">referential integrity</a>.<br />
+That EntityU cannot point to a non-existing EntityV could be handled in the domain.</p>
+<p>However, because of later topics, we will need this foreign key constraint. So we will configure it.</p>
+<h3 id="configuration">Configuration</h3>
+<p>Here:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureGuidAsFk(EntityTypeBuilder&lt;EntityU&gt; entityUBuilder, EntityTypeBuilder&lt;EntityV&gt; entityVBuilder)
+{
+    entityUBuilder.HasKey(x =&gt; x.Id);
+    entityVBuilder.HasKey(x =&gt; x.Id);
+
+    entityUBuilder.Property&lt;Guid&gt;(&quot;entityVId&quot;);
+    
+    entityUBuilder.HasOne&lt;EntityV&gt;()
+        .WithMany()
+        .HasForeignKey(&quot;entityVId&quot;);
+}
+</code></pre>
+<p>We have two entity-builders this time, one for each entity.<br />
+We configure the primary key for each entity.<br />
+We then tell EFC about the property <code>entityVId</code> on EntityU, it is of type <code>Guid</code>.<br />
+Finally we configure the relationship.<br />
+We say that EntityU has one EntityV, and that EntityV has many EntityU.<br />
+We also say that the foreign key is <code>entityVId</code>.</p>
+<h3 id="test">Test</h3>
+<p>We write two tests, a sunny and a rainy.</p>
+<p>First, to prove that we can create a foreign key:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task GuidAsFk_ValidTarget()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityV entityV = new(Guid.NewGuid());
+
+    await SaveAndClearAsync(entityV, ctx);
+
+    EntityU entityU = new(Guid.NewGuid());
+    entityU.SetEntityVId(entityV.Id);
+
+    await SaveAndClearAsync(entityU, ctx);
+
+    EntityU retrievedU = ctx.EntityUs
+        .Single(x =&gt; x.Id == entityU.Id);
+
+    EntityV? retrievedV = ctx.EntityVs
+                        .SingleOrDefault(x =&gt; x.Id == retrievedU.entityVId);
+    Assert.NotNull(retrievedV);
+}
+</code></pre>
+<p>First, we create an instance of EntityV, and save it.<br />
+Then we create an instance of EntityU, and set the foreign key to the Id of the EntityV.\</p>
+<p>This should work, as EntityU is now referencing an existing EntityV, which is already in the database.</p>
+<p>We then retrieve the EntityU, and check that the foreign key points to an existing EntityV, which is then also retrieved.</p>
+<p>Next up, the following test will show that an exception is thrown from the database, if we try to add a foreign key to a non-existing EntityV:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task GuidAsFk_InValidTarget()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityU entityU = new(Guid.NewGuid());
+    entityU.SetEntityVId(Guid.NewGuid());
+    
+    ctx.EntityUs.Add(entityU);
+    Action exp = () =&gt; ctx.SaveChanges();
+
+    Exception? exception = Record.Exception(exp);
+
+    Assert.NotNull(exception);
+}
+</code></pre>
+<p>Create an instance of EntityU, and set the foreign key to a new Guid. This Guid points to nothing.<br />
+Then we add the EntityU to the context, and try to save changes.<br />
+The saving will fail with an exception, which we record and assert is not null.</p>
+<p>This is the exception message:</p>
+<blockquote>
+<p>SQLite Error 19: 'FOREIGN KEY constraint failed'</p>
+</blockquote>
+
+</div>
+<div class="tab">
+<hr/><h1 id="strongly-typed-foreign-key">Strongly Typed Foreign Key</h1><hr/>
+<p>This case covers a foreign key, where the primary key is a strongly typed id, i.e. value object.</p>
+<p>It will again be a one-to-many relationship, where EntityX has a foreign key to EntityY.</p>
+<h2 id="entities">Entities</h2>
+<p>We are going with EntityX and Y. EntityY has the following strong ID:</p>
+<pre><code class="line-numbers language-csharp">public class YId
+{
+    public Guid Value { get; }
+
+    public static YId Create()
+        =&gt; new(Guid.NewGuid());
+
+    public static YId FromGuid(Guid guid)
+        =&gt; new(guid);
+
+    private YId(Guid guid)
+        =&gt; Value = guid;
+}
+</code></pre>
+<p>And then EntityY:</p>
+<pre><code class="line-numbers language-csharp">public class EntityY
+{
+    public YId Id { get; }
+
+    public EntityY(YId id) =&gt; Id = id;
+}
+</code></pre>
+<p>And finally EntityX:</p>
+<pre><code class="line-numbers language-csharp">public class EntityX
+{
+    public Guid Id { get; }
+
+    internal YId foreignKeyToY;
+
+    public EntityX(Guid id)
+    {
+        Id = id;
+    }
+
+    public void SetFk(YId id) =&gt; foreignKeyToY = id;
+}
+</code></pre>
+<p>It is irrelevant for the example whether EntityX has a strong ID or not, so I've used the simpler approach.</p>
+<h3 id="configuration">Configuration</h3>
+<p>Again we need referential integrity on the foreign key, so that is configured as well.</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureStronglyTypedFk(EntityTypeBuilder&lt;EntityX&gt; entityBuilderX, EntityTypeBuilder&lt;EntityY&gt; entityBuilderY)
+{
+    entityBuilderX.HasKey(x =&gt; x.Id);
+
+    entityBuilderY.HasKey(y =&gt; y.Id);
+    
+    entityBuilderY.Property(y =&gt; y.Id)
+        .HasConversion(
+            yId =&gt; yId.Value,
+            dbValue =&gt; YId.FromGuid(dbValue)
+        );
+
+    entityBuilderX.HasOne&lt;EntityY&gt;()
+        .WithMany()
+        .HasForeignKey(&quot;foreignKeyToY&quot;);
+}
+</code></pre>
+<p>First, we define the PK on EntityX. That's just a Guid, so that's simple.<br />
+The we define the PK on EntityY. That is a strongly typed ID, so we also have to configure the conversion between YId and Guid. This was introduced on slide 9.<br />
+And finally, we define that EntityX HasOne EntityY, which has many (WithMany) EntityY.<br />
+The last line defines the property on EntityX, which should act as a foreign key.</p>
+<h3 id="test">Test</h3>
+<p>Again we create two tests, one to show this works, and one to show that the referential integrity constraint is in place.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task StrongIdAsFk_ValidTarget()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityY entityY = new (YId.Create());
+    await SaveAndClearAsync(entityY, ctx);
+
+    EntityX entityX = new(Guid.NewGuid());
+    entityX.SetFk(entityY.Id);
+
+    await SaveAndClearAsync(entityX, ctx);
+
+    EntityX retrievedX = ctx.EntityXs.Single(x =&gt; x.Id == entityX.Id);
+
+    EntityY? retrievedY = ctx.EntityYs
+        .SingleOrDefault(y =&gt; y.Id == retrievedX.foreignKeyToY);
+
+    Assert.NotNull(retrievedY);
+}
+</code></pre>
+<p>First 3 lines, we add a new EntityY to the database.</p>
+<p>Then we create an EntityX, and set the foreign key to point to the EntityY, we just created.<br />
+EntityX is now saved to the database, without problems.</p>
+<p>We retrieve EntityX, and use its foreign key to retrieve EntityY.</p>
+<p>Then the test to verify the referential integrity:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task StrongIdAsFk_InvalidTarget()
+{
+    await using MyDbContext ctx = SetupContext();
+    YId yId = YId.Create();
+    EntityX entityX = new(Guid.NewGuid());
+    entityX.SetFk(yId);
+
+    ctx.EntityXs.Add(entityX);
+
+    Action exp = () =&gt; ctx.SaveChanges();
+
+    Exception? exception = Record.Exception(exp);
+    Assert.NotNull(exception);
+}
+</code></pre>
+<p>A &quot;dummy&quot; YId is created, but not associated with any EntityY.<br />
+Then EntityX, which gets this YId, pointing to nothing.</p>
+<p>When we save the changes, we get an exception back.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="list-of-guid-foreign-keys">List of Guid Foreign Keys</h1><hr/>
+<p>Sometimes an entity needs to reference multiple instances of another type of entity.
+This is a one-to-many relationship, but we change where the foreign key is. Now, we keep a list of foreign keys on the &quot;parent&quot;
+entity, instead of a single foreign key on the &quot;child&quot; entity.</p>
+<p>This is a common pattern, and it is often used when we have a &quot;parent&quot; entity, which has a list of &quot;child&quot; entities.</p>
+<p>We do, however, encounter a problem, as this is not easily mapped.
+We therefore, unfortunately, have to make modifications to our Entities, to make this work.<br />
+This is a bit unfortunate, because it is not a domain concern, but a persistence concern.</p>
+<p>We can keep the changes internal, so, hopefully, it will not cause to many problems.</p>
+<h3 id="entities">Entities</h3>
+<p>First, the initial case.</p>
+<p>We have two entities: EntityA and EntityB.<br />
+EntityA has a list of foreign keys to EntityB.</p>
+<p>Like this:</p>
+<p><img src="img.png" alt="img.png" /></p>
+<pre><code class="line-numbers language-csharp">public class EntityB
+{
+    public Guid Id { get; }
+
+    public EntityB(Guid id)
+    {
+        Id = id;
+    }
+}
+
+public class EntityA
+{
+    public Guid Id { get; }
+
+    internal List&lt;Guid&gt; foreignKeysToB = new();
+
+    public EntityA(Guid id)
+    {
+        Id = id;
+    }
+
+    public void AddForeignKey(Guid fk) =&gt; foreignKeysToB.Add(fk);
+}
+</code></pre>
+<p>You can see that EntityA has a list of foreign keys, and EntityB has a single Guid as primary key.</p>
+<h3 id="configuration">Configuration</h3>
+<p>How do we configure this? A list of simple type is not easy to store in the database, in a meaningful way.
+Some suggestions will json-fy this, and just store a string.
+But that won't work for us. It would ruin the referential integrity.</p>
+<p>The database is going to need a &quot;join-table&quot;, with two attributes,
+one referencing the EntityA (back to owner), and another referencing EntityB.
+This is the actual foreign key from the EntityA class.</p>
+<p>I have not found a simple solution to this, and essentially, it we cannot map a list of Guids.
+We need to create a wrapper class, which contains the Guid.
+This problem is then a list of entities, with some referential integrity details,
+which is simple enough handle. One entity having a list of other entities is an often use case.</p>
+<p>We must therefore first modify EntityA, to instead contain a list of EntityBForeignKey instances.</p>
+<p>The wrapper can be made simple, like this:</p>
+<pre><code class="line-numbers language-csharp">public class EntityBForeignKey(Guid id)
+{
+    public Guid Id { get; } = id;
+}
+</code></pre>
+<p>We ca use the <a href="https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/primary-constructors">primary constructor</a> approach, to make it even more concise.
+Or create an explicit constructor.</p>
+<p>We will also have to rework EntityA, to use this wrapper class. To minimize changes,
+I suggest adding an implicit operator to EntityBForeignKey, so that we can easily convert a Guid into the wrapper.<br />
+And then another, so we can easily unwrap an EntityBForeignKey into a Guid.</p>
+<p>Now the EntityBForeignKey class looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class EntityBForeignKey(Guid id)
+{
+    public Guid Id { get; } = id;
+
+    public static implicit operator EntityBForeignKey(Guid id) 
+        =&gt; new (id);
+    
+    public static implicit operator Guid(EntityBForeignKey ent)
+        =&gt; ent.Id;
+}
+</code></pre>
+<p>(Maybe &quot;FkToB&quot; is a better name, but I don't want to change the guide and code)</p>
+<p>And EntityA looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class EntityA
+{
+    public Guid Id { get; }
+
+    internal List&lt;EntityBForeignKey&gt; foreignKeys = new();
+
+    public EntityA(Guid id)
+    {
+        Id = id;
+    }
+
+    public void AddForeignKey(Guid fk) =&gt; foreignKeys.Add(fk);
+}
+</code></pre>
+<p>Notice the list now contains instances of EntityBForeignKey, <em>however</em> we have not modified the <code>AddForeignKey()</code> method, because of the implicit operators.</p>
+<p>If we need the Guids for some logic, we can (mostly) just use the wrappers as if they were Guids, because of the implicit operators.</p>
+<p>Now, the diagram looks like this:</p>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+<p>Now, EntityBForeignKey is a separate, join table, used to bind EntityA and EntityB together.</p>
+<p>It will become a separate table in the database, like this:</p>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+<p>The configuration is a bit more involved this time around. Here we go:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureListOfGuidsAsForeignKeys(ModelBuilder mBuilder)
+{
+    mBuilder.Entity&lt;EntityA&gt;().HasKey(&quot;Id&quot;);
+    mBuilder.Entity&lt;EntityB&gt;().HasKey(&quot;Id&quot;);
+
+    mBuilder.Entity&lt;EntityBForeignKey&gt;().Property&lt;Guid&gt;(&quot;FkToA&quot;);
+    mBuilder.Entity&lt;EntityBForeignKey&gt;().HasKey(&quot;FkToA&quot;, &quot;FkToB&quot;);
+
+    mBuilder.Entity&lt;EntityA&gt;()
+        .HasMany&lt;EntityBForeignKey&gt;(&quot;foreignKeysToB&quot;)
+        .WithOne()
+        .HasForeignKey(&quot;FkToA&quot;)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    mBuilder.Entity&lt;EntityBForeignKey&gt;()
+        .HasOne&lt;EntityB&gt;()
+        .WithMany()
+        .HasForeignKey(x =&gt; x.FkToB);
+}
+</code></pre>
+<p>Lines 3,4: Configure the primary keys for EntityA and EntityB.</p>
+<p>Line 6: EntityBForeignKey will become a new separate table, and we need a foreign key back to the owner, EntityA.<br />
+There is currently no attribute, so we say EntityBForeignKey has a shadow property, called <code>FkToA</code>.\</p>
+<p>Line 7: Now EntityBForeignKey has two properties: FkToA, and FkToB.<br />
+We configure the primary key for EntityBForeignKey, which is a combination of FkToA and FkToB. I.e. a composite key.</p>
+<p>Line 9: We start configuring EntityA.<br />
+Line 10: We say that EntityA has many EntityBForeignKey instances.<br />
+Line 11: We say that each EntityBForeignKey has one EntityA.<br />
+Line 12: We say that the foreign key on EntityBForeignKey, which points back to EntityA, is called <code>FkToA</code>.<br />
+Line 13: We say that if an EntityA is deleted, all the EntityBForeignKey instances pointing to it, should also be deleted. This is a cascade delete.</p>
+<p>Line 15: We start configuring EntityBForeignKey.<br />
+Line 16: We say that EntityBForeignKey has one EntityB.<br />
+Line 17: We say that EntityB has many EntityBForeignKey instances (though not present in the code).<br />
+Line 18: We say that the foreign key on EntityBForeignKey, which points to EntityB, is the <code>FkToB</code> property.</p>
+<p>Now, we could also add the <code>OnDelete</code> method to the EntityBForeignKey configuration, to make sure that if an EntityB is deleted, the EntityBForeignKey is also deleted.<br />
+There are probably cases, where this makes sense.<br />
+But there may also be cases, where we want to keep the EntityBForeignKey, even if the EntityB is deleted.<br />
+Maybe you want to handle this in business logic instead.<br />
+Even though in the database EntityBForeignKey references both A and B, we know that in the domain model, it is A, which owns the EntityBForeignKey.
+Therefore, you might argue that changes to/deletion of EntityB instances, should not affect the integrity of EntityA.</p>
+<p>The script generated looks like this:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityAs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityAs&quot; PRIMARY KEY
+);
+
+CREATE TABLE &quot;EntityBs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityBs&quot; PRIMARY KEY
+);
+
+CREATE TABLE &quot;EntityBForeignKey&quot; (
+    &quot;FkToB&quot; TEXT NOT NULL,
+    &quot;FkToA&quot; TEXT NOT NULL,
+    CONSTRAINT &quot;PK_EntityBForeignKey&quot; PRIMARY KEY (&quot;FkToA&quot;, &quot;FkToB&quot;),
+    CONSTRAINT &quot;FK_EntityBForeignKey_EntityAs_FkToA&quot; FOREIGN KEY (&quot;FkToA&quot;) REFERENCES &quot;EntityAs&quot; (&quot;Id&quot;) ON DELETE CASCADE,
+    CONSTRAINT &quot;FK_EntityBForeignKey_EntityBs_FkToB&quot; FOREIGN KEY (&quot;FkToB&quot;) REFERENCES &quot;EntityBs&quot; (&quot;Id&quot;) ON DELETE CASCADE
+);
+
+</code></pre>
+<p>The interesting part is the join table. You will notice the two attributes, and the composite primary key as well.</p>
+<p>Then two foreign keys. And we do actually get an <code>ON DELETE CASCADE</code> for both foreign keys.
+It seem EFC configures this, because the Guid of EntityForeignKey class is non-nullable.
+Interesting. We could <em>probably</em> override this with:</p>
+<pre><code class="line-numbers language-csharp">.OnDelete(DeleteBehavior.SetNull);
+</code></pre>
+<h3 id="test">Test</h3>
+<p>We need two tests, a success to see that we can save and retrieve the foreign keys.
+And failure to show that we cannot reference a non-existing EntityB.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task ListOfGuidFkReferences_ValidValues()
+{
+    await using MyDbContext ctx = SetupContext();
+
+    // adding reference entities
+    EntityB b1 = new(Guid.NewGuid());
+    EntityB b2 = new(Guid.NewGuid());
+    EntityB b3 = new(Guid.NewGuid());
+
+    ctx.EntityBs.AddRange(b1, b2, b3);
+    await ctx.SaveChangesAsync();
+    ctx.ChangeTracker.Clear();
+
+
+    EntityA a1 = new(Guid.NewGuid());
+    a1.AddForeignKey(b1.Id);
+    a1.AddForeignKey(b2.Id);
+    a1.AddForeignKey(b3.Id);
+
+    await SaveAndClearAsync(a1, ctx);
+
+
+    EntityA retrieved = ctx.EntityAs
+        .Include(&quot;foreignKeysToB&quot;) // I have to include, because this was not done with Owned Entity Types.
+        .Single(x =&gt; x.Id == a1.Id);
+
+    Assert.NotEmpty(retrieved.foreignKeysToB);
+    Assert.Contains(retrieved.foreignKeysToB, x =&gt; x.FkToB == b1.Id);
+    Assert.Contains(retrieved.foreignKeysToB, x =&gt; x.FkToB == b2.Id);
+    Assert.Contains(retrieved.foreignKeysToB, x =&gt; x.FkToB == b3.Id);
+}
+</code></pre>
+<ul>
+<li>Get context</li>
+<li>Create and save 3 EntityB instances.</li>
+<li>Clear cache.</li>
+<li>Then we retrieve the EntityA again, and notice the <code>Include(..)</code>, because we need to load associated <em>entities</em>, not owned values. We use a string to reference the navigation property.</li>
+<li>Then we assert that the foreign keys are there.</li>
+<li>And we assert the foreign keys match the IDs of the EntityB instances.</li>
+</ul>
+<p>Here's the failure case:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task ListOfGuidFkReferences_InvalidValues()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityA a1 = new(Guid.NewGuid());
+    a1.AddForeignKey(Guid.NewGuid());
+    a1.AddForeignKey((Guid.NewGuid()));
+    a1.AddForeignKey((Guid.NewGuid()));
+
+    ctx.EntityAs.Add(a1);
+    
+    Action exp = () =&gt; ctx.SaveChanges();
+
+    Exception? exception = Record.Exception(exp);
+    Assert.NotNull(exception);
+}
+</code></pre>
+<ul>
+<li>Create an EntityA, and add 3 foreign keys, which are not associated with any EntityB.</li>
+<li>Assert that we get an exception, when trying to save the changes.</li>
+</ul>
+
+</div>
+<div class="tab">
+<hr/><h1 id="list-of-strongly-typed-foreign-keys">List of Strongly Typed Foreign Keys</h1><hr/>
+<p>Sometimes an entity needs to reference multiple instances of another type of entity.
+This is a one-to-many relationship, but we change where the foreign key is. Now, we keep a list of foreign keys on the &quot;parent&quot;
+entity, instead of a single foreign key on the &quot;child&quot; entity.</p>
+<p>This is a common pattern, and it is often used when we have a &quot;parent&quot; entity, which has a list of &quot;child&quot; entities.</p>
+<p>This time, instead of Guids, we will use strongly typed Ids.</p>
+<h3 id="entities">Entities</h3>
+<p>We start with EntityD:</p>
+<pre><code class="line-numbers language-csharp">public class EntityD
+{
+    public DId Id { get; }
+
+    public EntityD(DId id) =&gt; Id = id;
+    
+    private EntityD(){}
+}
+
+public class DId
+{
+    public Guid Value { get; }
+
+    public static DId Create() =&gt; new(Guid.NewGuid());
+
+    public static DId FromGuid(Guid id) =&gt; new(id);
+
+    private DId(Guid newGuid)
+        =&gt; Value = newGuid;
+}
+</code></pre>
+<p>EntityD is as usual, now with a strongly typed Id. That class is defined above as well.\</p>
+<p>Then we have EntityC:</p>
+<pre><code class="line-numbers language-csharp">public class EntityC
+{
+    public Guid Id { get; }
+
+    private string someValue = &quot;42&quot;;
+
+    internal List&lt;DId&gt; foreignKeysToD;
+
+    public EntityC(Guid id)
+    {
+        Id = id;
+        foreignKeysToD = new();
+    }
+
+    public void AddFk(DId id) =&gt; foreignKeysToD.Add(id);
+}
+</code></pre>
+<p>Notice the list of DId instances, to reference multiple EntityDs.</p>
+<p>Now, we need a similar trick as with the previous slide. Even though we have a list of strongly typed Ids, these have a defined mapping, which converts them to Guids, so we are back to the previous case. We cannot use DId as a wrapper class, with its own table.<br />
+We must create a wrapper class for DId:</p>
+<pre><code class="line-numbers language-csharp">public class ReferenceFromCtoD
+{
+    public DId FkToD { get; set; }
+    public static implicit operator ReferenceFromCtoD(DId fk) =&gt; new(fk);
+    public static implicit operator DId(ReferenceFromCtoD reference) =&gt; reference.FkToD;
+    private ReferenceFromCtoD(DId fk) =&gt; FkToD = fk;
+    private ReferenceFromCtoD(){}
+}
+</code></pre>
+<p>This time two explicit constructors are apparently needed. Not sure why, compared to previous slide.<br />
+And implicit operators for ease of use.</p>
+<p>We update EntityC to use this wrapper class:</p>
+<pre data-line="5"><code class="line-numbers language-csharp">public class EntityC
+{
+    public Guid Id { get; }
+
+    internal List&lt;ReferenceFromCtoD&gt; foreignKeysToD;
+
+    public EntityC(Guid id)
+    {
+        Id = id;
+        foreignKeysToD = new();
+    }
+
+    public void AddFk(DId id) =&gt; foreignKeysToD.Add(id);
+}
+</code></pre>
+<p>And again, we don't have to update the <code>AddFk()</code> method because of the implicit operators.</p>
+<p>Now we can configure this setup.</p>
+<h3 id="configuration">Configuration</h3>
+<p>Here's the configuration code, the complexity is growing:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureListOfStronglyTypedForeignKeys(ModelBuilder mBuilder)
+{
+    // First Ids on both
+    mBuilder.Entity&lt;EntityC&gt;().HasKey(x =&gt; x.Id);
+    mBuilder.Entity&lt;EntityD&gt;().HasKey(x =&gt; x.Id);
+
+
+    // Then the conversion from strong ID to simple type
+    mBuilder.Entity&lt;EntityD&gt;() // here we define the conversion for the ID
+        .Property(m =&gt; m.Id)
+        .HasConversion(
+            id =&gt; id.Value, // how to convert ID type to simple value, EFC can understand
+            value =&gt; DId.FromGuid(value)); // how to convert simple EFC value to strong ID.
+
+    // Now we configure the join table
+    mBuilder.Entity&lt;ReferenceFromCtoD&gt;(x =&gt;
+    {
+        x.Property&lt;Guid&gt;(&quot;FkBackToC&quot;);
+        x.HasKey(&quot;FkBackToC&quot;, &quot;FkToD&quot;);
+        x.HasOne&lt;EntityC&gt;()
+            .WithMany(&quot;foreignKeysToD&quot;)
+            .HasForeignKey(&quot;FkBackToC&quot;);
+
+        x.Property(m =&gt; m.FkToD)
+            .HasConversion(
+                id =&gt; id.Value, // how to convert ID type to simple value, EFC can understand
+                value =&gt; DId.FromGuid(value)); // how to convert simple EFC value to strong ID.
+
+        x.HasOne&lt;EntityD&gt;()
+            .WithMany()
+            .HasForeignKey(y =&gt; y.FkToD);
+    });
+}
+</code></pre>
+<p>I will take out various parts of this configuration and explain them.</p>
+<pre><code class="line-numbers language-csharp">mBuilder.Entity&lt;EntityC&gt;().HasKey(x =&gt; x.Id);
+mBuilder.Entity&lt;EntityD&gt;().HasKey(x =&gt; x.Id);
+</code></pre>
+<p>Define the primary keys for both entities.</p>
+<pre><code class="line-numbers language-csharp">mBuilder.Entity&lt;EntityD&gt;() 
+        .Property(m =&gt; m.Id)
+        .HasConversion(
+            id =&gt; id.Value, 
+            value =&gt; DId.FromGuid(value));
+</code></pre>
+<p>This is to define the conversion from DId to Guid, and back. It's the same as slide 9.<br />
+Line 1: Access the EntityTypeBuilder for EntityD.<br />
+Line 2: Configure the property <code>Id</code>.<br />
+Line 3: Define the conversion.<br />
+Line 4: How to convert from DId to Guid.<br />
+Line 5: How to convert from Guid to DId.</p>
+<p>Then we need the join table:</p>
+<pre><code class="line-numbers language-csharp">mBuilder.Entity&lt;ReferenceFromCtoD&gt;(x =&gt;
+{
+    x.Property&lt;Guid&gt;(&quot;FkBackToC&quot;);
+    x.HasKey(&quot;FkBackToC&quot;, &quot;FkToD&quot;);
+    x.HasOne&lt;EntityC&gt;()
+        .WithMany(&quot;foreignKeysToD&quot;)
+        .HasForeignKey(&quot;FkBackToC&quot;);
+
+    x.Property(m =&gt; m.FkToD)
+        .HasConversion(
+            id =&gt; id.Value, // how to convert ID type to simple value, EFC can understand
+            value =&gt; DId.FromGuid(value)); // how to convert simple EFC value to strong ID.
+
+    x.HasOne&lt;EntityD&gt;()
+        .WithMany()
+        .HasForeignKey(y =&gt; y.FkToD);
+});
+</code></pre>
+<p>Line 1: Access the EntityTypeBuilder for ReferenceFromCtoD.<br />
+Line 3: Define the property <code>FkBackToC</code>. This is the foreign key back to EntityC. It is not initially on the class <code>ReferenceFromCtoD</code>, so it is added as a shadow property.<br />
+Line 4: Define the primary key for this join table. It is a composite key.<br />
+Line 5: We say ReferenceFromCtoD has a reference to EntityC.<br />
+Line 6: We say EntityC has many ReferenceFromCtoD. That's the list in EntityC.<br />
+Line 7: We define the foreign key, which points from <code>ReferenceFromCtoD</code> back to <code>EntityC</code>.<br />
+Line 9: Define the property <code>FkToD</code>. This is the foreign key to EntityD.<br />
+Line 10: Define the conversion from DId to Guid, and back. This was actually also done above.
+There is a way to define a conversion once, so you don't have to duplicate it. At some point I'll look into this.<br />
+Line 14: We say ReferenceFromCtoD has a reference to EntityD.<br />
+Line 15: We say EntityD has many ReferenceFromCtoD. This isn't present in the code, only the database.<br />
+Line 16: We define the foreign key, which points from <code>ReferenceFromCtoD</code> to <code>EntityD</code>.</p>
+<p>Again, because of non-nullability, we should get that on-delete cascade behaviour.<br />
+You can probably override as needed, see the previous slide.</p>
+<p>We get the following sql script:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityCs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityCs&quot; PRIMARY KEY
+);
+
+CREATE TABLE &quot;EntityDs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityDs&quot; PRIMARY KEY
+);
+
+CREATE TABLE &quot;ReferenceFromCtoD&quot; (
+    &quot;FkToD&quot; TEXT NOT NULL,
+    &quot;FkBackToC&quot; TEXT NOT NULL,
+    CONSTRAINT &quot;PK_ReferenceFromCtoD&quot; PRIMARY KEY (&quot;FkBackToC&quot;, &quot;FkToD&quot;),
+    CONSTRAINT &quot;FK_ReferenceFromCtoD_EntityCs_FkBackToC&quot; FOREIGN KEY (&quot;FkBackToC&quot;) REFERENCES &quot;EntityCs&quot; (&quot;Id&quot;) ON DELETE CASCADE,
+    CONSTRAINT &quot;FK_ReferenceFromCtoD_EntityDs_FkToD&quot; FOREIGN KEY (&quot;FkToD&quot;) REFERENCES &quot;EntityDs&quot; (&quot;Id&quot;) ON DELETE CASCADE
+);
+
+</code></pre>
+<p>The join table is there, with the two foreign keys, and the composite primary key.<br />
+And we get the <code>ON DELETE CASCADE</code> for both foreign keys. Again, this can be overwritten, you may not want cascade delete on the <code>FkToD</code> attribute.</p>
+<h3 id="test">Test</h3>
+<p>First success case:</p>
+<pre><code class="line-numbers language-csharp">public async Task ListOfStrongIdFkReferences()
+{
+    await using MyDbContext ctx = SetupContext();
+
+    EntityD d1 = new (DId.Create());
+    EntityD d2 = new (DId.Create());
+    EntityD d3 = new (DId.Create());
+
+    await ctx.EntityDs.AddRangeAsync(d1, d2, d3);
+    await ctx.SaveChangesAsync();
+    ctx.ChangeTracker.Clear();
+
+    EntityC c = new EntityC(Guid.NewGuid());
+    c.AddFk(d1.Id);
+    c.AddFk(d2.Id);
+    c.AddFk(d3.Id);
+
+    await SaveAndClearAsync(c, ctx);
+
+    EntityC retrieved = ctx.EntityCs
+        .Include(&quot;foreignKeysToD&quot;)
+        .Single(x =&gt; x.Id == c.Id);
+
+    Assert.NotEmpty(retrieved.foreignKeysToD);
+    Assert.Contains(retrieved.foreignKeysToD, x =&gt; x.FkToD.Value == d1.Id.Value);
+    Assert.Contains(retrieved.foreignKeysToD, x =&gt; x.FkToD.Value == d2.Id.Value);
+    Assert.Contains(retrieved.foreignKeysToD, x =&gt; x.FkToD.Value == d3.Id.Value);
+}
+</code></pre>
+<ul>
+<li>Create the DbContext.</li>
+<li>Create the &quot;D&quot; entities.</li>
+<li>Add to database and clear cache.</li>
+<li>Create the &quot;C&quot; entity, and add the foreign keys.</li>
+<li>Save the &quot;C&quot; entity, and clear the cache.</li>
+<li>Retrieve the &quot;C&quot; entity, notice again the <code>Include</code> statement.</li>
+<li>Assert stuff about the list of foreign keys.</li>
+</ul>
+<p>Then the failure case:</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task ListOfStrongIdFkReferences_FailWithInvalidFk()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityC c = new (Guid.NewGuid());
+    c.AddFk(DId.Create());
+
+    ctx.EntityCs.Add(c);
+
+    Action exp = () =&gt; ctx.SaveChanges();
+    Exception? exception = Record.Exception(exp);
+
+    Assert.NotNull(exception);
+}
+</code></pre>
+<p>Bla bla, assert that we get an exception, when trying to save EntityC, which references a non-existing EntityD.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="enums">Enums</h1><hr/>
+<p>Sometimes you need enums. EFC can handle this out of the box, so minimum configuration can be needed.<br />
+However, when we use enums, it just results in an integer in the database.<br />
+This is error prone, and it is recommended to use a string instead.<br />
+This is because the integer value of an enum can change, and then the database will be inconsistent.<br />
+The string value of an enum is more stable, and it is easier to understand when looking at the database.</p>
+<p>This case covers the conversion from enum to string, and back.</p>
+<h3 id="entity">Entity</h3>
+<pre><code class="line-numbers language-csharp">public class Entity1
+{
+    public Guid Id { get; }
+
+    internal MyEnum status = MyEnum.First;
+    
+    public Entity1(Guid id)
+    {
+        Id = id;
+    }
+    
+    public void SetStatus(MyEnum newStatus) =&gt; status = newStatus;
+}
+
+public enum MyEnum
+{
+    First = 1,
+    Second = 2
+}
+</code></pre>
+<p>The entity has a field of type <code>MyEnum</code>, which is an enum defined below it.<br />
+It is recommend to explicitly set the integer values of the enum, as shown here. This is because, you can then rearrange the order of enum values later, without breaking stuff.
+Or insert a new enum into the middle of the list, like this:</p>
+<pre><code class="line-numbers language-csharp">public enum MyEnum
+{
+    First = 1,
+    FirstAndAHalf = 3,
+    Second = 2
+}
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<p>The configuration:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureEnumWithConversion(EntityTypeBuilder&lt;Entity1&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+    
+    entityBuilder.Property&lt;MyEnum&gt;(&quot;status&quot;)
+        .HasConversion(
+            status =&gt; status.ToString(), 
+            value =&gt; (MyEnum)Enum.Parse(typeof(MyEnum), value)
+        );
+}
+</code></pre>
+<p>Define PK.</p>
+<p>Then access the property called &quot;status&quot;, of type <code>MyEnum</code>.<br />
+We define the conversion, from <code>MyEnum</code> to string, and back.\</p>
+<h3 id="test">Test</h3>
+<p>Eh, some day..</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="enumeration-class">Enumeration class</h1><hr/>
+<p>It is occasionally recommend to not use enum, but instead an enumeration class. This is because the integer value of an enum can change, and then the database will be inconsistent.
+The string value of an enumeration class is more stable, and it is easier to understand when looking at the database.</p>
+<p>Because of persistence, it does require a more elaborate enumeration class.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class MyStatusEnum
+{
+    public static MyStatusEnum First { get; } = new(&quot;First&quot;);
+    public static MyStatusEnum Second { get; } = new(&quot;Second&quot;);
+    public static MyStatusEnum Third { get; } = new(&quot;Third&quot;);
+    
+    private readonly string backingValue;
+    private MyStatusEnum(string value)
+        =&gt; backingValue = value;
+
+    private MyStatusEnum() {}
+    
+    private bool Equals(MyStatusEnum other)
+        =&gt; backingValue == other.backingValue;
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((MyStatusEnum)obj);
+    }
+
+    public override int GetHashCode()
+        =&gt; backingValue.GetHashCode();
+}
+</code></pre>
+<p>The first three properties are the enumaration values. They are static, and they are of the enumeration class type. They are initialized with a string value.</p>
+<p>We have two constructors, both private, so you can only create instances of this class through the static properties.</p>
+<p>Then there's some equality stuff making sure that the string value is used for comparison.</p>
+<p>The entity using this enumeration class looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class EntityH
+{
+    public Guid Id { get; }
+    internal MyStatusEnum status = MyStatusEnum.First;
+    
+    public EntityH(Guid id)
+    {
+        Id = id;
+    }
+
+    private EntityH() // EFC
+    {
+    }
+}
+</code></pre>
+<p>The usual Id, and then a field of type MyStatusEnum.</p>
+<p>You should probably add a mutator method for this status field.</p>
+<h3 id="configuration">Configuration</h3>
+<p>We apply the complex property type approach. See slide 11.
+The configuration looks like this:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureEnumAsClass(EntityTypeBuilder&lt;EntityH&gt; entityBuilder)
+{
+    entityBuilder.HasKey(x =&gt; x.Id);
+    entityBuilder.ComplexProperty&lt;MyStatusEnum&gt;(&quot;status&quot;,
+        propBuilder =&gt;
+        {
+            propBuilder.Property(&quot;backingValue&quot;)
+                .HasColumnName(&quot;status&quot;);
+        }
+    );
+}
+</code></pre>
+<p>Define PK.<br />
+Then access the property called &quot;status&quot;, of type <code>MyStatusEnum</code>. Say it is a complex type.<br />
+We say that MyStatusEnum has a field variable called &quot;backingValue&quot;, but in the database the column should just be called &quot;status&quot;.
+Rename this as needed. It is to avoid the column name &quot;status_backingValue&quot;, which is not very meaningful.</p>
+<h3 id="test">Test</h3>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task ClassAsEnum()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityH h = new(Guid.NewGuid());
+
+    await SaveAndClearAsync(h, ctx);
+
+    EntityH retrieved = ctx.EntityHs.Single(x =&gt; x.Id == h.Id);
+
+    Assert.Equal(MyStatusEnum.First, retrieved.status);
+}
+</code></pre>
+<p>Hmm, maybe a bit of a boring test, because &quot;First&quot; is the default value.<br />
+You should probably add a mutator method, so you can change the status value, and actually do that in the test.</p>
+<p>Man, I'm getting lazy and tired of writing this guide.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="single-nested-entity">Single Nested Entity</h1><hr/>
+<p>Within aggregates, one root entity can have a composition to another entity.</p>
+<p>This is a 1:1 relationship, where the root entity is the parent, and the nested entity is the child.</p>
+<h3 id="entities">Entities</h3>
+<p>We need two entities, one root and one nested.</p>
+<pre><code class="line-numbers language-csharp">public class EntityChildA
+{
+    public Guid Id { get; }
+    
+    public EntityChildA(Guid id)
+    {
+        Id = id;
+    }
+}
+
+public class EntityRootA
+{
+    public Guid Id { get; }
+
+    internal EntityChildA child = null!;
+
+    public EntityRootA(Guid id)
+        =&gt; Id = id;
+
+    private EntityRootA() // EFC
+    {
+    }
+
+    public void SetChild(EntityChildA nestedEntity)
+        =&gt; child = nestedEntity;
+}
+</code></pre>
+<p>The first class, <code>EntityChildA</code>, is the nested entity. It has an Id, and a constructor.<br />
+The second class, <code>EntityRootA</code>, is the root entity. It has an Id, and a field of type <code>EntityChildA</code>.\</p>
+<p>This becomes a one to one relationship.</p>
+<h3 id="configuration">Configuration</h3>
+<p>We must configure the child entity, there is not much interesting there, just defining the primary key.<br />
+The interesting part is the root entity, where we define the composition.</p>
+<p>Here's the configuration:</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureSingleNestedEntity(
+    EntityTypeBuilder&lt;EntityChildA&gt; entityBuilderChild,
+    EntityTypeBuilder&lt;EntityRootA&gt; entityBuilderRoot)
+{
+    entityBuilderChild.HasKey(x =&gt; x.Id);
+    entityBuilderRoot.HasKey(x =&gt; x.Id);
+
+    entityBuilderRoot
+        .HasOne&lt;EntityChildA&gt;(&quot;child&quot;)
+        .WithOne()
+        .HasForeignKey&lt;EntityChildA&gt;(&quot;parentId&quot;)
+        .OnDelete(DeleteBehavior.Cascade);
+}
+</code></pre>
+<p>We define primary keys for both entities.<br />
+Then we define the composition.<br />
+Line 8: We use the entity builder for the EntityRootA.
+Line 9: We say EntityRootA has one of EntityChildA, and the field is called &quot;child&quot;.<br />
+Line 10: Then we say that EntityChildA has one of EntityRootA.<br />
+Line 11: We define the foreign key, which is a field on &quot;EntityRootA&quot;. It does not exist in code, so this becomes a shadow property.<br />
+Line 12: We also define that if the root entity is deleted, the child entity should also be deleted.</p>
+<p>The script generated looks like this, now.
+Notice the foreign key on the child, &quot;parentId&quot;, pointing to the parent.</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityRootAs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityRootAs&quot; PRIMARY KEY
+);
+
+
+CREATE TABLE &quot;EntityChildAs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityChildAs&quot; PRIMARY KEY,
+    &quot;parentId&quot; TEXT NULL,
+    CONSTRAINT &quot;FK_EntityChildAs_EntityRootAs_parentId&quot; FOREIGN KEY (&quot;parentId&quot;) REFERENCES &quot;EntityRootAs&quot; (&quot;Id&quot;) ON DELETE CASCADE
+);
+</code></pre>
+<h3 id="test">Test</h3>
+<p>To prove that this works, we write a test.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task SingleNestedEntity()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityRootA root = new(Guid.NewGuid());
+    EntityChildA child = new(Guid.NewGuid());
+    root.SetChild(child);
+
+    await SaveAndClearAsync(root, ctx);
+
+    EntityRootA retrievedRoot = ctx.EntityRootAs
+        .Include(&quot;child&quot;)
+        .Single(x =&gt; x.Id == root.Id);
+
+    Assert.NotNull(retrievedRoot.child);
+    Assert.Equal(child.Id, retrievedRoot.child.Id);
+}
+</code></pre>
+<ol>
+<li>Create the DbContext</li>
+<li>Create the root entity, parent</li>
+<li>Create the nested entity, child</li>
+<li>Set the nested entity on the root entity</li>
+<li>Save the root entity, clear the change tracker. Notice the child is also saved, as EFC saves an entire object graph.</li>
+<li>Retrieve the root entity, and include the child entity. Notice we have to explicitly include the child, by referencing the field variable by name. The child is not automatically loaded, because it is not configured as an <em>owned entity type</em>.</li>
+<li>Assert that the child is not null</li>
+<li>Assert that the Id of the child is the same as the Id of the child we created.</li>
+</ol>
+
+</div>
+<div class="tab">
+<hr/><h1 id="list-of-entities">List of Entities</h1><hr/>
+<p>Sometimes an entity has a list of other entities. The common example is Order having multiple OrderLines.</p>
+<h3 id="entities">Entities</h3>
+<p>We start with two entities</p>
+<pre><code class="line-numbers language-csharp">public class EntityChildB
+{
+    public Guid Id { get; }
+
+    public EntityChildB(Guid id)
+        =&gt; Id = id;
+}
+
+public class EntityRootB
+{
+    public Guid Id { get; }
+
+    internal List&lt;EntityChildB&gt; children = new();
+
+    public EntityRootB(Guid id)
+        =&gt; Id = id;
+    
+    public void AddChild(EntityChildB nestedEntity)
+        =&gt; children.Add(nestedEntity);
+}
+</code></pre>
+<p>First, the child entity, it's boring, just an Id.<br />
+Then the root entity, or parent, which has a list of EntityChildB.</p>
+<h3 id="configuration">Configuration</h3>
+<p>The end result will look very similar to the previous, but it is now a one-to-many, so the configuration is slightly different.</p>
+<pre><code class="line-numbers language-csharp">private void ConfigureListOfNestedEntities(
+    EntityTypeBuilder&lt;EntityChildB&gt; entityBuilderChild,
+    EntityTypeBuilder&lt;EntityRootB&gt; entityBuilderRoot)
+{
+    entityBuilderChild.HasKey(x =&gt; x.Id);
+    entityBuilderRoot.HasKey(x =&gt; x.Id);
+
+    entityBuilderRoot
+        .HasMany&lt;EntityChildB&gt;(&quot;children&quot;)
+        .WithOne()
+        .HasForeignKey(&quot;parentId&quot;)
+        .OnDelete(DeleteBehavior.Cascade);
+}
+</code></pre>
+<ol>
+<li>Define primary keys</li>
+<li>We use the entity builder for the root.</li>
+<li>We say the root &quot;HasMany&quot; children, of type EntityChildB. The field on the root is called &quot;children&quot;.</li>
+<li>We say that the child has one parent.</li>
+<li>We define the foreign key, &quot;parentId&quot;, this will automatically go onto the child as a shadow property</li>
+<li>And that it should cascade delete, so if the parent is deleted, all children are deleted.</li>
+</ol>
+<p>This is the sql script:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityRootBs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityRootBs&quot; PRIMARY KEY
+);
+
+CREATE TABLE &quot;EntityChildBs&quot; (
+    &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityChildBs&quot; PRIMARY KEY,
+    &quot;parentId&quot; TEXT NULL,
+    CONSTRAINT &quot;FK_EntityChildBs_EntityRootBs_parentId&quot; 
+        FOREIGN KEY (&quot;parentId&quot;) REFERENCES &quot;EntityRootBs&quot; (&quot;Id&quot;) 
+            ON DELETE CASCADE
+);
+</code></pre>
+<h3 id="test">Test</h3>
+<p>We create a test with a root and several children, and then verify all children are loaded correctly.</p>
+<pre><code class="line-numbers language-csharp">[Fact]
+public async Task MultipleNestedEntities()
+{
+    await using MyDbContext ctx = SetupContext();
+    EntityRootB root = new(Guid.NewGuid());
+    EntityChildB child1 = new(Guid.NewGuid());
+    EntityChildB child2 = new(Guid.NewGuid());
+    root.AddChild(child1);
+    root.AddChild(child2);
+
+    await SaveAndClearAsync(root, ctx);
+    
+    EntityRootB retrievedRoot = ctx.EntityRootBs
+        .Include(&quot;children&quot;)
+        .Single(x =&gt; x.Id == root.Id);
+    
+    Assert.NotEmpty(retrievedRoot.children);
+    Assert.Contains(retrievedRoot.children, x =&gt; x.Id == child1.Id);
+    Assert.Contains(retrievedRoot.children, x =&gt; x.Id == child2.Id);
+}
+</code></pre>
+<ol>
+<li>Create context</li>
+<li>Create the root entity</li>
+<li>Create two nested entities</li>
+<li>Save the root, along with children. EFC saves an entire object graph.</li>
+<li>Retrieve the root, and verify that the children are there.</li>
+</ol>
+
+</div>
+<div class="tab">
+<hr/><h1 id="list-of-primitives">List of Primitives.</h1><hr/>
+<p>A primitive is e.g. <code>int</code>, <code>string</code>, <code>bool</code>, etc.</p>
+<p>I will probably recommend wrapping these in a wrapper, similar to value objects.</p>
+<p>An alternative is to look here: <a href="https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/whatsnew#primitive-collection-properties">https://learn.microsoft.com/en-us/ef/core/what-is-new/ef-core-8.0/whatsnew#primitive-collection-properties</a></p>
+
+</div>
+
+
+
+        
+        <div style="overflow:auto; padding-bottom: 10px">
+            <hr/>
+            <div style="float:right;">
+                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>
