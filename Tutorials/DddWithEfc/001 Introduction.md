@@ -95,3 +95,5 @@ Slides:
 21. List of strongly typed ids (wrapper og conversion)
 22. Enums
 23. Enumeration classes
+24. Single nested entity
+24. List of entities.
