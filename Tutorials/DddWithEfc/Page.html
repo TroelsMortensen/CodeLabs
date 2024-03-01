@@ -21,9 +21,9 @@
 <li class="step" onclick="setTab(2)">3 Init DbContext</li>
 <li class="step" onclick="setTab(3)">4 Design Time Factory Class</li>
 <li class="step" onclick="setTab(4)">5 Test strategies</li>
-<li class="step" onclick="setTab(5)">6 Primary keys and constructors</li>
-<li class="step" onclick="setTab(6)">7 Private Constructor</li>
-<li class="step" onclick="setTab(7)">8 Test helper methods</li>
+<li class="step" onclick="setTab(5)">6 Test helper methods</li>
+<li class="step" onclick="setTab(6)">7 Primary keys and constructors</li>
+<li class="step" onclick="setTab(7)">8 Private Constructor</li>
 <li class="step" onclick="setTab(8)">9 Configuring Guid Primary Key</li>
 <li class="step" onclick="setTab(9)">10 Configuring Strongly Typed PK</li>
 <li class="step" onclick="setTab(10)">11 Primitive Field Variables</li>
@@ -97,7 +97,7 @@ And we grab the property on the <code>Guest</code> called <code>Username</code>.
 Finally we say that this property must have a value, it is required.</p>
 <p>So, this chain of method calls is &quot;fluent&quot;.</p>
 <p>There are different &quot;builders&quot; in EFC, we will use different ones, for different purposes.<br />
-If we wish to configure an entity, we use a ModelBuilder.<br />
+If we wish to configure an entity, we use a EntityTypeBuilder.<br />
 If we wish to configure a property, we use a PropertyBuilder.<br />
 And so on. This is somewhat &quot;automatic&quot;. You will see.</p>
 <p>Often configuration code (or generally fluent code, like LINQ) will be formatted so that each dot &quot;.&quot; starts on a new line,
@@ -116,26 +116,26 @@ I realize this is unfortunate, if you use this guide as a reference, and you are
 Eventually I may rework this guide, so that each case is self-contained. But for now, I will just refer to the first time, and then be brief the next times.</p>
 <h2 id="table-of-content">Table of content</h2>
 <p>Slides:
-6. Constructor
-7. Test helper methods
-8. Guid primary key
-9. Strongly typed primary key
-10. Primitive field variables
-10. Value object overview
-11. Non-nullable single-valued value object
-12. Nullable single-valued value object
-13. Non-nullable multi-valued value object
-14. Nullable multi-valued value object
-15. Non-nullable nested value objects
-16. Nullable nested value objects
-17. List of Value objects
-18. Single foreign key with Guid
-19. Single foreign key with strongly typed id
-20. List of Guid foreign keys (wrapper med conversion)
-21. List of strongly typed ids (wrapper og conversion)
-22. Enums
-23. Enumeration classes
-24. Single nested entity
+6. Constructor<br />
+7. Test helper methods<br />
+8. Guid primary key<br />
+9. Strongly typed primary key<br />
+10. Primitive field variables<br />
+10. Value object overview<br />
+11. Non-nullable single-valued value object<br />
+12. Nullable single-valued value object<br />
+13. Non-nullable multi-valued value object<br />
+14. Nullable multi-valued value object<br />
+15. Non-nullable nested value objects<br />
+16. Nullable nested value objects<br />
+17. List of Value objects<br />
+18. Single foreign key with Guid<br />
+19. Single foreign key with strongly typed id<br />
+20. List of Guid foreign keys (wrapper med conversion)<br />
+21. List of strongly typed ids (wrapper og conversion)<br />
+22. Enums<br />
+23. Enumeration classes<br />
+24. Single nested entity<br />
 24. List of entities.</p>
 
 </div>
@@ -193,11 +193,12 @@ It must be injected from the outside because of testing reasons. You will see la
 <div class="tab">
 <hr/><h1 id="design-time-context-factory">Design Time Context Factory</h1><hr/>
 <p><a href="https://learn.microsoft.com/en-us/ef/core/cli/dbcontext-creation?tabs=dotnet-core-cli">Design time</a>
-refers to the time where e.g. a migrations is created.<br />
+refers to the time where e.g. a migration is created.<br />
 Here, an instance of our DbContext will be created.</p>
 <p>We do have a problem though, because our DbContext requires an argument for its constructor.<br />
 Usually this is provided in the Program.cs class, upon start up, so generally not a problem.<br />
-But when just generating the database or verifying a configuration, or testing whether a DbContext can actually be created,
+But when just generating the database or verifying a configuration,
+or testing whether a DbContext can actually be created, or verifying the output sql looks right,
 we need some way to provide this argument.</p>
 <p>We do this with a DesignTimeContextFactory.</p>
 <p>At the same location as your DbContext, create the following class:</p>
@@ -217,24 +218,25 @@ You may also change the data source variable, if you want to call your database 
 <p>When trying to e.g. create a migration, or verifying a configuration, EFC will look for this class, and use it to instantiate a DbContext with the correct parameters.</p>
 <h2 id="test">Test</h2>
 <p>To test this, open the terminal, navigate into the project, and type:</p>
-<pre><code>dotnet ef dbcontext script
+<pre><code class="line-numbers language-shell">dotnet ef dbcontext script
 </code></pre>
 <p>Like this:</p>
 <p><img src="Resources/RunTerminalCommand.png" alt="img.png" /></p>
 <p>We will use this command over and over, to verify our configurations.</p>
 <p>The point of that command is to see what SQL script is generated, based on your current DbContext, if we were to create a migration, e.g. build the database.</p>
-<p>It will fail. That's fine, this is what we currently hope for.<br />
+<p>It will fail. That's fine, this is what we currently expect.<br />
 It should fail with an error message about one of your entities needing a primary key:</p>
 <p>&quot;... The exception 'The entity type 'VeaEvent' requires a primary key to be defined ...&quot;</p>
 <p>If you get this message, all is good for now.</p>
 <h4 id="wrong-failure">Wrong failure</h4>
 <p>If you get a message about not being able to instantiate/activate the DbContext, you have failed incorrectly:</p>
 <p>&quot;Unable to resolve service for type 'Microsoft.EntityFrameworkCore.DbContextOptions' while attempting to activate 'SqliteDataWrite.SqliteWriteDbContext'&quot;</p>
+<p>This is because EFC cannot find your IDesignTimeDbContextFactory.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="testing-strategies">Testing Strategies</h1><hr/>
-<p>I will for each case provide one or two test cases, to show how to test the configuration.</p>
+<p>I will for each configuration case provide one or two test cases, to show how to test the configuration.</p>
 <p>This is generally not as thorough as one might wish. You will need to define success and failure cases.</p>
 <ul>
 <li>How do you prove it works as expected?</li>
@@ -243,61 +245,6 @@ It should fail with an error message about one of your entities needing a primar
 <li>What happens if one entity is deleted? Are associated entities deleted as well? Should they be?</li>
 <li>Is the ON DELETE behaviour &quot;set null&quot; or &quot;cascade&quot; or &quot;restrict&quot; or &quot;no action&quot;? And does this actually work?</li>
 </ul>
-
-</div>
-<div class="tab">
-<hr/><h1 id="define-primary-keys-and-constructors">Define Primary Keys and Constructors</h1><hr/>
-<p>As mentioned on the previous slide, you hopefully get an error about an entity missing a primary key.<br />
-All entities must have a primary key defined. And all entities must have a constructor, which EFC can use.<br />
-Initially you will just set this up on your aggregates, until EFC does not complain.</p>
-<p>So, this is the next step.</p>
-<p>You will have to work your way step by step through the entities, until you get a script printed in the console.<br />
-Then as you move through configurations, you may get back to this error over and over, for each entity.<br />
-Generally, I think EFC is decently good at outputting informative error messages. Get used to reading these.</p>
-<p>First, a bit of structure.</p>
-<h2 id="preparing-for-configuration">Preparing for configuration</h2>
-<p>We start with the first entity it is complaining about, in my case the <code>VeaEvent</code>, probably because it's the top DbSet defined.</p>
-<p>We configure everything from inside the <code>OnModelCreating()</code> method.
-We are going to have <em>a lot</em> of configuration, so we start out with an initial structure<br />
-You have (at least) two approaches:</p>
-<ul>
-<li>Configuration method per entity, it's simpler, we go with this.</li>
-<li>Auto-discoverable configuration class per entity. A bit more complex, generally better.
-You must create an EntityConfiguration class, <a href="https://www.entityframeworktutorial.net/code-first/move-configurations-to-seperate-class-in-code-first.aspx">see here</a>.</li>
-</ul>
-<p>You can pick either approach. I will go with the first.<br />
-Expand your code in the DbContext with a new method for configuring this first entity:</p>
-<pre><code class="line-numbers language-chsparp">protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    ConfigureVeaEvent(modelBuilder.Entity&lt;VeaEvent&gt;());
-}
-
-private static void ConfigureVeaEvent(EntityTypeBuilder&lt;VeaEvent&gt; entityBuilder)
-{
-    throw new NotImplementedException();
-}
-</code></pre>
-<p>You will create more helper configuration methods, all called from the <code>OnModelCreating()</code>.</p>
-
-</div>
-<div class="tab">
-<hr/><h1 id="private-constructor">Private Constructor</h1><hr/>
-<p>Though, initially EFC will complain about a missing primary key, it will then complain about a missing constructor.\</p>
-<p>But the latter is easier to fix, so we start there.</p>
-<p>Every entity, which EFC must manage, must have a constructor it can use, when materializing entities from the database back to C#.</p>
-<p>Such a constructor must either match all relevant properties, which won't do for us, because DDD DM, <strong>or</strong>,
-it must be a no-argument constructor:</p>
-<pre><code class="line-numbers language-csharp">private MyEntity(){}
-</code></pre>
-<p>Like this. EFC uses a lot of reflection, so it is not a problem, that it is private. Now the object can be instantiated, and relevant properties are set through reflection.<br />
-We must add a private constructor to every EFC-entity, i.e. every kind of class EFC will manage, including value objects.<br />
-EFC deals only with &quot;entity&quot;, everything is an entity. DDD is more granular, with aggregate, entity, value object.<br />
-I hope I can keep this straight, and not confusing.</p>
-<p>The point is, when EFC complains about a missing constructor, you will add a boring, private, no-args constructor.</p>
-<p>We find this case of EFC seeping into our sacred DM acceptable, as we do not change the public API of the entity.
-We are not using anything EFC specific, like attributes [Required]. We are not changing behaviour, or anything of relevance.<br />
-It's just a tiny detail, we must remember, or be reminded by EFC.</p>
-<p>So, go ahead and add a private constructor to the first entity.</p>
 
 </div>
 <div class="tab">
@@ -335,9 +282,9 @@ Line 5: Create new instance of DbContext.<br />
 Line 6: Delete any existing database.<br />
 Line 7: Create clean database.</p>
 <p>This method is called at the beginning of each test, like this:</p>
-<pre><code class="line-numbers language-chspar">await using MyDbContext ctx = SetupContext();
+<pre><code class="line-numbers language-csharp">await using MyDbContext ctx = SetupContext();
 </code></pre>
-<p>The we have a fresh DbContext, with a clean database.</p>
+<p>Then we have a fresh DbContext, with a clean database.</p>
 <h3 id="save-and-clear">Save and Clear</h3>
 <p>The next helper method covers saving an entity, and clearing the ChangeTracker (the cache).</p>
 <pre><code class="line-numbers language-csharp">private static async Task SaveAndClearAsync&lt;T&gt;(T entity, MyDbContext context) 
@@ -363,6 +310,63 @@ Line 6: Clear the ChangeTracker, i.e. cache.</p>
 
 </div>
 <div class="tab">
+<hr/><h1 id="define-primary-keys-and-constructors">Define Primary Keys and Constructors</h1><hr/>
+<p>As mentioned on a previous slide, you hopefully get an error about an entity missing a primary key.<br />
+All entities must have a primary key defined. And all entities must have a constructor, which EFC can use.<br />
+Initially you will just set this up on your aggregates, until EFC does not complain.</p>
+<p>Then you can start configuration, and then as you tell EFC about your other entities, it will again complain about primary keys and constructors.</p>
+<p>So, this is the next step.</p>
+<p>You will have to work your way step by step through the entities, until you get a script printed in the console.<br />
+Then as you move through configurations, you may get back to this error over and over, for each entity.<br />
+Generally, I think EFC is decently good at outputting informative error messages. Get used to reading these.</p>
+<p>First, a bit of structure.</p>
+<h2 id="preparing-for-configuration">Preparing for configuration</h2>
+<p>We start with the first entity it is complaining about, in my case the <code>VeaEvent</code>, probably because it's the top DbSet defined.</p>
+<p>We configure everything from inside the <code>OnModelCreating()</code> method.
+We are going to have <em>a lot</em> of configuration, so we start out with an initial structure.<br />
+You have (at least) two approaches:</p>
+<ul>
+<li>Configuration method per entity, it's simpler, we go with this, it's simpler for the guide, but the below approach is better. You should do that.</li>
+<li>Auto-discoverable configuration class per entity. A bit more complex, generally better.
+You must create an EntityConfiguration class, <a href="https://www.entityframeworktutorial.net/code-first/move-configurations-to-seperate-class-in-code-first.aspx">see here</a>. You should go with this.</li>
+</ul>
+<p>Create an EntityConfiguration class for your first entity.</p>
+<p>I will simplify and use the other approach, and expand my code in the DbContext with a new method for configuring this first entity:</p>
+<pre><code class="line-numbers language-chsparp">protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    ConfigureVeaEvent(modelBuilder.Entity&lt;VeaEvent&gt;());
+}
+
+private static void ConfigureVeaEvent(EntityTypeBuilder&lt;VeaEvent&gt; entityBuilder)
+{
+    throw new NotImplementedException();
+}
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="private-constructor">Private Constructor</h1><hr/>
+<p>Initially EFC will complain about a missing primary key, and it will then complain about a missing constructor.</p>
+<p>But the latter is easier to fix, so we start there.</p>
+<p>Every entity, which EFC must manage, must have a constructor it can use, when materializing entities from the database back to C#.</p>
+<p>Such a constructor must either match all relevant properties, which generally won't do for us, because DDD DM, <strong>or</strong>,
+it must be a no-argument constructor:</p>
+<pre><code class="line-numbers language-csharp">private MyEntity(){}
+</code></pre>
+<p>Like this. This is what we will do, whenever EFC complains.<br />
+EFC uses a lot of reflection, so it is not a problem, that it is private. Now the object can be instantiated, and relevant properties are set through reflection.</p>
+<p>We must add a private constructor to almost every EFC-entity, i.e. every kind of class EFC will manage, often including value objects. Though, you can hold off until EFC actually complains.<br />
+EFC deals only with &quot;entity&quot;, everything is an entity. DDD is more granular, with aggregate, entity, value object.<br />
+I hope I can keep this straight, and not confusing.</p>
+<p>The point is, when EFC complains about a missing constructor, you will add a boring, private, no-args constructor.</p>
+<p>We find this case of EFC-needs seeping into our sacred DM acceptable, as we do not change the public API of the entity.
+We are not using anything EFC specific, like attributes [Required]. We are not changing behaviour, or anything of relevance.<br />
+It's just a tiny detail, we must remember, or be reminded by EFC.</p>
+<p>If we go away from EFC, we don't actually have to rework the DM again.</p>
+<p>So, go ahead and add a private constructor to the first entity.</p>
+
+</div>
+<div class="tab">
 <hr/><h1 id="configuring-guid-primary-key">Configuring Guid Primary Key</h1><hr/>
 <p>This case covers the usage of Guids as primary key for an entity.</p>
 <p>EFC uses convention to discover primary keys, so if you follow these, it's easy.<br />
@@ -377,9 +381,9 @@ Like this:</p>
 <pre><code class="line-numbers language-csharp">public Guid Id { get; }
 </code></pre>
 <p>You should not have a <code>private set;</code> included, as the Id should never be changed after the entity has been instantiated.
-By leaving out a setter, the Id can only be set upon construction, i.e. from the constructor.</p>
+By leaving out a setter, the Id can only be set upon construction, i.e. from the constructor. Or through reflection.</p>
 <p>This here is the generic looking entity, we will configure. It is minimal, stripped bare. You may have a factory method, that's irrelevant.</p>
-<pre><code class="line-numbers language-chsparp">public class EntityL
+<pre><code class="line-numbers language-csharp">public class EntityL
 {
     public Guid Id { get; }
 
@@ -414,7 +418,7 @@ private void ConfigureEntityL(EntityTypeBuilder&lt;EntityL&gt; entityBuilder)
 </code></pre>
 <p>We have the DbSet defined.<br />
 The <code>OnModelCreating</code> calls our configure method with an argument <code>mBuilder.Entity&lt;EntityL&gt;()</code>.<br />
-This argument gives ss an EntityTypeBuilder, which is a class used to configure a specific entity.</p>
+This argument gives us an EntityTypeBuilder, which is a class used to configure a specific entity.</p>
 <p>In our configure method, we just call <code>HasKey</code>, with a lambda expression pointing to the specific Id property.<br />
 This means, we are creating a configuration for the entity of type <code>EntityL</code>, saying it has a primary key,
 and that pk is the <code>Id</code> property on the class.</p>
@@ -510,18 +514,20 @@ A private constructor for EFC to use.</p>
 <p>Line 3: We say EntityM has a PK, and it is the Id property of EntityM.</p>
 <p>But then, it is a strong type, which EFC cannot just save.
 What database type matches MId?<br />
-So, we must define how to convert MId to something the database can understand. And how to convert back again to MId.</p>
+So, we must define how to convert MId to something the database can understand.
+And how to convert back again to MId.</p>
 <p>Line 6: We access the property <code>Id</code>,
 which gives us a <code>PropertyBuilder</code>, i.e. a class,
 which can configure specific properties, in this case <code>Id</code>.<br />
-Line 7: We say that this property has a conversion, as mentioned just above. C# uses <code>MId</code>, the database uses <code>TEXT</code>. We must define how to convert back and to.
+Line 7: We say that this property has a conversion, as mentioned just above.
+C# uses <code>MId</code>, the database uses <code>TEXT</code>. We must define how to convert back and forth.
 This is done with two lambda expressions:</p>
 <ul>
 <li>Line 8 is how to get the database value from <code>MId</code>, and here we just extract the Guid from the <code>MId</code>.</li>
 <li>Line 9 is how to convert db-value, i.e. <code>TEXT</code>, back to <code>MId</code>, and we do this from our static method, which takes a Guid, and wraps it into an <code>MId</code>.</li>
 </ul>
 <p>Yes, but what about the Guid -&gt; TEXT step? Luckily EFC can manage this for us, without explicit configuration.</p>
-<p>You have a Result on <code>FromGuid</code>? I guess the line is then something like <code>MId.FromGuid(dbValue).Value</code>.</p>
+<p>You have a Result on <code>FromGuid</code>? I guess line 9 is then something like <code>MId.FromGuid(dbValue).Value</code>.</p>
 <h3 id="the-test">The Test</h3>
 <p>The following test illustrates usage, and proves correctness:</p>
 <pre><code class="line-numbers language-csharp">[Fact]
@@ -546,6 +552,7 @@ public async Task StrongIdAsPk()
 <li>Retrieve entity</li>
 <li>Assert that it exists</li>
 </ol>
+<p>Notice I <em>don't</em> need to access the internal value of MId, e.g. <code>x.Id.Value.Equals(..</code>. This is because we have defined the conversion. This is nice.</p>
 
 </div>
 <div class="tab">
@@ -655,7 +662,7 @@ Like this:</p>
 </code></pre>
 <p>Here, we say that the value of this property <em>may</em> be null.</p>
 <p>Non-nullable is then without this question-mark, indicating the value must not be null.<br />
-This is the case, we are dealing with here.</p>
+This is the case, we are dealing with here. EFC will look at this &quot;?&quot; regarding not null constraints in the database.</p>
 <h3 id="entity">Entity</h3>
 <p>Here, then, is my entity:</p>
 <pre><code class="line-numbers language-csharp">public class EntityN
@@ -759,7 +766,9 @@ public async Task NonNullableSinglePrimitiveValuedValueObject_FailWhenNull()
 <p>This case covers how to configure a <em>nullable</em> property value object, containing a single value.</p>
 <p>Now, the &quot;complex type&quot; feature used on the previous slide does not support nullability. Hopefully in EFC9.</p>
 <p>Instead, we have to say the value object is an entity,
-and configure it like that. It looks pretty similar. But feels like a nasty hack, because the value object will actually become an entity, with an id, in the database.</p>
+and configure it like that. It looks pretty similar.
+But feels like a nasty hack, because the value object will actually become an entity,
+with an id, in the database. It's a bit funky. We don't have to think too much about this yet.</p>
 <h3 id="value-object">Value Object</h3>
 <p>First, the value object. Basically the same as the previous case.<br />
 I'm just keeping cases cleanly separated, so I'm using a new letter suffix.</p>
@@ -810,16 +819,16 @@ I'm just keeping cases cleanly separated, so I'm using a new letter suffix.</p>
 Line 5: Use the entity type builder for EntityO.<br />
 Line 6: Say that EntityO <em>owns a single other entity</em>, of type ValueObjectO, and the property (field) on EntityO is called &quot;someValue&quot;.
 This basically says ValueObjectO should be an entity in itself. When it is a single value, it can still be flattened onto the EntityO.<br />
-If we look at the script generated, the table for EntityO is defined like this:</p>
+Line 7: Here we extract the <code>Value</code> of the value object.<br />
+Line 8: Notice that the table gets a column named by combining the property/field name, with the property name on the value object: &quot;someValue_Value&quot;.
+The last line here is not strictly necessary, but we may want to rename the column to something more meaningful.</p>
+<p>Again, the value object becomes a part of the entity, i.e. the same table.</p>
+<p>If we look at the script generated, the table for EntityO is defined like this:</p>
 <pre><code class="line-numbers language-sql">CREATE TABLE &quot;EntityOs&quot; (
     &quot;Id&quot; TEXT NOT NULL CONSTRAINT &quot;PK_EntityOs&quot; PRIMARY KEY,
     &quot;someValue_Value&quot; TEXT NULL
 );
 </code></pre>
-<p>Line 7: Here we extract the <code>Value</code> of the value object.<br />
-Line 8: Notice that the table gets a column named by combining the property/field name, with the property name on the value object: &quot;someValue_Value&quot;.
-The last line here is not strictly necessary, but we may want to rename the column to something more meaningful.</p>
-<p>Again, the value object becomes a part of the entity, i.e. the same table.</p>
 <h3 id="test">Test</h3>
 <p>The first test shows, that we can add the value object to the entity, save and retrieve it again.</p>
 <pre><code class="line-numbers language-csharp">[Fact]

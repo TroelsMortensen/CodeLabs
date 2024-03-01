@@ -37,7 +37,7 @@ public string? MyProperty { get; set; }
 Here, we say that the value of this property _may_ be null.
 
 Non-nullable is then without this question-mark, indicating the value must not be null.\
-This is the case, we are dealing with here.
+This is the case, we are dealing with here. EFC will look at this "?" regarding not null constraints in the database.
 
 ### Entity
 Here, then, is my entity:

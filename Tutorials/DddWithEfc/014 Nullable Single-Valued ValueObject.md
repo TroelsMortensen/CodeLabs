@@ -5,7 +5,9 @@ This case covers how to configure a _nullable_ property value object, containing
 Now, the "complex type" feature used on the previous slide does not support nullability. Hopefully in EFC9.
 
 Instead, we have to say the value object is an entity, 
-and configure it like that. It looks pretty similar. But feels like a nasty hack, because the value object will actually become an entity, with an id, in the database.
+and configure it like that. It looks pretty similar. 
+But feels like a nasty hack, because the value object will actually become an entity, 
+with an id, in the database. It's a bit funky. We don't have to think too much about this yet.
 
 ### Value Object
 First, the value object. Basically the same as the previous case.\
@@ -69,6 +71,12 @@ Then...\
 Line 5: Use the entity type builder for EntityO.\
 Line 6: Say that EntityO _owns a single other entity_, of type ValueObjectO, and the property (field) on EntityO is called "someValue".
 This basically says ValueObjectO should be an entity in itself. When it is a single value, it can still be flattened onto the EntityO.\
+Line 7: Here we extract the `Value` of the value object.\
+Line 8: Notice that the table gets a column named by combining the property/field name, with the property name on the value object: "someValue_Value".
+The last line here is not strictly necessary, but we may want to rename the column to something more meaningful.
+
+Again, the value object becomes a part of the entity, i.e. the same table.
+
 If we look at the script generated, the table for EntityO is defined like this:
 
 ```sql
@@ -77,11 +85,6 @@ CREATE TABLE "EntityOs" (
     "someValue_Value" TEXT NULL
 );
 ```
-Line 7: Here we extract the `Value` of the value object.\
-Line 8: Notice that the table gets a column named by combining the property/field name, with the property name on the value object: "someValue_Value".
-The last line here is not strictly necessary, but we may want to rename the column to something more meaningful.
-
-Again, the value object becomes a part of the entity, i.e. the same table.
 
 ### Test
 The first test shows, that we can add the value object to the entity, save and retrieve it again.
