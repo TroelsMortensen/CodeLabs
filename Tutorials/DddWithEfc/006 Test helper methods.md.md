@@ -38,11 +38,11 @@ Line 7: Create clean database.
 
 This method is called at the beginning of each test, like this:
 
-```chspar
+```csharp
 await using MyDbContext ctx = SetupContext();
 ```
 
-The we have a fresh DbContext, with a clean database.
+Then we have a fresh DbContext, with a clean database.
 
 ### Save and Clear
 The next helper method covers saving an entity, and clearing the ChangeTracker (the cache).

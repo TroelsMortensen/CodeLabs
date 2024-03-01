@@ -21,11 +21,11 @@ public Guid Id { get; }
 ```
 
 You should not have a `private set;` included, as the Id should never be changed after the entity has been instantiated.
-By leaving out a setter, the Id can only be set upon construction, i.e. from the constructor.
+By leaving out a setter, the Id can only be set upon construction, i.e. from the constructor. Or through reflection.
 
 This here is the generic looking entity, we will configure. It is minimal, stripped bare. You may have a factory method, that's irrelevant.
 
-```chsparp
+```csharp
 public class EntityL
 {
     public Guid Id { get; }
@@ -66,7 +66,7 @@ private void ConfigureEntityL(EntityTypeBuilder<EntityL> entityBuilder)
 
 We have the DbSet defined.\
 The `OnModelCreating` calls our configure method with an argument `mBuilder.Entity<EntityL>()`.\
-This argument gives ss an EntityTypeBuilder, which is a class used to configure a specific entity.
+This argument gives us an EntityTypeBuilder, which is a class used to configure a specific entity.
 
 In our configure method, we just call `HasKey`, with a lambda expression pointing to the specific Id property.\
 This means, we are creating a configuration for the entity of type `EntityL`, saying it has a primary key, 

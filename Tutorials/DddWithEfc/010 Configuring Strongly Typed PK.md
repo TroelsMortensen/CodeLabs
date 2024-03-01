@@ -88,19 +88,21 @@ Line 3: We say EntityM has a PK, and it is the Id property of EntityM.
 
 But then, it is a strong type, which EFC cannot just save. 
 What database type matches MId?\
-So, we must define how to convert MId to something the database can understand. And how to convert back again to MId.
+So, we must define how to convert MId to something the database can understand. 
+And how to convert back again to MId.
 
 Line 6: We access the property `Id`, 
 which gives us a `PropertyBuilder`, i.e. a class, 
 which can configure specific properties, in this case `Id`.\
-Line 7: We say that this property has a conversion, as mentioned just above. C# uses `MId`, the database uses `TEXT`. We must define how to convert back and to.
+Line 7: We say that this property has a conversion, as mentioned just above. 
+C# uses `MId`, the database uses `TEXT`. We must define how to convert back and forth.
 This is done with two lambda expressions:
 * Line 8 is how to get the database value from `MId`, and here we just extract the Guid from the `MId`.
 * Line 9 is how to convert db-value, i.e. `TEXT`, back to `MId`, and we do this from our static method, which takes a Guid, and wraps it into an `MId`.
 
 Yes, but what about the Guid -> TEXT step? Luckily EFC can manage this for us, without explicit configuration.
 
-You have a Result on `FromGuid`? I guess the line is then something like `MId.FromGuid(dbValue).Value`.
+You have a Result on `FromGuid`? I guess line 9 is then something like `MId.FromGuid(dbValue).Value`.
 
 
 ### The Test
@@ -128,3 +130,5 @@ public async Task StrongIdAsPk()
 4) Save and clear
 5) Retrieve entity
 6) Assert that it exists
+
+Notice I _don't_ need to access the internal value of MId, e.g. `x.Id.Value.Equals(..`. This is because we have defined the conversion. This is nice.
