@@ -1,6 +1,6 @@
 # Testing Strategies
 
-I will for each case provide one or two test cases, to show how to test the configuration.
+I will for each configuration case provide one or two test cases, to show how to test the configuration.
 
 This is generally not as thorough as one might wish. You will need to define success and failure cases.
 

@@ -50,7 +50,7 @@ Finally we say that this property must have a value, it is required.
 So, this chain of method calls is "fluent". 
 
 There are different "builders" in EFC, we will use different ones, for different purposes.\
-If we wish to configure an entity, we use a ModelBuilder.\
+If we wish to configure an entity, we use a EntityTypeBuilder.\
 If we wish to configure a property, we use a PropertyBuilder.\
 And so on. This is somewhat "automatic". You will see.
 
@@ -76,24 +76,24 @@ Eventually I may rework this guide, so that each case is self-contained. But for
 
 ## Table of content
 Slides:
-6. Constructor
-7. Test helper methods
-8. Guid primary key
-9. Strongly typed primary key
-10. Primitive field variables
-10. Value object overview
-11. Non-nullable single-valued value object
-12. Nullable single-valued value object
-13. Non-nullable multi-valued value object
-14. Nullable multi-valued value object
-15. Non-nullable nested value objects
-16. Nullable nested value objects
-17. List of Value objects
-18. Single foreign key with Guid
-19. Single foreign key with strongly typed id
-20. List of Guid foreign keys (wrapper med conversion)
-21. List of strongly typed ids (wrapper og conversion)
-22. Enums
-23. Enumeration classes
-24. Single nested entity
+6. Constructor\
+7. Test helper methods\
+8. Guid primary key\
+9. Strongly typed primary key\
+10. Primitive field variables\
+10. Value object overview\
+11. Non-nullable single-valued value object\
+12. Nullable single-valued value object\
+13. Non-nullable multi-valued value object\
+14. Nullable multi-valued value object\
+15. Non-nullable nested value objects\
+16. Nullable nested value objects\
+17. List of Value objects\
+18. Single foreign key with Guid\
+19. Single foreign key with strongly typed id\
+20. List of Guid foreign keys (wrapper med conversion)\
+21. List of strongly typed ids (wrapper og conversion)\
+22. Enums\
+23. Enumeration classes\
+24. Single nested entity\
 24. List of entities.

@@ -1,8 +1,10 @@
 # Define Primary Keys and Constructors
 
-As mentioned on the previous slide, you hopefully get an error about an entity missing a primary key.\
+As mentioned on a previous slide, you hopefully get an error about an entity missing a primary key.\
 All entities must have a primary key defined. And all entities must have a constructor, which EFC can use.\
 Initially you will just set this up on your aggregates, until EFC does not complain.
+
+Then you can start configuration, and then as you tell EFC about your other entities, it will again complain about primary keys and constructors.
 
 So, this is the next step.
 
@@ -17,15 +19,16 @@ First, a bit of structure.
 We start with the first entity it is complaining about, in my case the `VeaEvent`, probably because it's the top DbSet defined.
 
 We configure everything from inside the `OnModelCreating()` method. 
-We are going to have _a lot_ of configuration, so we start out with an initial structure\
+We are going to have _a lot_ of configuration, so we start out with an initial structure.\
 You have (at least) two approaches:
 
-* Configuration method per entity, it's simpler, we go with this.
+* Configuration method per entity, it's simpler, we go with this, it's simpler for the guide, but the below approach is better. You should do that.
 * Auto-discoverable configuration class per entity. A bit more complex, generally better.
-You must create an EntityConfiguration class, [see here](https://www.entityframeworktutorial.net/code-first/move-configurations-to-seperate-class-in-code-first.aspx).
+You must create an EntityConfiguration class, [see here](https://www.entityframeworktutorial.net/code-first/move-configurations-to-seperate-class-in-code-first.aspx). You should go with this.
 
-You can pick either approach. I will go with the first.\
-Expand your code in the DbContext with a new method for configuring this first entity:
+Create an EntityConfiguration class for your first entity.
+
+I will simplify and use the other approach, and expand my code in the DbContext with a new method for configuring this first entity:
 
 ```chsparp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,5 +41,3 @@ private static void ConfigureVeaEvent(EntityTypeBuilder<VeaEvent> entityBuilder)
     throw new NotImplementedException();
 }
 ```
-
-You will create more helper configuration methods, all called from the `OnModelCreating()`.
