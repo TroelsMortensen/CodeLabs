@@ -15,12 +15,15 @@ namespace CodeLabsGenerator
             StringBuilder mainBuilder = new();
             InsertBasePageHtmlFromFile(basePagePath, mainBuilder);
             InsertStepsOverview(pathToMdSteps, mainBuilder);
+            InsertDropDownStepsOverview(pathToMdSteps, mainBuilder);
             InsertAllTabsFromMdFiles(pathToMdSteps, mainBuilder);
             AddLineNumberClassToCodeTag(mainBuilder);
             MoveLineHighlightingAttributes(mainBuilder);
             InsertNumberedRingSteps(mainBuilder);
             WriteFinalPageToFile(pathToMdSteps, mainBuilder);
         }
+
+
 
         private static void InsertNumberedRingSteps(StringBuilder mainBuilder)
         {
@@ -87,11 +90,27 @@ namespace CodeLabsGenerator
             mainBuilder.Replace("###STEPOVERVIEW###", sb.ToString());
         }
 
+        private static void InsertDropDownStepsOverview(string pathToMdSteps, StringBuilder mainBuilder)
+        {
+            var mdFiles = GetAndSortMdFiles(pathToMdSteps);
+
+            StringBuilder sb = new();
+            for (int i = 0; i < mdFiles.Count; i++)
+            {
+                string fileName = ExtractMdFileName(mdFiles[i]);
+                fileName = StripLeadingZeros(fileName);
+                // fileName = SurroundContentWithSpan(fileName);
+                sb.Append($"<span class=\"drop-down-step\" onclick=\"setTab({i})\">{fileName}</span>").Append('\n');
+            }
+
+            mainBuilder.Replace("###DROPDOWNSTEPOVERVIEW###", sb.ToString());
+        }
+        
         private static string SurroundContentWithSpan(string fileName)
         {
             var strings = fileName.Split(" ");
             return strings[0] +
-                   "<span class=\"step-content\">"
+                   " <span class=\"step-content\">"
                    + string.Join(" ", strings.Skip(1))
                    + "</span>";
         }
