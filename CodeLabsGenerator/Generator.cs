@@ -89,7 +89,8 @@ namespace CodeLabsGenerator
 
             mainBuilder.Replace("###STEPOVERVIEW###", sb.ToString());
         }
-
+        
+        // should refactor this to use the same method as InsertStepsOverview, somehow
         private static void InsertDropDownStepsOverview(string pathToMdSteps, StringBuilder mainBuilder)
         {
             var mdFiles = GetAndSortMdFiles(pathToMdSteps);
@@ -99,7 +100,6 @@ namespace CodeLabsGenerator
             {
                 string fileName = ExtractMdFileName(mdFiles[i]);
                 fileName = StripLeadingZeros(fileName);
-                // fileName = SurroundContentWithSpan(fileName);
                 sb.Append($"<span class=\"drop-down-step\" onclick=\"setTab({i})\">{fileName}</span>").Append('\n');
             }
 
