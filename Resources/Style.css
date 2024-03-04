@@ -43,7 +43,7 @@ body {
     /*flex-basis: auto;*/
 }
 
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 1200px) {
     #steps-list {
         display: none;
     }
@@ -54,14 +54,8 @@ body {
     }
 }
 
-@media only screen and (min-width: 901px) {
+@media only screen and (min-width: 1201px) {
     #drop-down-button {
-        display: none;
-    }
-}
-
-@media only screen and (max-width: 1200px) {
-    .step-content {
         display: none;
     }
 }

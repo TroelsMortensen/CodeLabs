@@ -83,7 +83,6 @@ namespace CodeLabsGenerator
             {
                 string fileName = ExtractMdFileName(mdFiles[i]);
                 fileName = StripLeadingZeros(fileName);
-                fileName = SurroundContentWithSpan(fileName);
                 sb.Append($"<li class=\"step\" onclick=\"setTab({i})\">{fileName}</li>").Append('\n');
             }
 
@@ -106,15 +105,6 @@ namespace CodeLabsGenerator
             mainBuilder.Replace("###DROPDOWNSTEPOVERVIEW###", sb.ToString());
         }
         
-        private static string SurroundContentWithSpan(string fileName)
-        {
-            var strings = fileName.Split(" ");
-            return strings[0] +
-                   " <span class=\"step-content\">"
-                   + string.Join(" ", strings.Skip(1))
-                   + "</span>";
-        }
-
         private static string StripLeadingZeros(string fileName)
         {
             var trimmedForZero = fileName.TrimStart('0');
