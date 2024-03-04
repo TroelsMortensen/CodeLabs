@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <a href="./../../index.html" class="homelink">HOME</a>
+</div>
+<div id="main-page" style="display:flex;width:100%;height:100%;padding-top:64px">
+    <div id="steps-list">
+        <ol>
+            <li class="step" onclick="setTab(0)">1 First</li>
+            <li class="step" onclick="setTab(1)">2 Second</li>
+            <li class="step" onclick="setTab(2)">3 Third with a long name</li>
+
+        </ol>
+    </div>
+    <div id="card-container">
+
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
+            </div>
+
+            <!-- One "tab" for each step in the form: -->
+            <div class="tab">
+                <hr/>
+                <h1 id="title">Title</h1>
+                <hr/>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis sagittis orci. Cras semper arcu
+                    nunc, sit amet porttitor ex viverra eget. Donec nisi magna, vulputate et libero at, euismod aliquam
+                    orci. Cras pellentesque sapien id lacus ornare, at semper leo consectetur. Etiam nunc quam, dapibus
+                    finibus consectetur ut, volutpat id elit. Praesent sollicitudin neque quis mattis iaculis. Duis et
+                    dui
+                    non tortor porta finibus at nec mi. Mauris pulvinar diam et bibendum ornare. Sed id elit sit amet
+                    nisi
+                    volutpat placerat sit amet sed turpis. Morbi nec neque erat. Integer eget ante quis orci tempus
+                    viverra
+                    quis ac purus. Phasellus commodo, erat eget sodales condimentum, urna justo porttitor ante, eget
+                    facilisis felis nisl in felis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+                    posuere
+                    cubilia curae; Praesent rhoncus dolor ac ligula accumsan, ut fermentum metus laoreet. Ut laoreet,
+                    velit
+                    nec molestie euismod, sem ex fringilla velit, sed blandit elit nunc sed augue. Praesent laoreet sem
+                    sed
+                    pellentesque egestas.</p>
+                <p>Sed id euismod magna, eu scelerisque sapien. Donec eu ante ac mauris feugiat suscipit quis vitae
+                    dolor.
+                    Praesent sem urna, scelerisque interdum augue a, feugiat pellentesque neque. Fusce egestas nisl
+                    erat,
+                    sit amet molestie elit pharetra id. Aenean quis pellentesque lorem. Pellentesque blandit dignissim
+                    sem,
+                    et tempor nunc pellentesque nec. Donec sed sapien ut lectus semper molestie. Aenean nec efficitur
+                    nisl.
+                    Ut consectetur dui eu sem viverra vehicula. Nam aliquet imperdiet nisl, ac tincidunt sapien rutrum
+                    id.
+                    Ut quis auctor ligula. Cras nibh neque, finibus vel sapien a, varius maximus justo.</p>
+                <p>Cras et convallis purus. Nulla facilisi. Vestibulum ac blandit tellus. Etiam malesuada urna at mauris
+                    tempor, ut iaculis nisl bibendum. Nunc ultricies et massa sed tincidunt. Pellentesque quis cursus
+                    velit.
+                    In purus felis, maximus et ullamcorper ac, gravida et dolor. Vestibulum ante ipsum primis in
+                    faucibus
+                    orci luctus et ultrices posuere cubilia curae; Donec porttitor placerat eleifend. Proin semper
+                    pulvinar
+                    lorem.</p>
+                <p>Duis imperdiet vitae erat non venenatis. Morbi quam tortor, tempor quis libero at, elementum aliquet
+                    massa. Aenean eget egestas magna, in ullamcorper nibh. Suspendisse sodales risus leo, efficitur
+                    commodo
+                    erat hendrerit sit amet. In scelerisque, lectus in ullamcorper semper, ante mi mollis ex, at
+                    suscipit
+                    felis lorem ultricies neque. Proin aliquet volutpat nulla ac rhoncus. Vestibulum porta tincidunt
+                    justo
+                    nec facilisis. Morbi quis porttitor nisi, eu gravida mi. Curabitur id est feugiat, rhoncus diam ut,
+                    vestibulum ligula. Aenean imperdiet mi ac quam finibus cursus. Duis eget arcu vel turpis accumsan
+                    volutpat. Donec pulvinar facilisis nisl id vestibulum. Aliquam erat volutpat.</p>
+                <p>Duis massa odio, ornare sit amet molestie quis, sagittis in eros. Proin faucibus eleifend justo,
+                    dictum
+                    varius tortor facilisis id. Maecenas pulvinar rutrum libero, nec dapibus ex. Aliquam sit amet orci
+                    nec
+                    lectus venenatis vehicula condimentum in magna. Praesent aliquet diam vestibulum tincidunt
+                    facilisis.
+                    Aliquam dapibus, justo a ultrices sodales, velit sem sollicitudin nulla, id congue ex risus et
+                    purus.
+                    Quisque in purus nunc. In ac arcu mattis, facilisis dolor et, bibendum urna. Phasellus pharetra
+                    maximus
+                    aliquam. Suspendisse congue libero nec molestie gravida. Vivamus posuere bibendum magna, nec mattis
+                    nisi
+                    consectetur ac.</p>
+
+            </div>
+            <div class="tab">
+                <hr/>
+                <h1 id="title">Title</h1>
+                <hr/>
+                <p>Duis imperdiet vitae erat non venenatis. Morbi quam tortor, tempor quis libero at, elementum aliquet
+                    massa. Aenean eget
+                    egestas magna, in ullamcorper nibh. Suspendisse sodales risus leo, efficitur commodo erat hendrerit
+                    sit
+                    amet. In
+                    scelerisque, lectus in ullamcorper semper, ante mi mollis ex, at suscipit felis lorem ultricies
+                    neque.
+                    Proin aliquet
+                    volutpat nulla ac rhoncus. Vestibulum porta tincidunt justo nec facilisis. Morbi quis porttitor
+                    nisi, eu
+                    gravida mi.
+                    Curabitur id est feugiat, rhoncus diam ut, vestibulum ligula. Aenean imperdiet mi ac quam finibus
+                    cursus. Duis eget arcu
+                    vel turpis accumsan volutpat. Donec pulvinar facilisis nisl id vestibulum. Aliquam erat
+                    volutpat.</p>
+                <p>Duis massa odio, ornare sit amet molestie quis, sagittis in eros. Proin faucibus eleifend justo,
+                    dictum
+                    varius tortor
+                    facilisis id. Maecenas pulvinar rutrum libero, nec dapibus ex. Aliquam sit amet orci nec lectus
+                    venenatis vehicula
+                    condimentum in magna. Praesent aliquet diam vestibulum tincidunt facilisis. Aliquam dapibus, justo a
+                    ultrices sodales,
+                    velit sem sollicitudin nulla, id congue ex risus et purus. Quisque in purus nunc. In ac arcu mattis,
+                    facilisis dolor et,
+                    bibendum urna. Phasellus pharetra maximus aliquam. Suspendisse congue libero nec molestie gravida.
+                    Vivamus posuere
+                    bibendum magna, nec mattis nisi consectetur ac.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis sagittis orci. Cras semper arcu
+                    nunc, sit amet
+                    porttitor ex viverra eget. Donec nisi magna, vulputate et libero at, euismod aliquam orci. Cras
+                    pellentesque sapien id
+                    lacus ornare, at semper leo consectetur. Etiam nunc quam, dapibus finibus consectetur ut, volutpat
+                    id
+                    elit. Praesent
+                    sollicitudin neque quis mattis iaculis. Duis et dui non tortor porta finibus at nec mi. Mauris
+                    pulvinar
+                    diam et bibendum
+                    ornare. Sed id elit sit amet nisi volutpat placerat sit amet sed turpis. Morbi nec neque erat.
+                    Integer
+                    eget ante quis
+                    orci tempus viverra quis ac purus. Phasellus commodo, erat eget sodales condimentum, urna justo
+                    porttitor ante, eget
+                    facilisis felis nisl in felis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+                    posuere
+                    cubilia curae;
+                    Praesent rhoncus dolor ac ligula accumsan, ut fermentum metus laoreet. Ut laoreet, velit nec
+                    molestie
+                    euismod, sem ex
+                    fringilla velit, sed blandit elit nunc sed augue. Praesent laoreet sem sed pellentesque egestas.</p>
+                <p>Sed id euismod magna, eu scelerisque sapien. Donec eu ante ac mauris feugiat suscipit quis vitae
+                    dolor.
+                    Praesent sem
+                    urna, scelerisque interdum augue a, feugiat pellentesque neque. Fusce egestas nisl erat, sit amet
+                    molestie elit pharetra
+                    id. Aenean quis pellentesque lorem. Pellentesque blandit dignissim sem, et tempor nunc pellentesque
+                    nec.
+                    Donec sed
+                    sapien ut lectus semper molestie. Aenean nec efficitur nisl. Ut consectetur dui eu sem viverra
+                    vehicula.
+                    Nam aliquet
+                    imperdiet nisl, ac tincidunt sapien rutrum id. Ut quis auctor ligula. Cras nibh neque, finibus vel
+                    sapien a, varius
+                    maximus justo.</p>
+                <p>Cras et convallis purus. Nulla facilisi. Vestibulum ac blandit tellus. Etiam malesuada urna at mauris
+                    tempor, ut iaculis
+                    nisl bibendum. Nunc ultricies et massa sed tincidunt. Pellentesque quis cursus velit. In purus
+                    felis,
+                    maximus et
+                    ullamcorper ac, gravida et dolor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+                    posuere cubilia
+                    curae; Donec porttitor placerat eleifend. Proin semper pulvinar lorem.</p>
+
+            </div>
+            <div class="tab">
+                <hr/>
+                <h1 id="title">Title</h1>
+                <hr/>
+                <p>Cras et convallis purus. Nulla facilisi. Vestibulum ac blandit tellus. Etiam malesuada urna at mauris
+                    tempor, ut iaculis
+                    nisl bibendum. Nunc ultricies et massa sed tincidunt. Pellentesque quis cursus velit. In purus
+                    felis,
+                    maximus et
+                    ullamcorper ac, gravida et dolor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+                    posuere cubilia
+                    curae; Donec porttitor placerat eleifend. Proin semper pulvinar lorem.</p>
+                <p>Duis imperdiet vitae erat non venenatis. Morbi quam tortor, tempor quis libero at, elementum aliquet
+                    massa. Aenean eget
+                    egestas magna, in ullamcorper nibh. Suspendisse sodales risus leo, efficitur commodo erat hendrerit
+                    sit
+                    amet. In
+                    scelerisque, lectus in ullamcorper semper, ante mi mollis ex, at suscipit felis lorem ultricies
+                    neque.
+                    Proin aliquet
+                    volutpat nulla ac rhoncus. Vestibulum porta tincidunt justo nec facilisis. Morbi quis porttitor
+                    nisi, eu
+                    gravida mi.
+                    Curabitur id est feugiat, rhoncus diam ut, vestibulum ligula. Aenean imperdiet mi ac quam finibus
+                    cursus. Duis eget arcu
+                    vel turpis accumsan volutpat. Donec pulvinar facilisis nisl id vestibulum. Aliquam erat
+                    volutpat.</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis sagittis orci. Cras semper arcu
+                    nunc, sit amet
+                    porttitor ex viverra eget. Donec nisi magna, vulputate et libero at, euismod aliquam orci. Cras
+                    pellentesque sapien id
+                    lacus ornare, at semper leo consectetur. Etiam nunc quam, dapibus finibus consectetur ut, volutpat
+                    id
+                    elit. Praesent
+                    sollicitudin neque quis mattis iaculis. Duis et dui non tortor porta finibus at nec mi. Mauris
+                    pulvinar
+                    diam et bibendum
+                    ornare. Sed id elit sit amet nisi volutpat placerat sit amet sed turpis. Morbi nec neque erat.
+                    Integer
+                    eget ante quis
+                    orci tempus viverra quis ac purus. Phasellus commodo, erat eget sodales condimentum, urna justo
+                    porttitor ante, eget
+                    facilisis felis nisl in felis. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+                    posuere
+                    cubilia curae;
+                    Praesent rhoncus dolor ac ligula accumsan, ut fermentum metus laoreet. Ut laoreet, velit nec
+                    molestie
+                    euismod, sem ex
+                    fringilla velit, sed blandit elit nunc sed augue. Praesent laoreet sem sed pellentesque egestas.</p>
+                <p>Duis massa odio, ornare sit amet molestie quis, sagittis in eros. Proin faucibus eleifend justo,
+                    dictum
+                    varius tortor
+                    facilisis id. Maecenas pulvinar rutrum libero, nec dapibus ex. Aliquam sit amet orci nec lectus
+                    venenatis vehicula
+                    condimentum in magna. Praesent aliquet diam vestibulum tincidunt facilisis. Aliquam dapibus, justo a
+                    ultrices sodales,
+                    velit sem sollicitudin nulla, id congue ex risus et purus. Quisque in purus nunc. In ac arcu mattis,
+                    facilisis dolor et,
+                    bibendum urna. Phasellus pharetra maximus aliquam. Suspendisse congue libero nec molestie gravida.
+                    Vivamus posuere
+                    bibendum magna, nec mattis nisi consectetur ac.</p>
+                <p>Sed id euismod magna, eu scelerisque sapien. Donec eu ante ac mauris feugiat suscipit quis vitae
+                    dolor.
+                    Praesent sem
+                    urna, scelerisque interdum augue a, feugiat pellentesque neque. Fusce egestas nisl erat, sit amet
+                    molestie elit pharetra
+                    id. Aenean quis pellentesque lorem. Pellentesque blandit dignissim sem, et tempor nunc pellentesque
+                    nec.
+                    Donec sed
+                    sapien ut lectus semper molestie. Aenean nec efficitur nisl. Ut consectetur dui eu sem viverra
+                    vehicula.
+                    Nam aliquet
+                    imperdiet nisl, ac tincidunt sapien rutrum id. Ut quis auctor ligula. Cras nibh neque, finibus vel
+                    sapien a, varius
+                    maximus justo.</p>
+
+            </div>
+
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>

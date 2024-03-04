@@ -7,16 +7,33 @@ body {
     background-color: #f1f1f1;
 }
 
-#top-buttons-container {
+#main-page{
+    display:flex;
+}
+
+#slide-card {
     background-color: #ffffff;
-    margin: 20px auto;
+    margin-left: 20px;
+    margin-right: 20px;
     padding-left: 40px;
     padding-right: 40px;
-    min-width: 300px;
-    width: 130ch;
+    min-width: 80ch;
     max-width: 130ch;
     border-radius: 25px;
     box-shadow: 0px 1px 2px 0px rgb(60 64 67), 0px 2px 16px 12px rgba(60, 64, 67, 0.5);
+}
+
+#steps-list{
+    flex-basis: content;
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+#card-container{
+    display:flex;
+    justify-content: center;
+    width: 100%;
+    /*flex-basis: auto;*/
 }
 
 .tab h1 {
@@ -39,7 +56,7 @@ h6 {
 
 .tab {
     font-family: Arial;
-    display: block;
+    display: none; /* Hide all steps by default: */
 }
 
 .tab img {
@@ -57,10 +74,7 @@ h6 {
     padding: 0 2px;
 }
 
-/* Hide all steps by default: */
-.tab {
-    display: none;
-}
+
 
 .next-button {
     margin-right: 10px;
