@@ -5,9 +5,9 @@ namespace IndexGenerator;
 
 public class Generator
 {
-    private static string folderPathToMds = @"C:\TRMO\RiderProjects\CodeLabs\IndexMds";
-    private static string indexBasePagePath = @"C:\TRMO\RiderProjects\CodeLabs\IndexGenerator\indexbase.html";
-    private static string indexPagePath = @"C:\TRMO\RiderProjects\CodeLabs\index.html";
+    private const string folderPathToMds = @"C:\TRMO\RiderProjects\CodeLabs\IndexMds";
+    private const string indexBasePagePath = @"C:\TRMO\RiderProjects\CodeLabs\IndexGenerator\indexbase.html";
+    private const string indexPagePath = @"C:\TRMO\RiderProjects\CodeLabs\index.html";
     private static MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
 
     private static string[] colors =
@@ -42,19 +42,13 @@ public class Generator
     }
 
     private static void OutFinalIndexPage(string result)
-    {
-        File.WriteAllText(indexPagePath, result);
-    }
+        => File.WriteAllText(indexPagePath, result);
 
     private static string InsertMdHtmlIntoBasePage(string indexBasePageAsText, StringBuilder mainBuilder)
-    {
-        return indexBasePageAsText.Replace("###CARDS###", mainBuilder.ToString());
-    }
+        => indexBasePageAsText.Replace("###CARDS###", mainBuilder.ToString());
 
     private static string GetIndexBasePageAsString()
-    {
-        return File.ReadAllText(indexBasePagePath);
-    }
+        => File.ReadAllText(indexBasePagePath);
 
     private static void ConvertAllMdFiles(StringBuilder mainBuilder)
     {
@@ -62,7 +56,7 @@ public class Generator
         int idx = 0;
         foreach (string mdFilePath in mdFileNames)
         {
-            mainBuilder.Append($"<div class=\"card\" style=\"background-color: {colors[idx]}\">").Append("\n");
+            mainBuilder.Append($"<div class=\"card\" style=\"background-color: {colors[idx]}\">").Append('\n');
             {
                 string mdText = File.ReadAllText(mdFilePath);
                 string mdAsHtml = Markdown.ToHtml(mdText, pipeline);
