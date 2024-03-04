@@ -18,7 +18,7 @@ public class Generator
         "#ffb1dd",
         "#c2ecff",
         "#cddc39",
-        "#795548",
+        "#68f16f",
         "#9c27b0",
         "#00bcd4",
         "#ffeb3b",
