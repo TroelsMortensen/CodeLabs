@@ -11,9 +11,27 @@
 <script src="./../../Resources/prism.js"></script>
 
 <div>
-    <a href="./../../index.html" class="homelink">HOME</a>
+    <div>
+        <a href="./../../index.html" class="homelink">HOME</a>
+    </div>
+    <div id="drop-down-button" style="padding:0;margin:0;">
+        <img id="drop-down-img" src="./../../Resources/drop-down-list.svg" alt="dropdown-icon"/>
+        <div id="dropdown-content">
+            <span class="drop-down-step" onclick="setTab(0)">1 Introduction</span>
+<span class="drop-down-step" onclick="setTab(1)">2 Architecture</span>
+<span class="drop-down-step" onclick="setTab(2)">3 New component</span>
+<span class="drop-down-step" onclick="setTab(3)">4 Controller class</span>
+<span class="drop-down-step" onclick="setTab(4)">5 GET all Todos</span>
+<span class="drop-down-step" onclick="setTab(5)">6 Test get endpoint</span>
+<span class="drop-down-step" onclick="setTab(6)">7 Add todo</span>
+<span class="drop-down-step" onclick="setTab(7)">8 Test add endpoint</span>
+<span class="drop-down-step" onclick="setTab(8)">9 Other endpoints</span>
+<span class="drop-down-step" onclick="setTab(9)">10 Bonus endpoint</span>
+
+        </div>
+    </div>
 </div>
-<div style="display:flex;width:100%;height:100%;padding-top:64px">
+<div id="main-page">
     <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
@@ -29,18 +47,20 @@
 
         </ol>
     </div>
-    <div id="top-buttons-container">
-        <div style="overflow:auto;">
+    <div id="card-container">
 
-            <div style="float:right; margin:10px">
-                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
             </div>
-        </div>
 
-        <!-- One "tab" for each step in the form: -->
+            <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+            <div class="tab">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>This is the second part of my Blazor tutorial.
 We are going to introduce a Web API, to be used by the blazor pages to read/write data.</p>
@@ -251,15 +271,14 @@ The second argument is the created Todo object, <code>added</code>.</p>
 
 
 
-        
-        <div style="overflow:auto; padding-bottom: 10px">
-            <hr/>
-            <div style="float:right;">
-                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 <script>

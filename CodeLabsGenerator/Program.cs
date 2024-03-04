@@ -10,7 +10,21 @@ class Program
     static void Main(string[] args)
     {
         // GenerateAllModifiedTutorials();
-        GenerateOne("C:\\TRMO\\RiderProjects\\CodeLabs\\Tutorials\\Sandbox");
+        ReGenerateAllTutorials();
+        // GenerateOne("C:\\TRMO\\RiderProjects\\CodeLabs\\Tutorials\\Sandbox");
+    }
+
+    private static void ReGenerateAllTutorials()
+    {
+        var tutorialDirectories = GetAllTutorialDirectories();
+        foreach (string directory in tutorialDirectories)
+        {
+            // var shouldGenerate = ShouldGenerateTutorial(directory);
+            // if (shouldGenerate)
+            // {
+            GenerateOne(directory);
+            // }
+        }
     }
 
     private static void GenerateAllModifiedTutorials()
@@ -31,10 +45,10 @@ class Program
         DateTime directoryWriteTime = Directory.GetLastWriteTime(directory);
         DateTime pageWriteTime = File.GetLastWriteTime(directory + "/Page.html");
         DateTime basePageWriteTime = File.GetLastWriteTime(basePagePath);
-        
+
         bool directoryIsNewerThanPage = directoryWriteTime > pageWriteTime;
         bool basePageIsNewerThanPage = basePageWriteTime > pageWriteTime;
-        
+
         return directoryIsNewerThanPage || basePageIsNewerThanPage;
     }
 

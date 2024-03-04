@@ -11,9 +11,35 @@
 <script src="./../../Resources/prism.js"></script>
 
 <div>
-    <a href="./../../index.html" class="homelink">HOME</a>
+    <div>
+        <a href="./../../index.html" class="homelink">HOME</a>
+    </div>
+    <div id="drop-down-button" style="padding:0;margin:0;">
+        <img id="drop-down-img" src="./../../Resources/drop-down-list.svg" alt="dropdown-icon"/>
+        <div id="dropdown-content">
+            <span class="drop-down-step" onclick="setTab(0)">1 Introduction</span>
+<span class="drop-down-step" onclick="setTab(1)">2 New component</span>
+<span class="drop-down-step" onclick="setTab(2)">3 Adding dependencies</span>
+<span class="drop-down-step" onclick="setTab(3)">4 Installing db tools</span>
+<span class="drop-down-step" onclick="setTab(4)">5 DbContext</span>
+<span class="drop-down-step" onclick="setTab(5)">6 Generating a migration</span>
+<span class="drop-down-step" onclick="setTab(6)">7 Applying a migration</span>
+<span class="drop-down-step" onclick="setTab(7)">8 Inspecting the database</span>
+<span class="drop-down-step" onclick="setTab(8)">9 Todo DAO</span>
+<span class="drop-down-step" onclick="setTab(9)">10 Registering services</span>
+<span class="drop-down-step" onclick="setTab(10)">11 Seeding the database</span>
+<span class="drop-down-step" onclick="setTab(11)">12 Absolute path</span>
+<span class="drop-down-step" onclick="setTab(12)">13 First test</span>
+<span class="drop-down-step" onclick="setTab(13)">14 Get all</span>
+<span class="drop-down-step" onclick="setTab(14)">15 Add Todo</span>
+<span class="drop-down-step" onclick="setTab(15)">16 Update</span>
+<span class="drop-down-step" onclick="setTab(16)">17 Delete</span>
+<span class="drop-down-step" onclick="setTab(17)">18 Get by criteria</span>
+
+        </div>
+    </div>
 </div>
-<div style="display:flex;width:100%;height:100%;padding-top:64px">
+<div id="main-page">
     <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
@@ -37,18 +63,20 @@
 
         </ol>
     </div>
-    <div id="top-buttons-container">
-        <div style="overflow:auto;">
+    <div id="card-container">
 
-            <div style="float:right; margin:10px">
-                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
             </div>
-        </div>
 
-        <!-- One "tab" for each step in the form: -->
+            <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+            <div class="tab">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>In this tutorial we will add Entity Framework Core (henceforth &quot;EFC&quot;) with SQLite as the data storage, instead of the json-file storage system currently in use.</p>
 <p>Below is the layered diagram, you should be familiar with it by now.</p>
@@ -527,15 +555,14 @@ WHERE   Id = {id}
 
 
 
-        
-        <div style="overflow:auto; padding-bottom: 10px">
-            <hr/>
-            <div style="float:right;">
-                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 <script>

@@ -11,9 +11,55 @@
 <script src="./../../Resources/prism.js"></script>
 
 <div>
-    <a href="./../../index.html" class="homelink">HOME</a>
+    <div>
+        <a href="./../../index.html" class="homelink">HOME</a>
+    </div>
+    <div id="drop-down-button" style="padding:0;margin:0;">
+        <img id="drop-down-img" src="./../../Resources/drop-down-list.svg" alt="dropdown-icon"/>
+        <div id="dropdown-content">
+            <span class="drop-down-step" onclick="setTab(0)">1 Introduction</span>
+<span class="drop-down-step" onclick="setTab(1)">2 Architecture</span>
+<span class="drop-down-step" onclick="setTab(2)">3 New solution</span>
+<span class="drop-down-step" onclick="setTab(3)">4 Domain component</span>
+<span class="drop-down-step" onclick="setTab(4)">5 Model classes</span>
+<span class="drop-down-step" onclick="setTab(5)">6 Web API</span>
+<span class="drop-down-step" onclick="setTab(6)">7 Application component</span>
+<span class="drop-down-step" onclick="setTab(7)">8 File data component</span>
+<span class="drop-down-step" onclick="setTab(8)">9 File data storage</span>
+<span class="drop-down-step" onclick="setTab(9)">10 First feature</span>
+<span class="drop-down-step" onclick="setTab(10)">11 Logic layer</span>
+<span class="drop-down-step" onclick="setTab(11)">12 Web API Controller</span>
+<span class="drop-down-step" onclick="setTab(12)">13 User DAO</span>
+<span class="drop-down-step" onclick="setTab(13)">14 Finalize create user</span>
+<span class="drop-down-step" onclick="setTab(14)">15 Test create user</span>
+<span class="drop-down-step" onclick="setTab(15)">16 Get users feature</span>
+<span class="drop-down-step" onclick="setTab(16)">17 Get users logic</span>
+<span class="drop-down-step" onclick="setTab(17)">18 Get users dao</span>
+<span class="drop-down-step" onclick="setTab(18)">19 Get users controller</span>
+<span class="drop-down-step" onclick="setTab(19)">20 Add Todo feature</span>
+<span class="drop-down-step" onclick="setTab(20)">21 Add Todo application layer</span>
+<span class="drop-down-step" onclick="setTab(21)">22 Add Todo data layer</span>
+<span class="drop-down-step" onclick="setTab(22)">23 Add Todo Web API</span>
+<span class="drop-down-step" onclick="setTab(23)">24 Setup services</span>
+<span class="drop-down-step" onclick="setTab(24)">25 View Todos</span>
+<span class="drop-down-step" onclick="setTab(25)">26 View Todos logic</span>
+<span class="drop-down-step" onclick="setTab(26)">27 View Todos Data</span>
+<span class="drop-down-step" onclick="setTab(27)">28 View Todos Web API</span>
+<span class="drop-down-step" onclick="setTab(28)">29 Complete Todo feature</span>
+<span class="drop-down-step" onclick="setTab(29)">30 Complete Todo logic</span>
+<span class="drop-down-step" onclick="setTab(30)">31 Complete Todo DAO</span>
+<span class="drop-down-step" onclick="setTab(31)">32 Complete Todo endpoint</span>
+<span class="drop-down-step" onclick="setTab(32)">33 Delete Todo feature</span>
+<span class="drop-down-step" onclick="setTab(33)">34 Delete Todo Logic</span>
+<span class="drop-down-step" onclick="setTab(34)">35 Delete Todo DAO</span>
+<span class="drop-down-step" onclick="setTab(35)">36 Delete Todo endpoint</span>
+<span class="drop-down-step" onclick="setTab(36)">37 Get Todo by id</span>
+<span class="drop-down-step" onclick="setTab(37)">38 Conclusion</span>
+
+        </div>
+    </div>
 </div>
-<div style="display:flex;width:100%;height:100%;padding-top:64px">
+<div id="main-page">
     <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
@@ -57,18 +103,20 @@
 
         </ol>
     </div>
-    <div id="top-buttons-container">
-        <div style="overflow:auto;">
+    <div id="card-container">
 
-            <div style="float:right; margin:10px">
-                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
             </div>
-        </div>
 
-        <!-- One "tab" for each step in the form: -->
+            <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+            <div class="tab">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>This is the first part of a 3 part tutorial series (at least according to the current plan).</p>
 <p>The system will be a basic Todo-app. You will be able to create Todo items, update and delete them.
@@ -1932,15 +1980,14 @@ The argument variable must be named the same as in the URI template, i.e. &quot;
 
 
 
-        
-        <div style="overflow:auto; padding-bottom: 10px">
-            <hr/>
-            <div style="float:right;">
-                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 <script>

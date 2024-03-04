@@ -11,9 +11,58 @@
 <script src="./../../Resources/prism.js"></script>
 
 <div>
-    <a href="./../../index.html" class="homelink">HOME</a>
+    <div>
+        <a href="./../../index.html" class="homelink">HOME</a>
+    </div>
+    <div id="drop-down-button" style="padding:0;margin:0;">
+        <img id="drop-down-img" src="./../../Resources/drop-down-list.svg" alt="dropdown-icon"/>
+        <div id="dropdown-content">
+            <span class="drop-down-step" onclick="setTab(0)">1 Introduction</span>
+<span class="drop-down-step" onclick="setTab(1)">2 Architecture</span>
+<span class="drop-down-step" onclick="setTab(2)">3 Components</span>
+<span class="drop-down-step" onclick="setTab(3)">4 Overall UI design</span>
+<span class="drop-down-step" onclick="setTab(4)">5 Fix CORS</span>
+<span class="drop-down-step" onclick="setTab(5)">6 Add user</span>
+<span class="drop-down-step" onclick="setTab(6)">7 Add User page</span>
+<span class="drop-down-step" onclick="setTab(7)">8 Add User Code</span>
+<span class="drop-down-step" onclick="setTab(8)">9 Add User View</span>
+<span class="drop-down-step" onclick="setTab(9)">10 Add User Test</span>
+<span class="drop-down-step" onclick="setTab(10)">11 Add User Styling</span>
+<span class="drop-down-step" onclick="setTab(11)">12 Add Page to NavMenu</span>
+<span class="drop-down-step" onclick="setTab(12)">13 View Users feature</span>
+<span class="drop-down-step" onclick="setTab(13)">14 View Users Service</span>
+<span class="drop-down-step" onclick="setTab(14)">15 View Users Code</span>
+<span class="drop-down-step" onclick="setTab(15)">16 View Users View</span>
+<span class="drop-down-step" onclick="setTab(16)">17 View Users Styling</span>
+<span class="drop-down-step" onclick="setTab(17)">18 Add Todo Feature</span>
+<span class="drop-down-step" onclick="setTab(18)">19 Add Todo Service</span>
+<span class="drop-down-step" onclick="setTab(19)">20 Add Todo Page</span>
+<span class="drop-down-step" onclick="setTab(20)">21 View Todos</span>
+<span class="drop-down-step" onclick="setTab(21)">22 View Todos Service</span>
+<span class="drop-down-step" onclick="setTab(22)">23 View Todos Page</span>
+<span class="drop-down-step" onclick="setTab(23)">24 View Todos Filtering</span>
+<span class="drop-down-step" onclick="setTab(24)">25 Component Intro</span>
+<span class="drop-down-step" onclick="setTab(25)">26 Checkbox Component</span>
+<span class="drop-down-step" onclick="setTab(26)">27 Use Checkbox</span>
+<span class="drop-down-step" onclick="setTab(27)">28 Edit Todo</span>
+<span class="drop-down-step" onclick="setTab(28)">29 GetTodoById</span>
+<span class="drop-down-step" onclick="setTab(29)">30 Edit Todo Page</span>
+<span class="drop-down-step" onclick="setTab(30)">31 Navigate To Edit</span>
+<span class="drop-down-step" onclick="setTab(31)">32 Delete Todo Feature</span>
+<span class="drop-down-step" onclick="setTab(32)">33 Delete Todo Service</span>
+<span class="drop-down-step" onclick="setTab(33)">34 Delete Todo View</span>
+<span class="drop-down-step" onclick="setTab(34)">35 Summation</span>
+<span class="drop-down-step" onclick="setTab(35)">36 Component Communication</span>
+<span class="drop-down-step" onclick="setTab(36)">37 Popup</span>
+<span class="drop-down-step" onclick="setTab(37)">38 Using the Popup</span>
+<span class="drop-down-step" onclick="setTab(38)">39 Edit Todo Popup</span>
+<span class="drop-down-step" onclick="setTab(39)">40 State Container Example</span>
+<span class="drop-down-step" onclick="setTab(40)">41 Conclusion</span>
+
+        </div>
+    </div>
 </div>
-<div style="display:flex;width:100%;height:100%;padding-top:64px">
+<div id="main-page">
     <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
@@ -60,18 +109,20 @@
 
         </ol>
     </div>
-    <div id="top-buttons-container">
-        <div style="overflow:auto;">
+    <div id="card-container">
 
-            <div style="float:right; margin:10px">
-                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
             </div>
-        </div>
 
-        <!-- One "tab" for each step in the form: -->
+            <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+            <div class="tab">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <hr/><h1 id="please-notice">Please notice!</h1><hr/>
 <p>This guide was written with Blazor-WASM in mind.
@@ -2626,15 +2677,14 @@ The fact that a method is asynchronous is also implied by the return type of Tas
 
 
 
-        
-        <div style="overflow:auto; padding-bottom: 10px">
-            <hr/>
-            <div style="float:right;">
-                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 <script>

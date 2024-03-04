@@ -11,9 +11,55 @@
 <script src="./../../Resources/prism.js"></script>
 
 <div>
-    <a href="./../../index.html" class="homelink">HOME</a>
+    <div>
+        <a href="./../../index.html" class="homelink">HOME</a>
+    </div>
+    <div id="drop-down-button" style="padding:0;margin:0;">
+        <img id="drop-down-img" src="./../../Resources/drop-down-list.svg" alt="dropdown-icon"/>
+        <div id="dropdown-content">
+            <span class="drop-down-step" onclick="setTab(0)">1 Introduction</span>
+<span class="drop-down-step" onclick="setTab(1)">2 New solution</span>
+<span class="drop-down-step" onclick="setTab(2)">3 Project structure</span>
+<span class="drop-down-step" onclick="setTab(3)">4 Domain component</span>
+<span class="drop-down-step" onclick="setTab(4)">5 Model classes</span>
+<span class="drop-down-step" onclick="setTab(5)">6 More components</span>
+<span class="drop-down-step" onclick="setTab(6)">7 Blazor component</span>
+<span class="drop-down-step" onclick="setTab(7)">8 File data component</span>
+<span class="drop-down-step" onclick="setTab(8)">9 File context</span>
+<span class="drop-down-step" onclick="setTab(9)">10 Data access interfaces</span>
+<span class="drop-down-step" onclick="setTab(10)">11 Data access implementation</span>
+<span class="drop-down-step" onclick="setTab(11)">12 Adding services</span>
+<span class="drop-down-step" onclick="setTab(12)">13 Viewing todos</span>
+<span class="drop-down-step" onclick="setTab(13)">14 Navigate to page</span>
+<span class="drop-down-step" onclick="setTab(14)">15 Test your app</span>
+<span class="drop-down-step" onclick="setTab(15)">16 Todos page code</span>
+<span class="drop-down-step" onclick="setTab(16)">17 Todos page view</span>
+<span class="drop-down-step" onclick="setTab(17)">18 Test todos overview</span>
+<span class="drop-down-step" onclick="setTab(18)">19 Clean up</span>
+<span class="drop-down-step" onclick="setTab(19)">20 dotnet watch</span>
+<span class="drop-down-step" onclick="setTab(20)">21 Todo validation</span>
+<span class="drop-down-step" onclick="setTab(21)">22 Add todo page</span>
+<span class="drop-down-step" onclick="setTab(22)">23 Add todo view</span>
+<span class="drop-down-step" onclick="setTab(23)">24 Add todo styling</span>
+<span class="drop-down-step" onclick="setTab(24)">25 Test add todo</span>
+<span class="drop-down-step" onclick="setTab(25)">26 Removing a todo</span>
+<span class="drop-down-step" onclick="setTab(26)">27 Completed status</span>
+<span class="drop-down-step" onclick="setTab(27)">28 Filtering data</span>
+<span class="drop-down-step" onclick="setTab(28)">29 Filtering data problem</span>
+<span class="drop-down-step" onclick="setTab(29)">30 Editing a todo</span>
+<span class="drop-down-step" onclick="setTab(30)">31 Edit from overview</span>
+<span class="drop-down-step" onclick="setTab(31)">32 Status</span>
+<span class="drop-down-step" onclick="setTab(32)">33 Components</span>
+<span class="drop-down-step" onclick="setTab(33)">34 Toggle component</span>
+<span class="drop-down-step" onclick="setTab(34)">35 Popup component</span>
+<span class="drop-down-step" onclick="setTab(35)">36 Popup usage</span>
+<span class="drop-down-step" onclick="setTab(36)">37 Update todo popup</span>
+<span class="drop-down-step" onclick="setTab(37)">38 Conclusion</span>
+
+        </div>
+    </div>
 </div>
-<div style="display:flex;width:100%;height:100%;padding-top:64px">
+<div id="main-page">
     <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
@@ -57,18 +103,20 @@
 
         </ol>
     </div>
-    <div id="top-buttons-container">
-        <div style="overflow:auto;">
+    <div id="card-container">
 
-            <div style="float:right; margin:10px">
-                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
             </div>
-        </div>
 
-        <!-- One "tab" for each step in the form: -->
+            <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+            <div class="tab">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p><img src="Resources/TodoIcon.png" alt="Todo list" /></p>
 <p>This tutorial will initially introduce you to Blazor-server. You will create a web app to manage todo items. You can consider it a very simple Trello clone.</p>
@@ -2099,15 +2147,14 @@ Further down, another label and a number-input, with the value bound to <code>ed
 
 
 
-        
-        <div style="overflow:auto; padding-bottom: 10px">
-            <hr/>
-            <div style="float:right;">
-                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 <script>

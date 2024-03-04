@@ -11,9 +11,32 @@
 <script src="./../../Resources/prism.js"></script>
 
 <div>
-    <a href="./../../index.html" class="homelink">HOME</a>
+    <div>
+        <a href="./../../index.html" class="homelink">HOME</a>
+    </div>
+    <div id="drop-down-button" style="padding:0;margin:0;">
+        <img id="drop-down-img" src="./../../Resources/drop-down-list.svg" alt="dropdown-icon"/>
+        <div id="dropdown-content">
+            <span class="drop-down-step" onclick="setTab(0)">1 Introduction</span>
+<span class="drop-down-step" onclick="setTab(1)">2 New project</span>
+<span class="drop-down-step" onclick="setTab(2)">3 Utils class</span>
+<span class="drop-down-step" onclick="setTab(3)">4 Category enum</span>
+<span class="drop-down-step" onclick="setTab(4)">5 Product class</span>
+<span class="drop-down-step" onclick="setTab(5)">6 Program class</span>
+<span class="drop-down-step" onclick="setTab(6)">7 Your first breakpoint</span>
+<span class="drop-down-step" onclick="setTab(7)">8 The debug window</span>
+<span class="drop-down-step" onclick="setTab(8)">9 Advancing execution</span>
+<span class="drop-down-step" onclick="setTab(9)">10 Stepping over code</span>
+<span class="drop-down-step" onclick="setTab(10)">11 Stepping into code</span>
+<span class="drop-down-step" onclick="setTab(11)">12 Resuming the program</span>
+<span class="drop-down-step" onclick="setTab(12)">13 Evaluating expressions</span>
+<span class="drop-down-step" onclick="setTab(13)">14 Adding watches</span>
+<span class="drop-down-step" onclick="setTab(14)">15 End note</span>
+
+        </div>
+    </div>
 </div>
-<div style="display:flex;width:100%;height:100%;padding-top:64px">
+<div id="main-page">
     <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
@@ -34,18 +57,20 @@
 
         </ol>
     </div>
-    <div id="top-buttons-container">
-        <div style="overflow:auto;">
+    <div id="card-container">
 
-            <div style="float:right; margin:10px">
-                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
             </div>
-        </div>
 
-        <!-- One "tab" for each step in the form: -->
+            <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+            <div class="tab">
 <hr/><h1 id="welcome-to-debugging-in-c-with-rider">Welcome to debugging in C# with Rider</h1><hr/>
 <p>This tutorial will introduce the debugging tool in Rider.
 The tutorial can be used for other IDEs as well,
@@ -307,15 +332,14 @@ Put a breakpoint at that line or a few lines before, to inspect what happens up 
 
 
 
-        
-        <div style="overflow:auto; padding-bottom: 10px">
-            <hr/>
-            <div style="float:right;">
-                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 <script>

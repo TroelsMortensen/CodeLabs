@@ -11,9 +11,34 @@
 <script src="./../../Resources/prism.js"></script>
 
 <div>
-    <a href="./../../index.html" class="homelink">HOME</a>
+    <div>
+        <a href="./../../index.html" class="homelink">HOME</a>
+    </div>
+    <div id="drop-down-button" style="padding:0;margin:0;">
+        <img id="drop-down-img" src="./../../Resources/drop-down-list.svg" alt="dropdown-icon"/>
+        <div id="dropdown-content">
+            <span class="drop-down-step" onclick="setTab(0)">1 Introduction</span>
+<span class="drop-down-step" onclick="setTab(1)">2 Architecture</span>
+<span class="drop-down-step" onclick="setTab(2)">3 New Component</span>
+<span class="drop-down-step" onclick="setTab(3)">4 DAO Implementations</span>
+<span class="drop-down-step" onclick="setTab(4)">5 +Add EFC</span>
+<span class="drop-down-step" onclick="setTab(5)">6 +Installing db tools</span>
+<span class="drop-down-step" onclick="setTab(6)">7 +Create DbContext</span>
+<span class="drop-down-step" onclick="setTab(7)">8 Configuring tables</span>
+<span class="drop-down-step" onclick="setTab(8)">9 Configuring Relationships</span>
+<span class="drop-down-step" onclick="setTab(9)">10 +Create Database</span>
+<span class="drop-down-step" onclick="setTab(10)">11 Add User</span>
+<span class="drop-down-step" onclick="setTab(11)">12 Get Users</span>
+<span class="drop-down-step" onclick="setTab(12)">13 Add Todo</span>
+<span class="drop-down-step" onclick="setTab(13)">14 Get Todos</span>
+<span class="drop-down-step" onclick="setTab(14)">15 Complete Todo</span>
+<span class="drop-down-step" onclick="setTab(15)">16 Delete Todo</span>
+<span class="drop-down-step" onclick="setTab(16)">17 The End</span>
+
+        </div>
+    </div>
 </div>
-<div style="display:flex;width:100%;height:100%;padding-top:64px">
+<div id="main-page">
     <div id="steps-list">
         <ol>
             <li class="step" onclick="setTab(0)">1 Introduction</li>
@@ -36,18 +61,20 @@
 
         </ol>
     </div>
-    <div id="top-buttons-container">
-        <div style="overflow:auto;">
+    <div id="card-container">
 
-            <div style="float:right; margin:10px">
-                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
             </div>
-        </div>
 
-        <!-- One "tab" for each step in the form: -->
+            <!-- One "tab" for each step in the form: -->
 
-        <div class="tab">
+            <div class="tab">
 <hr/><h1 id="introduction">Introduction</h1><hr/>
 <p>This is the <em>third</em> part of a 3 part tutorial series.</p>
 <p>You should already have the Todo Web API in place from the first part, and the Blazor-WASM app from the second tutorial.
@@ -933,15 +960,14 @@ And there are things, which could be done differently. But... I removed the disc
 
 
 
-        
-        <div style="overflow:auto; padding-bottom: 10px">
-            <hr/>
-            <div style="float:right;">
-                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
             </div>
         </div>
-        
     </div>
 </div>
 <script>
