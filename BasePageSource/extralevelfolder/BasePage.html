@@ -19,28 +19,30 @@
             ###STEPOVERVIEW###
         </ol>
     </div>
-    <div id="slide-card">
-        <div id="top-buttons-row" style="overflow:auto;">
+    <div id="card-container">
 
-            <div style="float:right; margin:10px">
-                <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
+            </div>
+
+            <!-- One "tab" for each step in the form: -->
+
+            ###STEPPAGES###
+
+
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
             </div>
         </div>
-
-        <!-- One "tab" for each step in the form: -->
-
-        ###STEPPAGES###
-
-
-        <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
-            <hr/>
-            <div style="float:right;">
-                <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
-            </div>
-        </div>
-
     </div>
 </div>
 <script>

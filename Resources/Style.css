@@ -36,6 +36,19 @@ body {
     /*flex-basis: auto;*/
 }
 
+@media only screen and (max-width: 900px){
+    #steps-list{
+        display: none;
+    }
+    
+}
+@media only screen and (max-width: 1200px){
+    .step-content{
+        display: none;
+    }
+    
+}
+
 .tab h1 {
     text-align: center;
 }
