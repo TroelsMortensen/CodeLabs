@@ -2293,6 +2293,47 @@ public async Task ListOfStrongIdFkReferences_FailWithInvalidFk()
 }
 </code></pre>
 <p>Bla bla, assert that we get an exception, when trying to save EntityC, which references a non-existing EntityD.</p>
+<h2 id="todo">TODO</h2>
+<p>This can be done as an owned entity, rather than explicitly making the wrapper class an entity.
+I feel this makes more sense, conceptually. Eventually, I will probably update this example.</p>
+<p>Though, <strong>the end result is the same</strong>, and so it is not a priority.</p>
+<p>For now, a quick and dirty solution is just pasting my configuration code, without explanation.</p>
+<pre><code class="line-numbers language-csharp">private static void ParticipantsListConfiguration(EntityTypeBuilder&lt;VeaEvent&gt; entityBuilder)
+{
+    entityBuilder.OwnsMany&lt;VeaEvent.GuestFk&gt;(&quot;participants&quot;, valueBuilder =&gt;
+    {
+        valueBuilder.Property(guestFk =&gt; guestFk.GuestId)
+            .HasConversion(
+                guestId =&gt; guestId.Get,
+                dbValue =&gt; GuestId.FromGuid(dbValue).Payload
+            )
+            .HasColumnName(&quot;GuestFk&quot;);
+        
+        valueBuilder.Property(x =&gt; x.EventId)
+            .HasColumnName(&quot;EventFk&quot;);
+        
+        valueBuilder.WithOwner()
+            .HasForeignKey(x =&gt; x.EventId);
+        
+        valueBuilder.HasOne&lt;Guest&gt;()
+            .WithMany()
+            .HasForeignKey(fk =&gt; fk.GuestId);
+        
+        valueBuilder.HasKey(x =&gt; new {x.GuestId, x.EventId});
+    });
+}
+</code></pre>
+<p>I do get this script:</p>
+<pre><code class="line-numbers language-sql">CREATE TABLE &quot;GuestFk&quot; (
+    &quot;GuestFk&quot; TEXT NOT NULL,
+    &quot;EventFk&quot; TEXT NOT NULL,
+    CONSTRAINT &quot;PK_GuestFk&quot; PRIMARY KEY (&quot;GuestFk&quot;, &quot;EventFk&quot;),
+    CONSTRAINT &quot;FK_GuestFk_Events_EventFk&quot; FOREIGN KEY (&quot;EventFk&quot;) REFERENCES &quot;Events&quot;
+ (&quot;Id&quot;) ON DELETE CASCADE,
+    CONSTRAINT &quot;FK_GuestFk_Guests_GuestFk&quot; FOREIGN KEY (&quot;GuestFk&quot;) REFERENCES &quot;Guests&quot;
+ (&quot;Id&quot;) ON DELETE CASCADE
+);
+</code></pre>
 
 </div>
 <div class="tab">

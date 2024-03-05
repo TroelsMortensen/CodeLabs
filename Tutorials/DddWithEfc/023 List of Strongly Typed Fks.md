@@ -287,3 +287,52 @@ public async Task ListOfStrongIdFkReferences_FailWithInvalidFk()
 ```
 
 Bla bla, assert that we get an exception, when trying to save EntityC, which references a non-existing EntityD.
+
+## TODO 
+This can be done as an owned entity, rather than explicitly making the wrapper class an entity. 
+I feel this makes more sense, conceptually. Eventually, I will probably update this example.
+
+Though, **the end result is the same**, and so it is not a priority.
+
+For now, a quick and dirty solution is just pasting my configuration code, without explanation.
+
+```csharp
+private static void ParticipantsListConfiguration(EntityTypeBuilder<VeaEvent> entityBuilder)
+{
+    entityBuilder.OwnsMany<VeaEvent.GuestFk>("participants", valueBuilder =>
+    {
+        valueBuilder.Property(guestFk => guestFk.GuestId)
+            .HasConversion(
+                guestId => guestId.Get,
+                dbValue => GuestId.FromGuid(dbValue).Payload
+            )
+            .HasColumnName("GuestFk");
+        
+        valueBuilder.Property(x => x.EventId)
+            .HasColumnName("EventFk");
+        
+        valueBuilder.WithOwner()
+            .HasForeignKey(x => x.EventId);
+        
+        valueBuilder.HasOne<Guest>()
+            .WithMany()
+            .HasForeignKey(fk => fk.GuestId);
+        
+        valueBuilder.HasKey(x => new {x.GuestId, x.EventId});
+    });
+}
+```
+
+I do get this script:
+
+```sql
+CREATE TABLE "GuestFk" (
+    "GuestFk" TEXT NOT NULL,
+    "EventFk" TEXT NOT NULL,
+    CONSTRAINT "PK_GuestFk" PRIMARY KEY ("GuestFk", "EventFk"),
+    CONSTRAINT "FK_GuestFk_Events_EventFk" FOREIGN KEY ("EventFk") REFERENCES "Events"
+ ("Id") ON DELETE CASCADE,
+    CONSTRAINT "FK_GuestFk_Guests_GuestFk" FOREIGN KEY ("GuestFk") REFERENCES "Guests"
+ ("Id") ON DELETE CASCADE
+);
+```
