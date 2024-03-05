@@ -2129,6 +2129,7 @@ And implicit operators for ease of use.</p>
 </code></pre>
 <p>And again, we don't have to update the <code>AddFk()</code> method because of the implicit operators.</p>
 <p>Now we can configure this setup.</p>
+<p><strong>First, re-run your <em>unit tests</em>. You have made implementation changes, which may affect your unit tests, or the internal logic in your aggregate. I had about 6 failed unit tests, because I was now comparing the wrapper class to the strong Id class.</strong></p>
 <h3 id="configuration">Configuration</h3>
 <p>Here's the configuration code, the complexity is growing:</p>
 <pre><code class="line-numbers language-csharp">private void ConfigureListOfStronglyTypedForeignKeys(ModelBuilder mBuilder)

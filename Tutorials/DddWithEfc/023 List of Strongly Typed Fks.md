@@ -98,6 +98,10 @@ And again, we don't have to update the `AddFk()` method because of the implicit 
 
 Now we can configure this setup.
 
+**First, re-run your _unit tests_. You have made implementation changes, which may affect your unit tests, or the internal logic in your aggregate. I had about 6 failed unit tests, because I was now comparing the wrapper class to the strong Id class.**
+
+
+
 ### Configuration
 Here's the configuration code, the complexity is growing:
 

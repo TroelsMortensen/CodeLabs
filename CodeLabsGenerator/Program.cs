@@ -9,8 +9,8 @@ class Program
 
     static void Main(string[] args)
     {
-        // GenerateAllModifiedTutorials();
-        ReGenerateAllTutorials();
+        GenerateAllModifiedTutorials();
+        // ReGenerateAllTutorials();
         // GenerateOne("C:\\TRMO\\RiderProjects\\CodeLabs\\Tutorials\\Sandbox");
     }
 
