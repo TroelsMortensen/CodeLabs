@@ -21,7 +21,8 @@ The first helper method creates a DbContext, and sets up a fresh database:
 private static MyDbContext SetupContext()
 {
     DbContextOptionsBuilder<MyDbContext> optionsBuilder = new();
-    optionsBuilder.UseSqlite(@"Data Source = Test.db");
+    string testDbName = "Test" + Guid.NewGuid() +".db";
+    optionsBuilder.UseSqlite(@"Data Source = " + testDbName);
     MyDbContext context = new(optionsBuilder.Options);
     context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
@@ -31,10 +32,11 @@ private static MyDbContext SetupContext()
 Line 1: It is static for performance reasons, not strictly necessary.\
 Line 3: Create options builder, here we can set various db configurations. In our case the specific test database.\
 In a real system, you often have different databases, like production, Q/A testing, local testing, etc. We need a database, we can reset for every test.\
-Line 4: We define the test database.\
-Line 5: Create new instance of DbContext.\
-Line 6: Delete any existing database.\
-Line 7: Create clean database.
+Line 4: Test classes are run in parallel, so I need a unique database per test, to avoid conflict. The Guid fixes this.\
+Line 5: The data source is defined.\
+Line 6: Create new instance of DbContext.\
+Line 7: Delete any existing database.\
+Line 8: Create clean database.
 
 This method is called at the beginning of each test, like this:
 

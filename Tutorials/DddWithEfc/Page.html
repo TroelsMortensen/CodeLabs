@@ -317,7 +317,8 @@ It should fail with an error message about one of your entities needing a primar
 <pre><code class="line-numbers language-csharp">private static MyDbContext SetupContext()
 {
     DbContextOptionsBuilder&lt;MyDbContext&gt; optionsBuilder = new();
-    optionsBuilder.UseSqlite(@&quot;Data Source = Test.db&quot;);
+    string testDbName = &quot;Test&quot; + Guid.NewGuid() +&quot;.db&quot;;
+    optionsBuilder.UseSqlite(@&quot;Data Source = &quot; + testDbName);
     MyDbContext context = new(optionsBuilder.Options);
     context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
@@ -327,10 +328,11 @@ It should fail with an error message about one of your entities needing a primar
 <p>Line 1: It is static for performance reasons, not strictly necessary.<br />
 Line 3: Create options builder, here we can set various db configurations. In our case the specific test database.<br />
 In a real system, you often have different databases, like production, Q/A testing, local testing, etc. We need a database, we can reset for every test.<br />
-Line 4: We define the test database.<br />
-Line 5: Create new instance of DbContext.<br />
-Line 6: Delete any existing database.<br />
-Line 7: Create clean database.</p>
+Line 4: Test classes are run in parallel, so I need a unique database per test, to avoid conflict. The Guid fixes this.<br />
+Line 5: The data source is defined.<br />
+Line 6: Create new instance of DbContext.<br />
+Line 7: Delete any existing database.<br />
+Line 8: Create clean database.</p>
 <p>This method is called at the beginning of each test, like this:</p>
 <pre><code class="line-numbers language-csharp">await using MyDbContext ctx = SetupContext();
 </code></pre>
