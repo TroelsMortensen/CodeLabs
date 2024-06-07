@@ -186,6 +186,8 @@
 
     EL_resetButton.addEventListener("click", () => {
         ctx.canvas.style.transform = `rotate(${-PI/2}rad)`;
+        const sector = sectors[0];
+        EL_spin.style.background = sector.color;
     });
 
     function getQuestion() {
