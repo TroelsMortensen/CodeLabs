@@ -7,15 +7,15 @@
 
 [Introduction to debugging in C#](./Tutorials/CsharpDebugging/Page.html)
 
-[DEPRECATED: Simple Blazor-server login](./Tutorials/BlazorLogin/Page.html)
+<s>[DEPRECATED: Simple Blazor-server login](./Tutorials/BlazorLogin/Page.html)</s>
 
-[DEPRECATED: JWT Login](./Tutorials/BlazorWasmJwtAuth/Page.html)
+<s>[DEPRECATED: JWT Login](./Tutorials/BlazorWasmJwtAuth/Page.html)</s>
 
-[DEPRECATED: Todo App Part 1 - Web API](./Tutorials/NetTodoApp-Part1-WebAPI/Page.html)
+<s>[DEPRECATED: Todo App Part 1 - Web API](./Tutorials/NetTodoApp-Part1-WebAPI/Page.html)</s>
 
-[DEPRECATED: Todo App Part 2 - Blazor](./Tutorials/NetTodoApp-Part2-Blazor/Page.html)
+<s>[DEPRECATED: Todo App Part 2 - Blazor](./Tutorials/NetTodoApp-Part2-Blazor/Page.html)</s>
 
-[DEPRECATED: Todo App Part 3 - EFC](./Tutorials/NetTodoApp-Part3-EFC/Page.html)
+<s>[DEPRECATED: Todo App Part 3 - EFC](./Tutorials/NetTodoApp-Part3-EFC/Page.html)</s>
 
 ### Videos
 ...
