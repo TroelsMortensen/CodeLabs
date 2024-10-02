@@ -1,7 +1,8 @@
 # 1:1 relationships
 In this section, we will cover the one-to-one relationships.\
 
-From the ER diagram, we can see that the `Book` and `PriceOffer` entities have a one-to-one relationship.\
+From the ER diagram, we can see that the `Book` and `PriceOffer` entities have a one-to-one relationship.
+
 The Book has a price, but sometimes it's on sale, in which case there will be a PriceOffer instance, with a NewPrice and a PromotionalText.\
 Whenever the sale ends, the PriceOffer is removed, and the Book's price is the regular price. Yes, this is a simple example, but it's enough to show the concept.
 

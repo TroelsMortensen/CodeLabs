@@ -19,6 +19,11 @@ Here is the ER diagram:
 
 ![img.png](img.png)
 
+The Book is the center. It belongs to a Category (e.g. Sci-Fi, Romance, Autobiography, etc), has an Author, and can have multiple Reviews.\
+Sometimes the Book is on sale, in which case there is a PriceOffer.\
+A Book can be written by multiple Authors, in which case we might want to list keep track of the order of the authors for this specific Book. That's the purpose of the Writes::Order attribute.\
+For example, the book "BDD in Action" is written by two authors, and the order is important, because the first author is the main author. If we include the Foreword author, we might want to list him last.
+
 ## By Convention?
 What does this mean?\
 EFC has 3 ways to configure the domain model:
