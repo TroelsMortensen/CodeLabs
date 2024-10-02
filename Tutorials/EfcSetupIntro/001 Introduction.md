@@ -17,6 +17,7 @@ It also covers each of the relevant relationships:
 
 Here is the ER diagram:
 
+![img.png](img.png)
 
 
 ## Source code
