@@ -37,9 +37,10 @@ public class Review
 ```
 
 The Book has many Reviews, so this is modelled with a "collection navigation property", i.e. the `List<Review> Reviews`
-property.\
+property. This property is instantiated to a new empty list with `[]`, alternatively `new()` or `new List<Review>`. This is just to suppress the null warning.
+
 The Review has one Book, so this is modelled with a "reference navigation property", i.e. the `Book Book` property.\
-I also include the `BookId` foreign key on the Review.
+I also include the `BookId` foreign key on the Review. This is the standard approach in relational databases, where the "many" side has the foreign key.
 
 ### Add DbSet
 
