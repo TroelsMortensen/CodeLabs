@@ -35,3 +35,18 @@ so as your model grows, it is more convenient if all configuration is in one pla
 
 ### Defining composite primary key
 Sometimes you need multiple properties/attributes to be included in the primary key. In our example, the Writes relationship attribute will need this.
+
+In step 12 I update the Writes class to include foreign keys to Author::Id and Book::Id. These are used in the composite primary key.\
+
+Here is the updated `OnModelCreating` method:
+
+```csharp
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<Category>()
+        .HasKey(c => c.Name);
+
+    modelBuilder.Entity<Writes>()
+        .HasKey(w => new { w.BookId, w.AuthorId });
+}
+```
