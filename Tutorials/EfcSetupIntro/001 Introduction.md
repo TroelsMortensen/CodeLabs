@@ -45,4 +45,4 @@ I will not cover these in this guide, other than how to define primary keys.\
 You can do a lot of configuration with the fluent API, which will be introduced in my elective course: Domain Centric Architecture (DCA).
 
 ## Source code
-The code for this guide can be found in my GitHub repository here.... // TODO: Add link
+The code for this guide can be found in my [GitHub repository here](https://github.com/TroelsMortensen/IntroductionToEfc/tree/master).
