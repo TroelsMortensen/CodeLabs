@@ -9,6 +9,9 @@ The next couple of slides will cover basic interactions with the database:
   * Disconnected entities
 * Deleting data
 * Retrieving data
+* Connecting data
+  * Through association
+  * Through foreign key
 * Querying data
   * Simple queries
   * Filtering

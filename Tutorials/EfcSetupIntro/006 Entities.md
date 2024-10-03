@@ -13,11 +13,11 @@ Generally, you will want to use properties with both set and get, either public 
 public string Name { get; set; }
 public string Text { get; private set; }
 ```
-EFC will discover both public and private properties by default.
+EFC should discover both public and private properties by default.
 
 #### Private constructor
 You may have a constructor on your entity class.\
-If it takes in arguments for _all_ properties, it should be fine.\
+If it takes in arguments for _all_ properties, it _should_ be fine.\
 If it takes in arguments for _some_ properties, you need to also include a private no-argument constructor, like this:
 
 ```csharp
@@ -26,18 +26,25 @@ private Book() { } // Used by EFC
 
 EFC will by default instantiate your entity with the private constructor, then use the properties to set the values.
 
+The constructor with all arguments may not be convenient though, as you may discover later.
+
 #### Primary Key
 A property of type `int` named `Id` will be the primary key.\
-Alternatively, the name can also by <class-name>Id. For example, `BookId`.
+Alternatively, the name can also by `<class-name>Id`. For example, `BookId`.
 
 EFC will automatically configure this property as the primary key.
 
-#### Foreign Key
-Foreign keys are included in the database, and are used to link entities together.\
-They are automatically created by EFC when you have a navigation property. We will cover navigation properties when setting up relationships.
+If you name your primary key something else, or use a type other than int, you will need to configure this with the Fluent API.\
+See step 8.
 
-You may optionally include a property of type int to act as an explicit foreign key on the entity. This is not required, but can be useful in some cases.\
-When doing this, the name of the property should be <navigation-property-name>Id. For example, if you have a navigation property called `Author` on the Book, the foreign key property should be `AuthorId`.
+#### Foreign Key
+Foreign keys are included in the database, and are used to link entities together. This is standard relational database.\
+They are automatically created by EFC when you have a navigation property. 
+I will introduce navigation properties in the next step. We will use them when setting up relationships.
+
+You may sometimes optionally include a property to act as an explicit foreign key on the entity. 
+This is not always required, but can be useful in some cases.\
+When doing this, the name of the property should be `<navigation-property-name>Id`. For example, if you have a navigation property called `Author` on the Book, the foreign key property should be `AuthorId`.
 
 ## Entities
 Below you will find the initial code for each entity, without the relationships specified.
@@ -122,5 +129,3 @@ public class Writes
 ```
 
 There are currently no keys on this. This will require a bit of configuration later, because the standard approach is to use a composite key, from the foreign keys to Book and Author.
-
-Next up, we will add the relationships between the entities.

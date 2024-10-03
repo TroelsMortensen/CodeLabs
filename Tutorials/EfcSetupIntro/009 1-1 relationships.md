@@ -17,8 +17,11 @@ Here's the part of the diagram, we will focus on:
 
 Let's have a look at the `Book` and `PriceOffer` entities, and how we can connect them.
 
-I am going to include navigation properties in both directions.\
-For the 1:1 relationship, you also have to explicitly define the foreign key, otherwise EFC will not be able to figure out which table should contain the foreign key.\
+I am going to include navigation properties in both directions.
+
+For the 1:1 relationship, you also have to explicitly define the foreign key, 
+otherwise EFC will not be able to figure out which table should contain the foreign key.
+
 The foreign key should be on the dependent side (optional side), which is the `PriceOffer` side in this case.
 
 Here are the updated classes:
@@ -55,7 +58,7 @@ This should be enough for EFC to figure things out.
 ### Add DbSets
 
 Now, let's add the DbSets to the `BookContext` class.\
-I update the class this:
+I update the class to this:
 
 ```csharp
 public class AppContext : DbContext
@@ -70,8 +73,9 @@ public class AppContext : DbContext
 }
 ```
 The DbSet<T> defines a table of the type T. Or Book, and PriceOffer.
-You can define the sets as normal properties: `public DbSet<Book> Books { get; set; }`, but I don't get a null warning, when I do the above.\
-It says that when accessing Books, we get the Set<Book>() method, which is just a generic way to access a DbSet, defined on the DbContext class.
+You can define the sets as normal properties: `public DbSet<Book> Books { get; set; }`, but I don't get a null warning, when I do the above.
+
+It says that when accessing Books, we call the Set<Book>() method, which is just a generic way to access a DbSet, defined on the DbContext class.
 
 
 ### Create a migration
@@ -81,11 +85,13 @@ This was the first migration, and we get a Migrations directory, with two classe
 ![img_2.png](img_2.png)
 
 The `20241003073530_BookAndPriceOffer` class contains the migration code, i.e. what to do to the database to make it match the model.\
-The `AppContextModelSnapshot` class contains the model snapshot, which is a snapshot of the current model. It keeps track of the "version" or state of the database, so when new migrations are created, it knows what to do.\
-Generally, we don't need to look into these files, but your might inspect the first file, to verify that the migration looks correct.
+The `AppContextModelSnapshot` class contains the model snapshot, which is a snapshot of the current model. 
+It keeps track of the "version" or state of the database, so when new migrations are created, EFC knows what to do.
+
+Generally, we don't need to look into these files, but you might inspect the first file, to verify that the migration looks correct.
 
 ### Update database
-Run the commend to update the database.\
+Run the command to update the database.\
 You get the new `bookstore.db` file, which is your SQLite database. Double click it, to set up a connection, so we can inspect and interact with it through the database view.
 
 Inspect the result. You can see this in the migration file above, but sometimes it's easier to see the outcome in the database.\

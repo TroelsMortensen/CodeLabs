@@ -1,5 +1,5 @@
 # CLI Tools
-Various actions against EFC is done through the CLI tools. The tools are installed as a global tool, so you can use them from any project. Therefore, this needs only be done once.
+Various actions against EFC are done through the CLI tools. The tools are installed as a global tool, so you can use them from any project. Therefore, this needs only be done once.
 
 ## Install the tools
 Open then terminal and run the following command:

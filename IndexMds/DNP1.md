@@ -7,6 +7,8 @@
 
 [Introduction to debugging in C#](./Tutorials/CsharpDebugging/Page.html)
 
+[Introduction to Entity Framework Core](./Tutorials/EfcSetupIntro/Page.html)
+
 <s>[DEPRECATED: Simple Blazor-server login](./Tutorials/BlazorLogin/Page.html)</s>
 
 <s>[DEPRECATED: JWT Login](./Tutorials/BlazorWasmJwtAuth/Page.html)</s>
