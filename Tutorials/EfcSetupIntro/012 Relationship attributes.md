@@ -1,5 +1,5 @@
 # Relationship attributes
-Now, there is only one relationship left, the \*:\* relationship, which is the Writes relationship attribute.\
+Now, there is only one relationship left, the \*:\* relationship, which is the Writes relationship attribute.
 
 Relationship attributes only exist on \*:\* relationships.
 
@@ -11,10 +11,10 @@ Here's the relationship in the diagram:
 ![img_13.png](img_13.png)
 
 ### Implementing the relationship
-As mentioned, we need a new class to bind the Book and Author together, we explicitly create the join table.\
+As mentioned, we need a new class to bind the Book and Author together, so we explicitly create the join table.\
 We then implement two 1:\* relationships, one from Book to Writes, and one from Author to Writes.
 
-Here are the updated classes:
+Here are the updated classes. It is not important what you call the collection navigation properties to Writes. I have called them WrittenBy and Writes, that made sense me:
 
 ```csharp
 public class Book

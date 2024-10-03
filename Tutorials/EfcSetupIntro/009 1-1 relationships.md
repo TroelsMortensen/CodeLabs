@@ -109,11 +109,11 @@ And PriceOffer table:
 
 ![img_5.png](img_5.png)
 
-No data yet, but I do get the columns I expect. We case see the BookId column on the PriceOffer table, which is the foreign key.
+No data yet, but I do get the columns I expect. We can see the BookId column on the PriceOffer table, which is the foreign key.
 
 ### You messed up?
 Sometimes you mess up a migration or application to the database. For your case as a student, it's simpler to just delete the Migrations directory and the bookstore.db file.\
 This will obviously delete all data, but it's a simple way to start over.\
 
 Alternatively, there are ways to undo migration applications, or to remove the latest migration if it has not yet been applied.\
-This is done with commands in the terminal. I leave it up to you to google this, if you need it.
+This is done with commands in the terminal. I leave it up to you to google this, if you need it. However, it's not always possible to undo an applied migration.

@@ -33,7 +33,7 @@ public class Category
 }
 ```
 This time we can't put a foreign key in either of the classes. A \*:\* relationship is modelled with a join table, and EFC will automatically create this for us behind the scenes.\
-When we apply the upcoming migration, you will see this join table in the database.
+When we apply the upcoming migration, you will see this join table in the database. My join table is called `BookCategory`.
 
 ### Add DbSet
 Add a new DbSet to the AppContext class:
@@ -54,4 +54,4 @@ Update the database with the new migration, and after a refresh of the database 
 
 ![img_12.png](img_12.png)
 
-
+Notice also the BookCategory table, which is the join table EFC created for us.
