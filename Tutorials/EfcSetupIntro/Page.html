@@ -206,11 +206,15 @@ If it takes in arguments for <em>some</em> properties, you need to also include 
 <p>A property of type <code>int</code> named <code>Id</code> will be the primary key.<br />
 Alternatively, the name can also by <code>&lt;class-name&gt;Id</code>. For example, <code>BookId</code>.</p>
 <p>EFC will automatically configure this property as the primary key.</p>
+<p>If you name your primary key something else, or use a type other than int, you will need to configure this with the Fluent API.<br />
+See step 8.</p>
 <h4 id="foreign-key">Foreign Key</h4>
-<p>Foreign keys are included in the database, and are used to link entities together.<br />
-They are automatically created by EFC when you have a navigation property. We will cover navigation properties when setting up relationships.</p>
-<p>You may optionally include a property of type int to act as an explicit foreign key on the entity. This is not required, but can be useful in some cases.<br />
-When doing this, the name of the property should be <navigation-property-name>Id. For example, if you have a navigation property called <code>Author</code> on the Book, the foreign key property should be <code>AuthorId</code>.</p>
+<p>Foreign keys are included in the database, and are used to link entities together. This is standard relational database.<br />
+They are automatically created by EFC when you have a navigation property.
+I will introduce navigation properties in the next step. We will use them when setting up relationships.</p>
+<p>You may sometimes optionally include a property to act as an explicit foreign key on the entity.
+This is not always required, but can be useful in some cases.<br />
+When doing this, the name of the property should be <code>&lt;navigation-property-name&gt;Id</code>. For example, if you have a navigation property called <code>Author</code> on the Book, the foreign key property should be <code>AuthorId</code>.</p>
 <h2 id="entities-1">Entities</h2>
 <p>Below you will find the initial code for each entity, without the relationships specified.</p>
 <h4 id="book">Book</h4>
@@ -273,20 +277,21 @@ We must then explicitly tell EFC that the Name property is the primary key. We w
 }
 </code></pre>
 <p>There are currently no keys on this. This will require a bit of configuration later, because the standard approach is to use a composite key, from the foreign keys to Book and Author.</p>
-<p>Next up, we will add the relationships between the entities.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="what-is-a-navigation-property">What is a navigation property?</h1><hr/>
-<p>A navigation property is just a reference to another entity. A normal association from one class to another. What makes it a <em>navigation property</em> is just that EFC knows about it, and we can use it to navigate from one entity to another.</p>
+<p>A navigation property is just a reference to another entity. A normal association from one class to another.
+What makes it a <em>navigation property</em> is just that EFC knows about it, and we can use it to navigate from one entity to another.
+We will see this when querying data later on.</p>
 <p>Navigation properties are generally how we define relationships in EFC, when we do it by convention.</p>
 <p>If an entity needs a relationship to another, we add a navigation property to the entity. I.e. an association.<br />
-If the relationships is &quot;many&quot;, we add a navigation property of type <code>List&lt;T&gt;</code> (or some other collection type).</p>
+If the relationship is &quot;many&quot;, we add a navigation property of type <code>List&lt;T&gt;</code> (or some other collection type).</p>
 <p>For 1:1 and 1:* cases, we only have to put the navigation property in one of the entities.<br />
-For the <em>:</em> case, we need to put the navigation property in both entities.<br />
+For the *:* case, we need to put a collection navigation property in both entities.<br />
 Generally though, it can be a good idea to put the navigation property in both entities, to make it easier to navigate in both directions.</p>
 <h2 id="foreign-keys">Foreign keys</h2>
-<p>We can also optionally include a foreign key property. Sometimes this make it easier to work with the relationship.\</p>
+<p>We can also include a foreign key property. Sometimes this make it easier to work with the relationship. It is necessary for the 1:1 relationship. Otherwise it is optional.</p>
 <h2 id="example">Example</h2>
 <p>Here's an example where ClassA has a reference to ClassB.</p>
 <pre><code class="line-numbers language-csharp">class ClassA
@@ -309,19 +314,19 @@ class ClassB
     public ClassB ClassB { get; set; } // Navigation property
 }
 </code></pre>
-<p>This is not required, but can be useful in some cases.<br />
-When doing this, the name of the property should be <code>&lt;navigation-property-name&gt;Id</code>.
+<p>When doing this, the name of the property should be <code>&lt;navigation-property-name&gt;Id</code>.
 For example, if you have a navigation property called <code>Author</code> on the Book, the foreign key property should be <code>AuthorId</code>.</p>
 <p>It is a balance between how much you want to &quot;pollute&quot; your entities, and how flexible they are to work with.<br />
-It is usually more convenient to have the foreign key property, and navigation properties in both directions.</p>
+It is often more convenient to have all the foreign key properties, and navigation properties you can.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="primary-keys">Primary keys</h1><hr/>
-<p>As mentioned, if an entity class has a property named <code>Id</code> or <code>&lt;classname&gt;Id</code> of type int, EFC will automatically treat it as the primary key.\</p>
+<p>As mentioned, if an entity class has a property named <code>Id</code> or <code>&lt;classname&gt;Id</code> of type int,
+EFC will automatically treat it as the primary key.</p>
 <p>However, sometimes you may want another type of primary key, or just name it differently.<br />
-Maybe your User has an <code>Email</code> property, and you want to use that as the primary key.\</p>
-<p>In our example, the Category entity has a <code>Name</code> property, which we want to use as the primary key.\</p>
+Maybe your User has an <code>Email</code> property, and you want to use that as the primary key.</p>
+<p>In our example, the Category entity has a <code>Name</code> property, which we want to use as the primary key.</p>
 <h3 id="defining-single-attribute-primary-key">Defining single attribute primary key</h3>
 <p>It can be defined either with an attribute, like this:</p>
 <pre><code class="line-numbers language-csharp">public class Category
@@ -337,13 +342,14 @@ Maybe your User has an <code>Email</code> property, and you want to use that as 
 }
 </code></pre>
 <p>This method above goes into the DbContext sub-class, i.e. the AppContext in our example. The method is called when creating a migration, and we can configure A LOT of things here.<br />
-In the above case, we just use the ModelBuilder class to say the the Entity of type Category has a primary key, which is the Name property.</p>
-<p>Personally, I prefer the Fluent API approach, as it keeps the entity classes clean, and the configuration in one place. It is also more powerful,
+In the above case, we just use the ModelBuilder class to say that the Entity of type Category has a primary key, which is the Name property.</p>
+<p>Personally, I prefer the Fluent API approach, as it keeps the entity classes cleaner, and the configuration in one place.
+The Fluent API is also more powerful,
 so as your model grows, it is more convenient if all configuration is in one place, rather than split between attributes and Fluent API.</p>
 <h3 id="defining-composite-primary-key">Defining composite primary key</h3>
 <p>Sometimes you need multiple properties/attributes to be included in the primary key. In our example, the Writes relationship attribute will need this.</p>
-<p>In step 12 I update the Writes class to include foreign keys to Author<span>Id and Book</span>Id. These are used in the composite primary key.\</p>
-<p>Here is the updated <code>OnModelCreating</code> method:</p>
+<p>In step 12 I update the Writes class to include foreign keys to Author<span>Id and Book</span>Id. These are used in the composite primary key.</p>
+<p>Here is the updated <code>OnModelCreating</code> method after step 12:</p>
 <pre><code class="line-numbers language-csharp">protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     modelBuilder.Entity&lt;Category&gt;()
@@ -353,6 +359,7 @@ so as your model grows, it is more convenient if all configuration is in one pla
         .HasKey(w =&gt; new { w.BookId, w.AuthorId });
 }
 </code></pre>
+<p>The second statement says that the Writes entity has a primary key consisting of Writes<span>BookId and Writes</span>AuthorId.</p>
 
 </div>
 <div class="tab">
@@ -367,9 +374,10 @@ example, but it's enough to show the concept.</p>
 <p><img src="img_1.png" alt="img_1.png" /></p>
 <h3 id="implementing-the-relationship">Implementing the relationship</h3>
 <p>Let's have a look at the <code>Book</code> and <code>PriceOffer</code> entities, and how we can connect them.</p>
-<p>I am going to include navigation properties in both directions.<br />
-For the 1:1 relationship, you also have to explicitly define the foreign key, otherwise EFC will not be able to figure out which table should contain the foreign key.<br />
-The foreign key should be on the dependent side (optional side), which is the <code>PriceOffer</code> side in this case.</p>
+<p>I am going to include navigation properties in both directions.</p>
+<p>For the 1:1 relationship, you also have to explicitly define the foreign key,
+otherwise EFC will not be able to figure out which table should contain the foreign key.</p>
+<p>The foreign key should be on the dependent side (optional side), which is the <code>PriceOffer</code> side in this case.</p>
 <p>Here are the updated classes:</p>
 <pre><code class="line-numbers language-csharp">public class Book
 {
@@ -398,7 +406,7 @@ is optional, and the PriceOffer side is required.</p>
 <p>This should be enough for EFC to figure things out.</p>
 <h3 id="add-dbsets">Add DbSets</h3>
 <p>Now, let's add the DbSets to the <code>BookContext</code> class.<br />
-I update the class this:</p>
+I update the class to this:</p>
 <pre><code class="line-numbers language-csharp">public class AppContext : DbContext
 {
     public DbSet&lt;Book&gt; Books =&gt; Set&lt;Book&gt;();
@@ -411,17 +419,18 @@ I update the class this:</p>
 }
 </code></pre>
 <p>The DbSet<T> defines a table of the type T. Or Book, and PriceOffer.
-You can define the sets as normal properties: <code>public DbSet&lt;Book&gt; Books { get; set; }</code>, but I don't get a null warning, when I do the above.<br />
-It says that when accessing Books, we get the Set<Book>() method, which is just a generic way to access a DbSet, defined on the DbContext class.</p>
+You can define the sets as normal properties: <code>public DbSet&lt;Book&gt; Books { get; set; }</code>, but I don't get a null warning, when I do the above.</p>
+<p>It says that when accessing Books, we call the Set<Book>() method, which is just a generic way to access a DbSet, defined on the DbContext class.</p>
 <h3 id="create-a-migration">Create a migration</h3>
 <p>Time to create a migration. I call mine <code>BookAndPriceOffer</code>.<br />
 This was the first migration, and we get a Migrations directory, with two classes inside:</p>
 <p><img src="img_2.png" alt="img_2.png" /></p>
 <p>The <code>20241003073530_BookAndPriceOffer</code> class contains the migration code, i.e. what to do to the database to make it match the model.<br />
-The <code>AppContextModelSnapshot</code> class contains the model snapshot, which is a snapshot of the current model. It keeps track of the &quot;version&quot; or state of the database, so when new migrations are created, it knows what to do.<br />
-Generally, we don't need to look into these files, but your might inspect the first file, to verify that the migration looks correct.</p>
+The <code>AppContextModelSnapshot</code> class contains the model snapshot, which is a snapshot of the current model.
+It keeps track of the &quot;version&quot; or state of the database, so when new migrations are created, EFC knows what to do.</p>
+<p>Generally, we don't need to look into these files, but you might inspect the first file, to verify that the migration looks correct.</p>
 <h3 id="update-database">Update database</h3>
-<p>Run the commend to update the database.<br />
+<p>Run the command to update the database.<br />
 You get the new <code>bookstore.db</code> file, which is your SQLite database. Double click it, to set up a connection, so we can inspect and interact with it through the database view.</p>
 <p>Inspect the result. You can see this in the migration file above, but sometimes it's easier to see the outcome in the database.<br />
 This means, however, it's more complicated to undo, if the result is not as expected.</p>
@@ -431,12 +440,12 @@ This means, however, it's more complicated to undo, if the result is not as expe
 <p><img src="img_4.png" alt="img_4.png" /></p>
 <p>And PriceOffer table:</p>
 <p><img src="img_5.png" alt="img_5.png" /></p>
-<p>No data yet, but I do get the columns I expect. We case see the BookId column on the PriceOffer table, which is the foreign key.</p>
+<p>No data yet, but I do get the columns I expect. We can see the BookId column on the PriceOffer table, which is the foreign key.</p>
 <h3 id="you-messed-up">You messed up?</h3>
 <p>Sometimes you mess up a migration or application to the database. For your case as a student, it's simpler to just delete the Migrations directory and the bookstore.db file.<br />
 This will obviously delete all data, but it's a simple way to start over.\</p>
 <p>Alternatively, there are ways to undo migration applications, or to remove the latest migration if it has not yet been applied.<br />
-This is done with commands in the terminal. I leave it up to you to google this, if you need it.</p>
+This is done with commands in the terminal. I leave it up to you to google this, if you need it. However, it's not always possible to undo an applied migration.</p>
 
 </div>
 <div class="tab">
@@ -524,7 +533,7 @@ public class Category
 }
 </code></pre>
 <p>This time we can't put a foreign key in either of the classes. A *:* relationship is modelled with a join table, and EFC will automatically create this for us behind the scenes.<br />
-When we apply the upcoming migration, you will see this join table in the database.</p>
+When we apply the upcoming migration, you will see this join table in the database. My join table is called <code>BookCategory</code>.</p>
 <h3 id="add-dbset">Add DbSet</h3>
 <p>Add a new DbSet to the AppContext class:</p>
 <pre><code class="line-numbers language-csharp">public DbSet&lt;Category&gt; Categories =&gt; Set&lt;Category&gt;();
@@ -536,20 +545,21 @@ When we apply the upcoming migration, you will see this join table in the databa
 <h3 id="update-the-database">Update the database</h3>
 <p>Update the database with the new migration, and after a refresh of the database view, you should see the new table:</p>
 <p><img src="img_12.png" alt="img_12.png" /></p>
+<p>Notice also the BookCategory table, which is the join table EFC created for us.</p>
 
 </div>
 <div class="tab">
 <hr/><h1 id="relationship-attributes">Relationship attributes</h1><hr/>
-<p>Now, there is only one relationship left, the *:* relationship, which is the Writes relationship attribute.\</p>
+<p>Now, there is only one relationship left, the *:* relationship, which is the Writes relationship attribute.</p>
 <p>Relationship attributes only exist on *:* relationships.</p>
 <p>For the basic *:* relationship, EFC automatically created the join table for us. This time, we must be explicit about the join table,
 because of the extra attribute.</p>
 <p>Here's the relationship in the diagram:</p>
 <p><img src="img_13.png" alt="img_13.png" /></p>
 <h3 id="implementing-the-relationship">Implementing the relationship</h3>
-<p>As mentioned, we need a new class to bind the Book and Author together, we explicitly create the join table.<br />
+<p>As mentioned, we need a new class to bind the Book and Author together, so we explicitly create the join table.<br />
 We then implement two 1:* relationships, one from Book to Writes, and one from Author to Writes.</p>
-<p>Here are the updated classes:</p>
+<p>Here are the updated classes. It is not important what you call the collection navigation properties to Writes. I have called them WrittenBy and Writes, that made sense me:</p>
 <pre><code class="line-numbers language-csharp">public class Book
 {
     public int Id { get; set; }
@@ -618,6 +628,12 @@ public DbSet&lt;Writes&gt; Writes =&gt; Set&lt;Writes&gt;();
 </li>
 <li>Deleting data</li>
 <li>Retrieving data</li>
+<li>Connecting data
+<ul>
+<li>Through association</li>
+<li>Through foreign key</li>
+</ul>
+</li>
 <li>Querying data
 <ul>
 <li>Simple queries</li>
