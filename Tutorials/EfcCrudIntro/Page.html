@@ -247,7 +247,7 @@ A use case for this could be a bank transfer,
 where you need to increase the amount of money in one account, and decrease it in another account.<br />
 Both updates should succeed in the database.</p>
 <h2 id="updating-untracked-entity">Updating untracked entity</h2>
-<p>Sometimes it feel unnecessary to first retrieve an entity to update it.</p>
+<p>Sometimes it feels unnecessary to first retrieve an entity to update it.</p>
 <p>What you can do instead is:</p>
 <ol>
 <li>Create a new entity with your new property values</li>
@@ -442,7 +442,7 @@ book.Categories.Remove(cat);
 
 await ctx.SaveChangesAsync();
 </code></pre>
-<p>Now, only categories which match my predicate <code>cat =&gt; cat.Name == &quot;.NET&quot;)</code> are loaded.
+<p>Now, only categories which match my predicate <code>cat =&gt; cat.Name == &quot;.NET&quot;</code> are loaded.
 So, instead of loading potentially thousands of irrelevant entities, I only load the one I need to remove.</p>
 
 </div>
