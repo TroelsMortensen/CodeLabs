@@ -6,7 +6,7 @@ There are two ways to add a new entity:
 
 They work very similar.
 
-# Add book
+## Add book
 I will add a new book to the database.
 
 I first create a new instance of the Book:

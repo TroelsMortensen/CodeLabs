@@ -29,7 +29,7 @@ Both updates should succeed in the database.
 
 ## Updating untracked entity
 
-Sometimes it feel unnecessary to first retrieve an entity to update it.
+Sometimes it feels unnecessary to first retrieve an entity to update it.
 
 What you can do instead is:
 1) Create a new entity with your new property values

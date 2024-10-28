@@ -68,7 +68,7 @@ This means that First() is probably faster, but Single() is both safer, and clea
 #### OrDefault
 Again, there is an alternative, which returns null in case of no match, rather than throwing an exception.
 
-## Set<T>
+## Generic Set\<T\>
 In the above, we have used the DbSet. I have also stated in the other tutorial that you don't strictly need to always define a DbSet.
 
 Instead you can use the generic set, which acts exactly in the same was.

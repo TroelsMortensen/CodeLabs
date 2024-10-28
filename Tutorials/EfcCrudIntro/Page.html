@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="./../../Resources/Style.css" rel="stylesheet">
+<link href="./../../Resources/prism.css" rel="stylesheet">
+<script src="./../../Resources/TabNavigavtor.js"></script>
+<link rel="shortcut icon" href="./../../Resources/CodeIcon.png">
+<title>VIA Codelabs</title>
+<body>
+<script src="./../../Resources/prism.js"></script>
+
+<div>
+    <div>
+        <a href="./../../index.html" class="homelink">HOME</a>
+    </div>
+    <div id="drop-down-button" style="padding:0;margin:0;">
+        <img id="drop-down-img" src="./../../Resources/drop-down-list.svg" alt="dropdown-icon"/>
+        <div id="dropdown-content">
+            <span class="drop-down-step" onclick="setTab(0)">1 Introduction</span>
+<span class="drop-down-step" onclick="setTab(1)">2 The DbSet</span>
+<span class="drop-down-step" onclick="setTab(2)">3 Add entity</span>
+<span class="drop-down-step" onclick="setTab(3)">4 Retrieve entity</span>
+<span class="drop-down-step" onclick="setTab(4)">5 Update entity</span>
+<span class="drop-down-step" onclick="setTab(5)">6 Delete entity</span>
+<span class="drop-down-step" onclick="setTab(6)">7 Add relationships</span>
+<span class="drop-down-step" onclick="setTab(7)">8 Remove relationships</span>
+
+        </div>
+    </div>
+</div>
+<div id="main-page">
+    <div id="steps-list">
+        <ol>
+            <li class="step" onclick="setTab(0)">1 Introduction</li>
+<li class="step" onclick="setTab(1)">2 The DbSet</li>
+<li class="step" onclick="setTab(2)">3 Add entity</li>
+<li class="step" onclick="setTab(3)">4 Retrieve entity</li>
+<li class="step" onclick="setTab(4)">5 Update entity</li>
+<li class="step" onclick="setTab(5)">6 Delete entity</li>
+<li class="step" onclick="setTab(6)">7 Add relationships</li>
+<li class="step" onclick="setTab(7)">8 Remove relationships</li>
+
+        </ol>
+    </div>
+    <div id="card-container">
+
+        <div id="slide-card">
+            <div id="top-buttons-row" style="overflow:auto;">
+
+                <div style="float:right; margin:10px">
+                    <button type="button" id="prevBtn" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn" class="next-button" onclick="nextPrev(1)">Next</button>
+                </div>
+            </div>
+
+            <!-- One "tab" for each step in the form: -->
+
+            <div class="tab">
+<hr/><h1 id="introduction">Introduction</h1><hr/>
+<p>This tutorial aims to show examples of basic CRUD operations using EFC.</p>
+<p>I will use the same example, as in the <a href="../EfcSetupIntro/Page.html">Setup guide</a>, shown here:</p>
+<p><img src="img.png" alt="er diagram" /></p>
+<p>I am therefore also using the same DbContext, which I set up in the above referenced guide.</p>
+<p>In this guide I will give examples of the following:</p>
+<ul>
+<li>Adding new entities</li>
+<li>Retrieving a single entity</li>
+<li>Updating an existing entity</li>
+<li>Deleting an existing entity</li>
+<li>Update relationships between entities</li>
+</ul>
+<p>A later guide will dive into more complex queries.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="the-dbset">The DbSet</h1><hr/>
+<p>Each DbSet is a &quot;virtual&quot; representation of a database table.</p>
+<p>If you have a table in the database called Books, there will be a corresponding DbSet in the DbContext called Books.</p>
+<p>This DbSet is our entry point into the database table.</p>
+<p>My current DbContext looks like this:</p>
+<pre><code class="line-numbers language-csharp">public class AppContext : DbContext
+{
+    public DbSet&lt;Book&gt; Books =&gt; Set&lt;Book&gt;();
+    public DbSet&lt;PriceOffer&gt; PriceOffers =&gt; Set&lt;PriceOffer&gt;();
+    public DbSet&lt;Review&gt; Reviews =&gt; Set&lt;Review&gt;();
+    public DbSet&lt;Author&gt; Authors =&gt; Set&lt;Author&gt;();
+    public DbSet&lt;Writes&gt; Writes =&gt; Set&lt;Writes&gt;();
+    public DbSet&lt;Category&gt; Category =&gt; Set&lt;Category&gt;();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlite(&quot;Data Source = bookstore.db&quot;);
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity&lt;Category&gt;()
+            .HasKey(c =&gt; c.Name);
+
+        modelBuilder.Entity&lt;Writes&gt;()
+            .HasKey(w =&gt; new { w.BookId, w.AuthorId });
+    }
+}
+</code></pre>
+<p>I misspelled the Category DbSet variable, it should have been Categories. Plural. I don't care enough to fix it.</p>
+<h2 id="repository">Repository</h2>
+<p>The DbSet is a repository pattern, meaning it is an interface for data access, which looks like a list.</p>
+<p>Therefore, we interact with the DbSet in much the same way as we would a List, using similar methods, for example: Add, Remove, etc.</p>
+<p>We make changes to the DbSet (list), or the entities within the DbSet, and when we make a call to DbContext::SaveChanges(),
+EFC will figure out what is changed/updated/deleted, and apply the same changes to the database.</p>
+<h2 id="transactions">Transactions</h2>
+<p>If multiple changes are made to multiple DbSets, and then at the end, we call SaveChanges(),
+all changes will be saved in <em>one</em> transaction.</p>
+<p>This means, that if one thing fails to be saved, all changes are discarded.</p>
+<h2 id="change-tracking">Change tracking</h2>
+<p>The DbSet has a &quot;Change tracker&quot;.</p>
+<p>This means, all changes made to a DbSet is tracked, all changes to entities within the DbSet is also tracked.</p>
+<p>When we save the changes, EFC will figure out how best to execute the changes to the database,
+whether this mean adding, updating, deleting, or replacing rows.</p>
+<p>EFC will also figure out the correct order of things.</p>
+<p>Whenever we load an entity from the database, this entity is kept in the corresponding DbSet,
+and all changes are then tracked by EFC. This is most evident when we make updates to tracked entities,
+which is shown later.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="add-an-entity">Add an entity</h1><hr/>
+<p>There are two ways to add a new entity:</p>
+<ul>
+<li>The DbSet</li>
+<li>The generic Set</li>
+</ul>
+<p>They work very similar.</p>
+<h2 id="add-book">Add book</h2>
+<p>I will add a new book to the database.</p>
+<p>I first create a new instance of the Book:</p>
+<pre><code class="line-numbers language-csharp">Book book = new Book
+{
+    Title = &quot;Entity Framework Core In Action&quot;,
+    PublishDate = new DateOnly(2021, 3, 1),
+    Price = 249.95m
+};
+</code></pre>
+<p>You may notice the 'm' in the last variable, this is just to indicate this is a decimal, to match the type of the property 'Price'.</p>
+<p>Notice also, I don't set the Id property of the Book. This is because the property is of type int,
+and by convention EFC will configure this as auto-generated.<br />
+So, when I don't provide a value, EFC will generate it.<br />
+If I to provide a value, EFC will just use that, if it is not already in use in the table.</p>
+<p>Then I use the DbSet<Book> to add the new book, and then save the changes.</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+
+await ctx.Books.AddAsync(book);
+await ctx.SaveChangesAsync();
+</code></pre>
+<p>The <code>using</code> in front of the instantiation of the AppContext means that when the DbContext is no longer used,
+it will be disposed of. This includes terminating the connection to the database.</p>
+<p>And that's it.</p>
+<p>If you run this, you can now open up the database view, refresh it, and see your new row.<br />
+You should also see the Id has been generated. Like this:</p>
+<p><img src="img_1.png" alt="img_1.png" /></p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="retrieving-an-entity">Retrieving an entity</h1><hr/>
+<p>Because of the way EFC and the repository DbContext works, we often have to retrieve entities.</p>
+<p>This is necessary when we want to update something: First we retrieve the entity, then modify it, then save it.</p>
+<p>It is also necessary when deleting: Retrieve the entity, remove it from the DbSet (which represents the table), then save the change.</p>
+<p>There are several ways of retrieving a single entity:</p>
+<ul>
+<li>Find</li>
+<li>Single (OrDefault)</li>
+<li>First (OrDefault)</li>
+</ul>
+<h2 id="find">Find</h2>
+<p>This method is used to search for an entity by its Id. The argument is a list of the primary key attribute values, i.e an <code>object[]</code>.</p>
+<p>For example:</p>
+<pre><code class="line-numbers language-csharp">Book? found = await ctx.Books.FindAsync(1);
+</code></pre>
+<p>Notice that if no matching book was found, <code>null</code> is returned. You will have to deal with this null-case somehow.
+Either throw an exception, or your specific case might have an other relevant way of handling the null-case.</p>
+<p>The Find() method is only available on the DbSet, it seems, but not on the more general IQueryable. This will become evident in slide 7.</p>
+<h2 id="single-ordefault">Single (OrDefault)</h2>
+<p>This method can search for entities by other candidate keys than the primary key.<br />
+You just provide a lambda expression as the search criteria.</p>
+<p>Like this:</p>
+<pre><code class="line-numbers language-csharp">Book found = await ctx.Books.SingleAsync(b =&gt; b.Id == 1);
+</code></pre>
+<p>The above looks for a book, where the Id is 1. If my entity had other unique properties, like user::email, I could search by email too.</p>
+<p>With the Find() method, the call results in one of three cases:</p>
+<ol>
+<li>A book was found, and returned.</li>
+<li>No matches was found, and an exception is thrown.</li>
+<li>Multiple matches were found, and an exception is thrown.</li>
+</ol>
+<h4 id="ordefault">OrDefault</h4>
+<p>If you don't like to potentially have to catch an exception,
+you can use the <code>SingleOrDefault</code> method,
+which will return null, if no matches were found, i.e. case 2) above. Case 1) and 3) is the same.</p>
+<p>Now you just have to handle the case of the entity being null, and potentially throw an exception, or somehow deal with this situation.</p>
+<h2 id="first-ordefault">First (OrDefault)</h2>
+<p>This method is similar in it's use, you provide a lambda expression as the search criteria.</p>
+<pre><code class="line-numbers language-csharp">Book? found = await ctx.Books.SingleOrDefaultAsync(b =&gt; b.Id == 1);
+</code></pre>
+<p>But, the potential resulting outcomes are slightly different:</p>
+<ol>
+<li>A book was found, and returned.</li>
+<li>No matches, an exception is thrown.</li>
+<li>Multiple matches, the first match is returned.</li>
+</ol>
+<p>So, this method returns the first match, while the Single() ensure there is <em>only</em> one match.<br />
+This means that First() is probably faster, but Single() is both safer, and clearer in its intend.</p>
+<h4 id="ordefault-1">OrDefault</h4>
+<p>Again, there is an alternative, which returns null in case of no match, rather than throwing an exception.</p>
+<h2 id="generic-sett">Generic Set&lt;T&gt;</h2>
+<p>In the above, we have used the DbSet. I have also stated in the other tutorial that you don't strictly need to always define a DbSet.</p>
+<p>Instead you can use the generic set, which acts exactly in the same was.</p>
+<p>The two below lines of code do the same thing:</p>
+<pre><code class="line-numbers language-csharp">Book found = await ctx.Books.SingleAsync(b =&gt; b.Id == 1);
+Book found1 = await ctx.Set&lt;Book&gt;().SingleAsync(b =&gt; b.Id == 1);
+</code></pre>
+<p>Generally, using the DbSet is probably slightly easier. However, the generic approach opens of for interesting options, like defining a generic implementation of your own repository classes, which can work for all entities.<br />
+You could play around with this in your assignment. It means, you can create <em>one</em> repository class, which can work for any current and future entity.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="updating-an-existing-entity">Updating an existing entity</h1><hr/>
+<p>For this we have two approaches, we could call them &quot;update&quot; and &quot;replace&quot;, or &quot;tracked&quot; vs &quot;untracked&quot;.</p>
+<h2 id="updating-a-tracked-entity">Updating a tracked entity</h2>
+<p>The way this works is</p>
+<ol>
+<li>Retrieve the entity</li>
+<li>Change some property</li>
+<li>Save the changes</li>
+</ol>
+<p>Whenever we retrieve an entity, EFC will keep a reference to it, so it can detect changes, and optimize the sql to execute against the database.<br />
+It will only update the changed properties.</p>
+<p>It works like below, where I update the price of a book.</p>
+<pre><code class="line-numbers language-csharp">Book found = await ctx.Books.SingleAsync(b =&gt; b.Id == 1);
+found.Price = 235.00m;
+await ctx.SaveChangesAsync();
+</code></pre>
+<p>I can of course make multiple updates to a single entity, change the title, etc.</p>
+<p>I can also retrieve multiple entities, update them, and call SaveChanges at the end,
+so that all the updates happen together in a single transaction.<br />
+A use case for this could be a bank transfer,
+where you need to increase the amount of money in one account, and decrease it in another account.<br />
+Both updates should succeed in the database.</p>
+<h2 id="updating-untracked-entity">Updating untracked entity</h2>
+<p>Sometimes it feel unnecessary to first retrieve an entity to update it.</p>
+<p>What you can do instead is:</p>
+<ol>
+<li>Create a new entity with your new property values</li>
+<li>Set the Id to that of an existing entity</li>
+<li>Use the Update method</li>
+<li>Save the changes</li>
+</ol>
+<p>If I want to update my existing book, it looks like this:</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+Book bookToUpdate = new Book
+{
+    Id = 1,
+    Title = &quot;Entity Framework Core In Action&quot;,
+    PublishDate = new DateOnly(2021, 3, 1),
+    Price = 235.00m
+};
+
+await ctx.SaveChangesAsync();
+ctx.Books.Update(bookToUpdate);
+</code></pre>
+<p>You could consider this a &quot;replace&quot; instead.
+EFC will not optimize the query to only set the changed properties,
+it will overwrite all values in the row.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="delete-existing-entity">Delete existing entity</h1><hr/>
+<p>The way this works is to retrieve the entity, remove it, save the changes.</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+Book? book = await ctx.Books.FindAsync(1);
+ctx.Books.Remove(book);
+await ctx.SaveChangesAsync();
+</code></pre>
+
+</div>
+<div class="tab">
+<hr/><h1 id="adding-relationships-between-entities">Adding relationships between entities</h1><hr/>
+<p>This topic can be a bit comprehensive, and I have probably forgotten a case or two.</p>
+<p>There are several different ways to bind entities together, or to remove existing relationships.</p>
+<h2 id="add-new-entity-to-existing">Add new entity to existing</h2>
+<p>Let's look at the case of adding a Price Offer to our book.</p>
+<p>We have at least two approaches:</p>
+<ol>
+<li>Attach new PriceOffer to Book's navigation property:
+<ul>
+<li>Create PriceOffer instance</li>
+<li>Retrieve book</li>
+<li>Set book nav prop to point to price offer</li>
+</ul>
+</li>
+<li>Set foreign key
+<ul>
+<li>Create PriceOffer</li>
+<li>Set the foreign key property value to that of the book's primary key</li>
+</ul>
+</li>
+</ol>
+<h4 id="use-nav-prop">Use nav prop</h4>
+<p>The first case looks like the following:</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+PriceOffer po = new()
+{
+    NewPrice = 25m,
+    PromotionalText = &quot;On sale!&quot;
+};
+Book? book = await ctx.Books.SingleAsync(book =&gt; book.Id == 1);
+book.PriceOffer = po;
+await ctx.SaveChangesAsync();
+</code></pre>
+<p>After running the above piece of code, we can inspect the PriceOffer table,
+and see that both the primary key and foreign key are updated correctly:</p>
+<p><img src="img_2.png" alt="img_2.png" /></p>
+<p>The PriceOffer gets the next available Id, i.e. 1, and the foreign key points to the book with Id 1.</p>
+<h4 id="use-foreign-key">Use foreign key</h4>
+<p>Alternatively, instead of retrieving the book,
+we can reduce the number of queries against the database by just setting
+the foreign key property on the PriceOffer entity, like this:</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+PriceOffer po = new()
+{
+    NewPrice = 25m,
+    PromotionalText = &quot;On sale!&quot;,
+    BookId = 1
+};
+await ctx.PriceOffers.AddAsync(po);
+await ctx.SaveChangesAsync();
+</code></pre>
+<p>Notice the <code>BookId</code> property is set, and I just add the PriceOffer through its DbSet.</p>
+<h2 id="add-existing-entity-to-another-existing">Add existing entity to another existing</h2>
+<p>Let's assume we have some categories already, and we want to update an existing book to be part of an existing category.</p>
+<p>This is done as follows:</p>
+<ol>
+<li>Load one of the entities (doesn't matter which one)</li>
+<li>Load the other entity</li>
+<li>Add one entity to the collection navigation property of the other (again, it doesn't matter which is which)</li>
+<li>Save changes</li>
+</ol>
+<p>And the code looks like this:</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+
+Book? book = await ctx.Books.FindAsync(1);
+Category? cat = await ctx.Categories.FindAsync(&quot;.NET&quot;);
+book.Categories.Add(cat);
+
+await ctx.SaveChangesAsync();
+</code></pre>
+<p>Notice that Find returns a nullable entity, so I <em>should have</em> checked that neither is null.</p>
+<p>In my case I <em>know</em> both entities exist, and decided to keep the example simple.</p>
+<p>In this case we don't have any foreign keys, so the above approach is the only available.</p>
+
+</div>
+<div class="tab">
+<hr/><h1 id="removing-relationships-between-entities">Removing relationships between entities</h1><hr/>
+<p>Again, we have several different cases and different approaches.</p>
+<h3 id="dependent-relationships">Dependent relationships</h3>
+<p>For example, a PriceOffer cannot live without referencing a Book, so we can't just set the PriceOffer::BookId to null.</p>
+<p>In this case, I can do either:</p>
+<ol>
+<li>Delete the PriceOffer</li>
+<li>Load the book, set the PriceOffer nav prop to null, and let the database delete the PriceOffer for me.
+This works, because the database has set the ON DELETE behaviour to CASCADE</li>
+</ol>
+<p>The first case is covered in the previous slide about deleting entities.</p>
+<p>The other case would look like this:</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+
+Book book = await ctx.Books
+    .Include(b =&gt; b.PriceOffer)
+    .SingleAsync(b =&gt; b.Id == 1);
+
+book.PriceOffer = null;
+
+await ctx.SaveChangesAsync();
+</code></pre>
+<p>Notice the Include() call. This will load the Book entity, and <em>also</em> its associated PriceOffer.
+If I don't include the PriceOffer like this, the property will just be null.<br />
+This is the case for <em>all</em> navigation properties.
+If you wish to load them as well, you must do so explicitly.</p>
+<p>And, for some reason, after the Include, the Find method is no longer available,
+so I need to use another way to extract a single entity.</p>
+<h3 id="independent-relationships">Independent relationships</h3>
+<p>Next, let's look at the relationship between category and book again.
+This time, I just want to &quot;break the link&quot; between them, but still keep both entities.</p>
+<p>Again, I can load one entity, including the navigation proporty, and remove the other entity from the list.</p>
+<p>I have three ways:</p>
+<ol>
+<li>Remove from list by id</li>
+<li>Remove from list by reference</li>
+<li>Optimization to only include relevant entity</li>
+</ol>
+<h4 id="by-id">By Id</h4>
+<p>I load one entity, include the navigation property entities, and remove one by id:</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+
+Book book = await ctx.Books
+    .Include(b =&gt; b.Categories)
+    .SingleAsync(b =&gt; b.Id == 1);
+
+book.Categories.RemoveAll(cat =&gt; cat.Name == &quot;.NET&quot;);
+
+await ctx.SaveChangesAsync();
+</code></pre>
+<h4 id="by-entity">By entity</h4>
+<p>Load both entities, remove one from the other:</p>
+<pre><code class="line-numbers language-csharp">Book book = await ctx.Books
+    .Include(b =&gt; b.Categories)
+    .SingleAsync(b =&gt; b.Id == 1);
+Category cat = await ctx.Category.SingleAsync(c =&gt; c.Name == &quot;.NET&quot;);
+
+book.Categories.Remove(cat);
+
+await ctx.SaveChangesAsync();
+</code></pre>
+<h4 id="optimization">Optimization</h4>
+<p>Now, consider the following. In both of the above cases, I have loaded the Book, and also <em>all</em> associated Categories.<br />
+In this case it's not much of a problem, as the number of categories for a book will probably never grow larger than a handful.<br />
+But for example the number of reviews could be thousands.<br />
+Do I really need to load <em>all</em> reviews, just to remove a single?
+(Well, like PriceOffer, Review cannot exist by itself, so I could just delete the review directly.
+But, just pretend for a moment here that a review could exist without a book. I could set the FK to null, though.
+But for the sake of this example..)</p>
+<p>The solution? The Include method can consider some filtering, so only <em>some</em> associated entities are loaded.</p>
+<p>It looks like this:</p>
+<pre><code class="line-numbers language-csharp">using AppContext ctx = new();
+
+Book book = await ctx.Books
+    .Include(b =&gt; b.Categories.Where(cat =&gt; cat.Name == &quot;.NET&quot;))
+    .SingleAsync(b =&gt; b.Id == 1);
+Category cat = await ctx.Category.SingleAsync(c =&gt; c.Name == &quot;.NET&quot;);
+
+book.Categories.Remove(cat);
+
+await ctx.SaveChangesAsync();
+</code></pre>
+<p>Now, only categories which match my predicate <code>cat =&gt; cat.Name == &quot;.NET&quot;)</code> are loaded.
+So, instead of loading potentially thousands of irrelevant entities, I only load the one I need to remove.</p>
+
+</div>
+
+
+
+            <div id="bottom-buttons-row" style="overflow:auto; padding-bottom: 10px">
+                <hr/>
+                <div style="float:right;">
+                    <button type="button" id="prevBtn1" class="prev-button" onclick="nextPrev(-1)">Previous</button>
+                    <button type="button" id="nextBtn1" class="next-button" onclick="nextPrev(1)">Next&gt;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    showFirstOrSpecificTab();
+</script>
+
+</body>
+</html>

@@ -9,6 +9,8 @@
 
 [Introduction to Entity Framework Core](./Tutorials/EfcSetupIntro/Page.html)
 
+[CRUD operations with EFC](./Tutorials/EfcCrudIntro/Page.html)
+
 <s>[DEPRECATED: Simple Blazor-server login](./Tutorials/BlazorLogin/Page.html)</s>
 
 <s>[DEPRECATED: JWT Login](./Tutorials/BlazorWasmJwtAuth/Page.html)</s>
