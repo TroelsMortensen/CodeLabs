@@ -163,7 +163,11 @@ await ctx.SaveChangesAsync();
 #### Optimization
 Now, consider the following. In both of the above cases, I have loaded the Book, and also _all_ associated Categories.\
 In this case it's not much of a problem, as the number of categories for a book will probably never grow larger than a handful.\
-But for example the number of reviews could be thousands. Do I really need to load _all_ reviews, just to remove a single? (Well, like PriceOffer, Review cannot exist by itself, so I could just delete the review directly. But, just pretend for a moment here that a review could exist without a book)
+But for example the number of reviews could be thousands.\
+Do I really need to load _all_ reviews, just to remove a single? 
+(Well, like PriceOffer, Review cannot exist by itself, so I could just delete the review directly. 
+But, just pretend for a moment here that a review could exist without a book. I could set the FK to null, though.
+But for the sake of this example..)
 
 The solution? The Include method can consider some filtering, so only _some_ associated entities are loaded.
 
