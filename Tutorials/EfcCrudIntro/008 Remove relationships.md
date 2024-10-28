@@ -100,5 +100,5 @@ book.Categories.Remove(cat);
 await ctx.SaveChangesAsync();
 ```
 
-Now, only categories which match my predicate `cat => cat.Name == ".NET")` are loaded.
+Now, only categories which match my predicate `cat => cat.Name == ".NET"` are loaded.
 So, instead of loading potentially thousands of irrelevant entities, I only load the one I need to remove.
