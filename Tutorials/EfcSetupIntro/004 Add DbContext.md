@@ -14,10 +14,12 @@ The DbContext contains a bunch of useful methods, which we can either use or ove
 First, we need to sub-class the DbContext.\
 Create a new class, call it whatever you want. `AppContext` is a good start.
 
-#### Edit: 
-I've learned, that there is another existing class called AppContext, 
+> **Edit:**
+> 
+> I've learned, that there is another existing class called AppContext, 
 which sometimes causes conflicts. Maybe another name is better, like `BookstoreContext`.
 My examples, though, will still use the AppContext name.
+
 
 Here's the initial class.
 

@@ -158,10 +158,12 @@ This is an abstract class, and you need to create a subclass of it to use it.</p
 <p>The DbContext contains a bunch of useful methods, which we can either use or override.</p>
 <p>First, we need to sub-class the DbContext.<br />
 Create a new class, call it whatever you want. <code>AppContext</code> is a good start.</p>
-<h4 id="edit">Edit:</h4>
+<blockquote>
+<p><strong>Edit:</strong></p>
 <p>I've learned, that there is another existing class called AppContext,
 which sometimes causes conflicts. Maybe another name is better, like <code>BookstoreContext</code>.
 My examples, though, will still use the AppContext name.</p>
+</blockquote>
 <p>Here's the initial class.</p>
 <pre><code class="line-numbers language-csharp">public class AppContext : DbContext
 {
