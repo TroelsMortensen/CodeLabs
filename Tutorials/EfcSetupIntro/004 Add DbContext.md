@@ -1,7 +1,23 @@
 ﻿# Add DbContext
 The DbContext subclass is your gateway to the database. 
+On second semester, you may have had a DatabaseManager class, which handled all interactions
+with the database.\
+Maybe you applied DAO pattern, and had multiple DatabaseManagers.\
+The DbContext has a similar responsibility.
 
-Create such a class, call it whatever you want. `AppContext` is a good start.
+The EFC package you have added to the project includes a class called `DbContext`. 
+This is an abstract class, and you need to create a subclass of it to use it.
+
+The DbContext contains a bunch of useful methods, which we can either use or override.
+
+
+First, we need to sub-class the DbContext.\
+Create a new class, call it whatever you want. `AppContext` is a good start.
+
+#### Edit: 
+I've learned, that there is another existing class called AppContext, 
+which sometimes causes conflicts. Maybe another name is better, like `BookstoreContext`.
+My examples, though, will still use the AppContext name.
 
 Here's the initial class.
 

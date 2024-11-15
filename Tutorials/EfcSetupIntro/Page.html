@@ -148,8 +148,20 @@ You can do a lot of configuration with the fluent API, which will be introduced 
 </div>
 <div class="tab">
 <hr/><h1 id="add-dbcontext">Add DbContext</h1><hr/>
-<p>The DbContext subclass is your gateway to the database.</p>
-<p>Create such a class, call it whatever you want. <code>AppContext</code> is a good start.</p>
+<p>The DbContext subclass is your gateway to the database.
+On second semester, you may have had a DatabaseManager class, which handled all interactions
+with the database.<br />
+Maybe you applied DAO pattern, and had multiple DatabaseManagers.<br />
+The DbContext has a similar responsibility.</p>
+<p>The EFC package you have added to the project includes a class called <code>DbContext</code>.
+This is an abstract class, and you need to create a subclass of it to use it.</p>
+<p>The DbContext contains a bunch of useful methods, which we can either use or override.</p>
+<p>First, we need to sub-class the DbContext.<br />
+Create a new class, call it whatever you want. <code>AppContext</code> is a good start.</p>
+<h4 id="edit">Edit:</h4>
+<p>I've learned, that there is another existing class called AppContext,
+which sometimes causes conflicts. Maybe another name is better, like <code>BookstoreContext</code>.
+My examples, though, will still use the AppContext name.</p>
 <p>Here's the initial class.</p>
 <pre><code class="line-numbers language-csharp">public class AppContext : DbContext
 {
