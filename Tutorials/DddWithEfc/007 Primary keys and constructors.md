@@ -1,6 +1,6 @@
 # Define Primary Keys and Constructors
 
-As mentioned on a previous slide, you hopefully get an error about an entity missing a primary key.\
+As mentioned on a previous slide, you hopefully get an error about an entity missing a primary key, or a suitable constructor.\
 All entities must have a primary key defined. And all entities must have a constructor, which EFC can use.\
 Initially you will just set this up on your aggregates, until EFC does not complain.
 
@@ -8,8 +8,8 @@ Then you can start configuration, and then as you tell EFC about your other enti
 
 So, this is the next step.
 
-You will have to work your way step by step through the entities, until you get a script printed in the console.\
-Then as you move through configurations, you may get back to this error over and over, for each entity.\
+You will first have to work your way one by one through the aggregate roots, until you get a script printed in the console.\
+Then as you move through your configurations to include owned entities, you may get back to this error over and over, for each entity.\
 Generally, I think EFC is decently good at outputting informative error messages. Get used to reading these.
 
 First, a bit of structure.
