@@ -98,7 +98,7 @@
 
             <div class="tab">
 <hr/><h1 id="ddd-with-efc">DDD With EFC</h1><hr/>
-<p>This guide aims to explain how to configure Entity Framework core to work with your DDD inspired Domain Model.<br />
+<p>This guide aims to explain how to configure Entity Framework Core to work with your DDD inspired Domain Model.<br />
 Such a domain model looks vastly different from what EFC conventionally uses,
 which are just simple classes (data containers),
 with public properties.</p>
@@ -110,7 +110,7 @@ There will, however, be some cases,
 where you may have to rework your domain model a little bit. Mainly internal parts, so this should hopefully be acceptable.<br />
 This is a trade-off we must accept, if we wish to use EFC. It does seem like they continuously improve support, though. Lucky us.</p>
 <p>The next couple of slides does the initial setup in a step-by-step.<br />
-And then follows slides, which deal with the various specific cases.</p>
+And then the following slides will deal with the various specific cases.</p>
 <p>So, go through the first slides on setting up. Then find the slides relevant to your case.</p>
 <p>Each specific configuration case is explained with an isolated, generic example,
 along with one or more unit tests proving correctness. Hopefully you can convert this to your own specific needs.</p>
@@ -121,7 +121,7 @@ along with one or more unit tests proving correctness. Hopefully you can convert
 <li>By annotations: Here you put attributes on your properties, e.g. [Key] and [Required].</li>
 <li>With the Fluent API you write code in your DbContext class, to configure the entities.</li>
 </ul>
-<p>We will go with the last option. Why? Our domain model class are <em>not</em> property bags. They are carefully designed.<br />
+<p>We will go with the last option. Why? Our domain model classes are <em>not</em> property bags. They are carefully designed.<br />
 Option two is &quot;invasive&quot;, meaning we need to put all kinds of EFC specific attributes into the domain model. But remember,
 we aim to keep technologies out of the domain.</p>
 <p>The third approach means we can configure everything from the &quot;outside&quot;. It is also the most powerful, and it takes precedence over the other two approaches.</p>
@@ -165,28 +165,30 @@ If you wish to use the tool, I suggest outputting the script to a file, like thi
 This is because the terminal will make irregular line-breaks, which the tool cannot handle.</p>
 <p>Here's a link to the tool: <a href="https://troelsmortensen.github.io/SqlScriptVisualizer/">EFC Visualizer</a></p>
 <h2 id="table-of-content">Table of content</h2>
-<p>Slides:
-6. Constructor<br />
-7. Test helper methods<br />
-8. Guid primary key<br />
-9. Strongly typed primary key<br />
-10. Primitive field variables<br />
-10. Value object overview<br />
-11. Non-nullable single-valued value object<br />
-12. Nullable single-valued value object<br />
-13. Non-nullable multi-valued value object<br />
-14. Nullable multi-valued value object<br />
-15. Non-nullable nested value objects<br />
-16. Nullable nested value objects<br />
-17. List of Value objects<br />
-18. Single foreign key with Guid<br />
-19. Single foreign key with strongly typed id<br />
-20. List of Guid foreign keys (wrapper med conversion)<br />
-21. List of strongly typed ids (wrapper og conversion)<br />
-22. Enums<br />
-23. Enumeration classes<br />
-24. Single nested entity<br />
-24. List of entities.</p>
+<p>Slides:</p>
+<ol start="6">
+<li>Constructor\</li>
+<li>Test helper methods\</li>
+<li>Guid primary key\</li>
+<li>Strongly typed primary key\</li>
+<li>Primitive field variables\</li>
+<li>Value object overview\</li>
+<li>Non-nullable single-valued value object\</li>
+<li>Nullable single-valued value object\</li>
+<li>Non-nullable multi-valued value object\</li>
+<li>Nullable multi-valued value object\</li>
+<li>Non-nullable nested value objects\</li>
+<li>Nullable nested value objects\</li>
+<li>List of Value objects\</li>
+<li>Single foreign key with Guid\</li>
+<li>Single foreign key with strongly typed id\</li>
+<li>List of Guid foreign keys (wrapper med conversion)\</li>
+<li>List of strongly typed ids (wrapper og conversion)\</li>
+<li>Enums\</li>
+<li>Enumeration classes\</li>
+<li>Single nested entity\</li>
+<li>List of entities.</li>
+</ol>
 
 </div>
 <div class="tab">

@@ -1,6 +1,6 @@
 # DDD With EFC
 
-This guide aims to explain how to configure Entity Framework core to work with your DDD inspired Domain Model.\
+This guide aims to explain how to configure Entity Framework Core to work with your DDD inspired Domain Model.\
 Such a domain model looks vastly different from what EFC conventionally uses, 
 which are just simple classes (data containers), 
 with public properties.
@@ -15,7 +15,7 @@ where you may have to rework your domain model a little bit. Mainly internal par
 This is a trade-off we must accept, if we wish to use EFC. It does seem like they continuously improve support, though. Lucky us.
 
 The next couple of slides does the initial setup in a step-by-step.\
-And then follows slides, which deal with the various specific cases.
+And then the following slides will deal with the various specific cases.
 
 So, go through the first slides on setting up. Then find the slides relevant to your case.
 
@@ -28,7 +28,7 @@ EFC uses 3 kinds of configuration:
 * By annotations: Here you put attributes on your properties, e.g. [Key] and [Required].
 * With the Fluent API you write code in your DbContext class, to configure the entities.
 
-We will go with the last option. Why? Our domain model class are _not_ property bags. They are carefully designed.\
+We will go with the last option. Why? Our domain model classes are _not_ property bags. They are carefully designed.\
 Option two is "invasive", meaning we need to put all kinds of EFC specific attributes into the domain model. But remember,
 we aim to keep technologies out of the domain.
 
@@ -95,9 +95,9 @@ This is because the terminal will make irregular line-breaks, which the tool can
 
 Here's a link to the tool: [EFC Visualizer](https://troelsmortensen.github.io/SqlScriptVisualizer/)
 
-
 ## Table of content
 Slides:
+
 6. Constructor\
 7. Test helper methods\
 8. Guid primary key\
