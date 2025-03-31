@@ -24,7 +24,7 @@ You have (at least) two approaches:
 
 * Configuration method per entity, it's simpler, we go with this, it's simpler for the guide, but the below approach is better. You should do that.
 * Auto-discoverable configuration class per entity. A bit more complex, generally better.
-You must create an EntityConfiguration class, [see here](https://www.entityframeworktutorial.net/code-first/move-configurations-to-seperate-class-in-code-first.aspx). You should go with this.
+You must create an EntityConfiguration class, [see here](https://www.entityframeworktutorial.net/code-first/move-configurations-to-seperate-class-in-code-first.aspx). You should go with this. The example uses EntityTypeConfiguration, but I had to use the interface: IEntityTypeConfiguration.
 
 Create an EntityConfiguration class for your first entity.
 
