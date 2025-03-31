@@ -33,7 +33,7 @@ You may also change the data source variable, if you want to call your database 
 When trying to e.g. create a migration, or verifying a configuration, EFC will look for this class, and use it to instantiate a DbContext with the correct parameters.
 
 ## Test
-To test this, open the terminal, navigate into the project, and type:
+To test this, open the terminal, navigate into the persistence project, and type:
 
 ```shell
 dotnet ef dbcontext script
@@ -48,9 +48,13 @@ We will use this command over and over, to verify our configurations.
 The point of that command is to see what SQL script is generated, based on your current DbContext, if we were to create a migration, e.g. build the database.
 
 It will fail. That's fine, this is what we currently expect.\
-It should fail with an error message about one of your entities needing a primary key:
+It will fail with an error message about one of your entities needing a primary key:
 
 "... The exception 'The entity type 'VeaEvent' requires a primary key to be defined ..."
+
+Or with a message about not being able to find a suitable constructor:
+
+"...The exception 'No suitable constructor was found for entity type '...'..."
 
 If you get this message, all is good for now.
 

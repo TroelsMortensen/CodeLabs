@@ -23,10 +23,10 @@ Line 1
 * I have called the class SqliteWriteDbContext. You will later have a similar "Read" context.
 * We get `DbContextOptions` through the [Primary Constructor](https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/primary-constructors)
 * The `options` argument is passed to the base class. This argument contains information about which database to use.\
-It must be injected from the outside because of testing reasons. You will see later.
+It must be injected from the outside because sometimes we must use a test-database, and other times a production-database. You will see later.
 
 Lines 3-4
-* I define a DbSet _per aggregate **root**_ entity. There should be no need to define sets for entities, other than the root.
+* I define a DbSet _per aggregate **root**_ entity. **There should be no need to define sets for entities**, other than the root!
 * Obviously, if you do a different project case, or have different aggregate root entities, adjust the code accordingly.
 * The `=>` part is just the general recommendation, it means we retrieve the specific generic Set, which contains a certain entity.
 
