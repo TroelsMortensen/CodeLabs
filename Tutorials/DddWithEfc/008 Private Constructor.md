@@ -22,8 +22,8 @@ I hope I can keep this straight, and not confusing.
 
 The point is, when EFC complains about a missing constructor, you will add a boring, private, no-args constructor.
 
-We find this case of EFC-needs seeping into our sacred DM acceptable, as we do not change the public API of the entity. 
-We are not using anything EFC specific, like attributes [Required]. We are not changing behaviour, or anything of relevance.\
+We find this case of EFC-needs seeping into our sacred DM acceptable, as we do not change the public API of the aggregate. 
+We are not using anything EFC specific, like attributes [Required] or [Key]. We are not changing behaviour, or anything of relevance.\
 It's just a tiny detail, we must remember, or be reminded by EFC.
 
 If we go away from EFC, we don't actually have to rework the DM again.
