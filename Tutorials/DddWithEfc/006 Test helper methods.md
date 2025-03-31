@@ -18,7 +18,7 @@ These two methods will be used in each of my tests going forward.
 The first helper method creates a DbContext, and sets up a fresh database:
 
 ```csharp
-private static MyDbContext SetupContext()
+public static MyDbContext SetupContext()
 {
     DbContextOptionsBuilder<MyDbContext> optionsBuilder = new();
     string testDbName = "Test" + Guid.NewGuid() +".db";
@@ -29,13 +29,13 @@ private static MyDbContext SetupContext()
     return context;
 }
 ```
-Line 1: It is static for performance reasons, not strictly necessary.\
+Line 1: It is static for ease of use, not strictly necessary.\
 Line 3: Create options builder, here we can set various db configurations. In our case the specific test database.\
 In a real system, you often have different databases, like production, Q/A testing, local testing, etc. We need a database, we can reset for every test.\
 Line 4: Test classes are run in parallel, so I need a unique database per test, to avoid conflict. The Guid fixes this.\
-Line 5: The data source is defined.\
+Line 5: The data source is defined to be SQLite.\
 Line 6: Create new instance of DbContext.\
-Line 7: Delete any existing database.\
+Line 7: Delete any existing database, probably not needed.\
 Line 8: Create clean database.
 
 This method is called at the beginning of each test, like this:
@@ -60,13 +60,13 @@ private static async Task SaveAndClearAsync<T>(T entity, MyDbContext context)
 ```
 
 Line 1:
-* Again, static, performance, not really necessary, but Rider gives warning.
+* Again, static for ease of use, and performance, not really necessary, but Rider gives warning.
 * Method is generic `<T>`, so that it can save any type of entity. That's the first argument, `T entity`.
 
 Line 2: The last part is a constraint on the generic type argument `T`, 
 saying the argument must be a class. 
 Not a struct or record struct. 
-We need this constraint, because this constraint is also on the `Set<T>()` method further down.
+We need this constraint, because this constraint is also on the `Set<T>()` method further down in line 4.
 
 Line 4: Access the DbSet containing whatever type of entity `entity` is.\
 Line 5: Save everything to database.\
