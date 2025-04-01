@@ -22,6 +22,13 @@ The following slides will show different ways to configure value objects.
 The first slides are more elaborate in detail regarding what the code does.
 Then, because the configuration is pretty similar, the later slides will be more brief.
 
+### Has Conversion
+The most versatile and simplest approach to mapping Value Objects is to use the HasConversion method.\
+You already saw this in the strongly typed ID mapping. It can work for any single-valued value object.\
+If you are creative, you may also be able to use it for multi-valued value objects, but I would not recommend it. Querying becomes difficult.
+
+You can see an example of single-valued value object again on the next slide. 
+
 ### Note
 For each field variable or property on an entity, we have to add specific configuration.\
 You can access this field or property in two ways: 
@@ -35,6 +42,8 @@ It looks like this:
 
 ```csharp
 .property(entity => entity.someValue)...
+
+or:    
 
 .property("someValue")...
 ```
